@@ -5,12 +5,15 @@ authors = ["Sergii Mikhtoniuk <mikhtoniuk@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+# Kamu
+opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
+
 # HTTP
 actix-web = "*"
 actix-cors = "*"
 
 # GraphQL
-async-graphql = { version = "*", features=["chrono", "url", "apollo_tracing"] }
+async-graphql = { version = "*", features = ["chrono", "url", "apollo_tracing"] }
 async-graphql-actix-web = "*"
 
 # Tracing / logging / telemetry
@@ -26,3 +29,4 @@ clap = "*"
 indoc = "*"
 serde = "*"
 serde_json = "*"
+tokio = { version = "*", features = ["macros"] }
