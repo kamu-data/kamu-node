@@ -5,8 +5,6 @@ authors = ["Sergii Mikhtoniuk <mikhtoniuk@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-chrono = "*"
-
 # HTTP
 actix-web = "*"
 actix-cors = "*"
@@ -21,3 +19,10 @@ tracing-subscriber = "*"
 tracing-log = "*"
 tracing-bunyan-formatter = "*"
 tracing-actix-web = "*"
+
+# Utils
+chrono = "*"
+clap = "*"
+indoc = "*"
+serde = "*"
+serde_json = "*"

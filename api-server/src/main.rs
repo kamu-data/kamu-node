@@ -1,8 +1,11 @@
+mod cli_parser;
+
 use actix_web as ws;
 use async_graphql_actix_web as ws_gql;
+use clap::value_t_or_exit;
 
 const BINARY_NAME: &str = env!("CARGO_PKG_NAME");
-//const VERSION: &str = env!("CARGO_PKG_VERSION");
+const VERSION: &str = env!("CARGO_PKG_VERSION");
 const DEFAULT_LOGGING_CONFIG: &str = "info";
 
 async fn index_route() -> impl ws::Responder {
@@ -26,7 +29,7 @@ async fn playground_route() -> ws::Result<ws::HttpResponse> {
         )))
 }
 
-pub fn init_logging() {
+fn init_logging() {
     use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
     use tracing_log::LogTracer;
     use tracing_subscriber::{layer::SubscriberExt, EnvFilter, Registry};
@@ -49,16 +52,29 @@ pub fn init_logging() {
     tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber");
 }
 
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
+async fn gql_query(query: &str, full: bool) -> String {
+    let gql_schema = kamu_api_server::gql::schema();
+    let response = gql_schema.execute(query).await;
+
+    if full {
+        serde_json::to_string_pretty(&response).unwrap()
+    } else {
+        if response.is_ok() {
+            serde_json::to_string_pretty(&response.data).unwrap()
+        } else {
+            for err in &response.errors {
+                eprintln!("{}", err)
+            }
+            // TODO: Error should be propagated as bad exit code
+            "".to_owned()
+        }
+    }
+}
+
+async fn run_server(address: &str, http_port: u16) -> std::io::Result<()> {
     use actix_web::{http, middleware, web, App, HttpServer};
 
-    init_logging();
-
-    tracing::info!("Starting the web server");
-
-    let schema = kamu_api_server::gql::schema();
-    println!("{}", schema.sdl());
+    tracing::info!("HTTP server listening on {}:{}", address, http_port);
 
     HttpServer::new(move || {
         App::new()
@@ -80,8 +96,39 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("/graphql").route(web::post().to(graphql_route)))
             .service(web::resource("/playground").route(web::get().to(playground_route)))
     })
-    .bind("127.0.0.1:8080")?
+    .bind((address, http_port))?
     .workers(1)
     .run()
     .await
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    init_logging();
+
+    let matches = cli_parser::cli(BINARY_NAME, VERSION).get_matches();
+
+    match matches.subcommand() {
+        ("gql", Some(sub)) => match sub.subcommand() {
+            ("schema", _) => {
+                println!("{}", kamu_api_server::gql::schema().sdl());
+                Ok(())
+            }
+            ("query", Some(qsub)) => {
+                let result =
+                    gql_query(qsub.value_of("query").unwrap(), qsub.is_present("full")).await;
+                print!("{}", result);
+                Ok(())
+            }
+            _ => unimplemented!(),
+        },
+        ("run", Some(sub)) => {
+            run_server(
+                sub.value_of("address").unwrap(),
+                value_t_or_exit!(sub.value_of("http-port"), u16),
+            )
+            .await
+        }
+        _ => unimplemented!(),
+    }
 }
