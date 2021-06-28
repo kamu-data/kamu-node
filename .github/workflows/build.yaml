@@ -16,4 +16,5 @@ jobs:
       - uses: actions-rs/toolchain@v1  # Uses rust-toolchain file
       - run: cargo build
       - run: cargo test --verbose
+      - run: cat api-server/resources/schema.gql
       - run: git diff-index --quiet HEAD  # Ensure all generated files are up-to-date

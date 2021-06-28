@@ -7,6 +7,9 @@ edition = "2018"
 [dependencies]
 # Kamu
 opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
+# opendatafabric = { path = "../../kamu-cli/opendatafabric" }
+kamu = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
+# kamu = { path = "../../kamu-cli/kamu-core" }
 
 # HTTP
 actix-web = "*"
@@ -30,3 +33,10 @@ indoc = "*"
 serde = "*"
 serde_json = "*"
 tokio = { version = "*", features = ["macros"] }
+url = "*"
+
+
+[dev-dependencies]
+kamu-test = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
+# kamu-test = { path = "../../kamu-cli/kamu-core-test" }
+tempfile = "*"

@@ -13,6 +13,10 @@ pub fn cli(binary_name: &'static str, version: &'static str) -> App<'static, 'st
               kamu-api-server <command> <sub-command> -h
             "
         ))
+        .args(&[Arg::with_name("metadata-repo")
+            .long("metadata-repo")
+            .takes_value(true)
+            .help("URL of the dataset metadata repository")])
         .subcommands(vec![
             SubCommand::with_name("run").about("Run the server").args(&[
                 Arg::with_name("address")

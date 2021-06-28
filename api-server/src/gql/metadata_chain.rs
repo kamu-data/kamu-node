@@ -1,11 +1,20 @@
 use std::convert::TryFrom;
+use std::ops::Deref;
+use std::sync::{Arc, Mutex};
 
 use async_graphql::connection::*;
 use async_graphql::*;
 use chrono::prelude::*;
+use kamu::domain as dom;
 use opendatafabric as odf;
 
-struct Sha3_256(odf::Sha3_256);
+use super::DatasetID;
+
+////////////////////////////////////////////////////////////////////////////////////////
+// SHA
+////////////////////////////////////////////////////////////////////////////////////////
+
+pub(crate) struct Sha3_256(odf::Sha3_256);
 
 impl From<odf::Sha3_256> for Sha3_256 {
     fn from(value: odf::Sha3_256) -> Self {
@@ -19,15 +28,20 @@ impl Into<odf::Sha3_256> for Sha3_256 {
     }
 }
 
+impl Deref for Sha3_256 {
+    type Target = odf::Sha3_256;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
 #[Scalar]
 impl ScalarType for Sha3_256 {
     fn parse(value: Value) -> InputValueResult<Self> {
         if let Value::String(value) = &value {
-            // Parse the integer value
             let sha = odf::Sha3_256::try_from(value.as_str())?;
             Ok(sha.into())
         } else {
-            // If the type does not match
             Err(InputValueError::expected_type(value))
         }
     }
@@ -36,6 +50,10 @@ impl ScalarType for Sha3_256 {
         Value::String(self.0.to_string())
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////////////
+// MetadataBlock
+////////////////////////////////////////////////////////////////////////////////////////
 
 #[derive(SimpleObject)]
 pub(crate) struct MetadataBlock {
@@ -49,26 +67,56 @@ pub(crate) struct MetadataBlock {
     //pub vocab: Option<DatasetVocabulary>,
 }
 
+impl From<odf::MetadataBlock> for MetadataBlock {
+    fn from(val: odf::MetadataBlock) -> Self {
+        Self {
+            block_hash: val.block_hash.into(),
+            prev_block_hash: val.prev_block_hash.map(|v| v.into()),
+            system_time: val.system_time,
+            output_watermark: val.output_watermark,
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+// MetadataChain
+////////////////////////////////////////////////////////////////////////////////////////
+
 pub(crate) struct MetadataChain {
-    pub dataset_id: String,
+    dataset_id: DatasetID,
 }
 
 #[Object]
 impl MetadataChain {
-    /// Returns a metadata block corresponding to the specified hash
-    async fn block_by_hash(&self, _ctx: &Context<'_>, hash: Sha3_256) -> Option<MetadataBlock> {
-        Some(MetadataBlock {
-            block_hash: hash,
-            prev_block_hash: Some(odf::Sha3_256::zero().into()),
-            system_time: Utc::now(),
-            output_watermark: Some(Utc::now()),
-        })
+    #[graphql(skip)]
+    pub fn new(dataset_id: DatasetID) -> Self {
+        Self { dataset_id }
     }
 
+    #[graphql(skip)]
+    fn get_chain(&self, ctx: &Context<'_>) -> Result<Box<dyn dom::MetadataChain>> {
+        let repo_ref = ctx
+            .data::<Arc<Mutex<dyn dom::MetadataRepository>>>()
+            .unwrap();
+        let repo = repo_ref.lock().unwrap();
+        Ok(repo.get_metadata_chain(&self.dataset_id)?)
+    }
+
+    /// Returns a metadata block corresponding to the specified hash
+    async fn block_by_hash(
+        &self,
+        ctx: &Context<'_>,
+        hash: Sha3_256,
+    ) -> Result<Option<MetadataBlock>> {
+        let chain = self.get_chain(ctx)?;
+        Ok(chain.get_block(&hash).map(|b| b.into()))
+    }
+
+    // TODO: Add ref parameter (defaulting to "head")
     /// Iterates all metadata blocks starting from the latest one
     async fn blocks(
         &self,
-        _ctx: &Context<'_>,
+        ctx: &Context<'_>,
         after: Option<String>,
         before: Option<String>,
         first: Option<i32>,
@@ -82,25 +130,12 @@ impl MetadataChain {
             |_after, _before, _first, _last| async move {
                 let mut connection = Connection::new(false, false);
 
-                let blocks = vec![
-                    MetadataBlock {
-                        block_hash: odf::Sha3_256::zero().into(),
-                        prev_block_hash: Some(odf::Sha3_256::zero().into()),
-                        system_time: Utc::now(),
-                        output_watermark: Some(Utc::now()),
-                    },
-                    MetadataBlock {
-                        block_hash: odf::Sha3_256::zero().into(),
-                        prev_block_hash: None,
-                        system_time: Utc::now(),
-                        output_watermark: None,
-                    },
-                ];
+                let chain = self.get_chain(ctx)?;
 
                 connection.append(
-                    blocks
-                        .into_iter()
-                        .map(|b| Edge::new(b.block_hash.0.to_string(), b)),
+                    chain
+                        .iter_blocks()
+                        .map(|b| Edge::new(b.block_hash.to_string(), b.into())),
                 );
 
                 Ok(connection)

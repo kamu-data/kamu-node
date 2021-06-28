@@ -1,8 +1,14 @@
 mod cli_parser;
 
+use std::{
+    path::Path,
+    sync::{Arc, Mutex},
+};
+
 use actix_web as ws;
 use async_graphql_actix_web as ws_gql;
 use clap::value_t_or_exit;
+use url::Url;
 
 const BINARY_NAME: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -52,8 +58,12 @@ fn init_logging() {
     tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber");
 }
 
-async fn gql_query(query: &str, full: bool) -> String {
-    let gql_schema = kamu_api_server::gql::schema();
+async fn gql_query(
+    query: &str,
+    full: bool,
+    metadata_repo: Arc<Mutex<dyn kamu::domain::MetadataRepository>>,
+) -> String {
+    let gql_schema = kamu_api_server::gql::schema(metadata_repo);
     let response = gql_schema.execute(query).await;
 
     if full {
@@ -71,14 +81,18 @@ async fn gql_query(query: &str, full: bool) -> String {
     }
 }
 
-async fn run_server(address: &str, http_port: u16) -> std::io::Result<()> {
+async fn run_server(
+    address: &str,
+    http_port: u16,
+    metadata_repo: Arc<Mutex<dyn kamu::domain::MetadataRepository>>,
+) -> std::io::Result<()> {
     use actix_web::{http, middleware, web, App, HttpServer};
 
     tracing::info!("HTTP server listening on {}:{}", address, http_port);
 
     HttpServer::new(move || {
         App::new()
-            .data(kamu_api_server::gql::schema())
+            .data(kamu_api_server::gql::schema(metadata_repo.clone()))
             .wrap(middleware::Compress::default())
             .wrap(
                 actix_cors::Cors::default()
@@ -108,15 +122,38 @@ async fn main() -> std::io::Result<()> {
 
     let matches = cli_parser::cli(BINARY_NAME, VERSION).get_matches();
 
+    let cwd = Path::new(".").canonicalize().unwrap();
+    let metadata_repo_url = Url::parse(
+        matches
+            .value_of("metadata-repo")
+            .unwrap_or(Url::from_file_path(&cwd).unwrap().as_str()),
+    )
+    .unwrap();
+
+    let metadata_repo = match metadata_repo_url.scheme() {
+        "file" => {
+            let workspace_root_dir = metadata_repo_url.to_file_path().unwrap();
+            let workspace_layout = kamu::infra::WorkspaceLayout::new(&workspace_root_dir);
+            Arc::new(Mutex::new(kamu::infra::MetadataRepositoryImpl::new(
+                &workspace_layout,
+            )))
+        }
+        _ => panic!("Unsupported metadata repo URL scheme"),
+    };
+
     match matches.subcommand() {
         ("gql", Some(sub)) => match sub.subcommand() {
             ("schema", _) => {
-                println!("{}", kamu_api_server::gql::schema().sdl());
+                println!("{}", kamu_api_server::gql::schema(metadata_repo).sdl());
                 Ok(())
             }
             ("query", Some(qsub)) => {
-                let result =
-                    gql_query(qsub.value_of("query").unwrap(), qsub.is_present("full")).await;
+                let result = gql_query(
+                    qsub.value_of("query").unwrap(),
+                    qsub.is_present("full"),
+                    metadata_repo,
+                )
+                .await;
                 print!("{}", result);
                 Ok(())
             }
@@ -126,6 +163,7 @@ async fn main() -> std::io::Result<()> {
             run_server(
                 sub.value_of("address").unwrap(),
                 value_t_or_exit!(sub.value_of("http-port"), u16),
+                metadata_repo,
             )
             .await
         }

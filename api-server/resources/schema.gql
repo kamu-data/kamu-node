@@ -6,14 +6,15 @@ type Query {
 	"""
 	Returns dataset by its ID
 	"""
-	datasetById(id: String!): Dataset
+	datasetById(id: DatasetID!): Dataset
 	"""
 	Iterates all datasets
 	"""
 	datasets(after: String, before: String, first: Int, last: Int): DatasetConnection!
 }
+scalar DatasetID
 type Dataset {
-	id: String!
+	id: DatasetID!
 	"""
 	Access to the temporal metadata of the dataset
 	"""
