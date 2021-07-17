@@ -22,6 +22,10 @@ type Dataset {
 }
 type MetadataChain {
 	"""
+	Returns all named metadata block references
+	"""
+	refs: [BlockRef!]!
+	"""
 	Returns a metadata block corresponding to the specified hash
 	"""
 	blockByHash(hash: Sha3256!): MetadataBlock
@@ -29,6 +33,10 @@ type MetadataChain {
 	Iterates all metadata blocks starting from the latest one
 	"""
 	blocks(after: String, before: String, first: Int, last: Int): MetadataBlockConnection!
+}
+type BlockRef {
+	name: String!
+	blockHash: Sha3256!
 }
 scalar Sha3256
 type MetadataBlock {

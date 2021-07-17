@@ -1,6 +1,3 @@
-use std::sync::Arc;
-use std::sync::Mutex;
-
 use async_graphql::connection::*;
 use async_graphql::*;
 
@@ -20,8 +17,8 @@ impl Query {
 
     /// Returns dataset by its ID
     async fn dataset_by_id(&self, ctx: &Context<'_>, id: DatasetID) -> Result<Option<Dataset>> {
-        let metadata_repo_c = ctx.data::<Arc<Mutex<dyn MetadataRepository>>>().unwrap();
-        let metadata_repo = metadata_repo_c.lock().unwrap();
+        let cat = ctx.data::<dill::Catalog>().unwrap();
+        let metadata_repo = cat.get_one::<dyn MetadataRepository>().unwrap();
         match metadata_repo.get_metadata_chain(&id) {
             Ok(_) => Ok(Some(Dataset { id })),
             Err(DomainError::DoesNotExist { .. }) => Ok(None),
@@ -39,15 +36,14 @@ impl Query {
         first: Option<i32>,
         last: Option<i32>,
     ) -> Result<Connection<String, Dataset>> {
-        let metadata_repo_c = ctx.data::<Arc<Mutex<dyn MetadataRepository>>>().unwrap();
+        let cat = ctx.data::<dill::Catalog>().unwrap();
+        let metadata_repo = cat.get_one::<dyn MetadataRepository>().unwrap();
         query(
             after,
             before,
             first,
             last,
             |_after, _before, _first, _last| async move {
-                let metadata_repo = metadata_repo_c.lock().unwrap();
-
                 let mut connection = Connection::new(false, false);
 
                 // TODO: proper iteration
@@ -66,9 +62,9 @@ impl Query {
 
 pub type Schema = async_graphql::Schema<Query, EmptyMutation, EmptySubscription>;
 
-pub fn schema(metadata_repo: Arc<Mutex<dyn MetadataRepository>>) -> Schema {
+pub fn schema(catalog: dill::Catalog) -> Schema {
     Schema::build(Query, EmptyMutation, EmptySubscription)
         .extension(extensions::ApolloTracing)
-        .data(metadata_repo)
+        .data(catalog)
         .finish()
 }

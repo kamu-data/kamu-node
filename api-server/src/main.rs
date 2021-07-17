@@ -1,9 +1,6 @@
 mod cli_parser;
 
-use std::{
-    path::Path,
-    sync::{Arc, Mutex},
-};
+use std::path::Path;
 
 use actix_web as ws;
 use async_graphql_actix_web as ws_gql;
@@ -58,12 +55,8 @@ fn init_logging() {
     tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber");
 }
 
-async fn gql_query(
-    query: &str,
-    full: bool,
-    metadata_repo: Arc<Mutex<dyn kamu::domain::MetadataRepository>>,
-) -> String {
-    let gql_schema = kamu_api_server::gql::schema(metadata_repo);
+async fn gql_query(query: &str, full: bool, catalog: dill::Catalog) -> String {
+    let gql_schema = kamu_api_server::gql::schema(catalog);
     let response = gql_schema.execute(query).await;
 
     if full {
@@ -81,18 +74,20 @@ async fn gql_query(
     }
 }
 
-async fn run_server(
-    address: &str,
-    http_port: u16,
-    metadata_repo: Arc<Mutex<dyn kamu::domain::MetadataRepository>>,
-) -> std::io::Result<()> {
+async fn run_server(address: &str, http_port: u16, catalog: dill::Catalog) -> std::io::Result<()> {
     use actix_web::{http, middleware, web, App, HttpServer};
 
-    tracing::info!("HTTP server listening on {}:{}", address, http_port);
+    tracing::info!(
+        "HTTP server: \n\
+         - Server root: http://{addr}:{port}\n\
+         - GraphQL playground: http://{addr}:{port}/playground",
+        addr = address,
+        port = http_port
+    );
 
     HttpServer::new(move || {
         App::new()
-            .data(kamu_api_server::gql::schema(metadata_repo.clone()))
+            .data(kamu_api_server::gql::schema(catalog.clone()))
             .wrap(middleware::Compress::default())
             .wrap(
                 actix_cors::Cors::default()
@@ -120,6 +115,12 @@ async fn run_server(
 async fn main() -> std::io::Result<()> {
     init_logging();
 
+    let mut catalog = dill::Catalog::new();
+    catalog.add::<kamu::infra::MetadataRepositoryImpl>();
+    catalog
+        .bind::<dyn kamu::domain::MetadataRepository, kamu::infra::MetadataRepositoryImpl>()
+        .unwrap();
+
     let matches = cli_parser::cli(BINARY_NAME, VERSION).get_matches();
 
     let cwd = Path::new(".").canonicalize().unwrap();
@@ -130,28 +131,27 @@ async fn main() -> std::io::Result<()> {
     )
     .unwrap();
 
-    let metadata_repo = match metadata_repo_url.scheme() {
+    let workspace_layout = match metadata_repo_url.scheme() {
         "file" => {
             let workspace_root_dir = metadata_repo_url.to_file_path().unwrap();
-            let workspace_layout = kamu::infra::WorkspaceLayout::new(&workspace_root_dir);
-            Arc::new(Mutex::new(kamu::infra::MetadataRepositoryImpl::new(
-                &workspace_layout,
-            )))
+            kamu::infra::WorkspaceLayout::new(&workspace_root_dir)
         }
         _ => panic!("Unsupported metadata repo URL scheme"),
     };
 
+    catalog.add_value(workspace_layout);
+
     match matches.subcommand() {
         ("gql", Some(sub)) => match sub.subcommand() {
             ("schema", _) => {
-                println!("{}", kamu_api_server::gql::schema(metadata_repo).sdl());
+                println!("{}", kamu_api_server::gql::schema(catalog).sdl());
                 Ok(())
             }
             ("query", Some(qsub)) => {
                 let result = gql_query(
                     qsub.value_of("query").unwrap(),
                     qsub.is_present("full"),
-                    metadata_repo,
+                    catalog,
                 )
                 .await;
                 print!("{}", result);
@@ -163,7 +163,7 @@ async fn main() -> std::io::Result<()> {
             run_server(
                 sub.value_of("address").unwrap(),
                 value_t_or_exit!(sub.value_of("http-port"), u16),
-                metadata_repo,
+                catalog,
             )
             .await
         }

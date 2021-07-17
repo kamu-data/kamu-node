@@ -1,6 +1,5 @@
 use std::convert::TryFrom;
 use std::ops::Deref;
-use std::sync::{Arc, Mutex};
 
 use async_graphql::connection::*;
 use async_graphql::*;
@@ -79,6 +78,16 @@ impl From<odf::MetadataBlock> for MetadataBlock {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
+// MetadataRef
+////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(SimpleObject)]
+pub(crate) struct BlockRef {
+    name: String,
+    block_hash: Sha3_256,
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
 // MetadataChain
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -95,11 +104,18 @@ impl MetadataChain {
 
     #[graphql(skip)]
     fn get_chain(&self, ctx: &Context<'_>) -> Result<Box<dyn dom::MetadataChain>> {
-        let repo_ref = ctx
-            .data::<Arc<Mutex<dyn dom::MetadataRepository>>>()
-            .unwrap();
-        let repo = repo_ref.lock().unwrap();
-        Ok(repo.get_metadata_chain(&self.dataset_id)?)
+        let cat = ctx.data::<dill::Catalog>().unwrap();
+        let metadata_repo = cat.get_one::<dyn dom::MetadataRepository>().unwrap();
+        Ok(metadata_repo.get_metadata_chain(&self.dataset_id)?)
+    }
+
+    /// Returns all named metadata block references
+    async fn refs(&self, ctx: &Context<'_>) -> Result<Vec<BlockRef>> {
+        let chain = self.get_chain(ctx)?;
+        Ok(vec![BlockRef {
+            name: "head".to_owned(),
+            block_hash: chain.read_ref(&dom::BlockRef::Head).unwrap().into(),
+        }])
     }
 
     /// Returns a metadata block corresponding to the specified hash

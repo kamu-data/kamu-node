@@ -10,6 +10,8 @@ opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", branch = "mast
 # opendatafabric = { path = "../../kamu-cli/opendatafabric" }
 kamu = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
 # kamu = { path = "../../kamu-cli/kamu-core" }
+dill = { version = "~0.2.0" }
+# dill = { path = "../../dill" }
 
 # HTTP
 actix-web = "*"
