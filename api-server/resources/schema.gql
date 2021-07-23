@@ -1,99 +1,13 @@
-type Query {
-	"""
-	Returns the version of the GQL API
-	"""
-	apiVersion: String!
-	"""
-	Returns dataset by its ID
-	"""
-	datasetById(id: DatasetID!): Dataset
-	"""
-	Iterates all datasets
-	"""
-	datasets(after: String, before: String, first: Int, last: Int): DatasetConnection!
+type BlockRef {
+	name: String!
+	blockHash: Sha3256!
 }
-scalar DatasetID
 type Dataset {
 	id: DatasetID!
 	"""
 	Access to the temporal metadata of the dataset
 	"""
 	metadataChain: MetadataChain!
-}
-type MetadataChain {
-	"""
-	Returns all named metadata block references
-	"""
-	refs: [BlockRef!]!
-	"""
-	Returns a metadata block corresponding to the specified hash
-	"""
-	blockByHash(hash: Sha3256!): MetadataBlock
-	"""
-	Iterates all metadata blocks starting from the latest one
-	"""
-	blocks(after: String, before: String, first: Int, last: Int): MetadataBlockConnection!
-}
-type BlockRef {
-	name: String!
-	blockHash: Sha3256!
-}
-scalar Sha3256
-type MetadataBlock {
-	blockHash: Sha3256!
-	prevBlockHash: Sha3256
-	systemTime: DateTime!
-	outputWatermark: DateTime
-}
-"""
-Implement the DateTime<Utc> scalar
-
-The input/output is a string in RFC3339 format.
-"""
-scalar DateTime
-type MetadataBlockConnection {
-	"""
-	Information to aid in pagination.
-	"""
-	pageInfo: PageInfo!
-	"""
-	A list of edges.
-	"""
-	edges: [MetadataBlockEdge]
-}
-"""
-Information about pagination in a connection
-"""
-type PageInfo {
-	"""
-	When paginating backwards, are there more items?
-	"""
-	hasPreviousPage: Boolean!
-	"""
-	When paginating forwards, are there more items?
-	"""
-	hasNextPage: Boolean!
-	"""
-	When paginating backwards, the cursor to continue.
-	"""
-	startCursor: String
-	"""
-	When paginating forwards, the cursor to continue.
-	"""
-	endCursor: String
-}
-"""
-An edge in a connection.
-"""
-type MetadataBlockEdge {
-	"""
-	The item at the end of the edge
-	"""
-	node: MetadataBlock!
-	"""
-	A cursor for use in pagination
-	"""
-	cursor: String!
 }
 type DatasetConnection {
 	"""
@@ -118,6 +32,132 @@ type DatasetEdge {
 	"""
 	cursor: String!
 }
+scalar DatasetID
+type Datasets {
+	"""
+	Returns dataset by its ID
+	"""
+	byId(id: DatasetID!): Dataset
+	"""
+	Iterates all datasets
+	"""
+	all(after: String, before: String, first: Int, last: Int): DatasetConnection!
+}
+"""
+Implement the DateTime<Utc> scalar
+
+The input/output is a string in RFC3339 format.
+"""
+scalar DateTime
+type MetadataBlock {
+	blockHash: Sha3256!
+	prevBlockHash: Sha3256
+	systemTime: DateTime!
+	outputWatermark: DateTime
+}
+type MetadataBlockConnection {
+	"""
+	Information to aid in pagination.
+	"""
+	pageInfo: PageInfo!
+	"""
+	A list of edges.
+	"""
+	edges: [MetadataBlockEdge]
+}
+"""
+An edge in a connection.
+"""
+type MetadataBlockEdge {
+	"""
+	The item at the end of the edge
+	"""
+	node: MetadataBlock!
+	"""
+	A cursor for use in pagination
+	"""
+	cursor: String!
+}
+type MetadataChain {
+	"""
+	Returns all named metadata block references
+	"""
+	refs: [BlockRef!]!
+	"""
+	Returns a metadata block corresponding to the specified hash
+	"""
+	blockByHash(hash: Sha3256!): MetadataBlock
+	"""
+	Iterates all metadata blocks starting from the latest one
+	"""
+	blocks(after: String, before: String, first: Int, last: Int): MetadataBlockConnection!
+}
+"""
+Information about pagination in a connection
+"""
+type PageInfo {
+	"""
+	When paginating backwards, are there more items?
+	"""
+	hasPreviousPage: Boolean!
+	"""
+	When paginating forwards, are there more items?
+	"""
+	hasNextPage: Boolean!
+	"""
+	When paginating backwards, the cursor to continue.
+	"""
+	startCursor: String
+	"""
+	When paginating forwards, the cursor to continue.
+	"""
+	endCursor: String
+}
+type Query {
+	"""
+	Returns the version of the GQL API
+	"""
+	apiVersion: String!
+	"""
+	Dataset-related functionality group
+	"""
+	datasets: Datasets!
+	"""
+	Search-related functionality group
+	"""
+	search: Search!
+}
+type Search {
+	"""
+	Perform search across all resources
+	"""
+	query(after: String, before: String, first: Int, last: Int, query: String!): SearchQueryResultConnection!
+}
+union SearchQueryResult = | Dataset
+type SearchQueryResultConnection {
+	"""
+	Information to aid in pagination.
+	"""
+	pageInfo: PageInfo!
+	"""
+	A list of edges.
+	"""
+	edges: [SearchQueryResultEdge]
+}
+"""
+An edge in a connection.
+"""
+type SearchQueryResultEdge {
+	"""
+	The item at the end of the edge
+	"""
+	node: SearchQueryResult!
+	"""
+	A cursor for use in pagination
+	"""
+	cursor: String!
+}
+scalar Sha3256
 schema {
 	query: Query
 }

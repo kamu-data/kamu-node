@@ -27,12 +27,14 @@ async fn dataset_by_id_does_not_exist() {
         .unwrap();
     let schema = kamu_api_server::gql::schema(cat);
     let res = schema
-        .execute("{ datasetById (id: \"test\") { id } }")
+        .execute("{ datasets { byId (id: \"test\") { id } } }")
         .await;
     assert_eq!(
         res.data,
         value!({
-            "datasetById": null,
+            "datasets": {
+                "byId": null,
+            }
         })
     );
 }
@@ -60,13 +62,17 @@ async fn dataset_by_id() {
         .unwrap();
 
     let schema = kamu_api_server::gql::schema(cat);
-    let res = schema.execute("{ datasetById (id: \"foo\") { id } }").await;
+    let res = schema
+        .execute("{ datasets { byId (id: \"foo\") { id } } }")
+        .await;
     assert!(res.is_ok());
     assert_eq!(
         res.data,
         value!({
-            "datasetById": {
-                "id": "foo",
+            "datasets": {
+                "byId": {
+                    "id": "foo",
+                }
             }
         })
     );

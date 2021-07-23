@@ -16,6 +16,14 @@ pub fn cli(binary_name: &'static str, version: &'static str) -> App<'static, 'st
         .args(&[Arg::with_name("metadata-repo")
             .long("metadata-repo")
             .takes_value(true)
+            .validator(|arg| {
+                let url = url::Url::parse(&arg).map_err(|e| e.to_string())?;
+                if url.scheme() == "file" {
+                    url.to_file_path()
+                        .map_err(|_| "Invalid URL, should be in form: file:///home/me/workspace")?;
+                }
+                Ok(())
+            })
             .help("URL of the dataset metadata repository")])
         .subcommands(vec![
             SubCommand::with_name("run").about("Run the server").args(&[
