@@ -13,11 +13,11 @@
 
 ## Getting Started
 
-Install `bunyan` to get human-readable log output when running services in the foreground:
+### API Server
 
-```bash
-cargo install bunyan
-```
+Prerequisites:
+* Install `rustup`
+* Install `bunyan` crate (`cargo install bunyan`) to get human-readable log output when running services in the foreground
 
 To run API server using local `kamu` workspace:
 
@@ -39,6 +39,19 @@ To test GQL queries from the CLI:
 cargo run -- gql query '{ apiVersion }' | jq
 ```
 
+### Web UI
+
+Prerequisites:
+* Install `nvm`
+* Install latest `nodejs` (`nvm install node`)
+* Fetch dependencies (`cd web-ui; npm install`)
+
+To run Web UI in development mode first start the API server and then do:
+
+```bash
+npm run dev -- --open
+```
+
 ## GraphQL snippets
 
 Working with unions in search results:
@@ -57,4 +70,5 @@ Working with unions in search results:
       }
     }
   }
+}
 ```
