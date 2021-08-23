@@ -39,6 +39,4 @@ url = "*"
 
 
 [dev-dependencies]
-kamu-test = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
-# kamu-test = { path = "../../kamu-cli/kamu-core-test" }
 tempfile = "*"

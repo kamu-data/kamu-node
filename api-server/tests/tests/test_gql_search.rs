@@ -2,7 +2,7 @@ use async_graphql::*;
 
 use kamu::domain::*;
 use kamu::infra;
-use kamu_test::MetadataFactory;
+use kamu::testing::MetadataFactory;
 
 #[tokio::test]
 async fn query() {

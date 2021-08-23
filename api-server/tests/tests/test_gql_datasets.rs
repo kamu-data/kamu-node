@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 use kamu::domain::*;
 use kamu::infra;
-use kamu_test::MetadataFactory;
+use kamu::testing::MetadataFactory;
 
 #[test]
 fn update_schema_dump() {

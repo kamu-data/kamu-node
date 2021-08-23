@@ -94,7 +94,7 @@ async fn run_server(address: &str, http_port: u16, catalog: dill::Catalog) -> st
                     // TODO: Security
                     .allow_any_origin()
                     //.allowed_origin("http://127.0.0.1:8080")
-                    .allowed_methods(vec!["POST", "GET"])
+                    .allowed_methods(vec!["GET", "POST"])
                     .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
                     .allowed_header(http::header::CONTENT_TYPE)
                     .supports_credentials()
