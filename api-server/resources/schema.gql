@@ -8,6 +8,26 @@ type Dataset {
 	Access to the temporal metadata of the dataset
 	"""
 	metadataChain: MetadataChain!
+	"""
+	Creation time of the most recent metadata block in the chain
+	"""
+	lastUpdatedAt: DateTime!
+	"""
+	Creation time of the first metadata block in the chain
+	"""
+	createdAt: DateTime!
+	"""
+	Total number of output records in this dataset
+	"""
+	numRecordsTotal: Int!
+	"""
+	Records with event time prior to the watermark have already been reflected in the dataset (with high degree of certainty, but not guaranteed)
+	"""
+	lastWatermark: DateTime
+	"""
+	An estimated size of data on disk not accounting for replication or caching
+	"""
+	dataSize: Int!
 }
 type DatasetConnection {
 	"""

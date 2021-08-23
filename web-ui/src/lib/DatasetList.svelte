@@ -6,6 +6,10 @@
 
 <ul>
 	{#each datasets as ds}
-		<li><a href="/anonymous/{ds.id}">{ds.id}</a></li>
+		<li>
+			<a href="/anonymous/{ds.id}">{ds.id}</a>
+			<br />
+			<span>last updated: {ds.lastUpdatedAt}</span>
+		</li>
 	{/each}
 </ul>

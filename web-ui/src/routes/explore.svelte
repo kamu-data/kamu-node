@@ -11,12 +11,6 @@
 
 	let datasets: ArrayLike<Dataset> = null;
 
-	function delay<T>(t, v: T): Promise<T> {
-		return new Promise(function (resolve) {
-			setTimeout(resolve.bind(null, v), t);
-		});
-	}
-
 	function search(query: String) {
 		console.log('Sending search query', query);
 
@@ -31,6 +25,7 @@
 										__typename
 										... on Dataset {
 											id
+											lastUpdatedAt
 										}
 									}
 								}
@@ -42,14 +37,11 @@
 					query: query
 				}
 			})
-			// TODO: Add random delay to all queries
-			.then((result) => {
-				return delay(500, result);
-			})
 			.then((result) => {
 				datasets = result.data.search.query.edges.map((edge) => {
 					return {
-						id: edge.node.id
+						id: edge.node.id,
+						lastUpdatedAt: edge.node.lastUpdatedAt
 					};
 				});
 				if (dirty) {

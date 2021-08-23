@@ -15,6 +15,11 @@
 					datasets {
 						byId(id: $dataset_id) {
 							id
+							createdAt
+							lastUpdatedAt
+							numRecordsTotal
+							lastWatermark
+							dataSize
 						}
 					}
 				}
@@ -40,13 +45,18 @@
 	<ul>
 		<li><b>Owner:</b> <span>{ctx.account_id}</span></li>
 		<li><b>License:</b> <span>-</span></li>
-		<li><b>Last Updated:</b> <span>-</span></li>
-		<li><b>Created:</b> <span>-</span></li>
+		<li><b>Last Updated:</b> <span>{dataset.lastUpdatedAt}</span></li>
+		<li><b>Created:</b> <span>{dataset.createdAt}</span></li>
+		<li><b>Records:</b> <span>{dataset.numRecordsTotal}</span></li>
+		<li><b>Estimated Size:</b> <span>{dataset.dataSize} B</span></li>
 	</ul>
 
 	<!-- Data links -->
 	<ul>
-		<li><b>Kamu CLI:</b> <span>kamu pull {ctx.account_id}/{ctx.dataset_id}</span></li>
-		<li><a href="?">Download Zip</a></li>
+		<li>
+			<b>Kamu CLI:</b>
+			<pre>kamu pull {ctx.account_id}/{ctx.dataset_id}</pre>
+		</li>
+		<li><b>Download as:</b> <a href="?">CSV</a> | <a href="?">Parquet</a></li>
 	</ul>
 {/if}
