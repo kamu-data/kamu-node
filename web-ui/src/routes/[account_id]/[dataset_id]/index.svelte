@@ -1,24 +1,10 @@
-<script context="module" lang="ts">
-	/**
-	 * @type {import('@sveltejs/kit').Load}
-	 */
-	export async function load({ page }) {
-		return {
-			props: {
-				account_id: page.params.account_id,
-				dataset_id: page.params.dataset_id
-			}
-		};
-	}
-</script>
-
 <script lang="ts">
 	import { getClient, gql } from '$lib/gql';
 	import Loading from '$lib/Loading.svelte';
-	import type { Dataset } from '$lib/types';
+	import type { Dataset, DatasetViewContext } from '$lib/types';
+	import { getContext } from 'svelte';
 
-	export let account_id: String;
-	export let dataset_id: String;
+	const ctx: DatasetViewContext = getContext('dataset_view');
 
 	let dataset: Dataset = null;
 
@@ -34,7 +20,7 @@
 				}
 			`,
 			variables: {
-				dataset_id
+				dataset_id: ctx.dataset_id
 			}
 		})
 		.then((result) => {
@@ -45,21 +31,22 @@
 		});
 </script>
 
-<a href="/{account_id}/{dataset_id}">Overview</a>
-<a href="/{account_id}/{dataset_id}">Data</a>
-<a href="/{account_id}/{dataset_id}">Metadata</a>
-<a href="/{account_id}/{dataset_id}">Lineage</a>
-<a href="/{account_id}/{dataset_id}">Projections</a>
-<a href="/{account_id}/{dataset_id}">Issues</a>
-
-<h1>{account_id}/{dataset_id}</h1>
+<h1>{ctx.account_id}/{ctx.dataset_id}</h1>
 
 {#if dataset == null}
 	<Loading what="dataset" />
 {:else}
+	<!-- Metadata summary -->
 	<ul>
-		<li><b>Owner:</b> <span>{account_id}</span></li>
-		<li><b>Created:</b> <span>???</span></li>
-		<li><b>Last Updated:</b> <span>???</span></li>
+		<li><b>Owner:</b> <span>{ctx.account_id}</span></li>
+		<li><b>License:</b> <span>-</span></li>
+		<li><b>Last Updated:</b> <span>-</span></li>
+		<li><b>Created:</b> <span>-</span></li>
+	</ul>
+
+	<!-- Data links -->
+	<ul>
+		<li><b>Kamu CLI:</b> <span>kamu pull {ctx.account_id}/{ctx.dataset_id}</span></li>
+		<li><a href="?">Download Zip</a></li>
 	</ul>
 {/if}
