@@ -6,12 +6,14 @@ edition = "2018"
 
 [dependencies]
 # Kamu
-opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
-# opendatafabric = { path = "../../kamu-cli/opendatafabric" }
-kamu = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
-# kamu = { path = "../../kamu-cli/kamu-core" }
 dill = { version = "~0.2.0" }
+opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
+kamu = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
+
+# Kamu (dev)
 # dill = { path = "../../dill" }
+# opendatafabric = { path = "../../kamu-cli/opendatafabric" }
+# kamu = { path = "../../kamu-cli/kamu-core" }
 
 # HTTP
 actix-web = "*"
@@ -27,6 +29,7 @@ tracing-subscriber = "*"
 tracing-log = "*"
 tracing-bunyan-formatter = "*"
 tracing-actix-web = "*"
+slog = "*"  # Temporary, until kamu-core migrates to tracing
 
 # Utils
 chrono = "*"

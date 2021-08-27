@@ -12,4 +12,6 @@
 
 {#if lineage == null}
 	<Loading what="dataset lineage" />
-{:else}{/if}
+{:else}
+	<p>WUT</p>
+{/if}

@@ -1,13 +1,25 @@
 export interface Dataset {
-    id: String,
+    id: string,
     createdAt: Date,
     lastUpdatedAt: Date,
     numRecordsTotal: bigint,
-    lastWatermark: Date,
+    currentWatermark: Date,
     dataSize: bigint,
+    currentSchema: DatasetSchema,
+    tail: DataSlice,
 }
 
 export interface DatasetViewContext {
-    dataset_id: String;
-    account_id: String;
+    dataset_id: string;
+    account_id: string;
+}
+
+export interface DatasetSchema {
+    format: string,
+    content: object,
+}
+
+export interface DataSlice {
+    format: string,
+    content: object,
 }

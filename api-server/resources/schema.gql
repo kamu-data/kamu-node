@@ -2,6 +2,24 @@ type BlockRef {
 	name: String!
 	blockHash: Sha3256!
 }
+type DataSchema {
+	format: DataSchemaFormat!
+	content: String!
+}
+enum DataSchemaFormat {
+	PARQUET
+	PARQUET_JSON
+}
+type DataSlice {
+	format: DataSliceFormat!
+	content: String!
+}
+enum DataSliceFormat {
+	JSON
+	JSON_LD
+	JSON_SO_A
+	CSV
+}
 type Dataset {
 	id: DatasetID!
 	"""
@@ -21,13 +39,22 @@ type Dataset {
 	"""
 	numRecordsTotal: Int!
 	"""
-	Records with event time prior to the watermark have already been reflected in the dataset (with high degree of certainty, but not guaranteed)
+	Last recorded watermark
 	"""
-	lastWatermark: DateTime
+	currentWatermark: DateTime
+	"""
+	Latest data schema
+	"""
+	currentSchema(format: DataSchemaFormat): DataSchema!
 	"""
 	An estimated size of data on disk not accounting for replication or caching
 	"""
 	dataSize: Int!
+	"""
+	Returns the specified number of the latest records in the dataset
+	This is equivalent to the SQL query: `SELECT * FROM dataset ORDER BY event_time DESC LIMIT N`
+	"""
+	tail(numRecords: Int, format: DataSliceFormat): DataSlice!
 }
 type DatasetConnection {
 	"""

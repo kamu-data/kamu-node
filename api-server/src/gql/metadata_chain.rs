@@ -4,9 +4,10 @@ use std::ops::Deref;
 use async_graphql::connection::*;
 use async_graphql::*;
 use chrono::prelude::*;
-use kamu::domain as dom;
+use kamu::domain;
 use opendatafabric as odf;
 
+use super::utils::from_catalog;
 use super::DatasetID;
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -103,9 +104,8 @@ impl MetadataChain {
     }
 
     #[graphql(skip)]
-    fn get_chain(&self, ctx: &Context<'_>) -> Result<Box<dyn dom::MetadataChain>> {
-        let cat = ctx.data::<dill::Catalog>().unwrap();
-        let metadata_repo = cat.get_one::<dyn dom::MetadataRepository>().unwrap();
+    fn get_chain(&self, ctx: &Context<'_>) -> Result<Box<dyn domain::MetadataChain>> {
+        let metadata_repo = from_catalog::<dyn domain::MetadataRepository>(ctx).unwrap();
         Ok(metadata_repo.get_metadata_chain(&self.dataset_id)?)
     }
 
@@ -114,7 +114,7 @@ impl MetadataChain {
         let chain = self.get_chain(ctx)?;
         Ok(vec![BlockRef {
             name: "head".to_owned(),
-            block_hash: chain.read_ref(&dom::BlockRef::Head).unwrap().into(),
+            block_hash: chain.read_ref(&domain::BlockRef::Head).unwrap().into(),
         }])
     }
 

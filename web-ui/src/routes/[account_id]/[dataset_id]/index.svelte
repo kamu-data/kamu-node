@@ -8,6 +8,7 @@
 
 	let dataset: Dataset = null;
 
+	// TODO: Query data and schema separately to improve page load times
 	getClient()
 		.query({
 			query: gql`
@@ -15,11 +16,22 @@
 					datasets {
 						byId(id: $dataset_id) {
 							id
+
 							createdAt
 							lastUpdatedAt
 							numRecordsTotal
-							lastWatermark
+							currentWatermark
 							dataSize
+
+							currentSchema(format: "PARQUET_JSON") {
+								format
+								content
+							}
+
+							tail(numRecords: 20, format: "JSON") {
+								format
+								content
+							}
 						}
 					}
 				}
@@ -29,7 +41,15 @@
 			}
 		})
 		.then((result) => {
-			dataset = result.data.datasets.byId;
+			let d = Object.assign({}, result.data.datasets.byId);
+
+			d.currentSchema = Object.assign({}, d.currentSchema);
+			d.currentSchema.content = JSON.parse(d.currentSchema.content);
+
+			d.tail = Object.assign({}, d.tail);
+			d.tail.content = JSON.parse(d.tail.content);
+
+			dataset = d;
 		})
 		.catch((reason) => {
 			console.log('Gql request failed:', reason);
@@ -41,7 +61,7 @@
 {#if dataset == null}
 	<Loading what="dataset" />
 {:else}
-	<!-- Metadata summary -->
+	<h3>Metadata</h3>
 	<ul>
 		<li><b>Owner:</b> <span>{ctx.account_id}</span></li>
 		<li><b>License:</b> <span>-</span></li>
@@ -49,9 +69,16 @@
 		<li><b>Created:</b> <span>{dataset.createdAt}</span></li>
 		<li><b>Records:</b> <span>{dataset.numRecordsTotal}</span></li>
 		<li><b>Estimated Size:</b> <span>{dataset.dataSize} B</span></li>
+		<li><b>Watermark:</b> <span>{dataset.currentWatermark}</span></li>
 	</ul>
 
-	<!-- Data links -->
+	<h3>Schema</h3>
+	<pre>{JSON.stringify(dataset.currentSchema.content, null, 2)}</pre>
+
+	<h3>Data</h3>
+	<pre>{JSON.stringify(dataset.tail.content, null, 2)}</pre>
+
+	<h3>Get Data</h3>
 	<ul>
 		<li>
 			<b>Kamu CLI:</b>

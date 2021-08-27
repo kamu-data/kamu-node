@@ -116,9 +116,19 @@ async fn main() -> std::io::Result<()> {
     init_logging();
 
     let mut catalog = dill::Catalog::new();
+
+    // TODO: Temporary, until kamu-core migrates to tracing
+    let logger = slog::Logger::root(slog::Drain::fuse(slog::Discard), slog::o!());
+    catalog.add_factory(move || logger.new(slog::o!()));
+
     catalog.add::<kamu::infra::MetadataRepositoryImpl>();
     catalog
         .bind::<dyn kamu::domain::MetadataRepository, kamu::infra::MetadataRepositoryImpl>()
+        .unwrap();
+
+    catalog.add::<kamu::infra::QueryServiceImpl>();
+    catalog
+        .bind::<dyn kamu::domain::QueryService, kamu::infra::QueryServiceImpl>()
         .unwrap();
 
     let matches = cli_parser::cli(BINARY_NAME, VERSION).get_matches();
@@ -131,15 +141,16 @@ async fn main() -> std::io::Result<()> {
     )
     .unwrap();
 
-    let workspace_layout = match metadata_repo_url.scheme() {
+    match metadata_repo_url.scheme() {
         "file" => {
             let workspace_root_dir = metadata_repo_url.to_file_path().unwrap();
-            kamu::infra::WorkspaceLayout::new(&workspace_root_dir)
+            let workspace_layout = kamu::infra::WorkspaceLayout::new(&workspace_root_dir);
+            let volume_layout = kamu::infra::VolumeLayout::new(&workspace_layout.local_volume_dir);
+            catalog.add_value(workspace_layout);
+            catalog.add_value(volume_layout);
         }
         _ => panic!("Unsupported metadata repo URL scheme"),
-    };
-
-    catalog.add_value(workspace_layout);
+    }
 
     match matches.subcommand() {
         ("gql", Some(sub)) => match sub.subcommand() {
