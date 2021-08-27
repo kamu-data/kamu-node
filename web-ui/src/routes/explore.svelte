@@ -25,6 +25,7 @@
 										__typename
 										... on Dataset {
 											id
+											createdAt
 											lastUpdatedAt
 										}
 									}
@@ -41,6 +42,7 @@
 				datasets = result.data.search.query.edges.map((edge) => {
 					return {
 						id: edge.node.id,
+						createdAt: edge.node.createdAt,
 						lastUpdatedAt: edge.node.lastUpdatedAt
 					};
 				});

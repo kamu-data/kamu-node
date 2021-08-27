@@ -13,7 +13,7 @@ impl Datasets {
         let cat = ctx.data::<dill::Catalog>().unwrap();
         let metadata_repo = cat.get_one::<dyn domain::MetadataRepository>().unwrap();
         match metadata_repo.get_metadata_chain(&id) {
-            Ok(_) => Ok(Some(Dataset { id })),
+            Ok(_) => Ok(Some(Dataset::new(id))),
             Err(domain::DomainError::DoesNotExist { .. }) => Ok(None),
             Err(e) => Err(e.into()),
         }
@@ -43,7 +43,7 @@ impl Datasets {
                 connection.append(
                     metadata_repo
                         .get_all_datasets()
-                        .map(|id| Edge::new(id.to_string(), Dataset { id: id.into() })),
+                        .map(|id| Edge::new(id.to_string(), Dataset::new(id.into()))),
                 );
 
                 Ok(connection)

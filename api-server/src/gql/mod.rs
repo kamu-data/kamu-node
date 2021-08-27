@@ -1,11 +1,8 @@
-mod data_schema;
-pub(crate) use data_schema::*;
+mod dataset_data;
+pub(crate) use dataset_data::*;
 
-mod data_slice;
-pub(crate) use data_slice::*;
-
-mod dataset_id;
-pub(crate) use dataset_id::*;
+mod dataset_metadata;
+pub(crate) use dataset_metadata::*;
 
 mod dataset;
 pub(crate) use dataset::*;
@@ -21,6 +18,9 @@ pub use root::*;
 
 mod search;
 pub(crate) use search::*;
+
+mod types;
+pub(crate) use types::*;
 
 mod utils;
 pub(crate) use utils::*;

@@ -1,17 +1,24 @@
+/////////////////////////////////////////////////////////////////////////////////////////
+// GQL
+/////////////////////////////////////////////////////////////////////////////////////////
+
 export interface Dataset {
     id: string,
-    createdAt: Date,
-    lastUpdatedAt: Date,
-    numRecordsTotal: bigint,
-    currentWatermark: Date,
-    dataSize: bigint,
-    currentSchema: DatasetSchema,
-    tail: DataSlice,
+    createdAt?: Date,
+    lastUpdatedAt?: Date,
+    metadata?: DatasetMetadata,
+    data?: DatasetData,
 }
 
-export interface DatasetViewContext {
-    dataset_id: string;
-    account_id: string;
+export interface DatasetMetadata {
+    currentWatermark?: Date,
+    currentSchema?: DatasetSchema,
+}
+
+export interface DatasetData {
+    numRecordsTotal?: bigint,
+    estimatedSize?: bigint,
+    tail?: DataSlice,
 }
 
 export interface DatasetSchema {
@@ -22,4 +29,11 @@ export interface DatasetSchema {
 export interface DataSlice {
     format: string,
     content: object,
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+export interface DatasetViewContext {
+    dataset_id: string;
+    account_id: string;
 }

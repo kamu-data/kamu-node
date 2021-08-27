@@ -21,40 +21,24 @@ enum DataSliceFormat {
 	CSV
 }
 type Dataset {
+	datasetId: DatasetID!
 	id: DatasetID!
 	"""
-	Access to the temporal metadata of the dataset
+	Access to the data of the dataset
 	"""
-	metadataChain: MetadataChain!
+	data: DatasetData!
 	"""
-	Creation time of the most recent metadata block in the chain
+	Access to the metadata of the dataset
 	"""
-	lastUpdatedAt: DateTime!
+	metadata: DatasetMetadata!
 	"""
 	Creation time of the first metadata block in the chain
 	"""
 	createdAt: DateTime!
 	"""
-	Total number of output records in this dataset
+	Creation time of the most recent metadata block in the chain
 	"""
-	numRecordsTotal: Int!
-	"""
-	Last recorded watermark
-	"""
-	currentWatermark: DateTime
-	"""
-	Latest data schema
-	"""
-	currentSchema(format: DataSchemaFormat): DataSchema!
-	"""
-	An estimated size of data on disk not accounting for replication or caching
-	"""
-	dataSize: Int!
-	"""
-	Returns the specified number of the latest records in the dataset
-	This is equivalent to the SQL query: `SELECT * FROM dataset ORDER BY event_time DESC LIMIT N`
-	"""
-	tail(numRecords: Int, format: DataSliceFormat): DataSlice!
+	lastUpdatedAt: DateTime!
 }
 type DatasetConnection {
 	"""
@@ -65,6 +49,22 @@ type DatasetConnection {
 	A list of edges.
 	"""
 	edges: [DatasetEdge]
+}
+type DatasetData {
+	datasetId: DatasetID!
+	"""
+	Total number of records in this dataset
+	"""
+	numRecordsTotal: Int!
+	"""
+	An estimated size of data on disk not accounting for replication or caching
+	"""
+	estimatedSize: Int!
+	"""
+	Returns the specified number of the latest records in the dataset
+	This is equivalent to the SQL query: `SELECT * FROM dataset ORDER BY event_time DESC LIMIT N`
+	"""
+	tail(numRecords: Int, format: DataSliceFormat): DataSlice!
 }
 """
 An edge in a connection.
@@ -80,6 +80,21 @@ type DatasetEdge {
 	cursor: String!
 }
 scalar DatasetID
+type DatasetMetadata {
+	datasetId: DatasetID!
+	"""
+	Access to the temporal metadata chain of the dataset
+	"""
+	chain: MetadataChain!
+	"""
+	Last recorded watermark
+	"""
+	currentWatermark: DateTime
+	"""
+	Latest data schema
+	"""
+	currentSchema(format: DataSchemaFormat): DataSchema!
+}
 type Datasets {
 	"""
 	Returns dataset by its ID

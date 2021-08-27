@@ -16,21 +16,25 @@
 					datasets {
 						byId(id: $dataset_id) {
 							id
-
 							createdAt
 							lastUpdatedAt
-							numRecordsTotal
-							currentWatermark
-							dataSize
 
-							currentSchema(format: "PARQUET_JSON") {
-								format
-								content
+							metadata {
+								currentWatermark
+								currentSchema(format: "PARQUET_JSON") {
+									format
+									content
+								}
 							}
 
-							tail(numRecords: 20, format: "JSON") {
-								format
-								content
+							data {
+								numRecordsTotal
+								estimatedSize
+
+								tail(numRecords: 20, format: "JSON") {
+									format
+									content
+								}
 							}
 						}
 					}
@@ -43,11 +47,13 @@
 		.then((result) => {
 			let d = Object.assign({}, result.data.datasets.byId);
 
-			d.currentSchema = Object.assign({}, d.currentSchema);
-			d.currentSchema.content = JSON.parse(d.currentSchema.content);
+			d.metadata = Object.assign({}, d.metadata);
+			d.metadata.currentSchema = Object.assign({}, d.metadata.currentSchema);
+			d.metadata.currentSchema.content = JSON.parse(d.metadata.currentSchema.content);
 
-			d.tail = Object.assign({}, d.tail);
-			d.tail.content = JSON.parse(d.tail.content);
+			d.data = Object.assign({}, d.data);
+			d.data.tail = Object.assign({}, d.data.tail);
+			d.data.tail.content = JSON.parse(d.data.tail.content);
 
 			dataset = d;
 		})
@@ -67,16 +73,16 @@
 		<li><b>License:</b> <span>-</span></li>
 		<li><b>Last Updated:</b> <span>{dataset.lastUpdatedAt}</span></li>
 		<li><b>Created:</b> <span>{dataset.createdAt}</span></li>
-		<li><b>Records:</b> <span>{dataset.numRecordsTotal}</span></li>
-		<li><b>Estimated Size:</b> <span>{dataset.dataSize} B</span></li>
-		<li><b>Watermark:</b> <span>{dataset.currentWatermark}</span></li>
+		<li><b>Records:</b> <span>{dataset.data.numRecordsTotal}</span></li>
+		<li><b>Estimated Size:</b> <span>{dataset.data.estimatedSize} B</span></li>
+		<li><b>Watermark:</b> <span>{dataset.metadata.currentWatermark}</span></li>
 	</ul>
 
 	<h3>Schema</h3>
-	<pre>{JSON.stringify(dataset.currentSchema.content, null, 2)}</pre>
+	<pre>{JSON.stringify(dataset.metadata.currentSchema.content, null, 2)}</pre>
 
 	<h3>Data</h3>
-	<pre>{JSON.stringify(dataset.tail.content, null, 2)}</pre>
+	<pre>{JSON.stringify(dataset.data.tail.content, null, 2)}</pre>
 
 	<h3>Get Data</h3>
 	<ul>

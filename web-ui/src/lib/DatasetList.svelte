@@ -7,8 +7,8 @@
 <ul>
 	{#each datasets as ds}
 		<li>
-			<a href="/anonymous/{ds.id}">{ds.id}</a>
-			<br />
+			<a href="/anonymous/{ds.id}">{ds.id}</a><br />
+			<span>created: {ds.createdAt}</span><br />
 			<span>last updated: {ds.lastUpdatedAt}</span>
 		</li>
 	{/each}

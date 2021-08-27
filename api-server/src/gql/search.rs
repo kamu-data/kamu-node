@@ -40,7 +40,7 @@ impl Search {
                         .map(|id| {
                             Edge::new(
                                 id.to_string(),
-                                SearchQueryResult::Dataset(Dataset { id: id.into() }),
+                                SearchQueryResult::Dataset(Dataset::new(id.into())),
                             )
                         }),
                 );
