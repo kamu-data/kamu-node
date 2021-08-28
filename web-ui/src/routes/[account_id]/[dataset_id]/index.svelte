@@ -1,12 +1,23 @@
 <script lang="ts">
 	import { getClient, gql } from '$lib/gql';
 	import Loading from '$lib/Loading.svelte';
-	import type { Dataset, DatasetViewContext } from '$lib/types';
+	import type { Dataset, DataSchema, DataSlice } from '$lib/kamu';
+	import type { DatasetViewContext } from '$lib/types';
 	import { getContext } from 'svelte';
 
 	const ctx: DatasetViewContext = getContext('dataset_view');
 
 	let dataset: Dataset = null;
+	let schema: any = null;
+	let data: any = null;
+
+	function parseSchema(schema: DataSchema) {
+		return JSON.parse(schema.content);
+	}
+
+	function parseDataSlice(data: DataSlice) {
+		return JSON.parse(data.content);
+	}
 
 	// TODO: Query data and schema separately to improve page load times
 	getClient()
@@ -45,17 +56,9 @@
 			}
 		})
 		.then((result) => {
-			let d = Object.assign({}, result.data.datasets.byId);
-
-			d.metadata = Object.assign({}, d.metadata);
-			d.metadata.currentSchema = Object.assign({}, d.metadata.currentSchema);
-			d.metadata.currentSchema.content = JSON.parse(d.metadata.currentSchema.content);
-
-			d.data = Object.assign({}, d.data);
-			d.data.tail = Object.assign({}, d.data.tail);
-			d.data.tail.content = JSON.parse(d.data.tail.content);
-
-			dataset = d;
+			dataset = result.data.datasets.byId;
+			schema = parseSchema(dataset.metadata.currentSchema);
+			data = parseDataSlice(dataset.data.tail);
 		})
 		.catch((reason) => {
 			console.log('Gql request failed:', reason);
@@ -79,10 +82,10 @@
 	</ul>
 
 	<h3>Schema</h3>
-	<pre>{JSON.stringify(dataset.metadata.currentSchema.content, null, 2)}</pre>
+	<pre>{JSON.stringify(schema, null, 2)}</pre>
 
 	<h3>Data</h3>
-	<pre>{JSON.stringify(dataset.data.tail.content, null, 2)}</pre>
+	<pre>{JSON.stringify(data, null, 2)}</pre>
 
 	<h3>Get Data</h3>
 	<ul>

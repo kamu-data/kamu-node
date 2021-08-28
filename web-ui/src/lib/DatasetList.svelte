@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Dataset } from '$lib/types';
+	import type { Dataset } from '$lib/kamu';
 
 	export let datasets: ArrayLike<Dataset>;
 </script>

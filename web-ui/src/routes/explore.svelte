@@ -2,7 +2,7 @@
 	import DatasetList from '$lib/DatasetList.svelte';
 	import Loading from '$lib/Loading.svelte';
 	import { getClient, gql } from '$lib/gql';
-	import type { Dataset } from '$lib/types';
+	import type { Dataset } from '$lib/kamu';
 
 	let search_query = '';
 
