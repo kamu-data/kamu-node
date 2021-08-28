@@ -16,8 +16,8 @@
 	import { setContext } from 'svelte';
 	import type { DatasetViewContext } from '$lib/types';
 
-	export let account_id: String;
-	export let dataset_id: String;
+	export let account_id: string;
+	export let dataset_id: string;
 
 	const ctx: DatasetViewContext = { account_id, dataset_id };
 	setContext('dataset_view', ctx);
