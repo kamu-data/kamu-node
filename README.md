@@ -57,6 +57,10 @@ docker run -it --rm -p 8080:8080 kamudata/api-server:latest-with-data
 
 # Run with a local kamu workspace
 docker run -it --rm -p 8080:8080 -v /my/workspace:/opt/kamu/workspace:ro kamudata/api-server:latest-with-data
+
+# This image also comes with `kamu-cli` pre-installed so you can mess around with data without installing it on your host
+docker run -it --rm --entrypoint bash kamudata/api-server:latest-with-data
+$ kamu list
 ```
 
 Once you have the API server running, you can start Web UI in development mode:
@@ -64,6 +68,8 @@ Once you have the API server running, you can start Web UI in development mode:
 ```bash
 npm run dev -- --open
 ```
+
+The GQL schema can be explored using `playground` at http://127.0.0.1:8080/playground, and also available in full [here](/api-server/resources/schema.gql).
 
 ## GraphQL snippets
 
