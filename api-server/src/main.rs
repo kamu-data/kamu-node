@@ -145,6 +145,12 @@ async fn main() -> std::io::Result<()> {
         "file" => {
             let workspace_root_dir = metadata_repo_url.to_file_path().unwrap();
             let workspace_layout = kamu::infra::WorkspaceLayout::new(&workspace_root_dir);
+            if !workspace_layout.kamu_root_dir.exists() {
+                panic!(
+                    "Directory is not a kamu workspace: {}",
+                    workspace_root_dir.display()
+                );
+            }
             let volume_layout = kamu::infra::VolumeLayout::new(&workspace_layout.local_volume_dir);
             catalog.add_value(workspace_layout);
             catalog.add_value(volume_layout);
