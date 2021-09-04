@@ -46,7 +46,20 @@ Prerequisites:
 * Install latest `nodejs` (`nvm install node`)
 * Fetch dependencies (`cd web-ui; npm install`)
 
-To run Web UI in development mode first start the API server and then do:
+Web UI requires a running API Server, so you should either follow the above steps to set it up, or, if you are not planning to do any backend development, you can get the latest version with the following command:
+
+```bash
+# Get the latest version
+docker pull kamudata/api-server:latest-with-data
+
+# Run with example data
+docker run -it --rm -p 8080:8080 kamudata/api-server:latest-with-data
+
+# Run with a local kamu workspace
+docker run -it --rm -p 8080:8080 -v /my/workspace:/opt/kamu/workspace:ro kamudata/api-server:latest-with-data
+```
+
+Once you have the API server running, you can start Web UI in development mode:
 
 ```bash
 npm run dev -- --open
