@@ -25,6 +25,7 @@
 										__typename
 										... on Dataset {
 											id
+											kind
 											createdAt
 											lastUpdatedAt
 										}
@@ -40,11 +41,7 @@
 			})
 			.then((result) => {
 				datasets = result.data.search.query.edges.map((edge) => {
-					return {
-						id: edge.node.id,
-						createdAt: edge.node.createdAt,
-						lastUpdatedAt: edge.node.lastUpdatedAt
-					};
+					return edge.node;
 				});
 				if (dirty) {
 					dirty = false;

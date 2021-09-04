@@ -53,6 +53,8 @@ export type Dataset = {
   __typename?: 'Dataset';
   datasetId: Scalars['DatasetID'];
   id: Scalars['DatasetID'];
+  /** Returns the kind of a dataset (Root or Derivative) */
+  kind: DatasetKind;
   /** Access to the data of the dataset */
   data: DatasetData;
   /** Access to the metadata of the dataset */
@@ -101,6 +103,11 @@ export type DatasetEdge = {
 };
 
 
+export enum DatasetKind {
+  Root = 'ROOT',
+  Derivative = 'DERIVATIVE'
+}
+
 export type DatasetMetadata = {
   __typename?: 'DatasetMetadata';
   datasetId: Scalars['DatasetID'];
@@ -110,6 +117,8 @@ export type DatasetMetadata = {
   currentWatermark?: Maybe<Scalars['DateTime']>;
   /** Latest data schema */
   currentSchema: DataSchema;
+  /** Current upstream dependencies of a dataset */
+  currentUpstreamDependencies: Array<Dataset>;
 };
 
 

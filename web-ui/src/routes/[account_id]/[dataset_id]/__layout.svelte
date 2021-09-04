@@ -24,10 +24,11 @@
 </script>
 
 <a href="/{account_id}/{dataset_id}">Overview</a>
-<a href="/{account_id}/{dataset_id}">Data</a>
-<a href="/{account_id}/{dataset_id}">Metadata</a>
+<a href="/{account_id}/{dataset_id}/data">Data</a>
+<a href="/{account_id}/{dataset_id}/metadata">Metadata</a>
 <a href="/{account_id}/{dataset_id}/lineage">Lineage</a>
 <a href="/{account_id}/{dataset_id}">Projections</a>
 <a href="/{account_id}/{dataset_id}">Issues</a>
 
+<h1>{ctx.account_id}/{ctx.dataset_id}</h1>
 <slot />

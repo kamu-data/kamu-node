@@ -65,8 +65,6 @@
 		});
 </script>
 
-<h1>{ctx.account_id}/{ctx.dataset_id}</h1>
-
 {#if dataset == null}
 	<Loading what="dataset" />
 {:else}

@@ -65,4 +65,15 @@ impl DatasetMetadata {
             content: String::from_utf8(buf).unwrap(),
         })
     }
+
+    /// Current upstream dependencies of a dataset
+    async fn current_upstream_dependencies(&self, ctx: &Context<'_>) -> Result<Vec<Dataset>> {
+        let metadata_repo = from_catalog::<dyn domain::MetadataRepository>(ctx).unwrap();
+        let summary = metadata_repo.get_summary(&self.dataset_id)?;
+        Ok(summary
+            .dependencies
+            .into_iter()
+            .map(|id| Dataset::new(id.into()))
+            .collect())
+    }
 }

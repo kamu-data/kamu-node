@@ -1,27 +1,30 @@
 <script lang="ts">
 	import Loading from '$lib/Loading.svelte';
 	import type { DatasetViewContext } from '$lib/types';
-	import type { Dataset } from '$lib/kamu';
+	import type { MetadataBlock } from '$lib/kamu';
 	import { getContext } from 'svelte';
 	import { getClient, gql } from '$lib/gql';
 
 	const ctx: DatasetViewContext = getContext('dataset_view');
 
-	let dataset: Dataset = null;
+	let blocks: ArrayLike<MetadataBlock> = null;
 
 	getClient()
 		.query({
 			query: gql`
-				query getDatasetLineage($dataset_id: String) {
+				query getDatasetMetadata($dataset_id: String) {
 					datasets {
 						byId(id: $dataset_id) {
-							id
-							kind
-
 							metadata {
-								currentUpstreamDependencies {
-									id
-									kind
+								chain {
+									blocks {
+										edges {
+											node {
+												blockHash
+												systemTime
+											}
+										}
+									}
 								}
 							}
 						}
@@ -33,29 +36,25 @@
 			}
 		})
 		.then((result) => {
-			dataset = result.data.datasets.byId;
+			blocks = result.data.datasets.byId.metadata.chain.blocks.edges.map((e) => {
+				return e.node;
+			});
 		})
 		.catch((reason) => {
 			console.log('Gql request failed:', reason);
 		});
 </script>
 
-{#if dataset == null}
-	<Loading what="dataset lineage" />
+{#if blocks == null}
+	<Loading what="dataset metadata" />
 {:else}
-	<h3>Lineage</h3>
+	<h3>Metadata Chain</h3>
 	<ul>
-		<li>
-			<div>{dataset.id}</div>
-			<div>{dataset.kind}</div>
-			<ul>
-				{#each dataset.metadata.currentUpstreamDependencies as dep}
-					<li>
-						<a href="/anonymous/{dep.id}">{dep.id}</a>
-						<div>{dep.kind}</div>
-					</li>
-				{/each}
-			</ul>
-		</li>
+		{#each blocks as block}
+			<li>
+				<a href="?">{block.blockHash}</a>
+				<div>{block.systemTime}</div>
+			</li>
+		{/each}
 	</ul>
 {/if}

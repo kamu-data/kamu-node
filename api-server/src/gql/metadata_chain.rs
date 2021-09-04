@@ -1,6 +1,3 @@
-use std::convert::TryFrom;
-use std::ops::Deref;
-
 use async_graphql::connection::*;
 use async_graphql::*;
 use chrono::prelude::*;
@@ -8,48 +5,7 @@ use kamu::domain;
 use opendatafabric as odf;
 
 use super::utils::from_catalog;
-use super::DatasetID;
-
-////////////////////////////////////////////////////////////////////////////////////////
-// SHA
-////////////////////////////////////////////////////////////////////////////////////////
-
-pub(crate) struct Sha3_256(odf::Sha3_256);
-
-impl From<odf::Sha3_256> for Sha3_256 {
-    fn from(value: odf::Sha3_256) -> Self {
-        Sha3_256(value)
-    }
-}
-
-impl Into<odf::Sha3_256> for Sha3_256 {
-    fn into(self) -> odf::Sha3_256 {
-        self.0
-    }
-}
-
-impl Deref for Sha3_256 {
-    type Target = odf::Sha3_256;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-#[Scalar]
-impl ScalarType for Sha3_256 {
-    fn parse(value: Value) -> InputValueResult<Self> {
-        if let Value::String(value) = &value {
-            let sha = odf::Sha3_256::try_from(value.as_str())?;
-            Ok(sha.into())
-        } else {
-            Err(InputValueError::expected_type(value))
-        }
-    }
-
-    fn to_value(&self) -> Value {
-        Value::String(self.0.to_string())
-    }
-}
+use super::{DatasetID, Sha3_256};
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // MetadataBlock
