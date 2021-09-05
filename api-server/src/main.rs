@@ -1,15 +1,19 @@
 mod cli_parser;
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use actix_web as ws;
 use async_graphql_actix_web as ws_gql;
 use clap::value_t_or_exit;
 use url::Url;
 
+/////////////////////////////////////////////////////////////////////////////////////////
+
 const BINARY_NAME: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const DEFAULT_LOGGING_CONFIG: &str = "info";
+
+/////////////////////////////////////////////////////////////////////////////////////////
 
 async fn index_route() -> ws::Result<ws::HttpResponse> {
     Ok(ws::HttpResponse::Ok()
@@ -24,6 +28,8 @@ async fn index_route() -> ws::Result<ws::HttpResponse> {
             "#,
         ))
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
 
 async fn graphql_route(
     req: ws_gql::Request,
@@ -41,6 +47,8 @@ async fn playground_route() -> ws::Result<ws::HttpResponse> {
             GraphQLPlaygroundConfig::new("/graphql").subscription_endpoint("/graphql"),
         )))
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
 
 fn init_logging() {
     use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
@@ -65,6 +73,8 @@ fn init_logging() {
     tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber");
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////
+
 async fn gql_query(query: &str, full: bool, catalog: dill::Catalog) -> String {
     let gql_schema = kamu_api_server::gql::schema(catalog);
     let response = gql_schema.execute(query).await;
@@ -83,6 +93,8 @@ async fn gql_query(query: &str, full: bool, catalog: dill::Catalog) -> String {
         }
     }
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
 
 async fn run_server(address: &str, http_port: u16, catalog: dill::Catalog) -> std::io::Result<()> {
     use actix_web::{http, middleware, web, App, HttpServer};
@@ -121,6 +133,8 @@ async fn run_server(address: &str, http_port: u16, catalog: dill::Catalog) -> st
     .await
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     init_logging();
@@ -130,11 +144,6 @@ async fn main() -> std::io::Result<()> {
     // TODO: Temporary, until kamu-core migrates to tracing
     let logger = slog::Logger::root(slog::Drain::fuse(slog::Discard), slog::o!());
     catalog.add_factory(move || logger.new(slog::o!()));
-
-    catalog.add::<kamu::infra::MetadataRepositoryImpl>();
-    catalog
-        .bind::<dyn kamu::domain::MetadataRepository, kamu::infra::MetadataRepositoryImpl>()
-        .unwrap();
 
     catalog.add::<kamu::infra::QueryServiceImpl>();
     catalog
@@ -152,20 +161,11 @@ async fn main() -> std::io::Result<()> {
     .unwrap();
 
     match metadata_repo_url.scheme() {
-        "file" => {
-            let workspace_root_dir = metadata_repo_url.to_file_path().unwrap();
-            let workspace_layout = kamu::infra::WorkspaceLayout::new(&workspace_root_dir);
-            if !workspace_layout.kamu_root_dir.exists() {
-                panic!(
-                    "Directory is not a kamu workspace: {}",
-                    workspace_root_dir.display()
-                );
-            }
-            let volume_layout = kamu::infra::VolumeLayout::new(&workspace_layout.local_volume_dir);
-            catalog.add_value(workspace_layout);
-            catalog.add_value(volume_layout);
-        }
-        _ => panic!("Unsupported metadata repo URL scheme"),
+        "file" => init_metadata_repo_from_local_workspace(
+            &metadata_repo_url.to_file_path().unwrap(),
+            &mut catalog,
+        ),
+        _ => init_metadata_repo_from_synced_repo(metadata_repo_url, &mut catalog),
     }
 
     match matches.subcommand() {
@@ -196,4 +196,80 @@ async fn main() -> std::io::Result<()> {
         }
         _ => unimplemented!(),
     }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Workspace Init
+/////////////////////////////////////////////////////////////////////////////////////////
+
+fn init_metadata_repo_from_local_workspace(workspace_root_dir: &Path, catalog: &mut dill::Catalog) {
+    let workspace_layout = kamu::infra::WorkspaceLayout::new(&workspace_root_dir);
+    if !workspace_layout.kamu_root_dir.exists() {
+        panic!(
+            "Directory is not a kamu workspace: {}",
+            workspace_root_dir.display()
+        );
+    }
+    let volume_layout = kamu::infra::VolumeLayout::new(&workspace_layout.local_volume_dir);
+
+    catalog.add::<kamu::infra::MetadataRepositoryImpl>();
+    catalog
+        .bind::<dyn kamu::domain::MetadataRepository, kamu::infra::MetadataRepositoryImpl>()
+        .unwrap();
+
+    catalog.add_value(workspace_layout);
+    catalog.add_value(volume_layout);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+fn init_metadata_repo_from_synced_repo(repo_url: Url, catalog: &mut dill::Catalog) {
+    let workspace_root_dir = PathBuf::from(
+        std::env::var("KAMU_SYNC_DIR")
+            .ok()
+            .unwrap_or(".".to_owned()),
+    );
+
+    let workspace_layout = kamu::infra::WorkspaceLayout::new(&workspace_root_dir);
+    if !workspace_layout.kamu_root_dir.exists() {
+        tracing::info!(
+            message = "Creating local workspace as sync target from repository",
+            ?workspace_root_dir,
+            repo_url = repo_url.to_string().as_str(),
+        );
+        kamu::infra::WorkspaceLayout::create(&workspace_root_dir).unwrap();
+    } else {
+        tracing::info!(
+            message = "Using existing workspace as sync target from repository",
+            ?workspace_root_dir,
+            repo_url = repo_url.to_string().as_str(),
+        );
+    }
+
+    init_metadata_repo_from_local_workspace(&workspace_root_dir, catalog);
+    catalog.add::<kamu::infra::RepositoryFactory>();
+    catalog.add::<kamu::infra::SyncServiceImpl>();
+    catalog
+        .bind::<dyn kamu::domain::SyncService, kamu::infra::SyncServiceImpl>()
+        .unwrap();
+
+    let metadata_repo = catalog
+        .get_one::<dyn kamu::domain::MetadataRepository>()
+        .unwrap();
+
+    let repo_id = opendatafabric::RepositoryID::new_unchecked("remote");
+
+    let _ = metadata_repo.delete_repository(repo_id);
+    metadata_repo.add_repository(repo_id, repo_url).unwrap();
+
+    // Run first iteration synchronously to catch any misconfiguration
+    kamu_api_server::repo_sync::sync_all_from_repo(
+        catalog.get_one().unwrap(),
+        catalog.get_one().unwrap(),
+        catalog.get_one().unwrap(),
+        repo_id,
+    );
+
+    let catalog = catalog.clone();
+    std::thread::spawn(move || kamu_api_server::repo_sync::repo_sync_loop(catalog, repo_id));
 }
