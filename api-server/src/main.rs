@@ -227,7 +227,7 @@ fn init_metadata_repo_from_synced_repo(repo_url: Url, catalog: &mut dill::Catalo
     let workspace_root_dir = PathBuf::from(
         std::env::var("KAMU_SYNC_DIR")
             .ok()
-            .unwrap_or(".".to_owned()),
+            .expect("Please specify the directory where to store local copy of the repository using KAMU_SYNC_DIR env var"),
     );
 
     let workspace_layout = kamu::infra::WorkspaceLayout::new(&workspace_root_dir);
