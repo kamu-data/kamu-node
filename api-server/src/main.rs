@@ -11,8 +11,18 @@ const BINARY_NAME: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const DEFAULT_LOGGING_CONFIG: &str = "info";
 
-async fn index_route() -> impl ws::Responder {
-    format!("Hello!")
+async fn index_route() -> ws::Result<ws::HttpResponse> {
+    Ok(ws::HttpResponse::Ok()
+        .content_type("text/html; charset=utf-8")
+        .body(
+            r#"
+            <h1>Kamu API Server</h1>
+            <ul>
+                <li><a href="/graphql">GraphQL Endpoint</a></li>
+                <li><a href="/playground">GraphQL Playground</a></li>
+            </ul>
+            "#,
+        ))
 }
 
 async fn graphql_route(

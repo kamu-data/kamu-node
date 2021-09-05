@@ -23,7 +23,7 @@ api-server:
 
 .PHONY: api-server-push
 api-server-push:
-	docker push $(IMAGE_REPO)/api-server:$(KAMU_VERSION)
+	docker push $(IMAGE_REPO)/api-server:$(API_SERVER_VERSION)
 
 
 
