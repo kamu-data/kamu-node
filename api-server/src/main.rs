@@ -263,12 +263,30 @@ fn init_metadata_repo_from_synced_repo(repo_url: Url, catalog: &mut dill::Catalo
     metadata_repo.add_repository(repo_id, repo_url).unwrap();
 
     // Run first iteration synchronously to catch any misconfiguration
-    kamu_api_server::repo_sync::sync_all_from_repo(
-        catalog.get_one().unwrap(),
-        catalog.get_one().unwrap(),
-        catalog.get_one().unwrap(),
-        repo_id,
-    );
+    let start = chrono::Utc::now();
+    loop {
+        match kamu_api_server::repo_sync::sync_all_from_repo(
+            catalog.get_one().unwrap(),
+            catalog.get_one().unwrap(),
+            catalog.get_one().unwrap(),
+            repo_id,
+        ) {
+            Ok(_) => break,
+            Err(
+                kamu::domain::SyncError::IOError(_) | kamu::domain::SyncError::ProtocolError(_),
+            ) => {
+                tracing::warn!("Failed to do initial sync from repo, waiting a bit longer");
+                ()
+            }
+            e @ _ => e.expect("Terminating on sync failure"),
+        }
+
+        std::thread::sleep(std::time::Duration::from_secs(1));
+
+        if chrono::Utc::now() - start > chrono::Duration::seconds(10) {
+            break;
+        }
+    }
 
     let catalog = catalog.clone();
     std::thread::spawn(move || kamu_api_server::repo_sync::repo_sync_loop(catalog, repo_id));
