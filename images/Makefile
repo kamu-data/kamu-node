@@ -48,3 +48,19 @@ api-server-with-data:
 .PHONY: api-server-with-data-push
 api-server-with-data-push:
 	docker push $(IMAGE_REPO)/api-server:latest-with-data
+
+
+.PHONY: web-ui
+web-ui:
+	cp -r ../web-ui web-ui/
+	rm -rf web-ui/web-ui/.svelte-kit web-ui/web-ui/node_modules
+
+	docker build \
+		-t $(IMAGE_REPO)/platform-web-ui:latest \
+		web-ui/
+	
+	rm -rf web-ui/web-ui
+
+.PHONY: web-ui-push
+web-ui-push:
+	docker push $(IMAGE_REPO)/platform-web-ui:latest
