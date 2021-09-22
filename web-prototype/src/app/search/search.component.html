@@ -1,0 +1,71 @@
+<div id="search">
+    <div class="search-header-container-block">
+        <ul ngbNav #nav="ngbNav" class="nav-tabs">
+            <li ngbNavItem>
+                <a ngbNavLink (click)="onSearch()">Overview</a>
+                <ng-template ngbNavContent>Overview content</ng-template>
+            </li>
+            <li ngbNavItem>
+                <a ngbNavLink (click)="onSearchProjections()">Projections</a>
+                <ng-template ngbNavContent>Projections content</ng-template>
+            </li>
+            <li ngbNavItem>
+                <a ngbNavLink (click)="onSearchMetadata()">Metadata</a>
+                <ng-template ngbNavContent>Metadata content</ng-template>
+            </li>
+            <li ngbNavItem>
+                <a ngbNavLink (click)="showHistory()">History</a>
+                <ng-template ngbNavContent>History content</ng-template>
+            </li>
+            <li ngbNavItem>
+                <a ngbNavLink>Linage</a>
+                <ng-template ngbNavContent>Linage content</ng-template>
+            </li>
+            <li ngbNavItem>
+                <a ngbNavLink>Analysis</a>
+                <ng-template ngbNavContent>Analysis content</ng-template>
+            </li>
+        </ul>
+         <ul class="nav">
+             <li class="nav-item">
+                <a class="nav-link">Descission</a>
+             </li>
+            <li class="nav-item">
+                <a class="nav-link">Reputation</a>
+            </li>
+            <li class="nav-item app-active-button__container">
+                <a class="app-active-button">Explore</a>
+            </li>
+            <li class="nav-item app-active-button__container">
+                <a  class="app-active-button">Derive form</a>
+            </li>
+         </ul>
+    </div>
+    <div class="search-result-container">
+        <div class="search-result-container__content">
+            <div [ngbNavOutlet]="nav"></div>
+
+            <table mat-table [dataSource]="dataSource">
+
+                <ng-container *ngFor="let disCol of displayedColumns; let colIndex = index" matColumnDef="{{disCol}}">
+                    <th mat-header-cell *matHeaderCellDef>{{changeColumnName(disCol)}}</th>
+                    <td mat-cell *matCellDef="let element">{{element[disCol]}}</td>
+                </ng-container>
+
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+
+        </div>
+
+        <div class="card">
+            <nav class="navbar navbar-expand">
+                <div class="navbar-nav">
+                    <h3>Additional info block</h3>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+</div>

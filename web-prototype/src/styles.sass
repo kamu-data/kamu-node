@@ -1,0 +1,227 @@
+@use '~@angular/material' as mat
+@import "~bootstrap-icons/font/bootstrap-icons.css"
+/* Importing Bootstrap SCSS file. */
+@import '~bootstrap/scss/bootstrap'
+
+$app-primary: #F1F1F1
+$app-dark: #1C1C1C
+$app-white: #FFFFFF
+$app-emperor: #535353
+$app-veryLightGray: #DEDEDE
+$app-darkSeaGreen: #86BA90
+$app-nero: #282828
+$app-versatileBusinessDark: rgba(221, 221, 221, 0.25)
+$app-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400)
+// The "warn" palette is optional and defaults to red if not specified.
+$app-warn: mat.define-palette(mat.$red-palette)
+$my-theme: mat.define-light-theme($app-primary, $app-accent, $app-warn)
+
+*
+  font-size: 18px
+.app-active-button
+  background: $app-darkSeaGreen
+  border-radius: 4px
+  color: $app-white
+  display: flex
+  flex-direction: row
+  align-items: center
+  padding: 7px 12px
+  margin: 0 0.3rem
+  &:hover, &:focus, &:active
+    text-decoration: none
+    color: $app-emperor
+.app-header
+  height: 90px
+  & a
+    margin: 0 20px
+  & p
+    color: $app-white
+    font-style: normal
+    font-weight: normal
+    font-size: 18px
+  & .navbar
+    padding: 0
+
+.app-brand
+  width: 20%
+  > img
+    width: 77px
+    height: 55px
+a:visited
+  color: inherit
+.mat-app-background, .mat-drawer-container
+  background-color: $app-primary
+#app-header
+  background-color: $app-dark
+  justify-content: space-between
+.app-main-container
+  height: 100%
+  width: 100%
+  position: absolute
+  & .navbar
+    padding: 16px
+
+.mat-drawer-inner-container
+  & .navbar-nav
+    width: 100%
+    padding: 16px
+    & .nav-item
+      width: 100%
+      margin-bottom: 8px
+      border-radius: 4px
+      padding: 12px 16px
+      box-sizing: border-box
+      color: $app-emperor
+    & .nav-link:hover, .nav-link:focus
+      background: $app-darkSeaGreen
+      color: $app-white
+
+  & .mat-drawer.mat-drawer-side
+    width: 208px
+  & .mat-drawer-container
+    background: inherit
+    overflow: auto
+.app-content
+  display: grid
+  margin: 33px auto
+  padding: 0 16px
+  flex-direction: row
+  width: 100%
+  grid-template-columns: 0.2fr 1fr
+  grid-gap: 24px
+  //> *
+  //  width: 100%
+router-outlet
+  display: none
+.app-content__card-columns
+  column-count: 1
+  grid-column-gap: 1.25rem
+  column-gap: 1.25rem
+  orphans: 1
+  widows: 1
+.app-header__right-column
+  display: flex
+  align-items: center
+  justify-content: space-between
+  width: 24%
+  color: white
+  > span
+    margin-right: 5px
+.app-header__right-column__addnew-block
+  margin-right: 5%
+  width: 39%
+  display: flex
+  justify-content: space-around
+.app-header__right-column__label
+  display: block
+.img-container-round
+  width: 50px
+  height: 50px
+  background: #C4C4C4
+  border: 2px solid $app-white
+  box-sizing: border-box
+  border-radius: 35px
+  > img
+    width: 100%
+    height: 100%
+
+#searchInput
+  width: 45%
+#search
+  & .nav-tabs
+    margin-bottom: 14px
+    border-bottom: none
+  & .search-result-container
+    display: grid
+    grid-template-columns: 1fr 0.25fr
+    grid-gap: 25px
+  & table
+    width: 100%
+  & .search-header-container-block
+    width: 100%
+    display: grid
+    align-items: center
+    justify-content: space-between
+    grid-template-columns: 1fr 1fr
+    > ul:first-child
+      align-items: center
+      margin-bottom: 9px
+    > ul:last-child
+      justify-content: flex-end
+    & .nav-tabs
+      & .nav-link
+        border: none
+        background-color: transparent
+        padding: 0.5rem 0.3rem 0 0.3rem
+        &.active, &:hover, &:focus
+          text-decoration: underline
+        &.active
+          font-weight: bold
+    & .nav-link
+      padding: 0.5rem 0.3rem
+      color: $app-emperor
+      &:hover, &:focus, &:active
+        text-decoration: underline
+.search-result-container__content
+    padding: 20px 28px
+    background: $app-white
+    border: 1px solid $app-veryLightGray
+    box-sizing: border-box
+    box-shadow: 0px 5px 4px $app-versatileBusinessDark
+    border-radius: 8px
+    & [data-test-id="searchInput"]
+      height: 50px
+
+/*********** Search Page ******/
+.input-icon
+  background: none
+  color: white
+  position: absolute
+  top: 0
+  left: 0
+  z-index: 4
+  border: none
+  padding-top: 0
+  padding-bottom: 0
+  height: 100%
+  > i
+    font-size: 18px
+[data-test-id="searchInput"]
+  padding-left: 35px
+  &::placeholder
+    color: $app-white
+.input-group > [data-test-id="searchInput"].form-control
+  border-radius: 0.25rem
+  border-color: transparent
+  background: $app-emperor
+  color: $app-white
+.form-control:focus
+  box-shadow: 0 0 0 0.2rem #85bb906e
+.mat-header-cell
+  font-size: 20px
+
+[data-test-id="searchInput"], [data-test-id="addNewBlock"],
+[data-test-id="openUserInfo"], [data-test-id="appLogo"]
+  cursor: pointer
+/*************************/
+@media (max-width: 480px)
+  *
+    font-size: 15px
+  .app-header__right-column__label
+    display: none
+  .app-header__right-column__addnew-block
+    width: 18%
+  .app-brand > img
+    width: 60px
+    height: 50px
+  .app-active-button__container
+    margin-top: 7px
+  #search
+    .search-header-container-block
+      grid-template-columns: 1fr
+
+@media (max-width: 768px)
+  .app-content
+      grid-template-columns: 1fr
+  #search .search-result-container
+    grid-template-columns: 1fr

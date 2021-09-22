@@ -1,0 +1,77 @@
+<div>
+    <mat-toolbar id="app-header">
+        <div class="app-brand">
+            <a href="/search" data-test-id="appLogo"><img [src]="appLogo" alt="Application logo"/></a>
+        </div>
+        <div class="input-group flex-nowrap" id="searchInput">
+            <span class="input-group-text input-icon" id="addon-wrapping"><i class="bi bi-search"></i></span>
+            <input type="text" data-test-id="searchInput" class="form-control"
+                   placeholder="Search" [(ngModel)]="searchValue"
+                   aria-label="Search" aria-describedby="addon-wrapping"
+                   (keyup.enter)="onSearch(searchValue)" (blur)="onSearch(searchValue)">
+        </div>
+        <div class="app-header__right-column">
+            <div class="app-header__right-column__addnew-block" (click)="onAddNew()" data-test-id="addNewBlock">
+                <span><i class="bi bi-plus-circle"></i></span>
+                <span class="app-header__right-column__label">New</span>
+            </div>
+            <div class="img-container-round">
+                <img src="assets/icons/user-icon.png" (click)="onOpenUserInfo()" alt="User icon"
+                     data-test-id="openUserInfo">
+            </div>
+        </div>
+    </mat-toolbar>
+
+    <div class="app-main-container" role="main">
+
+        <mat-drawer-container class="example-container" autosize>
+            <mat-drawer #sidenav class="example-sidenav" mode="side">
+                <nav class="navbar-nav">
+                    <li>
+                        <a routerLink="search" class="nav-link nav-item">Search</a>
+                    </li>
+                    <li>
+                        <a routerLink="login" class="nav-link nav-item">Login</a>
+                    </li>
+                    <li>
+                        <a routerLink="help" class="nav-link nav-item">Help</a>
+                    </li>
+                    <li>
+                        <a routerLink="data" class="nav-link nav-item">Data</a>
+                    </li>
+                    <li>
+                        <a routerLink="graph" class="nav-link nav-item">Semantic Graph</a>
+                    </li>
+                    <li>
+                        <a routerLink="analytics" class="nav-link nav-item">Analytics</a>
+                    </li>
+                </nav>
+
+                <nav class="navbar-nav navbar-nav-bottom">
+                    <li>
+                        <a routerLink="billing" class="nav-link nav-item">Account & Billing</a>
+                    </li>
+                    <li>
+                        <a routerLink="analytics" class="nav-link nav-item">Analytics</a>
+                    </li>
+                </nav>
+            </mat-drawer>
+
+            <mat-drawer-content>
+                <div class="app-content">
+                    <div class="card">
+                        <nav class="navbar navbar-expand">
+                            <div class="navbar-nav">
+                                <h3>Additional info block</h3>
+                            </div>
+                        </nav>
+                    </div>
+
+                    <router-outlet></router-outlet>
+                </div>
+            </mat-drawer-content>
+
+        </mat-drawer-container>
+
+    </div>
+</div>
