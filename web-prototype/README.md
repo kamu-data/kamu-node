@@ -1,4 +1,4 @@
-# KamuClient
+# Kamu Web Prototype
 
 ### Technologies:
 

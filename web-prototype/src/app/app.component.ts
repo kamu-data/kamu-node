@@ -18,7 +18,6 @@ export class AppComponent implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   private checkWindowSize(): void {
-    debugger
     if (window.innerWidth < window.innerHeight) {
       this.sidenavService.close();
     } else {
@@ -40,7 +39,6 @@ export class AppComponent implements OnInit {
   }
 
   public onToggleSidenav(): void {
-    debugger
     this.sidenavService.toggle();
   }
 

@@ -1,5 +1,5 @@
 <div id="search">
-    <div class="search-header-container-block">
+    <div class="search-header-container-block" [style]="isMinimizeSearchAdditionalButtons ? 'grid-template-columns: 1fr 0.1fr' : ''">
         <ul ngbNav #nav="ngbNav" class="nav-tabs">
             <li ngbNavItem>
                 <a ngbNavLink (click)="onSearch()">Overview</a>
@@ -26,20 +26,12 @@
                 <ng-template ngbNavContent>Analysis content</ng-template>
             </li>
         </ul>
-         <ul class="nav">
-             <li class="nav-item">
-                <a class="nav-link">Descission</a>
-             </li>
-            <li class="nav-item">
-                <a class="nav-link">Reputation</a>
-            </li>
-            <li class="nav-item app-active-button__container">
-                <a class="app-active-button">Explore</a>
-            </li>
-            <li class="nav-item app-active-button__container">
-                <a  class="app-active-button">Derive form</a>
-            </li>
-         </ul>
+
+        <search-additional-buttons
+                [searchAdditionalButtonsData]="searchAdditionalButtonsData"
+                [isMinimizeSearchAdditionalButtons]="isMinimizeSearchAdditionalButtons"
+                (searchAdditionalButtonsMethod)="onClickSearchAdditionalButton($event)">
+        </search-additional-buttons>
     </div>
     <div class="search-result-container">
         <div class="search-result-container__content">

@@ -8,7 +8,6 @@ import {LoginComponent} from './auth/login/login.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {environment} from '../environments/environment';
-import {HelpComponent} from './help/help.component';
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {MatFormFieldModule} from "@angular/material/form-field";
@@ -25,6 +24,10 @@ import {FormsModule} from "@angular/forms";
 import {AppSearchService} from "./search/search.service";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {SideNavService} from "./services/sidenav.service";
+import {MatMenuModule} from "@angular/material/menu";
+import {MatButtonModule} from "@angular/material/button";
+import {SearchAdditionalButtonsModule} from "./components/search-additional-buttons/search-additional-buttons.module";
+import {SearchModule} from "./search/search.module";
 
 
 const Services = [
@@ -51,15 +54,15 @@ const MatModules = [
     MatFormFieldModule,
     MatTableModule,
     MatIconModule,
-    MatSidenavModule
+    MatSidenavModule,
+    MatMenuModule,
+    MatButtonModule
 ]
 
 @NgModule({
     declarations: [
         AppComponent,
-        SearchComponent,
-        LoginComponent,
-        HelpComponent
+        LoginComponent
     ],
     imports: [
         BrowserModule,
@@ -76,6 +79,7 @@ const MatModules = [
         HttpClientModule,
         CdkTableModule,
         ...MatModules,
+        SearchModule.forRoot(),
         FormsModule
     ],
     providers: [
@@ -83,5 +87,4 @@ const MatModules = [
     ],
     bootstrap: [AppComponent]
 })
-export class AppModule {
-}
+export class AppModule { }

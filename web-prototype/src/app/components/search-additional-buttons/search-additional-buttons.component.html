@@ -1,0 +1,24 @@
+<ng-template [ngIf]="isMinimizeSearchAdditionalButtons">
+    <button mat-icon-button [matMenuTriggerFor]="menu"
+            aria-label="Example icon-button with a menu"
+            data-test-id="searchAdditionalButtons">
+        <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+        <ng-template ngFor let-searchAdditionalButtonData [ngForOf]="searchAdditionalButtonsData">
+            <button mat-menu-item class="searchAdditionalButton">
+                <span>{{searchAdditionalButtonData.textButton}}</span>
+            </button>
+        </ng-template>
+    </mat-menu>
+</ng-template>
+<ng-template [ngIf]="!isMinimizeSearchAdditionalButtons">
+    <ul class="nav">
+        <ng-template ngFor let-searchAdditionalButtonData [ngForOf]="searchAdditionalButtonsData">
+            <li [classList]="searchAdditionalButtonData.styleClassContainer ? searchAdditionalButtonData.styleClassContainer + ' nav-item ' : 'nav-item'">
+                <a [classList]="searchAdditionalButtonData.styleClassButton ? searchAdditionalButtonData.styleClassButton + ' nav-link ' : 'nav-link'"
+                   (click)="onClick(searchAdditionalButtonData.textButton)">{{searchAdditionalButtonData.textButton}}</a>
+            </li>
+        </ng-template>
+    </ul>
+</ng-template>

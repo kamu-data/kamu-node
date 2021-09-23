@@ -30,13 +30,11 @@ export class AppSearchService {
     }
     public searchHistory(): void {
         this.searchApi.searchHistory().subscribe((data: SearchHistoryInterface[]) => {
-          debugger
           this.searchData = data;
           this.searchDataChanges(data);
         })
     }
     public search(): void {
-        debugger
         this.searchApi.searchOverview().subscribe((data: SearchOverviewInterface[]) => {
             this.searchData = data;
             this.searchDataChanges(data);

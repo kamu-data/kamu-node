@@ -73,7 +73,6 @@ export class SearchApi {
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
-                    debugger
                     return result.data;
                 }
             }));
@@ -119,7 +118,6 @@ export class SearchApi {
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
-                    debugger
                     return result.data;
                 }
             }));
