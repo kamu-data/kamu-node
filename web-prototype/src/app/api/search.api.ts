@@ -16,6 +16,20 @@ export class SearchApi {
         this.apollo = this.apolloProvider.use('newClientName');
     }
 
+    public seatchIndex(): Observable<any> {
+        const GET_DATA: DocumentNode = gql``
+
+        return this.apollo.watchQuery({query: GET_DATA})
+            .valueChanges.pipe(map((result: any) => {
+                if (result.data) {
+                    return result.data.search.query.edges.map((edge: any) => {
+                        let d = Object();
+                        d.id = edge.node.id;
+                        return d;
+                    })
+                }
+            }));
+    }
     public searchOverview(): Observable<SearchOverviewInterface[]> {
         const GET_DATA: DocumentNode = gql`
   {

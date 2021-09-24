@@ -1,12 +1,12 @@
 import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
-import {SearchApi} from "../api/search.api";
 import {AppSearchService} from "./search.service";
 import {SearchHistoryInterface} from "../interface/search.interface";
-import { MatTable } from '@angular/material/table';
 import AppValues from "../common/app.values";
 import {searchAdditionalButtonsEnum} from "./search.interface";
 import {SearchAdditionalButtonInterface} from "../components/search-additional-buttons/search-additional-buttons.interface";
+import {MatSidenav} from "@angular/material/sidenav";
+import {SideNavService} from "../services/sidenav.service";
 
 const ELEMENT_DATA: SearchHistoryInterface[] = [];
 
@@ -17,6 +17,10 @@ const ELEMENT_DATA: SearchHistoryInterface[] = [];
 })
 export class SearchComponent implements OnInit {
 
+  @ViewChild('sidenav', {static: true}) public sidenav?: MatSidenav;
+  public title: string = AppValues.appTitle;
+  public appLogo: string = `/${AppValues.appLogo}`;
+  public showFiller: boolean = true;
   public searchValue: string = '';
   public isMinimizeSearchAdditionalButtons: boolean = false;
   public searchAdditionalButtonsData: SearchAdditionalButtonInterface[] = [{
@@ -39,12 +43,26 @@ export class SearchComponent implements OnInit {
   @HostListener('window:resize', ['$event'])
   private checkWindowSize(): void {
     this.isMinimizeSearchAdditionalButtons = (window.innerWidth < window.innerHeight);
+
+    if (window.innerWidth < window.innerHeight) {
+      this.sidenavService.close();
+    } else {
+      this.sidenavService.open();
+    }
   }
+
   constructor(
-      private appSearchService: AppSearchService
-  ) { }
+      private appSearchService: AppSearchService,
+      private sidenavService: SideNavService) {
+  }
+
 
   public ngOnInit(): void {
+    if(this.sidenav) {
+      this.sidenavService.setSidenav(this.sidenav);
+      this.checkWindowSize();
+    }
+
     this.onSearch();
     this.appSearchService.onSearchChanges.subscribe((value: string) => {
       this.searchValue = value;
@@ -114,6 +132,20 @@ export class SearchComponent implements OnInit {
   }
   public onSearchMetadata(): void {
     this.appSearchService.onSearchMetadata();
+  }
+
+  public onToggleSidenav(): void {
+    this.sidenavService.toggle();
+  }
+
+  public onInputSearch(value: string): void {
+    this.appSearchService.searchChanges(value);
+  }
+  public onOpenUserInfo(): void {
+    console.info('click onOpenUserInfo');
+  }
+  public onAddNew(): void {
+    console.info('click onAddNew');
   }
 
 }

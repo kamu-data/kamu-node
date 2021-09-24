@@ -10,6 +10,8 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatTableModule} from "@angular/material/table";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {SearchHeaderComponent} from "./search-header/search-header.component";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
     imports: [
@@ -23,9 +25,10 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
         NgbModule,
         CommonModule,
         SearchAdditionalButtonsModule,
+        FormsModule,
     ],
-  exports: [SearchComponent],
-  declarations: [SearchComponent]
+  exports: [SearchComponent, SearchHeaderComponent],
+  declarations: [SearchComponent, SearchHeaderComponent]
 })
 export class SearchModule {
     public static forRoot(): ModuleWithProviders<any> {

@@ -150,6 +150,7 @@ router-outlet
       &:hover, &:focus, &:active
         text-decoration: underline
 .search-result-container__content
+    overflow: auto
     padding: 20px 28px
     background: $app-white
     border: 1px solid $app-veryLightGray
@@ -204,7 +205,7 @@ router-outlet
   .app-active-button__container
     margin-top: 7px
   #search
-    .search-header-container-block
+    & .search-header-container-block
       grid-template-columns: 1fr
 
 @media (max-width: 768px)
