@@ -30,11 +30,11 @@ export class SearchApi {
                 }
             }));
     }
-    public searchOverview(): Observable<SearchOverviewInterface[]> {
+    public searchOverview(searchQuery: string): Observable<SearchOverviewInterface[]> {
         const GET_DATA: DocumentNode = gql`
   {
   search {
-    query(query: "ca") {
+    query(query: "${searchQuery}") {
       edges{
         node{
           __typename
@@ -47,6 +47,7 @@ export class SearchApi {
   }
 }
 `;
+
 
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: any) => {

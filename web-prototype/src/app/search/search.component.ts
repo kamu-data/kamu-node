@@ -43,7 +43,6 @@ export class SearchComponent implements OnInit {
   private checkWindowSize(): void {
     this.isMinimizeSearchAdditionalButtons = (window.innerWidth < window.innerHeight);
 
-    debugger
     this.isMobileView = (window.innerWidth < window.innerHeight);
 
     if (window.innerWidth < window.innerHeight) {
@@ -65,7 +64,7 @@ export class SearchComponent implements OnInit {
       this.checkWindowSize();
     }
 
-    this.onSearch();
+    this.onSearch("");
     this.appSearchService.onSearchChanges.subscribe((value: string) => {
       this.searchValue = value;
     })
@@ -104,6 +103,7 @@ export class SearchComponent implements OnInit {
     const elementsData: SearchHistoryInterface[] = [];
     if (!data.length) {
       this.dataSource.data = [];
+      return;
     }
     this.dataSource.data = [];
     const keys_data: string[] = Object.keys(data[0]);
@@ -126,8 +126,8 @@ export class SearchComponent implements OnInit {
     this.appSearchService.searchHistory();
   }
 
-  public onSearch(): void {
-    this.appSearchService.search();
+  public onSearch(searchValue: string): void {
+    this.appSearchService.search(searchValue);
   }
   public onSearchProjections(): void {
     this.appSearchService.searchLastTenFields();
@@ -147,6 +147,7 @@ export class SearchComponent implements OnInit {
 
   public onInputSearch(value: string): void {
     this.appSearchService.searchChanges(value);
+    this.onSearch(value);
   }
   public onOpenUserInfo(): void {
     console.info('click onOpenUserInfo');

@@ -34,8 +34,8 @@ export class AppSearchService {
           this.searchDataChanges(data);
         })
     }
-    public search(): void {
-        this.searchApi.searchOverview().subscribe((data: SearchOverviewInterface[]) => {
+    public search(searchValue: string): void {
+        this.searchApi.searchOverview(searchValue).subscribe((data: SearchOverviewInterface[]) => {
             this.searchData = data;
             this.searchDataChanges(data);
         })
