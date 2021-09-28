@@ -11,6 +11,7 @@ export class SearchHeaderComponent {
     @Output() public onInputSearch: EventEmitter<string> = new EventEmitter();
     @Output() public addNew: EventEmitter<null> = new EventEmitter();
     @Output() public userInfo: EventEmitter<null> = new EventEmitter();
+    @Output() public onOpenMenu: EventEmitter<null> = new EventEmitter();
 
 
     public onSearch(value: string): void {
@@ -21,5 +22,8 @@ export class SearchHeaderComponent {
     }
     public onOpenUserInfo(): void {
         this.userInfo.emit();
+    }
+    public onToggleMenu(): void {
+        this.onOpenMenu.emit();
     }
 }

@@ -2,6 +2,7 @@
     <app-search-header [searchValue]="searchValue" [appLogo]="appLogo"
                        [isMobileView]="isMobileView"
                        (onInputSearch)="onInputSearch($event)"
+                       (onOpenMenu)="onToggleSidenav()"
                        (userInfo)="onOpenUserInfo()" (addNew)="onAddNew()"></app-search-header>
 
     <div class="app-main-container" role="main">
