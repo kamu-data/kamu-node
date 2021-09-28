@@ -30,17 +30,29 @@
     padding: 0
 
 .app-brand
-  width: 20%
+  grid-area: appBrandArea
   > img
     width: 77px
     height: 55px
+.app-header__mobile-menu-block
+  grid-area: appMobileMenu
+  & i
+    color: $app-primary
+    font-size: 30px
 a:visited
   color: inherit
 .mat-app-background, .mat-drawer-container
   background-color: $app-primary
 #app-header
   background-color: $app-dark
-  justify-content: space-between
+  display: grid
+  grid-template-areas: 'appBrandArea appSearchInputArea appHeaderArea'
+  &.mobileView
+    grid-template-areas: 'appMobileMenu appBrandArea appHeaderArea'
+  & .mobileSearch
+    display: block
+  & .desktopSearch
+    display: none
 .app-main-container
   height: 100%
   width: 100%
@@ -87,10 +99,10 @@ router-outlet
   orphans: 1
   widows: 1
 .app-header__right-column
+  grid-area: appHeaderArea
   display: flex
   align-items: center
-  justify-content: space-between
-  width: 24%
+  justify-content: end
   color: white
   > span
     margin-right: 5px
@@ -113,7 +125,7 @@ router-outlet
     height: 100%
 
 #searchInput
-  width: 45%
+  grid-area: appSearchInputArea
 #search
   & .nav-tabs
     margin-bottom: 14px

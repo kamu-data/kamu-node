@@ -7,6 +7,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 export class SearchHeaderComponent {
     @Input() public searchValue: string;
     @Input() public appLogo: string;
+    @Input() public isMobileView: boolean;
     @Output() public onInputSearch: EventEmitter<string> = new EventEmitter();
     @Output() public addNew: EventEmitter<null> = new EventEmitter();
     @Output() public userInfo: EventEmitter<null> = new EventEmitter();

@@ -18,9 +18,8 @@ const ELEMENT_DATA: SearchHistoryInterface[] = [];
 export class SearchComponent implements OnInit {
 
   @ViewChild('sidenav', {static: true}) public sidenav?: MatSidenav;
-  public title: string = AppValues.appTitle;
   public appLogo: string = `/${AppValues.appLogo}`;
-  public showFiller: boolean = true;
+  public isMobileView: boolean = false;
   public searchValue: string = '';
   public isMinimizeSearchAdditionalButtons: boolean = false;
   public searchAdditionalButtonsData: SearchAdditionalButtonInterface[] = [{
@@ -43,6 +42,8 @@ export class SearchComponent implements OnInit {
   @HostListener('window:resize', ['$event'])
   private checkWindowSize(): void {
     this.isMinimizeSearchAdditionalButtons = (window.innerWidth < window.innerHeight);
+
+    this.isMobileView = (window.innerWidth < window.innerHeight);
 
     if (window.innerWidth < window.innerHeight) {
       this.sidenavService.close();

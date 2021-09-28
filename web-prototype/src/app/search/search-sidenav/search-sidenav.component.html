@@ -1,0 +1,36 @@
+
+    <nav class="navbar-nav" *ngIf="isMobileView">
+        <div class="input-group flex-nowrap" id="searchInput">
+            <span class="input-group-text input-icon" id="addon-wrapping"><i class="bi bi-search"></i></span>
+            <input type="text" data-test-id="searchInput" class="form-control"
+                   placeholder="Search" [(ngModel)]="searchValue"
+                   aria-label="Search" aria-describedby="addon-wrapping"
+                   (keyup.enter)="onSearch(searchValue)" (blur)="onSearch(searchValue)">
+        </div>
+    </nav>
+    <nav class="navbar-nav">
+        <li>
+            <a routerLink="search" class="nav-link nav-item">Search</a>
+        </li>
+        <li>
+            <a routerLink="login" class="nav-link nav-item">Login</a>
+        </li>
+        <li>
+            <a routerLink="data" class="nav-link nav-item">Data</a>
+        </li>
+        <li>
+            <a routerLink="graph" class="nav-link nav-item">Semantic Graph</a>
+        </li>
+        <li>
+            <a routerLink="analytics" class="nav-link nav-item">Analytics</a>
+        </li>
+    </nav>
+
+    <nav class="navbar-nav navbar-nav-bottom">
+        <li>
+            <a routerLink="billing" class="nav-link nav-item">Account & Billing</a>
+        </li>
+        <li>
+            <a routerLink="analytics" class="nav-link nav-item">Analytics</a>
+        </li>
+    </nav>

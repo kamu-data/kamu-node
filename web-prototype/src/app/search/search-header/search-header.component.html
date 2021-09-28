@@ -1,10 +1,10 @@
 
-    <mat-toolbar id="app-header">
+    <mat-toolbar id="app-header" [className]="isMobileView ? 'mobileView' : ''">
         <div class="app-brand">
             <a href="/search" data-test-id="appLogo"><img [src]="appLogo" alt="Application logo"/></a>
         </div>
+        <span [classList]="'input-group-text input-icon ' + isMobileView ? 'mobileSearch' : 'desktopSearch'" id="addon-wrapping"><i class="bi bi-list"></i></span>
         <div class="input-group flex-nowrap" id="searchInput">
-            <span class="input-group-text input-icon" id="addon-wrapping"><i class="bi bi-search"></i></span>
             <input type="text" data-test-id="searchInput" class="form-control"
                    placeholder="Search" [(ngModel)]="searchValue"
                    aria-label="Search" aria-describedby="addon-wrapping"

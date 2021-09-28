@@ -12,6 +12,7 @@ import {MatSidenavModule} from "@angular/material/sidenav";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {SearchHeaderComponent} from "./search-header/search-header.component";
 import {FormsModule} from "@angular/forms";
+import {SearchSidenavComponent} from "./search-sidenav/search-sidenav.component";
 
 @NgModule({
     imports: [
@@ -28,7 +29,7 @@ import {FormsModule} from "@angular/forms";
         FormsModule,
     ],
   exports: [SearchComponent, SearchHeaderComponent],
-  declarations: [SearchComponent, SearchHeaderComponent]
+    declarations: [SearchComponent, SearchHeaderComponent, SearchSidenavComponent]
 })
 export class SearchModule {
     public static forRoot(): ModuleWithProviders<any> {
