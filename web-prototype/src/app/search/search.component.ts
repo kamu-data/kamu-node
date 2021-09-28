@@ -43,6 +43,7 @@ export class SearchComponent implements OnInit {
   private checkWindowSize(): void {
     this.isMinimizeSearchAdditionalButtons = (window.innerWidth < window.innerHeight);
 
+    debugger
     this.isMobileView = (window.innerWidth < window.innerHeight);
 
     if (window.innerWidth < window.innerHeight) {
