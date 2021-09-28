@@ -29,6 +29,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "sass",
+            "aot": false,
             "assets": [
               "src/favicon.ico",
               "src/assets",
@@ -39,6 +40,10 @@
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.sass"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": ["src"]
+            },
+            "showCircularDependencies": false,
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
               "./node_modules/bootstrap/dist/js/bootstrap.min.js"
