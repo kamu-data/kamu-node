@@ -10,6 +10,9 @@ export class SideNavService {
     public setSidenav(sidenav: MatSidenav): void {
         this.sidenav = sidenav;
     }
+    public isSidenavOpened(): boolean {
+        return this.sidenav?.opened || false;
+    }
 
     public open(): Promise<MatDrawerToggleResult> {
         this.emptySidenav();

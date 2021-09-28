@@ -139,6 +139,11 @@ export class SearchComponent implements OnInit {
   public onToggleSidenav(): void {
     this.sidenavService.toggle();
   }
+  public onCloseSidenav(): void {
+    if (this.sidenavService.isSidenavOpened()) {
+      this.onToggleSidenav();
+    }
+  }
 
   public onInputSearch(value: string): void {
     this.appSearchService.searchChanges(value);
