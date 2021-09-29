@@ -13,7 +13,7 @@
     </mat-menu>
 </ng-template>
 <ng-template [ngIf]="!isMinimizeSearchAdditionalButtons">
-    <ul class="nav">
+    <ul class="nav searchAdditionalButtons__nav">
         <ng-template ngFor let-searchAdditionalButtonData [ngForOf]="searchAdditionalButtonsData">
             <li [classList]="searchAdditionalButtonData.styleClassContainer ? searchAdditionalButtonData.styleClassContainer + ' nav-item ' : 'nav-item'">
                 <a [classList]="searchAdditionalButtonData.styleClassButton ? searchAdditionalButtonData.styleClassButton + ' nav-link ' : 'nav-link'"

@@ -28,11 +28,16 @@ import {MatMenuModule} from "@angular/material/menu";
 import {MatButtonModule} from "@angular/material/button";
 import {SearchAdditionalButtonsModule} from "./components/search-additional-buttons/search-additional-buttons.module";
 import {SearchModule} from "./search/search.module";
+import {AccountComponent} from "./auth/account/account.component";
+import {DatasetModule} from "./dataset/dataset.module";
+import {AppDatasetService} from "./dataset/dataset.service";
+import {SearchSidenavComponent} from "./search/search-sidenav/search-sidenav.component";
 
 
 const Services = [
     SearchApi,
     AppSearchService,
+    AppDatasetService,
     SideNavService,
     {
         provide: APOLLO_NAMED_OPTIONS,
@@ -62,11 +67,14 @@ const MatModules = [
 @NgModule({
     declarations: [
         AppComponent,
-        LoginComponent
+        LoginComponent,
+        AccountComponent,
+        SearchSidenavComponent
     ],
     imports: [
         BrowserModule,
         AppRoutingModule,
+        DatasetModule,
         BrowserAnimationsModule,
         ServiceWorkerModule.register('ngsw-worker.js', {
             enabled: environment.production,

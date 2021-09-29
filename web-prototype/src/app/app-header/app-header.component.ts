@@ -1,10 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 
 @Component({
-  selector: 'app-search-header',
-  templateUrl: './search-header.component.html'
+  selector: 'app-header',
+  templateUrl: './app-header.component.html'
 })
-export class SearchHeaderComponent {
+export class AppHeaderComponent {
     @Input() public searchValue: string;
     @Input() public appLogo: string;
     @Input() public isMobileView: boolean;

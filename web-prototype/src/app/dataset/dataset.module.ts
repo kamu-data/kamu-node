@@ -3,16 +3,15 @@ import {MatMenuModule} from "@angular/material/menu";
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
 import {CommonModule} from "@angular/common";
-import {SearchComponent} from "./search.component";
+import {DatasetComponent} from "./dataset.component";
 import {SearchAdditionalButtonsModule} from "../components/search-additional-buttons/search-additional-buttons.module";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatTableModule} from "@angular/material/table";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {AppHeaderComponent} from "../app-header/app-header.component";
 import {FormsModule} from "@angular/forms";
-import {SearchSidenavComponent} from "./search-sidenav/search-sidenav.component";
+import {SearchSidenavComponent} from "../search/search-sidenav/search-sidenav.component";
 
 @NgModule({
     imports: [
@@ -28,11 +27,11 @@ import {SearchSidenavComponent} from "./search-sidenav/search-sidenav.component"
         SearchAdditionalButtonsModule,
         FormsModule,
     ],
-  exports: [SearchComponent, AppHeaderComponent],
-    declarations: [SearchComponent, AppHeaderComponent]
+  exports: [DatasetComponent],
+  declarations: [DatasetComponent]
 })
-export class SearchModule {
+export class DatasetModule {
     public static forRoot(): ModuleWithProviders<any> {
-    return { ngModule: SearchModule };
+    return { ngModule: DatasetModule };
   }
 }

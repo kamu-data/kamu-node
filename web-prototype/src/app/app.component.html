@@ -1,1 +1,6 @@
+<app-header [searchValue]="searchValue" [appLogo]="appLogo"
+   [isMobileView]="isMobileView"
+   (onInputSearch)="onInputSearch($event)"
+   (onOpenMenu)="onToggleSidenav()"
+   (userInfo)="onOpenUserInfo()" (addNew)="onAddNew()"></app-header>
 <router-outlet></router-outlet>

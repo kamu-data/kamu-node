@@ -1,22 +1,20 @@
 import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
-import {AppSearchService} from "./search.service";
 import {SearchHistoryInterface} from "../interface/search.interface";
 import AppValues from "../common/app.values";
-import {searchAdditionalButtonsEnum} from "./search.interface";
 import {SearchAdditionalButtonInterface} from "../components/search-additional-buttons/search-additional-buttons.interface";
 import {MatSidenav} from "@angular/material/sidenav";
 import {SideNavService} from "../services/sidenav.service";
-import {Router} from "@angular/router";
+import {AppSearchService} from "../search/search.service";
+import {searchAdditionalButtonsEnum} from "../search/search.interface";
 
 const ELEMENT_DATA: SearchHistoryInterface[] = [];
 
 @Component({
-  selector: 'app-search',
-  templateUrl: './search.component.html',
-  styleUrls: ['./search.component.sass']
+  selector: 'app-dataset',
+  templateUrl: './dataset.component.html',
 })
-export class SearchComponent implements OnInit {
+export class DatasetComponent implements OnInit {
 
   @ViewChild('sidenav', {static: true}) public sidenav?: MatSidenav;
   public appLogo: string = `/${AppValues.appLogo}`;
@@ -53,7 +51,6 @@ export class SearchComponent implements OnInit {
   }
 
   constructor(
-      private router: Router,
       private appSearchService: AppSearchService,
       private sidenavService: SideNavService) {
   }
@@ -64,8 +61,8 @@ export class SearchComponent implements OnInit {
       this.sidenavService.setSidenav(this.sidenav);
       this.checkWindowSize();
     }
+    this.appSearchService.searchHistory();
 
-    this.onSearch("");
     this.appSearchService.onSearchChanges.subscribe((value: string) => {
       this.searchValue = value;
     })
@@ -73,10 +70,6 @@ export class SearchComponent implements OnInit {
     this.appSearchService.onSearchDataChanges.subscribe((data: any[]) => {
       this.renderTable(data);
     });
-  }
-
-  public onSelectDataset(dataset: { id: string }): void {
-    this.router.navigate([`dataset/${dataset.id}`]);
   }
 
 
@@ -127,13 +120,6 @@ export class SearchComponent implements OnInit {
     return AppValues.capitalizeFirstLetter(columnName);
   }
 
-  public showHistory(): void {
-    this.appSearchService.searchHistory();
-  }
-
-  public onSearch(searchValue: string): void {
-    this.appSearchService.search(searchValue);
-  }
   public onSearchProjections(): void {
     this.appSearchService.searchLastTenFields();
   }
@@ -152,7 +138,6 @@ export class SearchComponent implements OnInit {
 
   public onInputSearch(value: string): void {
     this.appSearchService.searchChanges(value);
-    this.onSearch(value);
   }
   public onOpenUserInfo(): void {
     console.info('click onOpenUserInfo');
