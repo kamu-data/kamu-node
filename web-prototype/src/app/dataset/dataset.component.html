@@ -1,12 +1,6 @@
 <div class="app-main-container" role="main">
 
-        <mat-drawer-container class="example-container" autosize>
-            <mat-drawer #sidenav class="example-sidenav" mode="side">
-                <app-search-sidenav [isMobileView]="isMobileView" [searchValue]="searchValue"
-                                    (onInputSearch)="onInputSearch($event)"></app-search-sidenav>
-            </mat-drawer>
 
-            <mat-drawer-content (click)="onCloseSidenav()">
                 <div class="app-content">
                     <div class="card">
                         <nav class="navbar navbar-expand">
@@ -76,9 +70,5 @@
                         </div>
                     </div>
                 </div>
-
-            </mat-drawer-content>
-
-        </mat-drawer-container>
 
     </div>

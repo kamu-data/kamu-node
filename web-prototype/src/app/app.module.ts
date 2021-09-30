@@ -68,8 +68,7 @@ const MatModules = [
     declarations: [
         AppComponent,
         LoginComponent,
-        AccountComponent,
-        SearchSidenavComponent
+        AccountComponent
     ],
     imports: [
         BrowserModule,

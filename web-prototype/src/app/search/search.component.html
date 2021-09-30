@@ -1,59 +1,47 @@
 <div class="app-main-container" role="main">
+    <div class="app-content">
+        <div class="card">
+            <nav class="navbar navbar-expand">
+                <div class="navbar-nav">
+                    <h3>Additional info block</h3>
+                </div>
+            </nav>
+        </div>
+        <div id="search">
+            <div class="search-header-container-block"
+                 [style]="'grid-template-columns: 1fr;'">
+                <search-additional-buttons
+                        [searchAdditionalButtonsData]="searchAdditionalButtonsData"
+                        [isMinimizeSearchAdditionalButtons]="isMinimizeSearchAdditionalButtons"
+                        (searchAdditionalButtonsMethod)="onClickSearchAdditionalButton($event)">
+                </search-additional-buttons>
+            </div>
+            <div class="search-result-container">
+                <div class="search-result-container__content">
+                    <table mat-table [dataSource]="dataSource">
 
-        <mat-drawer-container class="example-container" autosize>
-            <mat-drawer #sidenav class="example-sidenav" mode="side">
-                <app-search-sidenav [isMobileView]="isMobileView" [searchValue]="searchValue"
-                                    (onInputSearch)="onInputSearch($event)"></app-search-sidenav>
-            </mat-drawer>
-
-            <mat-drawer-content (click)="onCloseSidenav()">
-                <div class="app-content">
-                    <div class="card">
-                        <nav class="navbar navbar-expand">
-                            <div class="navbar-nav">
-                                <h3>Additional info block</h3>
-                            </div>
-                        </nav>
-                    </div>
-                    <div id="search">
-                        <div class="search-header-container-block"
-                             [style]="'grid-template-columns: 1fr;'">
-                            <search-additional-buttons
-                                    [searchAdditionalButtonsData]="searchAdditionalButtonsData"
-                                    [isMinimizeSearchAdditionalButtons]="isMinimizeSearchAdditionalButtons"
-                                    (searchAdditionalButtonsMethod)="onClickSearchAdditionalButton($event)">
-                            </search-additional-buttons>
-                        </div>
-                        <div class="search-result-container">
-                            <div class="search-result-container__content">
-                                <table mat-table [dataSource]="dataSource">
-
-                                    <ng-container *ngFor="let disCol of displayedColumns; let colIndex = index"
-                                                  matColumnDef="{{disCol}}">
-                                        <th mat-header-cell *matHeaderCellDef>{{changeColumnName(disCol)}}</th>
-                                        <td mat-cell *matCellDef="let element">{{element[disCol]}}</td>
-                                    </ng-container>
+                        <ng-container *ngFor="let disCol of displayedColumns; let colIndex = index"
+                                      matColumnDef="{{disCol}}">
+                            <th mat-header-cell *matHeaderCellDef>{{changeColumnName(disCol)}}</th>
+                            <td mat-cell *matCellDef="let element">{{element[disCol]}}</td>
+                        </ng-container>
 
 
-                                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                                    <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="onSelectDataset(row)" style="cursor: pointer"></tr>
-                                </table>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="onSelectDataset(row)"
+                            style="cursor: pointer"></tr>
+                    </table>
 
-                            </div>
-
-                            <div class="card">
-                                <nav class="navbar navbar-expand">
-                                    <div class="navbar-nav">
-                                        <h3>Additional info block</h3>
-                                    </div>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
-            </mat-drawer-content>
-
-        </mat-drawer-container>
-
+                <div class="card">
+                    <nav class="navbar navbar-expand">
+                        <div class="navbar-nav">
+                            <h3>Additional info block</h3>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
     </div>
+</div>

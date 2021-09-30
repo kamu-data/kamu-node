@@ -31,10 +31,6 @@
 
 .app-brand
   grid-area: appBrandArea
-  &.mobileSearch
-    align-items: center
-    justify-content: center
-    display: flex
   > img
     width: 77px
     height: 55px
@@ -44,10 +40,8 @@ a:visited
   background-color: $app-primary
 #app-header
   background-color: $app-dark
-  display: grid
-  grid-template-areas: "appBrandArea appSearchInputArea appHeaderArea"
-  &.mobileView
-    grid-template-areas: "appMobileMenu appBrandArea appHeaderArea"
+  & .navbar-nav
+      margin: auto
 
 .app-main-container
   height: 100%
@@ -111,24 +105,23 @@ router-outlet
 .app-header__right-column__label
   display: block
 .img-container-round
-  width: 50px
+  width: 56px
   height: 50px
   background: #C4C4C4
   border: 2px solid $app-white
   box-sizing: border-box
   border-radius: 35px
+  overflow: hidden
+  position: relative
   > img
-    width: 100%
+    position: absolute
+    object-fit: cover
     height: 100%
+    top: 0
+    left: -10%
 
 #searchInput
   grid-area: appSearchInputArea
-  &.desktopSearch
-    display: flex
-    justify-content: center
-    align-items: center
-  &.mobileSearch
-    display: none
 
 #mobileMenuButton
   &.mobileSearch
@@ -137,6 +130,8 @@ router-outlet
     & i
       color: $app-primary
       font-size: 30px
+.search-header-container-block
+  margin-bottom: 20px
 #search
   & .nav-tabs
     margin-bottom: 14px
@@ -243,3 +238,12 @@ router-outlet
       grid-template-columns: 1fr
   #search .search-result-container
     grid-template-columns: 1fr
+
+@media (max-width: 991px)
+  #app-header
+    & #appHeaderMenuButton, #appHeaderLogo, #appHeaderAdditionalBlock
+      order: 0
+    & #navbarNavDropdown
+      order: 1
+    & .navbar-nav
+      margin: 20px auto

@@ -19,7 +19,6 @@ const ELEMENT_DATA: SearchHistoryInterface[] = [];
 export class SearchComponent implements OnInit {
 
   @ViewChild('sidenav', {static: true}) public sidenav?: MatSidenav;
-  public appLogo: string = `/${AppValues.appLogo}`;
   public isMobileView: boolean = false;
   public searchValue: string = '';
   public isMinimizeSearchAdditionalButtons: boolean = false;

@@ -29,7 +29,7 @@ import {SearchSidenavComponent} from "./search-sidenav/search-sidenav.component"
         FormsModule,
     ],
   exports: [SearchComponent, AppHeaderComponent],
-    declarations: [SearchComponent, AppHeaderComponent]
+    declarations: [SearchComponent, AppHeaderComponent, SearchSidenavComponent]
 })
 export class SearchModule {
     public static forRoot(): ModuleWithProviders<any> {
