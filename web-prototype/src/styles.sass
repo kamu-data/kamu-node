@@ -40,9 +40,12 @@ a:visited
   background-color: $app-primary
 #app-header
   background-color: $app-dark
+  & *
+    color: $app-primary
   & .navbar-nav
       margin: auto
-
+.border-white-fade
+  border-color: $app-versatileBusinessDark
 .app-main-container
   height: 100%
   width: 100%
@@ -208,6 +211,7 @@ router-outlet
   border-color: transparent
   background: $app-emperor
   color: $app-white
+  padding: 5px 12px
 .form-control:focus
   box-shadow: 0 0 0 0.2rem #85bb906e
 .mat-header-cell
@@ -218,8 +222,6 @@ router-outlet
   cursor: pointer
 /*************************/
 @media (max-width: 480px)
-  *
-    font-size: 15px
   .app-header__right-column__label
     display: none
   .app-header__right-column__addnew-block
@@ -235,10 +237,9 @@ router-outlet
 
 @media (max-width: 768px)
   .app-content
-      grid-template-columns: 1fr
+    grid-template-columns: 1fr
   #search .search-result-container
     grid-template-columns: 1fr
-
 @media (max-width: 991px)
   #app-header
     & #appHeaderMenuButton, #appHeaderLogo, #appHeaderAdditionalBlock
