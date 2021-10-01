@@ -29,7 +29,6 @@ tracing-subscriber = "*"
 tracing-log = "*"
 tracing-bunyan-formatter = "*"
 tracing-actix-web = "*"
-slog = "*"  # Temporary, until kamu-core migrates to tracing
 
 # Utils
 chrono = "*"

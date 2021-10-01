@@ -141,10 +141,6 @@ async fn main() -> std::io::Result<()> {
 
     let mut catalog = dill::Catalog::new();
 
-    // TODO: Temporary, until kamu-core migrates to tracing
-    let logger = slog::Logger::root(slog::Drain::fuse(slog::Discard), slog::o!());
-    catalog.add_factory(move || logger.new(slog::o!()));
-
     catalog.add::<kamu::infra::QueryServiceImpl>();
     catalog
         .bind::<dyn kamu::domain::QueryService, kamu::infra::QueryServiceImpl>()
