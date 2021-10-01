@@ -3,7 +3,6 @@ import {BrowserModule} from '@angular/platform-browser';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {SearchComponent} from './search/search.component';
 import {LoginComponent} from './auth/login/login.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ServiceWorkerModule} from '@angular/service-worker';
@@ -26,12 +25,12 @@ import {MatSidenavModule} from "@angular/material/sidenav";
 import {SideNavService} from "./services/sidenav.service";
 import {MatMenuModule} from "@angular/material/menu";
 import {MatButtonModule} from "@angular/material/button";
-import {SearchAdditionalButtonsModule} from "./components/search-additional-buttons/search-additional-buttons.module";
 import {SearchModule} from "./search/search.module";
 import {AccountComponent} from "./auth/account/account.component";
-import {DatasetModule} from "./dataset/dataset.module";
-import {AppDatasetService} from "./dataset/dataset.service";
-import {SearchSidenavComponent} from "./search/search-sidenav/search-sidenav.component";
+import {DatasetModule} from "./dataset-view/dataset.module";
+import {AppDatasetService} from "./dataset-view/dataset.service";
+import {DynamicTableModule} from "./components/dynamic-table/dynamic-table.module";
+import {DatasetCreateModule} from "./dataset-create/dataset-create.module";
 
 
 const Services = [
@@ -68,12 +67,17 @@ const MatModules = [
     declarations: [
         AppComponent,
         LoginComponent,
-        AccountComponent
+        AccountComponent,
     ],
     imports: [
-        BrowserModule,
         AppRoutingModule,
+        DynamicTableModule,
         DatasetModule,
+        DatasetCreateModule,
+        SearchModule.forRoot(),
+
+
+        BrowserModule,
         BrowserAnimationsModule,
         ServiceWorkerModule.register('ngsw-worker.js', {
             enabled: environment.production,
@@ -86,7 +90,6 @@ const MatModules = [
         HttpClientModule,
         CdkTableModule,
         ...MatModules,
-        SearchModule.forRoot(),
         FormsModule
     ],
     providers: [
