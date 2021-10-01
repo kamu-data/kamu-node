@@ -21,6 +21,7 @@ jobs:
         with:
           target: ${{ matrix.target }}
           override: true
+          components: rustfmt
       - uses: actions-rs/cargo@v1
         with:
           use-cross: true
