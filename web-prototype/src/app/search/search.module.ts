@@ -13,6 +13,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {AppHeaderComponent} from "../app-header/app-header.component";
 import {FormsModule} from "@angular/forms";
 import {SearchSidenavComponent} from "./search-sidenav/search-sidenav.component";
+import {DynamicTableComponent} from "../components/dynamic-table/dynamic-table.component";
 
 @NgModule({
     imports: [
@@ -28,8 +29,8 @@ import {SearchSidenavComponent} from "./search-sidenav/search-sidenav.component"
         SearchAdditionalButtonsModule,
         FormsModule,
     ],
-  exports: [SearchComponent, AppHeaderComponent],
-    declarations: [SearchComponent, AppHeaderComponent, SearchSidenavComponent]
+  exports: [SearchComponent, AppHeaderComponent, DynamicTableComponent],
+    declarations: [SearchComponent, AppHeaderComponent, SearchSidenavComponent, DynamicTableComponent]
 })
 export class SearchModule {
     public static forRoot(): ModuleWithProviders<any> {

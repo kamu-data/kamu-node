@@ -1,4 +1,4 @@
-import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
+import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {AppSearchService} from "./search.service";
 import {SearchHistoryInterface} from "../interface/search.interface";
@@ -9,14 +9,15 @@ import {MatSidenav} from "@angular/material/sidenav";
 import {SideNavService} from "../services/sidenav.service";
 import {Router} from "@angular/router";
 
-const ELEMENT_DATA: SearchHistoryInterface[] = [];
+
+const ELEMENT_DATA: any[] = [];
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.sass']
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, AfterContentInit {
 
   @ViewChild('sidenav', {static: true}) public sidenav?: MatSidenav;
   public isMobileView: boolean = false;
@@ -37,7 +38,13 @@ export class SearchComponent implements OnInit {
   }];
 
   public displayedColumns: string[] = [];
-  public dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
+  public tableData: {
+    isTableHeader: boolean,
+    displayedColumns?: any[],
+    tableSource: any,
+    isResultQuantity: boolean
+  };
+  public searchData: SearchHistoryInterface[] = [];
 
   @HostListener('window:resize', ['$event'])
   private checkWindowSize(): void {
@@ -50,11 +57,16 @@ export class SearchComponent implements OnInit {
       this.sidenavService.open();
     }
   }
+  // public dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
 
   constructor(
       private router: Router,
       private appSearchService: AppSearchService,
       private sidenavService: SideNavService) {
+  }
+
+  public ngAfterContentInit(): void {
+    this.tableData.tableSource = this.searchData
   }
 
 
@@ -63,6 +75,11 @@ export class SearchComponent implements OnInit {
       this.sidenavService.setSidenav(this.sidenav);
       this.checkWindowSize();
     }
+    this.tableData = {
+    isTableHeader: false,
+    tableSource: this.searchData,
+    isResultQuantity: true
+  };
 
     this.onSearch("");
     this.appSearchService.onSearchChanges.subscribe((value: string) => {
@@ -70,11 +87,11 @@ export class SearchComponent implements OnInit {
     })
 
     this.appSearchService.onSearchDataChanges.subscribe((data: any[]) => {
-      this.renderTable(data);
+      this.tableData.tableSource = data;
     });
   }
 
-  public onSelectDataset(dataset: { id: string }): void {
+  public onSelectDataset(dataset: any): void {
     this.router.navigate([`dataset/${dataset.id}`]);
   }
 
@@ -103,28 +120,23 @@ export class SearchComponent implements OnInit {
   private onClickDescission() {
   }
 
-  private renderTable(data: SearchHistoryInterface[]): void {
-    const elementsData: SearchHistoryInterface[] = [];
-    if (!data.length) {
-      this.dataSource.data = [];
-      return;
-    }
-    this.dataSource.data = [];
-    const keys_data: string[] = Object.keys(data[0]);
-
-    this.displayedColumns = keys_data;
-
-    const dataSource = this.dataSource.data;
-    data.forEach((field: SearchHistoryInterface) => {
-      dataSource.push(field);
-    })
-    this.dataSource.data = dataSource;
-  }
-
-  public changeColumnName(columnName: string): string {
-    columnName = columnName.replace('_', ' ');
-    return AppValues.capitalizeFirstLetter(columnName);
-  }
+  // private renderTable(data: SearchHistoryInterface[]): void {
+  //   const elementsData: SearchHistoryInterface[] = [];
+  //   if (!data.length) {
+  //     this.dataSource.data = [];
+  //     return;
+  //   }
+  //   this.dataSource.data = [];
+  //   const keys_data: string[] = Object.keys(data[0]);
+  //
+  //   this.displayedColumns = keys_data;
+  //
+  //   const dataSource = this.dataSource.data;
+  //   data.forEach((field: SearchHistoryInterface) => {
+  //     dataSource.push(field);
+  //   })
+  //   this.dataSource.data = dataSource;
+  // }
 
   public showHistory(): void {
     this.appSearchService.searchHistory();

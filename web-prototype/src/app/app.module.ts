@@ -29,7 +29,6 @@ import {SearchModule} from "./search/search.module";
 import {AccountComponent} from "./auth/account/account.component";
 import {DatasetModule} from "./dataset-view/dataset.module";
 import {AppDatasetService} from "./dataset-view/dataset.service";
-import {DynamicTableModule} from "./components/dynamic-table/dynamic-table.module";
 import {DatasetCreateModule} from "./dataset-create/dataset-create.module";
 
 
@@ -71,7 +70,6 @@ const MatModules = [
     ],
     imports: [
         AppRoutingModule,
-        DynamicTableModule,
         DatasetModule,
         DatasetCreateModule,
         SearchModule.forRoot(),
