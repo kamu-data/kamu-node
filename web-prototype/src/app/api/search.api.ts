@@ -35,27 +35,31 @@ export class SearchApi {
   {
   search {
     query(query: "${searchQuery}") {
-      edges{
-        node{
+      edges {
+        node {
           __typename
           ... on Dataset {
             id
+            kind
+            createdAt
+            lastUpdatedAt
+            __typename
           }
         }
+        __typename
       }
+      __typename
     }
+    __typename
   }
 }
 `;
-
 
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: any) => {
                 if (result.data) {
                     return result.data.search.query.edges.map((edge: any) => {
-                        let d = Object();
-                        d.id = edge.node.id;
-                        return d;
+                        return this.clearlyData(edge);
                     })
                 }
             }));
@@ -162,20 +166,26 @@ export class SearchApi {
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
+                    debugger
                     return result.data.datasets.byId.metadata.chain.blocks.edges.map((edge: any) => {
-                        const object = edge.node;
-                        const value = 'typename';
-                        const nodeKeys: string[] = Object.keys(object).filter(key => !key.includes(value));
-                        let d = Object();
-
-                        nodeKeys.forEach((nodeKey: string) => {
-                            d[nodeKey] = edge.node[nodeKey];
-                        })
-
-                        return d;
+                        debugger
+                        return this.clearlyData(edge);
                     });
                 }
             }));
+    }
+
+    clearlyData(edge: any) {
+        const object = edge.node;
+        const value = 'typename';
+        const nodeKeys: string[] = Object.keys(object).filter(key => !key.includes(value));
+        let d = Object();
+
+        nodeKeys.forEach((nodeKey: string) => {
+            d[nodeKey] = edge.node[nodeKey];
+        })
+
+        return d;
     }
 
 }

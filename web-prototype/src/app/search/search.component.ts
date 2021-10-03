@@ -89,7 +89,7 @@ export class SearchComponent implements OnInit, AfterContentInit {
 
   private initTableData(): void {
     this.tableData = {
-      isTableHeader: false,
+      isTableHeader: true,
       tableSource: this.searchData,
       isResultQuantity: true,
       isClickableRow: true

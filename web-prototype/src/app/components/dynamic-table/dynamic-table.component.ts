@@ -43,7 +43,16 @@ export class DynamicTableComponent implements OnInit, OnChanges, AfterContentIni
 
   public changeColumnName(columnName: string): string {
     columnName = columnName.replace('_', ' ');
-    return AppValues.capitalizeFirstLetter(columnName);
+    let newColumnName: string = '';
+
+    for (let i = 0; i < columnName.length; i++) {
+      if (columnName.charAt(i) === columnName.charAt(i).toUpperCase()) {
+        newColumnName += ' ' + columnName.charAt(i);
+      } else newColumnName += columnName.charAt(i);
+    }
+    newColumnName = newColumnName.toLocaleLowerCase();
+
+    return AppValues.capitalizeFirstLetter(newColumnName);
   }
 
   public onSelectDataset(dataset: any): void {
