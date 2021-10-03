@@ -1,13 +1,12 @@
 import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
-import {MatTableDataSource} from '@angular/material/table';
 import {SearchHistoryInterface} from "../interface/search.interface";
 import AppValues from "../common/app.values";
 import {SearchAdditionalButtonInterface} from "../components/search-additional-buttons/search-additional-buttons.interface";
 import {MatSidenav} from "@angular/material/sidenav";
 import {SideNavService} from "../services/sidenav.service";
-import {AppSearchService} from "../search/search.service";
 import {searchAdditionalButtonsEnum} from "../search/search.interface";
 import {DatasetViewTypeEnum} from "./dataset-view.interface";
+import {AppDatasetService} from "./dataset.service";
 
 const ELEMENT_DATA: SearchHistoryInterface[] = [];
 
@@ -19,7 +18,6 @@ const ELEMENT_DATA: SearchHistoryInterface[] = [];
 export class DatasetComponent implements OnInit, AfterContentInit {
 
   @ViewChild('sidenav', {static: true}) public sidenav?: MatSidenav;
-  public typeSelected: string = 'overview'
   public isMobileView: boolean = false;
   public searchValue: string = '';
   public isMinimizeSearchAdditionalButtons: boolean = false;
@@ -61,7 +59,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
   }
 
   constructor(
-      private appSearchService: AppSearchService,
+      private appDatasetService: AppDatasetService,
       private sidenavService: SideNavService) {
     this._window = window;
   }
@@ -74,13 +72,13 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     }
     this.initTableData();
 
-    this.appSearchService.searchHistory();
+    this.onSearchDataset();
 
-    this.appSearchService.onSearchChanges.subscribe((value: string) => {
+    this.appDatasetService.onSearchChanges.subscribe((value: string) => {
       this.searchValue = value;
     })
 
-    this.appSearchService.onSearchDataChanges.subscribe((data: any[]) => {
+    this.appDatasetService.onSearchDataChanges.subscribe((data: any[]) => {
       this.tableData.tableSource = data;
     });
   }
@@ -93,9 +91,12 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     };
   }
   public getResultUnitText(): string {
-    debugger
-    const searchDataset: string = this._window.location.search.split('=')[1];
+    const searchDataset: string = this.getDatasetId();
     return `results in ${searchDataset}`
+  }
+
+  private getDatasetId(): string {
+    return this._window.location.search.split('=')[1];
   }
 
   public ngAfterContentInit(): void {
@@ -130,10 +131,18 @@ export class DatasetComponent implements OnInit, AfterContentInit {
   private onClickDescission() {
   }
 
-  public onSearchProjections(): void {
-    this.appSearchService.searchLastTenFields();
-  }
   public onSearchMetadata(): void {
-    this.appSearchService.onSearchMetadata();
+    this.datasetViewType = DatasetViewTypeEnum.metadata;
+    this.appDatasetService.onSearchMetadata(this.getDatasetId());
+  }
+
+  public onSearchDataset(): void {
+    this.datasetViewType = DatasetViewTypeEnum.overview;
+    this.appDatasetService.searchDataset(this.getDatasetId());
+  }
+
+  public onSearchLinageDataset(): void {
+    this.datasetViewType = DatasetViewTypeEnum.linage;
+    this.appDatasetService.onSearchLinageDataset(this.getDatasetId());
   }
 }

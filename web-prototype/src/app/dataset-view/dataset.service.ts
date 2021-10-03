@@ -28,8 +28,8 @@ export class AppDatasetService {
     public get getSearchData(): SearchHistoryInterface[] | SearchOverviewInterface[] {
         return this.searchData;
     }
-    public searchHistory(): void {
-        this.searchApi.searchHistory().subscribe((data: SearchHistoryInterface[]) => {
+    public searchDataset(id: string): void {
+        this.searchApi.searchDataset(id).subscribe((data: SearchHistoryInterface[]) => {
           this.searchData = data;
           this.searchDataChanges(data);
         })
@@ -40,14 +40,14 @@ export class AppDatasetService {
             this.searchDataChanges(data);
         })
     }
-    public searchLastTenFields(): void {
-        this.searchApi.searchLastTenFields().subscribe((data: any) => {
+    public onSearchLinageDataset(id: string): void {
+        this.searchApi.searchLinageDataset(id).subscribe((data: any) => {
             this.searchData = data;
             this.searchDataChanges(data);
         })
     }
-    public onSearchMetadata(): void {
-        this.searchApi.onSearchMetadata().subscribe((data: any) => {
+    public onSearchMetadata(id: string): void {
+        this.searchApi.onSearchMetadata(id).subscribe((data: any) => {
             this.searchData = data;
             this.searchDataChanges(data);
         })

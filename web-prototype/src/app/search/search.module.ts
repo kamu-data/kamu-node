@@ -4,15 +4,13 @@ import {SearchComponent} from "./search.component";
 import {SearchAdditionalButtonsModule} from "../components/search-additional-buttons/search-additional-buttons.module";
 import {FormsModule} from "@angular/forms";
 import {DynamicTableModule} from "../components/dynamic-table/dynamic-table.module";
-import {SearchSidenavModule} from "../search-sidenav/search-sidenav.module";
 
 @NgModule({
     imports: [
         CommonModule,
         SearchAdditionalButtonsModule,
         FormsModule,
-        DynamicTableModule,
-        SearchSidenavModule
+        DynamicTableModule
     ],
     exports: [SearchComponent],
     declarations: [SearchComponent]

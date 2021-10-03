@@ -17,7 +17,6 @@ export class AppHeaderComponent {
 
 
     public onSearch(event: InputEvent, value: string): void {
-        debugger
 
         this.onInputSearch.emit(value);
         setTimeout(() => {

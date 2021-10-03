@@ -125,56 +125,8 @@ export class SearchComponent implements OnInit, AfterContentInit {
   private onClickDescission() {
   }
 
-  // private renderTable(data: SearchHistoryInterface[]): void {
-  //   const elementsData: SearchHistoryInterface[] = [];
-  //   if (!data.length) {
-  //     this.dataSource.data = [];
-  //     return;
-  //   }
-  //   this.dataSource.data = [];
-  //   const keys_data: string[] = Object.keys(data[0]);
-  //
-  //   this.displayedColumns = keys_data;
-  //
-  //   const dataSource = this.dataSource.data;
-  //   data.forEach((field: SearchHistoryInterface) => {
-  //     dataSource.push(field);
-  //   })
-  //   this.dataSource.data = dataSource;
-  // }
-
-  public showHistory(): void {
-    this.appSearchService.searchHistory();
-  }
-
   public onSearch(searchValue: string): void {
     this.appSearchService.search(searchValue);
-  }
-  public onSearchProjections(): void {
-    this.appSearchService.searchLastTenFields();
-  }
-  public onSearchMetadata(): void {
-    this.appSearchService.onSearchMetadata();
-  }
-
-  public onToggleSidenav(): void {
-    this.sidenavService.toggle();
-  }
-  public onCloseSidenav(): void {
-    if (this.sidenavService.isSidenavOpened() && AppValues.isMobileView()) {
-      this.onToggleSidenav();
-    }
-  }
-
-  public onInputSearch(value: string): void {
-    this.appSearchService.searchChanges(value);
-    this.onSearch(value);
-  }
-  public onOpenUserInfo(): void {
-    console.info('click onOpenUserInfo');
-  }
-  public onAddNew(): void {
-    console.info('click onAddNew');
   }
 
 }

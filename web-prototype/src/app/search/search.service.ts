@@ -25,29 +25,8 @@ export class AppSearchService {
     public get onSearchDataChanges(): Observable<SearchHistoryInterface[] | SearchOverviewInterface[]> {
        return this.searchDataChanges$.asObservable();
     }
-    public get getSearchData(): SearchHistoryInterface[] | SearchOverviewInterface[] {
-        return this.searchData;
-    }
-    public searchHistory(): void {
-        this.searchApi.searchHistory().subscribe((data: SearchHistoryInterface[]) => {
-          this.searchData = data;
-          this.searchDataChanges(data);
-        })
-    }
     public search(searchValue: string): void {
         this.searchApi.searchOverview(searchValue).subscribe((data: SearchOverviewInterface[]) => {
-            this.searchData = data;
-            this.searchDataChanges(data);
-        })
-    }
-    public searchLastTenFields(): void {
-        this.searchApi.searchLastTenFields().subscribe((data: any) => {
-            this.searchData = data;
-            this.searchDataChanges(data);
-        })
-    }
-    public onSearchMetadata(): void {
-        this.searchApi.onSearchMetadata().subscribe((data: any) => {
             this.searchData = data;
             this.searchDataChanges(data);
         })

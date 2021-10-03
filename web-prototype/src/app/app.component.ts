@@ -32,7 +32,6 @@ export class AppComponent implements OnInit {
   }
 
   public onInputSearch(searchValue: string) {
-    debugger
     this.router.navigate(['search']);
     this.appSearchService.searchChanges(searchValue);
     this.appSearchService.search(searchValue);

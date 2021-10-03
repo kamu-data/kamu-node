@@ -12,7 +12,7 @@ import {MatSidenavModule} from "@angular/material/sidenav";
 import {NgbModule, NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
 import {DynamicTableModule} from "../components/dynamic-table/dynamic-table.module";
-import {SearchSidenavModule} from "../search-sidenav/search-sidenav.module";
+import {SearchSidenavModule} from "../components/search-sidenav/search-sidenav.module";
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
 
 @NgModule({

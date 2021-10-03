@@ -61,27 +61,24 @@ export class SearchApi {
             }));
     }
 
-    public searchLastTenFields(): Observable<any> {
+    public searchLinageDataset(id: string): Observable<any> {
         const GET_DATA: DocumentNode = gql`
 {
   datasets {
-    all(last: 10){
-      edges{
-        node {
-          metadata {
-            datasetId
-          }
-          id,
-          kind,
-          data {
-              tail {
-                format
-                content
-              }
-            }
+    byId(id: "${id}") {
+      id
+      kind
+      metadata {
+        currentUpstreamDependencies {
+          id
+          kind
+          __typename
         }
+        __typename
       }
+      __typename
     }
+    __typename
   }
 }
 `;
@@ -93,18 +90,38 @@ export class SearchApi {
             }));
     }
 
-    public searchHistory(): Observable<SearchHistoryInterface[]> {
+    public searchDataset(id: string): Observable<SearchHistoryInterface[]> {
         const GET_DATA: DocumentNode = gql`
 {
   datasets {
-    byId(id: "ca.covid19.daily-cases") {
-    	data{
-        tail(numRecords: 5, format: JSON){
-          content
-        }
+  byId(id: "${id}") {
+    id
+    createdAt
+    lastUpdatedAt
+    metadata {
+      currentWatermark
+      currentSchema(format: "PARQUET_JSON") {
+        format
+        content
+        __typename
       }
+      __typename
     }
+    data {
+      numRecordsTotal
+      estimatedSize
+      tail(numRecords: 20, format: "JSON") {
+        format
+        content
+        __typename
+      }
+      __typename
+    }
+    __typename
   }
+  __typename
+}
+
 }`
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
@@ -114,26 +131,49 @@ export class SearchApi {
             }));
     }
 
-    public onSearchMetadata(): Observable<any> {
+    public onSearchMetadata(id: string): Observable<any> {
         const GET_DATA: DocumentNode = gql`
 {
   datasets {
-    all(last: 10){
-      edges{
-        node {
-          metadata {
-            datasetId
+    byId(id: "${id}") {
+      metadata {
+        chain {
+          blocks {
+            edges {
+              node {
+                blockHash
+                systemTime
+                __typename
+              }
+              __typename
+            }
+            __typename
           }
+          __typename
         }
+        __typename
       }
+      __typename
     }
+    __typename
   }
 }
 `;
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
-                    return result.data;
+                    return result.data.datasets.byId.metadata.chain.blocks.edges.map((edge: any) => {
+                        const object = edge.node;
+                        const value = 'typename';
+                        const nodeKeys: string[] = Object.keys(object).filter(key => !key.includes(value));
+                        let d = Object();
+
+                        nodeKeys.forEach((nodeKey: string) => {
+                            d[nodeKey] = edge.node[nodeKey];
+                        })
+
+                        return d;
+                    });
                 }
             }));
     }
