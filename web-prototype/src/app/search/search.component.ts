@@ -75,12 +75,8 @@ export class SearchComponent implements OnInit, AfterContentInit {
       this.sidenavService.setSidenav(this.sidenav);
       this.checkWindowSize();
     }
-    this.tableData = {
-    isTableHeader: false,
-    tableSource: this.searchData,
-    isResultQuantity: true
-  };
 
+    this.initTableData();
     this.onSearch("");
     this.appSearchService.onSearchChanges.subscribe((value: string) => {
       this.searchValue = value;
@@ -91,8 +87,16 @@ export class SearchComponent implements OnInit, AfterContentInit {
     });
   }
 
+  private initTableData(): void {
+    this.tableData = {
+      isTableHeader: false,
+      tableSource: this.searchData,
+      isResultQuantity: true
+    };
+  }
+
   public onSelectDataset(dataset: any): void {
-    this.router.navigate([`dataset/${dataset.id}`]);
+    this.router.navigate([`dataset-view/${dataset.id}`]);
   }
 
 

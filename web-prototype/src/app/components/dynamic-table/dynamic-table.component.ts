@@ -14,7 +14,8 @@ import AppValues from "../../common/app.values";
 const ELEMENT_DATA: any[] = [];
 @Component({
   selector: 'app-dynamic-table',
-  templateUrl: './dynamic-table.component.html'
+  templateUrl: './dynamic-table.component.html',
+  styleUrls: ['./dynamic-table.sass']
 })
 export class DynamicTableComponent implements OnInit, OnChanges, AfterContentInit {
   @Input() public isTableHeader: boolean;
