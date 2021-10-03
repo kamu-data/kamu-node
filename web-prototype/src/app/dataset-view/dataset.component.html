@@ -1,14 +1,16 @@
 <div class="app-main-container" role="main">
     <div class="app-content">
-        <div id="search">
+        <div id="dataset-viewer">
             <div class="search-header-container-block"
                  [style]="isMinimizeSearchAdditionalButtons ? 'grid-template-columns: 1fr 0.1fr' : ''">
-                <mat-button-toggle-group name="datasetViewType" aria-label="Dataset View Type">
-                    <mat-button-toggle value="overview" [checked]="datasetViewType == 'overview'" (click)="onSearchDataset()">Overview</mat-button-toggle>
-                    <mat-button-toggle value="metadata" [checked]="datasetViewType == 'metadata'" (click)="onSearchMetadata()">Metadata</mat-button-toggle>
-                    <mat-button-toggle value="linage" [checked]="datasetViewType == 'linage'" (click)="onSearchLinageDataset()">Linage</mat-button-toggle>
-                    <mat-button-toggle value="projections" disabled>Projections</mat-button-toggle>
-              </mat-button-toggle-group>
+                <div class="datasetViewTypeToggleGroup">
+                    <mat-button-toggle-group name="datasetViewType" aria-label="Dataset View Type">
+                        <mat-button-toggle value="overview" [checked]="datasetViewType == 'overview'" (click)="onSearchDataset()">Overview</mat-button-toggle>
+                        <mat-button-toggle value="metadata" [checked]="datasetViewType == 'metadata'" (click)="onSearchMetadata()">Metadata</mat-button-toggle>
+                        <mat-button-toggle value="linage" [checked]="datasetViewType == 'linage'" (click)="onSearchLinageDataset()">Linage</mat-button-toggle>
+                        <mat-button-toggle value="projections" disabled>Projections</mat-button-toggle>
+                    </mat-button-toggle-group>
+                </div>
 
                 <search-additional-buttons
                         [searchAdditionalButtonsData]="searchAdditionalButtonsData"
