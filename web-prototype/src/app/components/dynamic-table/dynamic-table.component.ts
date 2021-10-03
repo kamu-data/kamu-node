@@ -66,7 +66,10 @@ export class DynamicTableComponent implements OnInit, OnChanges, AfterContentIni
     this.dataSource = new MatTableDataSource(dataSource);
   }
 
-  public searchResultQuantity(tableSource: any[]): string {
+  public searchResultQuantity(tableSource: any[] = []): string {
+      if(!Array.isArray(tableSource)) {
+        return '0';
+      }
       return tableSource.length.toString();
   }
 }

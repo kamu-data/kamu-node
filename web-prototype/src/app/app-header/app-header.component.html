@@ -20,7 +20,7 @@
                         <input type="text" data-test-id="searchInput" class="form-control"
                                placeholder="Search" [(ngModel)]="searchValue"
                                aria-label="Search" aria-describedby="addon-wrapping"
-                               (keyup.enter)="onSearch(searchValue)" (blur)="onSearch(searchValue)">
+                               (keyup.enter)="onSearch($event, searchValue)" (blur)="onSearch($event, searchValue)">
                     </div>
                 </li>
 <!--                <li class="nav-item">-->

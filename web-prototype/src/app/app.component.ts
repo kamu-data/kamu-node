@@ -1,7 +1,6 @@
 import {Component, HostListener, OnInit} from '@angular/core';
 import AppValues from "./common/app.values";
 import {AppSearchService} from "./search/search.service";
-import {SideNavService} from "./services/sidenav.service";
 import {Router} from "@angular/router";
 
 @Component({
@@ -22,7 +21,6 @@ export class AppComponent implements OnInit {
   constructor(
       private router: Router,
       private appSearchService: AppSearchService,
-      private sidenavService: SideNavService
   ) { }
 
   public ngOnInit() {
@@ -34,13 +32,10 @@ export class AppComponent implements OnInit {
   }
 
   public onInputSearch(searchValue: string) {
+    debugger
     this.router.navigate(['search']);
     this.appSearchService.searchChanges(searchValue);
     this.appSearchService.search(searchValue);
-  }
-
-  public onToggleSidenav() {
-    this.sidenavService.toggle();
   }
 
   public onOpenUserInfo(): void {

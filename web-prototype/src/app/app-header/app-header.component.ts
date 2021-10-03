@@ -12,15 +12,20 @@ export class AppHeaderComponent {
     @Output() public onInputSearch: EventEmitter<string> = new EventEmitter();
     @Output() public addNew: EventEmitter<null> = new EventEmitter();
     @Output() public userInfo: EventEmitter<null> = new EventEmitter();
-    @Output() public onOpenMenu: EventEmitter<null> = new EventEmitter();
 
     @ViewChild('appHeaderMenuButton') appHeaderMenuButton: ElementRef<HTMLElement>;
 
 
-    public onSearch(value: string): void {
+    public onSearch(event: InputEvent, value: string): void {
+        debugger
+
         this.onInputSearch.emit(value);
         setTimeout(() => {
-          this.triggerMenuClick();
+            if(this.isMobileView) {
+                this.triggerMenuClick();
+            }
+
+            (event.target as HTMLElement).blur();
         }, 200)
     }
     public onAddNew(): void {
@@ -28,9 +33,6 @@ export class AppHeaderComponent {
     }
     public onOpenUserInfo(): void {
         this.userInfo.emit();
-    }
-    public onToggleMenu(): void {
-        this.onOpenMenu.emit();
     }
 
     public triggerMenuClick(): void {
