@@ -1,7 +1,7 @@
-<div class="d-flex flex-column flex-md-row flex-justify-between border-bottom pb-3 position-relative">
-    <h3>
-        {{ searchResultQuantity(tableSource) }} dataset results
-    </h3>
+<div class="d-flex flex-column flex-md-row flex-justify-between border-bottom pb-3 position-relative" *ngIf="isResultQuantity">
+    <h2>
+        {{ searchResultQuantity(tableSource) }} {{resultUnitText}}
+    </h2>
 </div>
 <table mat-table [dataSource]="dataSource">
     <ng-container *ngFor="let disCol of displayedColumns; let colIndex = index"
@@ -15,5 +15,5 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     </ng-container>
     <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="onSelectDataset(row)"
-        style="cursor: pointer"></tr>
+        [class.clickable-row]='isClickableRow'></tr>
 </table>

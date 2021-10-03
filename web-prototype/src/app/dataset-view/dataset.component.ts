@@ -1,4 +1,4 @@
-import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
+import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {SearchHistoryInterface} from "../interface/search.interface";
 import AppValues from "../common/app.values";
@@ -7,20 +7,23 @@ import {MatSidenav} from "@angular/material/sidenav";
 import {SideNavService} from "../services/sidenav.service";
 import {AppSearchService} from "../search/search.service";
 import {searchAdditionalButtonsEnum} from "../search/search.interface";
+import {DatasetViewTypeEnum} from "./dataset-view.interface";
 
 const ELEMENT_DATA: SearchHistoryInterface[] = [];
 
 @Component({
   selector: 'app-dataset',
   templateUrl: './dataset.component.html',
+  styleUrls: ['./dataset-view.component.sass']
 })
-export class DatasetComponent implements OnInit {
+export class DatasetComponent implements OnInit, AfterContentInit {
 
   @ViewChild('sidenav', {static: true}) public sidenav?: MatSidenav;
-  public appLogo: string = `/${AppValues.appLogo}`;
+  public typeSelected: string = 'overview'
   public isMobileView: boolean = false;
   public searchValue: string = '';
   public isMinimizeSearchAdditionalButtons: boolean = false;
+  public datasetViewType: DatasetViewTypeEnum = DatasetViewTypeEnum.overview;
   public searchAdditionalButtonsData: SearchAdditionalButtonInterface[] = [{
     textButton: searchAdditionalButtonsEnum.Descission
   }, {
@@ -35,8 +38,15 @@ export class DatasetComponent implements OnInit {
     styleClassButton: 'app-active-button'
   }];
 
-  public displayedColumns: string[] = [];
-  public dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
+  public tableData: {
+    isTableHeader: boolean,
+    displayedColumns?: any[],
+    tableSource: any,
+    isResultQuantity: boolean,
+    isClickableRow: boolean
+  };
+  public searchData: SearchHistoryInterface[] = [];
+  private _window: Window;
 
   @HostListener('window:resize', ['$event'])
   private checkWindowSize(): void {
@@ -53,6 +63,7 @@ export class DatasetComponent implements OnInit {
   constructor(
       private appSearchService: AppSearchService,
       private sidenavService: SideNavService) {
+    this._window = window;
   }
 
 
@@ -61,6 +72,8 @@ export class DatasetComponent implements OnInit {
       this.sidenavService.setSidenav(this.sidenav);
       this.checkWindowSize();
     }
+    this.initTableData();
+
     this.appSearchService.searchHistory();
 
     this.appSearchService.onSearchChanges.subscribe((value: string) => {
@@ -68,8 +81,28 @@ export class DatasetComponent implements OnInit {
     })
 
     this.appSearchService.onSearchDataChanges.subscribe((data: any[]) => {
-      this.renderTable(data);
+      this.tableData.tableSource = data;
     });
+  }
+  private initTableData(): void {
+    this.tableData = {
+      isTableHeader: true,
+      tableSource: this.searchData,
+      isResultQuantity: true,
+      isClickableRow: false
+    };
+  }
+  public getResultUnitText(): string {
+    debugger
+    const searchDataset: string = this._window.location.search.split('=')[1];
+    return `results in ${searchDataset}`
+  }
+
+  public ngAfterContentInit(): void {
+    this.tableData.tableSource = this.searchData
+  }
+  public onSelectDataset(dataset: any): void {
+    return;
   }
 
 
@@ -97,53 +130,10 @@ export class DatasetComponent implements OnInit {
   private onClickDescission() {
   }
 
-  private renderTable(data: SearchHistoryInterface[]): void {
-    const elementsData: SearchHistoryInterface[] = [];
-    if (!data.length) {
-      this.dataSource.data = [];
-      return;
-    }
-    this.dataSource.data = [];
-    const keys_data: string[] = Object.keys(data[0]);
-
-    this.displayedColumns = keys_data;
-
-    const dataSource = this.dataSource.data;
-    data.forEach((field: SearchHistoryInterface) => {
-      dataSource.push(field);
-    })
-    this.dataSource.data = dataSource;
-  }
-
-  public changeColumnName(columnName: string): string {
-    columnName = columnName.replace('_', ' ');
-    return AppValues.capitalizeFirstLetter(columnName);
-  }
-
   public onSearchProjections(): void {
     this.appSearchService.searchLastTenFields();
   }
   public onSearchMetadata(): void {
     this.appSearchService.onSearchMetadata();
   }
-
-  public onToggleSidenav(): void {
-    this.sidenavService.toggle();
-  }
-  public onCloseSidenav(): void {
-    if (this.sidenavService.isSidenavOpened() && AppValues.isMobileView()) {
-      this.onToggleSidenav();
-    }
-  }
-
-  public onInputSearch(value: string): void {
-    this.appSearchService.searchChanges(value);
-  }
-  public onOpenUserInfo(): void {
-    console.info('click onOpenUserInfo');
-  }
-  public onAddNew(): void {
-    console.info('click onAddNew');
-  }
-
 }

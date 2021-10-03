@@ -8,6 +8,7 @@ import {SearchAdditionalButtonInterface} from "../components/search-additional-b
 import {MatSidenav} from "@angular/material/sidenav";
 import {SideNavService} from "../services/sidenav.service";
 import {Router} from "@angular/router";
+import {query} from "@angular/animations";
 
 
 const ELEMENT_DATA: any[] = [];
@@ -37,12 +38,12 @@ export class SearchComponent implements OnInit, AfterContentInit {
     styleClassButton: 'app-active-button'
   }];
 
-  public displayedColumns: string[] = [];
   public tableData: {
     isTableHeader: boolean,
     displayedColumns?: any[],
     tableSource: any,
-    isResultQuantity: boolean
+    isResultQuantity: boolean,
+    isClickableRow: boolean
   };
   public searchData: SearchHistoryInterface[] = [];
 
@@ -57,7 +58,6 @@ export class SearchComponent implements OnInit, AfterContentInit {
       this.sidenavService.open();
     }
   }
-  // public dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
 
   constructor(
       private router: Router,
@@ -91,12 +91,13 @@ export class SearchComponent implements OnInit, AfterContentInit {
     this.tableData = {
       isTableHeader: false,
       tableSource: this.searchData,
-      isResultQuantity: true
+      isResultQuantity: true,
+      isClickableRow: true
     };
   }
 
   public onSelectDataset(dataset: any): void {
-    this.router.navigate([`dataset-view/${dataset.id}`]);
+    this.router.navigate(['/dataset-view'], {queryParams: {id: dataset.id}});
   }
 
 

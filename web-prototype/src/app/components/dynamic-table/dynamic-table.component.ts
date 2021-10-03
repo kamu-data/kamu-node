@@ -22,10 +22,11 @@ export class DynamicTableComponent implements OnInit, OnChanges, AfterContentIni
   @Input() public tableColumns?: any[];
   @Input() public tableSource: any[];
   @Input() public isResultQuantity?: boolean = false;
-
-  public dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
+  @Input() public resultUnitText: string;
+  @Input() public isClickableRow: boolean = false;
   @Output() public onSelectDatasetEmit: EventEmitter<string> = new EventEmitter();
 
+  public dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
   public displayedColumns: string[] = [];
 
   constructor() { }

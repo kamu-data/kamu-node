@@ -1,12 +1,5 @@
 <div class="app-main-container" role="main">
     <div class="app-content">
-        <div class="card">
-            <nav class="navbar navbar-expand">
-                <div class="navbar-nav">
-                    <h3>Additional info block</h3>
-                </div>
-            </nav>
-        </div>
         <div id="search">
             <div class="search-header-container-block"
                  [style]="'grid-template-columns: 1fr;'">
@@ -19,6 +12,8 @@
             <div class="search-result-container">
                 <div class="search-result-container__content">
                     <app-dynamic-table [isResultQuantity]="tableData.isResultQuantity"
+                                       [resultUnitText]="'dataset results'"
+                                       [isClickableRow]="tableData.isClickableRow"
                                        [isTableHeader]="tableData.isTableHeader" [tableSource]="tableData.tableSource"
                                        (onSelectDatasetEmit)="onSelectDataset($event)"></app-dynamic-table>
                 </div>

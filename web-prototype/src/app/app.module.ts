@@ -30,6 +30,7 @@ import {AccountComponent} from "./auth/account/account.component";
 import {DatasetModule} from "./dataset-view/dataset.module";
 import {AppDatasetService} from "./dataset-view/dataset.service";
 import {DatasetCreateModule} from "./dataset-create/dataset-create.module";
+import {AppHeaderComponent} from "./app-header/app-header.component";
 
 
 const Services = [
@@ -65,6 +66,7 @@ const MatModules = [
 @NgModule({
     declarations: [
         AppComponent,
+        AppHeaderComponent,
         LoginComponent,
         AccountComponent,
     ],
