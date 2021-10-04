@@ -3,10 +3,86 @@ use std::{convert::TryFrom, ops::Deref};
 use async_graphql::*;
 use opendatafabric as odf;
 
+///////////////////////////////////////////////////////////////////////////////
+// Page-based connection
+///////////////////////////////////////////////////////////////////////////////
+
+macro_rules! page_based_connection {
+    ($node_type:ident, $connection_type:ident, $edge_type:ident) => {
+        #[derive(SimpleObject)]
+        #[graphql(complex)]
+        pub(crate) struct $connection_type {
+            /// A shorthand for `edges { node { ... } }`
+            pub nodes: Vec<$node_type>,
+
+            /// Approximate number of total nodes
+            pub total_count: Option<usize>,
+
+            /// Page information
+            pub page_info: crate::gql::types::PageBasedInfo,
+        }
+
+        #[ComplexObject]
+        impl $connection_type {
+            #[graphql(skip)]
+            pub fn new(
+                nodes: Vec<$node_type>,
+                page: usize,
+                per_page: usize,
+                total_count: Option<usize>,
+            ) -> Self {
+                let (total_pages, has_next_page) = match total_count {
+                    None => (None, nodes.len() != per_page),
+                    Some(tc) => (
+                        Some(tc.div_ceil(per_page)),
+                        (tc.div_ceil(per_page) - 1) > page,
+                    ),
+                };
+
+                Self {
+                    nodes,
+                    total_count,
+                    page_info: crate::gql::types::PageBasedInfo {
+                        has_previous_page: page > 0,
+                        has_next_page,
+                        total_pages,
+                    },
+                }
+            }
+            async fn edges(&self) -> Vec<$edge_type> {
+                self.nodes
+                    .iter()
+                    .map(|node| $edge_type { node: node.clone() })
+                    .collect()
+            }
+        }
+
+        #[derive(SimpleObject)]
+        pub(crate) struct $edge_type {
+            pub node: $node_type,
+        }
+    };
+}
+
+pub(crate) use page_based_connection;
+
+#[derive(SimpleObject)]
+pub struct PageBasedInfo {
+    /// When paginating backwards, are there more items?
+    pub has_previous_page: bool,
+
+    /// When paginating forwards, are there more items?
+    pub has_next_page: bool,
+
+    /// Approximate number of total pages assuming number of nodes per page stays the same
+    pub total_pages: Option<usize>,
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////
 // SHA
 ////////////////////////////////////////////////////////////////////////////////////////
 
+#[derive(Debug, Clone)]
 pub(crate) struct Sha3_256(odf::Sha3_256);
 
 impl From<odf::Sha3_256> for Sha3_256 {
@@ -81,6 +157,54 @@ impl ScalarType for DatasetID {
     fn parse(value: Value) -> InputValueResult<Self> {
         if let Value::String(value) = &value {
             let val = odf::DatasetIDBuf::try_from(value.as_str())?;
+            Ok(val.into())
+        } else {
+            Err(InputValueError::expected_type(value))
+        }
+    }
+
+    fn to_value(&self) -> Value {
+        Value::String(self.0.to_string())
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// AccountID
+/////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct AccountID(odf::UsernameBuf);
+
+impl From<odf::UsernameBuf> for AccountID {
+    fn from(value: odf::UsernameBuf) -> Self {
+        AccountID(value)
+    }
+}
+
+impl Into<odf::UsernameBuf> for AccountID {
+    fn into(self) -> odf::UsernameBuf {
+        self.0
+    }
+}
+
+impl Into<String> for AccountID {
+    fn into(self) -> String {
+        self.0.into()
+    }
+}
+
+impl Deref for AccountID {
+    type Target = odf::Username;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[Scalar]
+impl ScalarType for AccountID {
+    fn parse(value: Value) -> InputValueResult<Self> {
+        if let Value::String(value) = &value {
+            let val = odf::UsernameBuf::try_from(value.as_str())?;
             Ok(val.into())
         } else {
             Err(InputValueError::expected_type(value))

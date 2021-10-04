@@ -1,17 +1,16 @@
-use async_graphql::connection::*;
 use async_graphql::*;
 use chrono::prelude::*;
 use kamu::domain;
 use opendatafabric as odf;
 
 use super::utils::from_catalog;
-use super::{DatasetID, Sha3_256};
+use super::{page_based_connection, DatasetID, Sha3_256};
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // MetadataBlock
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Debug, Clone)]
 pub(crate) struct MetadataBlock {
     block_hash: Sha3_256,
     prev_block_hash: Option<Sha3_256>,
@@ -85,34 +84,35 @@ impl MetadataChain {
     }
 
     // TODO: Add ref parameter (defaulting to "head")
-    /// Iterates all metadata blocks starting from the latest one
+    // TODO: Support before/after style iteration
+    /// Iterates all metadata blocks in the reverse chronological order
     async fn blocks(
         &self,
         ctx: &Context<'_>,
-        after: Option<String>,
-        before: Option<String>,
-        first: Option<i32>,
-        last: Option<i32>,
-    ) -> Result<Connection<String, MetadataBlock>> {
-        query(
-            after,
-            before,
-            first,
-            last,
-            |_after, _before, _first, _last| async move {
-                let mut connection = Connection::new(false, false);
+        page: Option<usize>,
+        #[graphql(default = 20)] per_page: usize,
+    ) -> Result<MetadataBlockConnection> {
+        let chain = self.get_chain(ctx)?;
 
-                let chain = self.get_chain(ctx)?;
+        let page = page.unwrap_or(0);
 
-                connection.append(
-                    chain
-                        .iter_blocks()
-                        .map(|b| Edge::new(b.block_hash.to_string(), b.into())),
-                );
+        let nodes: Vec<_> = chain
+            .iter_blocks()
+            .skip(page * per_page)
+            .take(per_page)
+            .map(|block| block.into())
+            .collect();
 
-                Ok(connection)
-            },
-        )
-        .await
+        // TODO: Slow but temporary
+        let total_count = chain.iter_blocks().count();
+
+        Ok(MetadataBlockConnection::new(
+            nodes,
+            page,
+            per_page,
+            Some(total_count),
+        ))
     }
 }
+
+page_based_connection!(MetadataBlock, MetadataBlockConnection, MetadataBlockEdge);

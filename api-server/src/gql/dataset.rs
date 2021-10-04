@@ -5,7 +5,7 @@ use kamu::infra;
 
 use super::*;
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Debug, Clone)]
 #[graphql(complex)]
 pub(crate) struct Dataset {
     dataset_id: DatasetID,

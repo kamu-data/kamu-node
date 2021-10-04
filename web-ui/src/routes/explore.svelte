@@ -20,15 +20,12 @@
 					query search($query: String) {
 						search {
 							query(query: $query) {
-								edges {
-									node {
-										__typename
-										... on Dataset {
-											id
-											kind
-											createdAt
-											lastUpdatedAt
-										}
+								nodes {
+									... on Dataset {
+										id
+										kind
+										createdAt
+										lastUpdatedAt
 									}
 								}
 							}
@@ -40,9 +37,7 @@
 				}
 			})
 			.then((result) => {
-				datasets = result.data.search.query.edges.map((edge) => {
-					return edge.node;
-				});
+				datasets = result.data.search.query.nodes;
 				if (dirty) {
 					dirty = false;
 					search(search_query);

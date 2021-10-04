@@ -1,3 +1,4 @@
+scalar AccountID
 type BlockRef {
 	name: String!
 	blockHash: Sha3256!
@@ -46,13 +47,18 @@ type Dataset {
 }
 type DatasetConnection {
 	"""
-	Information to aid in pagination.
+	A shorthand for `edges { node { ... } }`
 	"""
-	pageInfo: PageInfo!
+	nodes: [Dataset!]!
 	"""
-	A list of edges.
+	Approximate number of total nodes
 	"""
-	edges: [DatasetEdge]
+	totalCount: Int
+	"""
+	Page information
+	"""
+	pageInfo: PageBasedInfo!
+	edges: [DatasetEdge!]!
 }
 type DatasetData {
 	datasetId: DatasetID!
@@ -70,18 +76,8 @@ type DatasetData {
 	"""
 	tail(numRecords: Int, format: DataSliceFormat): DataSlice!
 }
-"""
-An edge in a connection.
-"""
 type DatasetEdge {
-	"""
-	The item at the end of the edge
-	"""
 	node: Dataset!
-	"""
-	A cursor for use in pagination
-	"""
-	cursor: String!
 }
 scalar DatasetID
 enum DatasetKind {
@@ -113,9 +109,9 @@ type Datasets {
 	"""
 	byId(id: DatasetID!): Dataset
 	"""
-	Iterates all datasets
+	Returns datasets belonging to the specified account
 	"""
-	all(after: String, before: String, first: Int, last: Int): DatasetConnection!
+	byAccount(id: AccountID!, page: Int, perPage: Int! = 15): DatasetConnection!
 }
 """
 Implement the DateTime<Utc> scalar
@@ -131,26 +127,21 @@ type MetadataBlock {
 }
 type MetadataBlockConnection {
 	"""
-	Information to aid in pagination.
+	A shorthand for `edges { node { ... } }`
 	"""
-	pageInfo: PageInfo!
+	nodes: [MetadataBlock!]!
 	"""
-	A list of edges.
+	Approximate number of total nodes
 	"""
-	edges: [MetadataBlockEdge]
+	totalCount: Int
+	"""
+	Page information
+	"""
+	pageInfo: PageBasedInfo!
+	edges: [MetadataBlockEdge!]!
 }
-"""
-An edge in a connection.
-"""
 type MetadataBlockEdge {
-	"""
-	The item at the end of the edge
-	"""
 	node: MetadataBlock!
-	"""
-	A cursor for use in pagination
-	"""
-	cursor: String!
 }
 type MetadataChain {
 	"""
@@ -162,14 +153,11 @@ type MetadataChain {
 	"""
 	blockByHash(hash: Sha3256!): MetadataBlock
 	"""
-	Iterates all metadata blocks starting from the latest one
+	Iterates all metadata blocks in the reverse chronological order
 	"""
-	blocks(after: String, before: String, first: Int, last: Int): MetadataBlockConnection!
+	blocks(page: Int, perPage: Int! = 20): MetadataBlockConnection!
 }
-"""
-Information about pagination in a connection
-"""
-type PageInfo {
+type PageBasedInfo {
 	"""
 	When paginating backwards, are there more items?
 	"""
@@ -179,13 +167,9 @@ type PageInfo {
 	"""
 	hasNextPage: Boolean!
 	"""
-	When paginating backwards, the cursor to continue.
+	Approximate number of total pages assuming number of nodes per page stays the same
 	"""
-	startCursor: String
-	"""
-	When paginating forwards, the cursor to continue.
-	"""
-	endCursor: String
+	totalPages: Int
 }
 type Query {
 	"""
@@ -205,31 +189,26 @@ type Search {
 	"""
 	Perform search across all resources
 	"""
-	query(after: String, before: String, first: Int, last: Int, query: String!): SearchQueryResultConnection!
+	query(query: String!, page: Int, perPage: Int! = 15): SearchResultConnection!
 }
-union SearchQueryResult = | Dataset
-type SearchQueryResultConnection {
+union SearchResult = | Dataset
+type SearchResultConnection {
 	"""
-	Information to aid in pagination.
+	A shorthand for `edges { node { ... } }`
 	"""
-	pageInfo: PageInfo!
+	nodes: [SearchResult!]!
 	"""
-	A list of edges.
+	Approximate number of total nodes
 	"""
-	edges: [SearchQueryResultEdge]
+	totalCount: Int
+	"""
+	Page information
+	"""
+	pageInfo: PageBasedInfo!
+	edges: [SearchResultEdge!]!
 }
-"""
-An edge in a connection.
-"""
-type SearchQueryResultEdge {
-	"""
-	The item at the end of the edge
-	"""
-	node: SearchQueryResult!
-	"""
-	A cursor for use in pagination
-	"""
-	cursor: String!
+type SearchResultEdge {
+	node: SearchResult!
 }
 scalar Sha3256
 schema {

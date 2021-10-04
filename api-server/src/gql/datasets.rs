@@ -1,8 +1,9 @@
-use async_graphql::connection::*;
 use async_graphql::*;
 use kamu::domain;
 
 use super::*;
+
+///////////////////////////////////////////////////////////////////////////////
 
 pub(crate) struct Datasets;
 
@@ -19,36 +20,39 @@ impl Datasets {
         }
     }
 
-    // TODO: Should be per-account
-    /// Iterates all datasets
-    async fn all(
+    // TODO: Multitenancy
+    /// Returns datasets belonging to the specified account
+    async fn by_account(
         &self,
         ctx: &Context<'_>,
-        after: Option<String>,
-        before: Option<String>,
-        first: Option<i32>,
-        last: Option<i32>,
-    ) -> Result<Connection<String, Dataset>> {
+        _id: AccountID,
+        page: Option<usize>,
+        #[graphql(default = 15)] per_page: usize,
+    ) -> Result<DatasetConnection> {
         let cat = ctx.data::<dill::Catalog>().unwrap();
         let metadata_repo = cat.get_one::<dyn domain::MetadataRepository>().unwrap();
-        query(
-            after,
-            before,
-            first,
-            last,
-            |_after, _before, _first, _last| async move {
-                let mut connection = Connection::new(false, false);
 
-                // TODO: proper iteration
-                connection.append(
-                    metadata_repo
-                        .get_all_datasets()
-                        .map(|id| Edge::new(id.to_string(), Dataset::new(id.into()))),
-                );
+        let page = page.unwrap_or(0);
 
-                Ok(connection)
-            },
-        )
-        .await
+        let nodes: Vec<_> = metadata_repo
+            .get_all_datasets()
+            .skip(page * per_page)
+            .take(per_page)
+            .map(|id| Dataset::new(id.into()))
+            .collect();
+
+        // TODO: Slow but temporary
+        let total_count = metadata_repo.get_all_datasets().count();
+
+        Ok(DatasetConnection::new(
+            nodes,
+            page,
+            per_page,
+            Some(total_count),
+        ))
     }
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+page_based_connection!(Dataset, DatasetConnection, DatasetEdge);

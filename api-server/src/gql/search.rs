@@ -1,12 +1,11 @@
-use async_graphql::connection::*;
 use async_graphql::*;
 use kamu::domain;
 
-use super::Dataset;
+use super::{page_based_connection, Dataset};
 
-////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // Search
-////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 pub(crate) struct Search;
 
@@ -16,50 +15,45 @@ impl Search {
     async fn query(
         &self,
         ctx: &Context<'_>,
-        after: Option<String>,
-        before: Option<String>,
-        first: Option<i32>,
-        last: Option<i32>,
         query: String,
-    ) -> Result<Connection<String, SearchQueryResult>> {
+        page: Option<usize>,
+        #[graphql(default = 15)] per_page: usize,
+    ) -> Result<SearchResultConnection> {
         let cat = ctx.data::<dill::Catalog>().unwrap();
         let metadata_repo = cat.get_one::<dyn domain::MetadataRepository>().unwrap();
-        async_graphql::connection::query(
-            after,
-            before,
-            first,
-            last,
-            |_after, _before, _first, _last| async move {
-                let mut connection = Connection::new(false, false);
 
-                // TODO: proper iteration
-                connection.append(
-                    metadata_repo
-                        .get_all_datasets()
-                        .filter(|id| id.contains(&query))
-                        .map(|id| {
-                            Edge::new(
-                                id.to_string(),
-                                SearchQueryResult::Dataset(Dataset::new(id.into())),
-                            )
-                        }),
-                );
+        let page = page.unwrap_or(0);
 
-                Ok(connection)
-            },
-        )
-        .await
+        let nodes: Vec<_> = metadata_repo
+            .get_all_datasets()
+            .filter(|id| id.contains(&query))
+            .skip(page * per_page)
+            .take(per_page)
+            .map(|id| SearchResult::Dataset(Dataset::new(id.into())))
+            .collect();
+
+        // TODO: Slow but temporary
+        let total_count = metadata_repo.get_all_datasets().count();
+
+        Ok(SearchResultConnection::new(
+            nodes,
+            page,
+            per_page,
+            Some(total_count),
+        ))
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////
-// SearchQueryResult
-////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-#[derive(Union)]
-pub(crate) enum SearchQueryResult {
+#[derive(Union, Debug, Clone)]
+pub(crate) enum SearchResult {
     Dataset(Dataset),
-    // Account
-    // Organization
-    // Issue
+    // Account,
+    // Organization,
+    // Issue,
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+page_based_connection!(SearchResult, SearchResultConnection, SearchResultEdge);

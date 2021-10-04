@@ -78,14 +78,16 @@ Working with unions in search results:
 ```gql
 {
   search {
-    query(query: "foo") {
-      edges {
-        node {
-          __typename
-          ... on Dataset {
-            id
-          }
+    query(query: "", type: DATASET, perPage: 10, page: 0) {
+      nodes {
+        ... on Dataset {
+          id
         }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        totalPages
       }
     }
   }
