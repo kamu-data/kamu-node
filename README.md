@@ -78,7 +78,8 @@ Working with unions in search results:
 ```gql
 {
   search {
-    query(query: "", type: DATASET, perPage: 10, page: 0) {
+    query(query: "", perPage: 10, page: 0) {
+      totalCount
       nodes {
         ... on Dataset {
           id
