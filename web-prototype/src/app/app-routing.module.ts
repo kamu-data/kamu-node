@@ -5,25 +5,26 @@ import {LoginComponent} from "./auth/login/login.component";
 import {DatasetComponent} from "./dataset-view/dataset.component";
 import {DatasetCreateComponent} from "./dataset-create/dataset-create.component";
 import {AccountComponent} from "./auth/account/account.component";
+import AppValues from "./common/app.values";
 
 const routes: Routes = [
-    {path: '', redirectTo: 'search', pathMatch: 'full'},
-    {path: 'search', component: SearchComponent},
-    {path: 'login', component: LoginComponent},
-    {path: 'profile', component: AccountComponent},
+    {path: '', redirectTo: AppValues.urlSearch, pathMatch: 'full'},
+    {path: AppValues.urlSearch, component: SearchComponent},
+    {path: AppValues.urlLogin, component: LoginComponent},
+    {path: AppValues.urlProfile, component: AccountComponent},
     {
-        path: 'dataset-view',
+        path: AppValues.urlDatasetView,
         component: DatasetComponent,
         children: [
             {path: ':id', component: DatasetComponent}
         ]
     },
     {
-        path: 'dataset-create',
+        path: AppValues.urlDatasetCreate,
         component: DatasetCreateComponent,
         children: [
-            {path: '', redirectTo: 'select-type', pathMatch: 'full'},
-            {path: 'root', component: DatasetCreateComponent}
+            {path: '', redirectTo: AppValues.urlDatasetCreateSelectType, pathMatch: 'full'},
+            {path: AppValues.urlDatasetCreateRoot, component: DatasetCreateComponent}
         ]
     }
 ];

@@ -166,9 +166,7 @@ export class SearchApi {
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
-                    debugger
                     return result.data.datasets.byId.metadata.chain.blocks.edges.map((edge: any) => {
-                        debugger
                         return this.clearlyData(edge);
                     });
                 }

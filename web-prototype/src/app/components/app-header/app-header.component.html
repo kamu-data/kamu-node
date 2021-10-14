@@ -1,52 +1,67 @@
+<nav *ngIf="isVisible" class="navbar navbar-expand-lg navbar-dark bg-dark" id="app-header">
+    <button #appHeaderMenuButton id="appHeaderMenuButton" class="navbar-toggler"
+            type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
+    <div [classList]="'app-brand'" id="appHeaderLogo">
+        <a href="/search" data-test-id="appLogo"><img [src]="appLogo" alt="Application logo"/></a>
+    </div>
 
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <div class="input-group flex-nowrap flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 js-jump-to"
+                     id="searchInput">
+                    <input type="text" data-test-id="searchInput" class="form-control"
+                           placeholder="Search" [(ngModel)]="searchValue"
+                           aria-label="Search" aria-describedby="addon-wrapping"
+                           (keyup.enter)="onSearch($event, searchValue)" (blur)="onSearch($event, searchValue)">
+                </div>
+            </li>
+            <!--                <li class="nav-item">-->
+            <!--                    <a class="nav-link py-2 border-md-0 border-top border-md-top-0 border-white-fade" href="#">Home <span class="sr-only">(current)</span></a>-->
+            <!--                </li>-->
+            <!--                <li class="nav-item">-->
+            <!--                    <a class="nav-link py-2 border-md-0 border-top border-md-top-0 border-white-fade" href="#">Features</a>-->
+            <!--                </li>-->
+            <!--                <li class="nav-item">-->
+            <!--                    <a class="nav-link py-2 border-md-0 border-top border-md-top-0 border-white-fade" href="#">Pricing</a>-->
+            <!--                </li>-->
+            <!--                <li class="nav-item">-->
+            <!--                    <a class="nav-link py-2 border-md-0 border-top border-md-top-0 border-white-fade" href="#">Pricing</a>-->
+            <!--                </li>-->
+        </ul>
+    </div>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="app-header">
-        <button #appHeaderMenuButton id="appHeaderMenuButton" class="navbar-toggler"
-                type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
-                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+    <div id="appHeaderAdditionalBlock" class="app-header__right-column">
+        <button class="app-header__right-column__addnew-block" (click)="onAddNew()" data-test-id="addNewBlock">
+            <span><i class="bi bi-plus-circle"></i></span>
+            <span class="app-header__right-column__label">New</span>
         </button>
-
-        <div [classList]="'app-brand'" id="appHeaderLogo">
-            <a href="/search" data-test-id="appLogo"><img [src]="appLogo" alt="Application logo"/></a>
-        </div>
-
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <div class="input-group flex-nowrap flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 js-jump-to"
-                         id="searchInput">
-                        <input type="text" data-test-id="searchInput" class="form-control"
-                               placeholder="Search" [(ngModel)]="searchValue"
-                               aria-label="Search" aria-describedby="addon-wrapping"
-                               (keyup.enter)="onSearch($event, searchValue)" (blur)="onSearch($event, searchValue)">
-                    </div>
-                </li>
-<!--                <li class="nav-item">-->
-<!--                    <a class="nav-link py-2 border-md-0 border-top border-md-top-0 border-white-fade" href="#">Home <span class="sr-only">(current)</span></a>-->
-<!--                </li>-->
-<!--                <li class="nav-item">-->
-<!--                    <a class="nav-link py-2 border-md-0 border-top border-md-top-0 border-white-fade" href="#">Features</a>-->
-<!--                </li>-->
-<!--                <li class="nav-item">-->
-<!--                    <a class="nav-link py-2 border-md-0 border-top border-md-top-0 border-white-fade" href="#">Pricing</a>-->
-<!--                </li>-->
-<!--                <li class="nav-item">-->
-<!--                    <a class="nav-link py-2 border-md-0 border-top border-md-top-0 border-white-fade" href="#">Pricing</a>-->
-<!--                </li>-->
-            </ul>
-        </div>
-
-        <div id="appHeaderAdditionalBlock" class="app-header__right-column">
-            <div class="app-header__right-column__addnew-block" (click)="onAddNew()" data-test-id="addNewBlock">
-                <span><i class="bi bi-plus-circle"></i></span>
-                <span class="app-header__right-column__label">New</span>
-            </div>
+        <button class="button-round" mat-button [matMenuTriggerFor]="menu">
             <div class="img-container-round">
                 <img src="../../../assets/icons/user_icon.png" (click)="onOpenUserInfo()" alt="User icon"
                      data-test-id="openUserInfo">
             </div>
-        </div>
+        </button>
+        <mat-menu #menu="matMenu">
+            <p id="matmenu-signed-in-name">Signed in as <strong>Anonymous</strong></p>
+            <div role="none" class="dropdown-divider"></div>
 
-    </nav>
+            <button mat-menu-item>Your profile</button>
+            <button mat-menu-item>Your datasets</button>
+
+            <div role="none" class="dropdown-divider"></div>
+            <button mat-menu-item>Account & Billing</button>
+            <button mat-menu-item>Analytics</button>
+            <button mat-menu-item>Settings</button>
+            <button mat-menu-item>Help</button>
+
+            <div role="none" class="dropdown-divider"></div>
+            <button mat-menu-item>Sign out</button>
+        </mat-menu>
+    </div>
+
+</nav>

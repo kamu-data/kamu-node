@@ -8,6 +8,7 @@ export class AppHeaderComponent {
     @Input() public searchValue: string;
     @Input() public appLogo: string;
     @Input() public isMobileView: boolean;
+    @Input() public isVisible: boolean;
 
     @Output() public onInputSearch: EventEmitter<string> = new EventEmitter();
     @Output() public addNew: EventEmitter<null> = new EventEmitter();

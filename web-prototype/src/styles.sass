@@ -103,10 +103,39 @@ router-outlet
   margin-right: 5%
   display: flex
   justify-content: space-around
+  background: none
+  border: none
   > span:first-child
     margin-right: 10px
 .app-header__right-column__label
   display: block
+#appHeaderAdditionalBlock .button-round
+  width: 56px
+  height: 50px
+  min-width: 56px
+  border-radius: 35px
+  overflow: hidden
+  display: block
+  padding: 0
+#matmenu-signed-in-name
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
+  display: block
+  line-height: 48px
+  height: 48px
+  padding: 0 16px
+  text-align: left
+  text-decoration: none
+  max-width: 100%
+  position: relative
+  font-family: Roboto, "Helvetica Neue", sans-serif
+  font-size: 14px
+  font-weight: 400
+  & *
+    font-family: Roboto, "Helvetica Neue", sans-serif
+    font-size: 14px
+    font-weight: 600
 .img-container-round
   width: 56px
   height: 50px
