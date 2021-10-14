@@ -1,0 +1,46 @@
+@import src/assets/styles/var
+*
+  font-size: 18px
+#dataset-create
+  display: grid
+.dataset-create-content
+  display: grid
+  padding: 0 16px
+  flex-direction: row
+  width: 70%
+  grid-template-columns: 1fr 1fr
+  grid-gap: 24px
+  > *
+    display: grid
+    justify-items: center
+    overflow: initial
+.dataset-create-container
+  height: min-content
+  display: grid
+  justify-content: center
+  justify-items: center
+  align-items: center
+  align-self: center
+  align-content: center
+  width: 100%
+.dataset-create-tipText
+  font-style: normal
+  font-weight: normal
+  font-size: 14px
+  line-height: 18px
+  text-align: center
+  letter-spacing: 0.7px
+  color: $app-emperor
+
+.dataset-create-content__image-container
+  position: relative
+  >:last-child
+    position: absolute
+    top: 0
+    left: 28%
+    height: 100%
+
+@media (max-width: 768px)
+  .dataset-create-content
+    grid-template-columns: 1fr
+    width: 100%
