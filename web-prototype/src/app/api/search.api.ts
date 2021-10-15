@@ -35,7 +35,7 @@ export class SearchApi {
         const GET_DATA: DocumentNode = gql`
   {
   search {
-    query(query: "${searchQuery}", perPage: 1, page: ${(page-1).toString()}) {
+    query(query: "${searchQuery}", perPage: 2, page: ${(page-1).toString()}) {
       edges {
         node {
           __typename
