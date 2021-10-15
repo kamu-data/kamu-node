@@ -67,6 +67,7 @@ export class SearchApi {
                 let dataset: SearchOverviewDatasetsInterface[] = [];
                 let pageInfo: PageInfoInterface = SearchApi.pageInfoInit();
                 let totalCount: number = 0;
+                let currentPage: number = 1;
 
                 if (result.data) {
                     dataset = result.data.search.query.edges.map((edge: any) => {
@@ -74,16 +75,18 @@ export class SearchApi {
                     })
                     pageInfo = result.data.search.query.pageInfo;
                     totalCount = result.data.search.query.totalCount;
+                    currentPage = page;
                 }
 
-                return SearchApi.searchOverviewData(dataset, pageInfo, totalCount);
+                return SearchApi.searchOverviewData(dataset, pageInfo, totalCount, currentPage);
             }));
     }
-    private static searchOverviewData(dataset: SearchOverviewDatasetsInterface[], pageInfo: PageInfoInterface, totalCount: number): SearchOverviewInterface {
+    private static searchOverviewData(dataset: SearchOverviewDatasetsInterface[], pageInfo: PageInfoInterface, totalCount: number, currentPage: number): SearchOverviewInterface {
         return {
             dataset: dataset,
             pageInfo: pageInfo,
-            totalCount: totalCount
+            totalCount: totalCount,
+            currentPage: currentPage
         };
     }
     private static pageInfoInit(): PageInfoInterface {

@@ -35,7 +35,8 @@ export interface SearchOverviewDatasetsInterface {
 export interface SearchOverviewInterface {
     dataset: SearchOverviewDatasetsInterface[],
     totalCount: number,
-    pageInfo: PageInfoInterface
+    pageInfo: PageInfoInterface,
+    currentPage: number
 }
 export interface PageInfoInterface {
     hasNextPage: boolean,

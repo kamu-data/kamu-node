@@ -13,10 +13,9 @@ import {PageInfoInterface} from "../../interface/search.interface";
   styleUrls: ['./pagination-component.sass']
 })
 export class PaginationComponent implements OnInit {
-  @Input() public pageInfo: PageInfoInterface;
+  @Input()  public currentPage: number = 1;
+  @Input()  public pageInfo: PageInfoInterface;
   @Output() public pageChangeEvent: EventEmitter<number> = new EventEmitter();
-  public currentPage: number = 1;
-
 
   constructor() { }
   public ngOnInit(): void {

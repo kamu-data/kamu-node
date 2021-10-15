@@ -26,6 +26,7 @@ export class SearchComponent implements OnInit, AfterContentInit {
   @ViewChild('sidenav', {static: true}) public sidenav?: MatSidenav;
   public isMobileView: boolean = false;
   public searchValue: string = '';
+  public currentPage: number = 1;
   public isMinimizeSearchAdditionalButtons: boolean = false;
   public searchAdditionalButtonsData: SearchAdditionalButtonInterface[] = [{
     textButton: searchAdditionalButtonsEnum.Descission
@@ -90,6 +91,7 @@ export class SearchComponent implements OnInit, AfterContentInit {
       this.tableData.tableSource = data.dataset;
       this.tableData.pageInfo = data.pageInfo;
       this.tableData.totalCount = data.totalCount;
+      this.currentPage = data.currentPage;
     });
   }
 
@@ -109,6 +111,7 @@ export class SearchComponent implements OnInit, AfterContentInit {
   }
 
   public onPageChange(currentPage: number): void {
+    this.currentPage = currentPage;
     this.onSearch(this.searchValue, currentPage)
   }
 
@@ -141,8 +144,8 @@ export class SearchComponent implements OnInit, AfterContentInit {
   private onClickDescission() {
   }
 
-  public onSearch(searchValue: string, page: number = 1): void {
-    this.appSearchService.search(searchValue, page);
+  public onSearch(searchValue: string, page?: number): void {
+    this.appSearchService.search(searchValue, page || this.currentPage);
   }
 
 }

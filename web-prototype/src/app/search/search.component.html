@@ -18,7 +18,7 @@
                                    [isClickableRow]="tableData.isClickableRow"
                                    (onSelectDatasetEmit)="onSelectDataset($event)"></app-repo-list>
 
-                    <app-pagination [pageInfo]="tableData.pageInfo" (pageChangeEvent)="onPageChange($event)"></app-pagination>
+                    <app-pagination [currentPage]="currentPage" [pageInfo]="tableData.pageInfo" (pageChangeEvent)="onPageChange($event)"></app-pagination>
                 </div>
 
                 <div class="card">
