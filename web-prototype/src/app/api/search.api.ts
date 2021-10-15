@@ -4,8 +4,9 @@ import {map} from "rxjs/operators";
 import {ApolloQueryResult, DocumentNode, gql} from "@apollo/client/core";
 import {Observable} from "rxjs";
 import {
+    PageInfoInterface,
     SearchHistoryInterface,
-    SearchOverviewInterface,
+    SearchOverviewDatasetsInterface, SearchOverviewInterface,
 } from "../interface/search.interface";
 
 @Injectable()
@@ -30,11 +31,11 @@ export class SearchApi {
                 }
             }));
     }
-    public searchOverview(searchQuery: string): Observable<SearchOverviewInterface[]> {
+    public searchOverview(searchQuery: string): Observable<SearchOverviewInterface> {
         const GET_DATA: DocumentNode = gql`
   {
   search {
-    query(query: "${searchQuery}") {
+    query(query: "${searchQuery}", perPage: 10, page: 0) {
       edges {
         node {
           __typename
@@ -48,6 +49,12 @@ export class SearchApi {
         }
         __typename
       }
+      totalCount
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        totalPages
+      }
       __typename
     }
     __typename
@@ -57,12 +64,34 @@ export class SearchApi {
 
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: any) => {
+                let dataset: SearchOverviewDatasetsInterface[] = [];
+                let pageInfo: PageInfoInterface = SearchApi.pageInfoInit();
+                let totalCount: number = 0;
+
                 if (result.data) {
-                    return result.data.search.query.edges.map((edge: any) => {
+                    dataset = result.data.search.query.edges.map((edge: any) => {
                         return this.clearlyData(edge);
                     })
+                    pageInfo = result.data.search.query.pageInfo;
+                    totalCount = result.data.search.query.totalCount;
                 }
+
+                return SearchApi.searchOverviewData(dataset, pageInfo, totalCount);
             }));
+    }
+    private static searchOverviewData(dataset: SearchOverviewDatasetsInterface[], pageInfo: PageInfoInterface, totalCount: number): SearchOverviewInterface {
+        return {
+            dataset: dataset,
+            pageInfo: pageInfo,
+            totalCount: totalCount
+        };
+    }
+    private static pageInfoInit(): PageInfoInterface {
+        return {
+            hasNextPage: false,
+            hasPreviousPage: false,
+            totalPages: 0
+        }
     }
 
     public searchLinageDataset(id: string): Observable<any> {

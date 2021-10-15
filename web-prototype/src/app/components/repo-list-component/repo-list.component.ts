@@ -5,7 +5,7 @@ import {
   OnInit,
   Output
 } from "@angular/core";
-import {SearchOverviewInterface} from "../../interface/search.interface";
+import {SearchOverviewDatasetsInterface} from "../../interface/search.interface";
 import AppValues from "../../common/app.values";
 import * as moment from 'moment-timezone';
 import {Moment} from "moment-timezone";
@@ -15,7 +15,8 @@ import {Moment} from "moment-timezone";
   styleUrls: ['./repo-list.sass']
 })
 export class RepoListComponent implements OnInit {
-  @Input() public dataSource: SearchOverviewInterface[];
+  @Input() public dataSource: SearchOverviewDatasetsInterface[];
+  @Input() public totalCount: number = 0;
   @Input() public resultUnitText: string;
   @Input() public isResultQuantity?: boolean = false;
   @Input() public isClickableRow?: boolean = false;
@@ -31,7 +32,7 @@ export class RepoListComponent implements OnInit {
     this.onSelectDatasetEmit.emit(id);
   }
 
-  public searchResultQuantity(dataSource: SearchOverviewInterface[] = []): string {
+  public searchResultQuantity(dataSource: SearchOverviewDatasetsInterface[] = []): string {
       if(!Array.isArray(dataSource)) {
         return '0';
       }

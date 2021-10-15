@@ -26,9 +26,19 @@ export interface SearchHistoryInterface {
     system_time: string;
     total_daily: number;
 }
-export interface SearchOverviewInterface {
+export interface SearchOverviewDatasetsInterface {
     createdAt: string;
     id: string;
     kind: string;
     lastUpdatedAt: string;
+}
+export interface SearchOverviewInterface {
+    dataset: SearchOverviewDatasetsInterface[],
+    totalCount: number,
+    pageInfo: PageInfoInterface
+}
+export interface PageInfoInterface {
+    hasNextPage: boolean,
+    hasPreviousPage: boolean,
+    totalPages: number
 }

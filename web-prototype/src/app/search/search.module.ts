@@ -6,6 +6,7 @@ import {FormsModule} from "@angular/forms";
 import {DynamicTableModule} from "../components/dynamic-table/dynamic-table.module";
 import {MatChipsModule} from "@angular/material/chips";
 import {RepoListModule} from "../components/repo-list-component/repo-list.module";
+import {PaginationModule} from "../components/pagination-component/pagination.module";
 
 @NgModule({
     imports: [
@@ -13,6 +14,7 @@ import {RepoListModule} from "../components/repo-list-component/repo-list.module
         SearchAdditionalButtonsModule,
         FormsModule,
         DynamicTableModule,
+        PaginationModule,
         MatChipsModule,
         RepoListModule
     ],

@@ -1,0 +1,29 @@
+@import src/assets/styles/var
+.paginate-container
+  margin-top: 16px
+  margin-bottom: 16px
+  text-align: center
+  display: grid
+  justify-content: center
+
+ngb-pagination ::ng-deep .page-item .page-link
+  border: none !important
+  display: flex
+  justify-content: center
+  align-items: center
+.page_button
+  display: inline-block
+  width: 16px
+  height: 16px
+  content: ""
+  background-color: currentColor
+
+.previous_page
+  margin-right: 4px
+  clip-path: polygon(9.8px 12.8px, 8.7px 12.8px, 4.5px 8.5px, 4.5px 7.5px, 8.7px 3.2px, 9.8px 4.3px, 6.1px 8px, 9.8px 11.7px, 9.8px 12.8px)
+  @extend .page_button
+
+.next_page
+  margin-left: 4px
+  clip-path: polygon(6.2px 3.2px, 7.3px 3.2px, 11.5px 7.5px, 11.5px 8.5px, 7.3px 12.8px, 6.2px 11.7px, 9.9px 8px, 6.2px 4.3px, 6.2px 3.2px)
+  @extend .page_button

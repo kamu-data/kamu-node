@@ -1,7 +1,12 @@
 import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {AppSearchService} from "./search.service";
-import {SearchHistoryInterface, SearchOverviewInterface} from "../interface/search.interface";
+import {
+  PageInfoInterface,
+  SearchHistoryInterface,
+  SearchOverviewDatasetsInterface,
+  SearchOverviewInterface
+} from "../interface/search.interface";
 import AppValues from "../common/app.values";
 import {searchAdditionalButtonsEnum} from "./search.interface";
 import {SearchAdditionalButtonInterface} from "../components/search-additional-buttons/search-additional-buttons.interface";
@@ -37,12 +42,14 @@ export class SearchComponent implements OnInit, AfterContentInit {
   }];
 
   public tableData: {
-    tableSource: SearchOverviewInterface[],
+    tableSource: SearchOverviewDatasetsInterface[],
     isResultQuantity: boolean,
     resultUnitText: string,
-    isClickableRow: boolean
+    isClickableRow: boolean,
+    pageInfo: PageInfoInterface,
+    totalCount: number
   };
-  public searchData: SearchOverviewInterface[] = [];
+  public searchData: SearchOverviewDatasetsInterface[] = [];
 
   @HostListener('window:resize', ['$event'])
   private checkWindowSize(): void {
@@ -79,8 +86,10 @@ export class SearchComponent implements OnInit, AfterContentInit {
       this.searchValue = value;
     })
 
-    this.appSearchService.onSearchDataChanges.subscribe((data: any[]) => {
-      this.tableData.tableSource = data;
+    this.appSearchService.onSearchDataChanges.subscribe((data: SearchOverviewInterface) => {
+      this.tableData.tableSource = data.dataset;
+      this.tableData.pageInfo = data.pageInfo;
+      this.tableData.totalCount = data.totalCount;
     });
   }
 
@@ -89,7 +98,13 @@ export class SearchComponent implements OnInit, AfterContentInit {
       tableSource: this.searchData,
       resultUnitText: 'dataset results',
       isResultQuantity: true,
-      isClickableRow: true
+      isClickableRow: true,
+      pageInfo: {
+        hasNextPage: false,
+        hasPreviousPage: false,
+        totalPages: 1
+      },
+      totalCount: 0
     };
   }
 

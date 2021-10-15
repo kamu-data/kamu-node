@@ -13,9 +13,12 @@
                 <div class="search-result-container__content">
                     <app-repo-list [dataSource]="tableData.tableSource"
                                    [resultUnitText]="tableData.resultUnitText"
+                                   [totalCount]="tableData.totalCount"
                                    [isResultQuantity]="tableData.isResultQuantity"
                                    [isClickableRow]="tableData.isClickableRow"
                                    (onSelectDatasetEmit)="onSelectDataset($event)"></app-repo-list>
+
+                    <app-pagination></app-pagination>
                 </div>
 
                 <div class="card">

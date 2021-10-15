@@ -1,7 +1,11 @@
 import {Injectable} from "@angular/core";
 import {Observable, Subject} from "rxjs";
 import {SearchApi} from "../api/search.api";
-import {SearchHistoryInterface, SearchOverviewInterface} from "../interface/search.interface";
+import {
+    SearchHistoryInterface,
+    SearchOverviewDatasetsInterface,
+    SearchOverviewInterface
+} from "../interface/search.interface";
 
 @Injectable()
 export class AppDatasetService {
@@ -19,25 +23,19 @@ export class AppDatasetService {
     public get onSearchChanges(): Observable<string> {
        return this.searchChanges$.asObservable();
     }
-    public searchDataChanges(searchData: SearchHistoryInterface[]| SearchOverviewInterface[]): void {
+    public searchDataChanges(searchData: SearchHistoryInterface[]| SearchOverviewDatasetsInterface[]): void {
         this.searchDataChanges$.next(searchData);
     }
-    public get onSearchDataChanges(): Observable<SearchHistoryInterface[] | SearchOverviewInterface[]> {
+    public get onSearchDataChanges(): Observable<SearchHistoryInterface[] | SearchOverviewDatasetsInterface[]> {
        return this.searchDataChanges$.asObservable();
     }
-    public get getSearchData(): SearchHistoryInterface[] | SearchOverviewInterface[] {
+    public get getSearchData(): SearchHistoryInterface[] | SearchOverviewDatasetsInterface[] {
         return this.searchData;
     }
     public searchDataset(id: string): void {
         this.searchApi.searchDataset(id).subscribe((data: SearchHistoryInterface[]) => {
           this.searchData = data;
           this.searchDataChanges(data);
-        })
-    }
-    public search(searchValue: string): void {
-        this.searchApi.searchOverview(searchValue).subscribe((data: SearchOverviewInterface[]) => {
-            this.searchData = data;
-            this.searchDataChanges(data);
         })
     }
     public onSearchLinageDataset(id: string): void {
