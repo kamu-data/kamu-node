@@ -112,7 +112,7 @@ export class SearchComponent implements OnInit, AfterContentInit {
 
   public onPageChange(currentPage: number): void {
     this.currentPage = currentPage;
-    this.onSearch(this.searchValue, currentPage)
+    this.onSearch(this.searchValue, currentPage - 1)
   }
 
   public onSelectDataset(id: string): void {
@@ -145,7 +145,7 @@ export class SearchComponent implements OnInit, AfterContentInit {
   }
 
   public onSearch(searchValue: string, page?: number): void {
-    this.appSearchService.search(searchValue, page || this.currentPage);
+    this.appSearchService.search(searchValue, page);
   }
 
 }

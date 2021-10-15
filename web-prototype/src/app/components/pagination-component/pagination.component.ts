@@ -1,4 +1,5 @@
 import {
+  AfterContentInit,
   Component,
   EventEmitter,
   Input,

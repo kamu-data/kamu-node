@@ -31,11 +31,11 @@ export class SearchApi {
                 }
             }));
     }
-    public searchOverview(searchQuery: string, page: number): Observable<SearchOverviewInterface> {
+    public searchOverview(searchQuery: string, page: number = 0): Observable<SearchOverviewInterface> {
         const GET_DATA: DocumentNode = gql`
   {
   search {
-    query(query: "${searchQuery}", perPage: 2, page: ${(page-1).toString()}) {
+    query(query: "${searchQuery}", perPage: 2, page: ${(page).toString()}) {
       edges {
         node {
           __typename
@@ -75,6 +75,7 @@ export class SearchApi {
                     })
                     pageInfo = result.data.search.query.pageInfo;
                     totalCount = result.data.search.query.totalCount;
+                    debugger
                     currentPage = page;
                 }
 
@@ -86,7 +87,7 @@ export class SearchApi {
             dataset: dataset,
             pageInfo: pageInfo,
             totalCount: totalCount,
-            currentPage: currentPage
+            currentPage: currentPage + 1
         };
     }
     private static pageInfoInit(): PageInfoInterface {

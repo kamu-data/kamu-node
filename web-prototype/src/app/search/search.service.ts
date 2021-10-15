@@ -29,7 +29,8 @@ export class AppSearchService {
     public get onSearchDataChanges(): Observable<SearchOverviewInterface> {
        return this.searchDataChanges$.asObservable();
     }
-    public search(searchValue: string, page: number = 1): void {
+    public search(searchValue: string, page: number = 0): void {
+        debugger
         this.searchApi.searchOverview(searchValue, page).subscribe((data: SearchOverviewInterface) => {
             debugger
             this.searchData = data;
