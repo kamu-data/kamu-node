@@ -33,13 +33,17 @@ async fn query() {
         {
             search {
               query(query: \"bar\") {
-                edges {
-                  node {
-                    __typename
-                    ... on Dataset {
-                      id
-                    }
+                nodes {
+                  __typename
+                  ... on Dataset {
+                    id
                   }
+                }
+                totalCount
+                pageInfo {
+                  totalPages
+                  hasNextPage
+                  hasPreviousPage
                 }
               }
             }
@@ -53,7 +57,13 @@ async fn query() {
         value!({
             "search": {
                 "query": {
-                    "edges": [],
+                    "nodes": [],
+                    "totalCount": 0,
+                    "pageInfo": {
+                        "totalPages": 0,
+                        "hasNextPage": false,
+                        "hasPreviousPage": false,
+                    }
                 }
             }
         })
@@ -65,13 +75,17 @@ async fn query() {
         {
             search {
               query(query: \"foo\") {
-                edges {
-                  node {
-                    __typename
-                    ... on Dataset {
-                      id
-                    }
+                nodes {
+                  __typename
+                  ... on Dataset {
+                    id
                   }
+                }
+                totalCount
+                pageInfo {
+                  totalPages
+                  hasNextPage
+                  hasPreviousPage
                 }
               }
             }
@@ -85,12 +99,16 @@ async fn query() {
         value!({
             "search": {
                 "query": {
-                    "edges": [{
-                        "node": {
-                            "__typename": "Dataset",
-                            "id": "foo",
-                        }
+                    "nodes": [{
+                        "__typename": "Dataset",
+                        "id": "foo",
                     }],
+                    "totalCount": 1,
+                    "pageInfo": {
+                        "totalPages": 1,
+                        "hasNextPage": false,
+                        "hasPreviousPage": false,
+                    }
                 }
             }
         })

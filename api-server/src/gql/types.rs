@@ -33,6 +33,7 @@ macro_rules! page_based_connection {
             ) -> Self {
                 let (total_pages, has_next_page) = match total_count {
                     None => (None, nodes.len() != per_page),
+                    Some(0) => (Some(0), false),
                     Some(tc) => (
                         Some(tc.div_ceil(per_page)),
                         (tc.div_ceil(per_page) - 1) > page,

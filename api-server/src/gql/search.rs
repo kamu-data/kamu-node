@@ -33,7 +33,10 @@ impl Search {
             .collect();
 
         // TODO: Slow but temporary
-        let total_count = metadata_repo.get_all_datasets().count();
+        let total_count = metadata_repo
+            .get_all_datasets()
+            .filter(|id| id.contains(&query))
+            .count();
 
         Ok(SearchResultConnection::new(
             nodes,
