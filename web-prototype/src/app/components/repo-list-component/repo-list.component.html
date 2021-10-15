@@ -1,0 +1,27 @@
+<div class="d-flex flex-column flex-md-row flex-justify-between border-bottom pb-3 position-relative" *ngIf="isResultQuantity">
+    <h2>
+        {{ searchResultQuantity(dataSource) }} {{resultUnitText}}
+    </h2>
+</div>
+<div *ngFor="let row of dataSource; let rowIndex = index">
+    <div class="repo-list-container py-4">
+        <div class="repo-list-container__title-row">
+            <i class="bi bi-journal-album"></i>
+        </div>
+        <div>
+            <button class="repo-list-container__title mb-1" (click)="isClickableRow && onSelectDataset(row.id)">{{row.id}}</button>
+            <p class="mb-2">Open-source data hub/platform that implements Open Data Fabric protocol</p>
+            <mat-chip-list aria-label="Tags selection">
+                <mat-chip>{{row.kind}}</mat-chip>
+                <mat-chip>medicine</mat-chip>
+                <mat-chip>covid</mat-chip>
+                <mat-chip>health</mat-chip>
+                <mat-chip>covid19</mat-chip>
+            </mat-chip-list>
+            <div class="mt-2">
+                <p class="text-small color-text-secondary">Updated on {{momentConverDatetoLocalWithFormat(row.lastUpdatedAt)}}</p>
+            </div>
+        </div>
+    </div>
+    <mat-divider></mat-divider>
+</div>

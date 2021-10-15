@@ -21,6 +21,8 @@ import {InMemoryCache} from '@apollo/client/core';
 import {SearchApi} from "./api/search.api";
 import {FormsModule} from "@angular/forms";
 import {AppSearchService} from "./search/search.service";
+import {MatChipsModule} from '@angular/material/chips';
+import {MatDividerModule} from '@angular/material/divider';
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {SideNavService} from "./services/sidenav.service";
 import {MatMenuModule} from "@angular/material/menu";
@@ -54,6 +56,8 @@ const Services = [
     }
 ];
 const MatModules = [
+    MatChipsModule,
+    MatDividerModule,
     MatToolbarModule,
     MatFormFieldModule,
     MatTableModule,

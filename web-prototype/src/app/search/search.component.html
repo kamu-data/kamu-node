@@ -11,11 +11,11 @@
             </div>
             <div class="search-result-container">
                 <div class="search-result-container__content">
-                    <app-dynamic-table [isResultQuantity]="tableData.isResultQuantity"
-                                       [resultUnitText]="'dataset results'"
-                                       [isClickableRow]="tableData.isClickableRow"
-                                       [isTableHeader]="tableData.isTableHeader" [tableSource]="tableData.tableSource"
-                                       (onSelectDatasetEmit)="onSelectDataset($event)"></app-dynamic-table>
+                    <app-repo-list [dataSource]="tableData.tableSource"
+                                   [resultUnitText]="tableData.resultUnitText"
+                                   [isResultQuantity]="tableData.isResultQuantity"
+                                   [isClickableRow]="tableData.isClickableRow"
+                                   (onSelectDatasetEmit)="onSelectDataset($event)"></app-repo-list>
                 </div>
 
                 <div class="card">

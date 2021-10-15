@@ -27,5 +27,8 @@ export interface SearchHistoryInterface {
     total_daily: number;
 }
 export interface SearchOverviewInterface {
-    id: string
+    createdAt: string;
+    id: string;
+    kind: string;
+    lastUpdatedAt: string;
 }

@@ -1,7 +1,7 @@
 import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {AppSearchService} from "./search.service";
-import {SearchHistoryInterface} from "../interface/search.interface";
+import {SearchHistoryInterface, SearchOverviewInterface} from "../interface/search.interface";
 import AppValues from "../common/app.values";
 import {searchAdditionalButtonsEnum} from "./search.interface";
 import {SearchAdditionalButtonInterface} from "../components/search-additional-buttons/search-additional-buttons.interface";
@@ -10,8 +10,6 @@ import {SideNavService} from "../services/sidenav.service";
 import {Router} from "@angular/router";
 import {query} from "@angular/animations";
 
-
-const ELEMENT_DATA: any[] = [];
 
 @Component({
   selector: 'app-search',
@@ -39,13 +37,12 @@ export class SearchComponent implements OnInit, AfterContentInit {
   }];
 
   public tableData: {
-    isTableHeader: boolean,
-    displayedColumns?: any[],
-    tableSource: any,
+    tableSource: SearchOverviewInterface[],
     isResultQuantity: boolean,
+    resultUnitText: string,
     isClickableRow: boolean
   };
-  public searchData: SearchHistoryInterface[] = [];
+  public searchData: SearchOverviewInterface[] = [];
 
   @HostListener('window:resize', ['$event'])
   private checkWindowSize(): void {
@@ -89,15 +86,15 @@ export class SearchComponent implements OnInit, AfterContentInit {
 
   private initTableData(): void {
     this.tableData = {
-      isTableHeader: true,
       tableSource: this.searchData,
+      resultUnitText: 'dataset results',
       isResultQuantity: true,
       isClickableRow: true
     };
   }
 
-  public onSelectDataset(dataset: any): void {
-    this.router.navigate(['/dataset-view'], {queryParams: {id: dataset.id}});
+  public onSelectDataset(id: string): void {
+    this.router.navigate(['/dataset-view'], {queryParams: {id}});
   }
 
 

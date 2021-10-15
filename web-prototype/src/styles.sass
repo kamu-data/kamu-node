@@ -5,6 +5,10 @@
 @import "assets/styles/var"
 *
   font-size: 18px
+.color-text-secondary
+  color: $secondary
+.text-small
+  font-size: 12px
 .app-active-button
   background: $app-darkSeaGreen
   border-radius: 4px
@@ -29,6 +33,15 @@
     font-size: 18px
   & .navbar
     padding: 0
+#navbarNavDropdown .navbar-nav
+  width: 100%
+  justify-content: center
+  & .nav-item
+    width: 40%
+    transition: all .5s linear
+    line-height: 150px
+    &.active-search-input
+      width: 80%
 
 .app-brand
   grid-area: appBrandArea
@@ -111,9 +124,9 @@ router-outlet
 .app-header__right-column__label
   display: block
 #appHeaderAdditionalBlock .button-round
-  width: 56px
+  width: 50px
   height: 50px
-  min-width: 56px
+  min-width: 50px
   border-radius: 35px
   overflow: hidden
   display: block
@@ -138,7 +151,7 @@ router-outlet
     font-size: 14px
     font-weight: 600
 .img-container-round
-  width: 56px
+  width: 50px
   height: 50px
   background: #C4C4C4
   border: 2px solid $app-white

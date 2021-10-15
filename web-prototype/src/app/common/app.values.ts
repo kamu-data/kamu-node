@@ -1,4 +1,5 @@
 import {Injectable} from "@angular/core";
+import * as moment from 'moment-timezone';
 
 @Injectable()
 export default class AppValues {
@@ -17,4 +18,40 @@ export default class AppValues {
   public static isMobileView(): boolean {
     return window.innerWidth < window.innerHeight;
   }
+
+  /**
+   * Using for ISO format date from server '2021-02-26 00:13:11.959000'
+   * This method converts the date from the format ISO used to the format UTC
+   * and then to the local format by displaying it in the specified pattern
+   * @param dateParams {Date} date new Date('2021-02-26 00:13:11.959000')
+   * @param dateParams {string} format 'MMMM DD, YYYY'
+   * @param dateParams {boolean} isTextDate for example 'Today', 'Yesterday'
+   * @return {string}
+   */
+   public static momentConverDatetoLocalWithFormat(dateParams: {date: Date, format?: string, isTextDate?: boolean}): string {
+       const stringDate: string = new Date(dateParams.date).toString();
+       const UTCStringDate: string = stringDate.split('.')[0] + '.000Z';
+       const ISOStringDate: string = new Date(UTCStringDate).toISOString();
+
+       if (dateParams.isTextDate) {
+           if (moment(dateParams.date).isSame(moment().subtract(1, 'day'), "day")) {
+               return 'Yesterday';
+           }
+           if (moment(dateParams.date).isSame(moment(), "day")) {
+               return 'Today';
+           }
+       }
+
+       return moment(ISOStringDate).format(dateParams.format);
+   }
+
+   /**
+     * @desc gets current datetime and convert the given date
+     * object’s contents into a string in ISO format (ISO 8601)
+     * "2014-09-08T08:02:17-05:00"
+     * @returns {string}
+     */
+    public static getDateNowISO8601(): string {
+        return moment().format();
+    }
 }

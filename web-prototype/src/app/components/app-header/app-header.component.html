@@ -11,12 +11,13 @@
 
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav">
-            <li class="nav-item">
+            <li [classList]="'nav-item ' + (isSearchActive ? 'active-search-input' : '')">
                 <div class="input-group flex-nowrap flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 js-jump-to"
                      id="searchInput">
                     <input type="text" data-test-id="searchInput" class="form-control"
                            placeholder="Search" [(ngModel)]="searchValue"
                            aria-label="Search" aria-describedby="addon-wrapping"
+                           (focusin)="isSearchActive = true"
                            (keyup.enter)="onSearch($event, searchValue)" (blur)="onSearch($event, searchValue)">
                 </div>
             </li>

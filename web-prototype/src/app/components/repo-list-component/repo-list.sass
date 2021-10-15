@@ -1,0 +1,22 @@
+@import src/assets/styles/var
+.repo-list-container
+  width: 100%
+  display: grid
+  grid-template-columns: 0.01fr 1fr
+  grid-template-rows: 1fr
+.repo-list-container__title-row
+  display: flex
+  justify-content: left
+  & i
+    margin-right: 8px
+.repo-list-container__title
+  background: none
+  border: none
+  color: $app-navyBlue
+  &:hover, &:active
+    cursor: pointer
+    text-decoration: underline
+    background: none
+.mat-standard-chip
+  min-height: 25px
+  padding: 10px

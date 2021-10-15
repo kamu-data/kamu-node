@@ -16,9 +16,12 @@ export class AppHeaderComponent {
 
     @ViewChild('appHeaderMenuButton') appHeaderMenuButton: ElementRef<HTMLElement>;
 
+    public isSearchActive: boolean = false;
+
 
     public onSearch(event: InputEvent, value: string): void {
 
+        this.isSearchActive = false;
         this.onInputSearch.emit(value);
         setTimeout(() => {
             if(this.isMobileView) {
