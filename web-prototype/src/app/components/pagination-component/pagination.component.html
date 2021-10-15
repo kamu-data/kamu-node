@@ -1,5 +1,5 @@
 <div class="paginate-container">
-  <ngb-pagination class="pagination-custom" [collectionSize]="70" [(page)]="page" (pageChange)="onPageChange()" aria-label="Custom pagination">
+  <ngb-pagination class="pagination-custom" [collectionSize]="pageInfo.totalPages * 10" [maxSize]="7" [(page)]="currentPage" (pageChange)="onPageChange(currentPage)" aria-label="Custom pagination">
     <ng-template ngbPaginationPrevious><span class="previous_page"></span><span>Prev</span></ng-template>
     <ng-template ngbPaginationNext><span>Next</span><span class="next_page"></span></ng-template>
   </ngb-pagination>

@@ -108,6 +108,10 @@ export class SearchComponent implements OnInit, AfterContentInit {
     };
   }
 
+  public onPageChange(currentPage: number): void {
+    this.onSearch(this.searchValue, currentPage)
+  }
+
   public onSelectDataset(id: string): void {
     this.router.navigate(['/dataset-view'], {queryParams: {id}});
   }
@@ -137,8 +141,8 @@ export class SearchComponent implements OnInit, AfterContentInit {
   private onClickDescission() {
   }
 
-  public onSearch(searchValue: string): void {
-    this.appSearchService.search(searchValue);
+  public onSearch(searchValue: string, page: number = 1): void {
+    this.appSearchService.search(searchValue, page);
   }
 
 }

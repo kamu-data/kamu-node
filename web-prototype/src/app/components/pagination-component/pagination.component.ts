@@ -5,6 +5,7 @@ import {
   OnInit,
   Output
 } from "@angular/core";
+import {PageInfoInterface} from "../../interface/search.interface";
 
 @Component({
   selector: 'app-pagination',
@@ -12,11 +13,17 @@ import {
   styleUrls: ['./pagination-component.sass']
 })
 export class PaginationComponent implements OnInit {
-  public page: number = 1;
+  @Input() public pageInfo: PageInfoInterface;
+  @Output() public pageChangeEvent: EventEmitter<number> = new EventEmitter();
+  public currentPage: number = 1;
+
+
   constructor() { }
   public ngOnInit(): void {
-  }
-  public onPageChange() {
     debugger
+  }
+  public onPageChange(currentPage: number) {
+    debugger
+    this.pageChangeEvent.emit(currentPage);
   }
 }

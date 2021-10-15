@@ -31,11 +31,11 @@ export class SearchApi {
                 }
             }));
     }
-    public searchOverview(searchQuery: string): Observable<SearchOverviewInterface> {
+    public searchOverview(searchQuery: string, page: number): Observable<SearchOverviewInterface> {
         const GET_DATA: DocumentNode = gql`
   {
   search {
-    query(query: "${searchQuery}", perPage: 10, page: 0) {
+    query(query: "${searchQuery}", perPage: 1, page: ${(page-1).toString()}) {
       edges {
         node {
           __typename
