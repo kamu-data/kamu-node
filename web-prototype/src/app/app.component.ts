@@ -41,9 +41,20 @@ export class AppComponent implements OnInit {
         .subscribe((event: any) => {
           this.isVisible = this.isAvailableAppHeaderUrl(event.url);
         });
+    this.appSearchService.onSearchChanges.subscribe((searchValue: string) => {
+      this.searchValue = searchValue;
+      this.searchValueAddToAutocomplete();
+    });
     this.appSearchService.onAutocompleteDatasetChanges.subscribe((data: DatasetIDsInterface[]) => {
         this.ngTypeaheadList = data;
-    })
+        this.searchValueAddToAutocomplete();
+    });
+  }
+
+  private searchValueAddToAutocomplete(): void {
+     let newArray: DatasetIDsInterface[] = JSON.parse(JSON.stringify(this.ngTypeaheadList));
+      newArray.unshift({__typename: "Dataset", id: this.searchValue});
+      this.ngTypeaheadList = newArray;
   }
 
   private checkView(): void {
@@ -57,12 +68,12 @@ export class AppComponent implements OnInit {
     if (!this._window.location.pathname.includes(AppValues.urlSearch)) {
       this.router.navigate(['search']);
     }
-    this.appSearchService.searchChanges(searchValue);
     this.appSearchService.search(searchValue);
   }
 
-  public onKeyUpSearch(value: string) {
-    this.appSearchService.autocompleteDatasetSearch(value);
+  public onKeyUpSearch(searchValue: string) {
+    this.appSearchService.searchChanges(searchValue);
+    this.appSearchService.autocompleteDatasetSearch(searchValue);
   }
 
   public onOpenUserInfo(): void {

@@ -44,5 +44,6 @@ export interface PageInfoInterface {
     totalPages: number
 }
 export interface DatasetIDsInterface {
-    id: string
+    id: string,
+    __typename: string
 }

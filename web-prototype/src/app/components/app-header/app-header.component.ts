@@ -29,7 +29,7 @@ export class AppHeaderComponent {
         return text$.pipe(
             debounceTime(200),
             distinctUntilChanged(),
-            map(term => this.ngTypeaheadList.filter((item: DatasetIDsInterface) => new RegExp(term).test(item.id)).map((item: DatasetIDsInterface) => item.id))
+            map(term => this.ngTypeaheadList.map((item: DatasetIDsInterface) => item.id))
         )
     }
 
