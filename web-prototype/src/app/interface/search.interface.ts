@@ -43,3 +43,6 @@ export interface PageInfoInterface {
     hasPreviousPage: boolean,
     totalPages: number
 }
+export interface DatasetIDsInterface {
+    id: string
+}

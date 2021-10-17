@@ -3,6 +3,7 @@ import AppValues from "./common/app.values";
 import {AppSearchService} from "./search/search.service";
 import { filter } from 'rxjs/operators';
 import {Router, NavigationEnd} from '@angular/router';
+import {DatasetIDsInterface} from "./interface/search.interface";
 
 @Component({
   selector: 'app-root',
@@ -14,7 +15,9 @@ export class AppComponent implements OnInit {
   public isMobileView: boolean = false;
   public searchValue: string = '';
   public isVisible: boolean = true;
+  public ngTypeaheadList: DatasetIDsInterface[] = [];
   private appHeaderNotVisiblePages: string[] = [AppValues.urlDatasetCreate, AppValues.urlLogin];
+  private _window: Window;
 
   @HostListener('window:resize', ['$event'])
   private checkWindowSize(): void {
@@ -24,7 +27,9 @@ export class AppComponent implements OnInit {
   constructor(
       private router: Router,
       private appSearchService: AppSearchService,
-  ) { }
+  ) {
+    this._window = window;
+  }
 
   public ngOnInit(): void {
     this.checkView();
@@ -36,6 +41,9 @@ export class AppComponent implements OnInit {
         .subscribe((event: any) => {
           this.isVisible = this.isAvailableAppHeaderUrl(event.url);
         });
+    this.appSearchService.onAutocompleteDatasetChanges.subscribe((data: DatasetIDsInterface[]) => {
+        this.ngTypeaheadList = data;
+    })
   }
 
   private checkView(): void {
@@ -45,9 +53,16 @@ export class AppComponent implements OnInit {
      return !this.appHeaderNotVisiblePages.some(item => url.toLowerCase().includes(item));
   }
   public onInputSearch(searchValue: string) {
-    this.router.navigate(['search']);
+    debugger
+    if (!this._window.location.pathname.includes(AppValues.urlSearch)) {
+      this.router.navigate(['search']);
+    }
     this.appSearchService.searchChanges(searchValue);
     this.appSearchService.search(searchValue);
+  }
+
+  public onKeyUpSearch(value: string) {
+    this.appSearchService.autocompleteDatasetSearch(value);
   }
 
   public onOpenUserInfo(): void {

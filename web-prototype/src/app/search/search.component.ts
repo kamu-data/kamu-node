@@ -145,6 +145,7 @@ export class SearchComponent implements OnInit, AfterContentInit {
   }
 
   public onSearch(searchValue: string, page?: number): void {
+    debugger
     this.appSearchService.search(searchValue, page);
   }
 

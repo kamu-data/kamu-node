@@ -136,9 +136,9 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     this.appDatasetService.onSearchMetadata(this.getDatasetId());
   }
 
-  public onSearchDataset(): void {
+  public onSearchDataset(page: number = 0): void {
     this.datasetViewType = DatasetViewTypeEnum.overview;
-    this.appDatasetService.searchDataset(this.getDatasetId());
+    this.appDatasetService.searchDataset(this.getDatasetId(), page);
   }
 
   public onSearchLinageDataset(): void {

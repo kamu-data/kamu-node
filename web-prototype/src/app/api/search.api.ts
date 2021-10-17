@@ -4,6 +4,7 @@ import {map} from "rxjs/operators";
 import {ApolloQueryResult, DocumentNode, gql} from "@apollo/client/core";
 import {Observable} from "rxjs";
 import {
+    DatasetIDsInterface,
     PageInfoInterface,
     SearchHistoryInterface,
     SearchOverviewDatasetsInterface, SearchOverviewInterface,
@@ -36,12 +37,12 @@ export class SearchApi {
   {
   search {
     query(query: "${searchQuery}", perPage: 2, page: ${(page).toString()}) {
-      edges {
+     edges {
         node {
           __typename
           ... on Dataset {
             id
-            kind
+            kind 
             createdAt
             lastUpdatedAt
             __typename
@@ -75,7 +76,6 @@ export class SearchApi {
                     })
                     pageInfo = result.data.search.query.pageInfo;
                     totalCount = result.data.search.query.totalCount;
-                    debugger
                     currentPage = page;
                 }
 
@@ -96,6 +96,27 @@ export class SearchApi {
             hasPreviousPage: false,
             totalPages: 0
         }
+    }
+    public autocompleteDatasetSearch(id: string): Observable<DatasetIDsInterface[]> {
+        const GET_DATA: DocumentNode = gql`
+{
+  search {
+    query(query: "${id}", perPage: 10) {
+      nodes {
+        ... on Dataset {
+          id
+        }
+      }
+    }
+  }
+}`
+
+        return this.apollo.watchQuery({query: GET_DATA})
+            .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
+                if (result.data) {
+                    return result.data.search.query.nodes;
+                }
+            }));
     }
 
     public searchLinageDataset(id: string): Observable<any> {
@@ -127,7 +148,7 @@ export class SearchApi {
             }));
     }
 
-    public searchDataset(id: string): Observable<SearchHistoryInterface[]> {
+    public searchDataset(id: string, page: number = 0): Observable<SearchHistoryInterface[]> {
         const GET_DATA: DocumentNode = gql`
 {
   datasets {

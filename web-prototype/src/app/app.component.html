@@ -1,5 +1,7 @@
 <app-header [searchValue]="searchValue" [appLogo]="appLogo"
    [isMobileView]="isMobileView" [isVisible]="isVisible"
+   [ngTypeaheadList]="ngTypeaheadList"
    (onInputSearch)="onInputSearch($event)"
+   (keyUpSearchEvent)="onKeyUpSearch($event)"
    (userInfo)="onOpenUserInfo()" (addNew)="onAddNew()"></app-header>
 <router-outlet></router-outlet>

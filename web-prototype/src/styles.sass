@@ -33,6 +33,27 @@
     font-size: 18px
   & .navbar
     padding: 0
+
+#app-header
+  & input#typeahead-http.ng-touche, & input#typeahead-http.ng-valid
+    color: black
+  & .form-control
+    width: 300px
+  & .input-control
+    position: relative
+    flex: 1 1 auto
+    width: 1%
+    min-width: 0
+    margin-bottom: 0
+    border-top-right-radius: 0
+    border-bottom-right-radius: 0
+    height: calc(1.5em + 0.75rem + 2px)
+    font-size: 1rem
+    font-weight: 400
+    line-height: 1.5
+    border: 1px solid #ced4da
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out
+
 #navbarNavDropdown .navbar-nav
   width: 100%
   justify-content: center
@@ -40,8 +61,19 @@
     width: 40%
     transition: all .5s linear
     line-height: 150px
-    &.active-search-input
-      width: 80%
+  & .active-search-input
+    width: 80%
+  & ngb-typeahead-window
+    width: 100%
+    line-height: 1
+    & *
+      color: $app-nero
+    & .dropdown-item
+      height: 30px
+      & button
+        color: $app-nero
+      &.active *
+        color: $app-white
 
 .app-brand
   grid-area: appBrandArea
@@ -166,8 +198,13 @@ router-outlet
     top: 0
     left: -10%
 
+.searchInputContainer
+  height: 42.5px
+
 #searchInput
   grid-area: appSearchInputArea
+  width: 100%
+  @extend .searchInputContainer
 
 #mobileMenuButton
   &.mobileSearch

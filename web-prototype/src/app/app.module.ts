@@ -19,7 +19,7 @@ import {APOLLO_NAMED_OPTIONS, NamedOptions} from 'apollo-angular';
 import {HttpLink} from 'apollo-angular/http';
 import {InMemoryCache} from '@apollo/client/core';
 import {SearchApi} from "./api/search.api";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AppSearchService} from "./search/search.service";
 import {MatChipsModule} from '@angular/material/chips';
 import {MatDividerModule} from '@angular/material/divider';
@@ -33,6 +33,8 @@ import {DatasetModule} from "./dataset-view/dataset.module";
 import {AppDatasetService} from "./dataset-view/dataset.service";
 import {DatasetCreateModule} from "./dataset-create/dataset-create.module";
 import {AppHeaderComponent} from "./components/app-header/app-header.component";
+import {MatOptionModule} from "@angular/material/core";
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
 
 
 const Services = [
@@ -64,7 +66,8 @@ const MatModules = [
     MatIconModule,
     MatSidenavModule,
     MatMenuModule,
-    MatButtonModule
+    MatButtonModule,
+    MatAutocompleteModule
 ]
 
 @NgModule({
@@ -94,7 +97,9 @@ const MatModules = [
         HttpClientModule,
         CdkTableModule,
         ...MatModules,
-        FormsModule
+        FormsModule,
+        MatOptionModule,
+        ReactiveFormsModule
     ],
     providers: [
         ...Services
