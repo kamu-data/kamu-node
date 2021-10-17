@@ -7,7 +7,8 @@ $app-emperor: #535353
 $app-veryLightGray: #DEDEDE
 $app-darkSeaGreen: #86BA90
 $app-navyBlue: #0969da
-$app-aliceBlue: #ddf4ff
+$app-aliceBlue: #f6f8fa
+$app-cloudy: #57606a
 $app-nero: #282828
 $secondary: #57606a
 $app-versatileBusinessDark: rgba(221, 221, 221, 0.25)
@@ -17,6 +18,16 @@ $app-warn: mat.define-palette(mat.$red-palette)
 $my-theme: mat.define-light-theme($app-primary, $app-accent, $app-warn)
 
 
+.d-none
+  display: none !important
+.f6
+  font-size: 12px !important
+.color-text-tertiary
+  color: $app-cloudy
+.color-bg-tertiary
+  background-color: $app-aliceBlue
+.rounded-1
+  border-radius: 4px !important
 @media (max-width: 480px)
   *
     font-size: 15px

@@ -53,6 +53,8 @@
     line-height: 1.5
     border: 1px solid #ced4da
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out
+.jump-to-badge-jump
+  display: none
 
 #navbarNavDropdown .navbar-nav
   width: 100%
@@ -66,18 +68,29 @@
   & ngb-typeahead-window
     width: 100%
     line-height: 1
-    & *
+    & ngb-highlight
       color: $app-nero
     & .dropdown-item
+      display: flex
+      justify-content: space-between
       height: 30px
       padding-left: 10px
       padding-right: 10px
       margin: 5px 0
+      & *
+        color: $app-nero
       & button
         color: $app-nero
-      &.active *
-        color: $app-white
-
+      &.active
+        & *
+          color: $app-white
+        & .jump-to-badge-jump
+          justify-content: center
+          align-items: center
+          display: flex
+          color: $app-nero
+          & *
+            color: $app-nero
 .app-brand
   grid-area: appBrandArea
   > img
