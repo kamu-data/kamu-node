@@ -15,21 +15,22 @@
                 <div class="input-group flex-nowrap flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 js-jump-to"
                      id="searchInput">
                     <input type="text" data-test-id="searchInput" class="form-control"
-                           id="typeahead-http" [ngbTypeahead]="search" [resultTemplate]="rt" [inputFormatter]="formatter"
+                           id="typeahead-http" [ngbTypeahead]="search" [resultTemplate]="rt"
                            placeholder="Search" [(ngModel)]="searchValue"
                            aria-label="Search" aria-describedby="addon-wrapping"
                            (focusin)="isSearchActive = true"
-                           (keyup)="onKeyUpSearch($event)" [editable]="false"
-                           (keyup.enter)="onSearch($event,searchValue)" (blur)="onSearch($event, searchValue)">
+                           (keyup)="onKeyUpSearch($event)"
+                           (selectItem)="onSelectItem($event, searchValue)"
+                           (keyup.enter)="onSearch($event, searchValue)" (blur)="onSearch($event, searchValue)">
                 </div>
 
                 <ng-template #rt let-r="result" let-t="term">
                     <div>
                         <i class="bi bi-journal-album mr-2"></i>
-                        <ngb-highlight [result]="r" [term]="t"></ngb-highlight>
+                        <ngb-highlight [result]="r.id" [term]="t.id"></ngb-highlight>
                     </div>
                     <div class="border rounded-1 flex-shrink-0 color-bg-tertiary px-1 f6 color-text-tertiary ml-1 jump-to-badge-jump">
-                        Jump to <span class="d-inline-block ml-1 v-align-middle"><i class="bi bi-arrow-return-left"></i></span>
+                        {{ isDatasetType(r['__typename']) ? 'Jump to' : 'All Kamu' }} <span class="d-inline-block ml-1 v-align-middle"><i class="bi bi-arrow-return-left"></i></span>
                     </div>
                 </ng-template>
             </li>

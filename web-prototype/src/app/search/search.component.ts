@@ -51,6 +51,7 @@ export class SearchComponent implements OnInit, AfterContentInit {
     totalCount: number
   };
   public searchData: SearchOverviewDatasetsInterface[] = [];
+  private _window: Window;
 
   @HostListener('window:resize', ['$event'])
   private checkWindowSize(): void {
@@ -68,6 +69,7 @@ export class SearchComponent implements OnInit, AfterContentInit {
       private router: Router,
       private appSearchService: AppSearchService,
       private sidenavService: SideNavService) {
+      this._window = window;
   }
 
   public ngAfterContentInit(): void {
@@ -82,7 +84,8 @@ export class SearchComponent implements OnInit, AfterContentInit {
     }
 
     this.initTableData();
-    this.onSearch("");
+    const currentId: string = this._window.location.search.split('?id=')[1].split('&')[0];
+    this.onSearch(currentId || "");
     this.appSearchService.onSearchChanges.subscribe((value: string) => {
       this.searchValue = value;
     })
@@ -145,7 +148,6 @@ export class SearchComponent implements OnInit, AfterContentInit {
   }
 
   public onSearch(searchValue: string, page?: number): void {
-    debugger
     this.appSearchService.search(searchValue, page);
   }
 

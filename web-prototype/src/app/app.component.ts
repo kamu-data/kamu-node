@@ -3,7 +3,7 @@ import AppValues from "./common/app.values";
 import {AppSearchService} from "./search/search.service";
 import { filter } from 'rxjs/operators';
 import {Router, NavigationEnd} from '@angular/router';
-import {DatasetIDsInterface} from "./interface/search.interface";
+import {DatasetIDsInterface, TypeNames} from "./interface/search.interface";
 
 @Component({
   selector: 'app-root',
@@ -36,24 +36,35 @@ export class AppComponent implements OnInit {
     this.appHeaderInit();
   }
   private appHeaderInit(): void {
+    this.appSearchService.onSearchChanges.subscribe((searchValue: string) => {
+      this.searchValue = searchValue;
+
+      if (!searchValue) {
+        this.ngTypeaheadList = [];
+      }
+      this.searchValueAddToAutocomplete();
+    });
+
+    this.appSearchService.onAutocompleteDatasetChanges.subscribe((data: DatasetIDsInterface[]) => {
+      this.ngTypeaheadList = data;
+      this.searchValueAddToAutocomplete();
+    });
+
     this.router.events
         .pipe(filter(event => event instanceof NavigationEnd))
         .subscribe((event: any) => {
           this.isVisible = this.isAvailableAppHeaderUrl(event.url);
+          debugger
+          // const searchValue: string = event.url.split('?id=')[1];
+          // this.appSearchService.searchChanges(searchValue);
         });
-    this.appSearchService.onSearchChanges.subscribe((searchValue: string) => {
-      this.searchValue = searchValue;
-      this.searchValueAddToAutocomplete();
-    });
-    this.appSearchService.onAutocompleteDatasetChanges.subscribe((data: DatasetIDsInterface[]) => {
-        this.ngTypeaheadList = data;
-        this.searchValueAddToAutocomplete();
-    });
   }
 
   private searchValueAddToAutocomplete(): void {
      let newArray: DatasetIDsInterface[] = JSON.parse(JSON.stringify(this.ngTypeaheadList));
-      newArray.unshift({__typename: "Dataset", id: this.searchValue});
+     if (this.searchValue) {
+       newArray.unshift({__typename: TypeNames.allDataType, id: this.searchValue});
+     }
       this.ngTypeaheadList = newArray;
   }
 
@@ -63,12 +74,15 @@ export class AppComponent implements OnInit {
   private isAvailableAppHeaderUrl(url: string): boolean {
      return !this.appHeaderNotVisiblePages.some(item => url.toLowerCase().includes(item));
   }
-  public onInputSearch(searchValue: string) {
+  public onInputSearch(searchValue: string): void {
     debugger
-    if (!this._window.location.pathname.includes(AppValues.urlSearch)) {
-      this.router.navigate(['search']);
-    }
-    this.appSearchService.search(searchValue);
+    this.appSearchService.searchChanges(searchValue);
+    setTimeout(() => this.router.navigate(['search'], { queryParams: { id: searchValue}}));
+  }
+
+  public onSelectDataset(id: string): void {
+    this.appSearchService.searchChanges(id);
+    this.router.navigate(['/dataset-view'], {queryParams: {id}});
   }
 
   public onKeyUpSearch(searchValue: string) {

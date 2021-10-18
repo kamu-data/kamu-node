@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {Apollo, ApolloBase} from "apollo-angular";
 import {map} from "rxjs/operators";
 import {ApolloQueryResult, DocumentNode, gql} from "@apollo/client/core";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 import {
     DatasetIDsInterface,
     PageInfoInterface,
@@ -98,6 +98,9 @@ export class SearchApi {
         }
     }
     public autocompleteDatasetSearch(id: string): Observable<DatasetIDsInterface[]> {
+        if(!id) {
+            return of([]);
+        }
         const GET_DATA: DocumentNode = gql`
 {
   search {

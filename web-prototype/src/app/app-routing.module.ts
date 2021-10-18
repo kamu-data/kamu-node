@@ -9,7 +9,13 @@ import AppValues from "./common/app.values";
 
 const routes: Routes = [
     {path: '', redirectTo: AppValues.urlSearch, pathMatch: 'full'},
-    {path: AppValues.urlSearch, component: SearchComponent},
+    {
+        path: AppValues.urlSearch,
+        component: SearchComponent,
+        children: [
+            {path: ':id', component: SearchComponent}
+        ]
+    },
     {path: AppValues.urlLogin, component: LoginComponent},
     {path: AppValues.urlProfile, component: AccountComponent},
     {

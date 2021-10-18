@@ -45,5 +45,10 @@ export interface PageInfoInterface {
 }
 export interface DatasetIDsInterface {
     id: string,
-    __typename: string
+    __typename: TypeNames
+}
+
+export enum TypeNames {
+    allDataType = 'all',
+    datasetType = 'Dataset'
 }

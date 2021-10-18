@@ -38,16 +38,13 @@ export class AppSearchService {
        return this.autocompleteDatasetChanges$.asObservable();
     }
     public search(searchValue: string, page: number = 0): void {
-        debugger
         this.searchApi.searchOverview(searchValue, page).subscribe((data: SearchOverviewInterface) => {
-            debugger
             this.searchData = data;
             this.searchDataChanges(data);
         })
     }
     public autocompleteDatasetSearch(search: string): void {
         this.searchApi.autocompleteDatasetSearch(search).subscribe((data: DatasetIDsInterface[]) => {
-            debugger
             this.autocompleteDatasetChanges(data);
         })
     }

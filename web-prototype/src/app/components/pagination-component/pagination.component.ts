@@ -19,11 +19,8 @@ export class PaginationComponent implements OnInit {
   @Output() public pageChangeEvent: EventEmitter<number> = new EventEmitter();
 
   constructor() { }
-  public ngOnInit(): void {
-    debugger
-  }
+  public ngOnInit(): void {}
   public onPageChange(currentPage: number) {
-    debugger
     this.pageChangeEvent.emit(currentPage);
   }
 }
