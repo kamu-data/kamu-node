@@ -21,7 +21,7 @@
                            (focusin)="isSearchActive = true"
                            (keyup)="onKeyUpSearch($event)"
                            (selectItem)="onSelectItem($event, searchValue)"
-                           (keyup.enter)="onSearch($event, searchValue)" (blur)="onSearch($event, searchValue)">
+                           (keyup.enter)="onSearch($event)" (blur)="onSearch($event)">
                 </div>
 
                 <ng-template #rt let-r="result" let-t="term">

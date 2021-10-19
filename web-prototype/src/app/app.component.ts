@@ -37,12 +37,14 @@ export class AppComponent implements OnInit {
   }
   private appHeaderInit(): void {
     this.appSearchService.onSearchChanges.subscribe((searchValue: string) => {
-      this.searchValue = searchValue;
-
-      if (!searchValue) {
-        this.ngTypeaheadList = [];
-      }
-      this.searchValueAddToAutocomplete();
+      debugger
+      setTimeout(() => {
+        this.searchValue = searchValue;
+        if (!searchValue) {
+          this.ngTypeaheadList = [];
+        }
+        this.searchValueAddToAutocomplete();
+      })
     });
 
     this.appSearchService.onAutocompleteDatasetChanges.subscribe((data: DatasetIDsInterface[]) => {
@@ -55,8 +57,13 @@ export class AppComponent implements OnInit {
         .subscribe((event: any) => {
           this.isVisible = this.isAvailableAppHeaderUrl(event.url);
           debugger
-          // const searchValue: string = event.url.split('?id=')[1];
-          // this.appSearchService.searchChanges(searchValue);
+
+          if (event.url.split('?id=').length) {
+            setTimeout(() => {
+              const searchValue: string = event.url.split('?id=')[1];
+              this.appSearchService.searchChanges(searchValue);
+            })
+          }
         });
   }
 
@@ -74,15 +81,14 @@ export class AppComponent implements OnInit {
   private isAvailableAppHeaderUrl(url: string): boolean {
      return !this.appHeaderNotVisiblePages.some(item => url.toLowerCase().includes(item));
   }
-  public onInputSearch(searchValue: string): void {
-    debugger
-    this.appSearchService.searchChanges(searchValue);
-    setTimeout(() => this.router.navigate(['search'], { queryParams: { id: searchValue}}));
-  }
 
-  public onSelectDataset(id: string): void {
-    this.appSearchService.searchChanges(id);
-    this.router.navigate(['/dataset-view'], {queryParams: {id}});
+  public onSelectDataset(item: DatasetIDsInterface): void {
+    // this.appSearchService.searchChanges(item.id);
+    if (item.__typename === TypeNames.datasetType) {
+      this.router.navigate(['/dataset-view'], {queryParams: {id: item.id}});
+    } else {
+      this.router.navigate(['search'], {queryParams: {id: item.id}});
+    }
   }
 
   public onKeyUpSearch(searchValue: string) {

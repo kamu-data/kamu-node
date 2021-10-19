@@ -2,6 +2,7 @@ import {Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleCha
 import {Observable, OperatorFunction} from "rxjs";
 import {debounceTime, distinctUntilChanged, map} from "rxjs/operators";
 import {DatasetIDsInterface, TypeNames} from "../../interface/search.interface";
+import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-header',
@@ -14,8 +15,7 @@ export class AppHeaderComponent {
     @Input() public isVisible: boolean;
     @Input() public ngTypeaheadList: DatasetIDsInterface[] = [];
 
-    @Output() public onInputSearch: EventEmitter<string> = new EventEmitter();
-    @Output() public onSelectDataset: EventEmitter<string> = new EventEmitter();
+    @Output() public onSelectDataset: EventEmitter<DatasetIDsInterface> = new EventEmitter();
     @Output() public keyUpSearchEvent: EventEmitter<string> = new EventEmitter();
     @Output() public addNew: EventEmitter<null> = new EventEmitter();
     @Output() public userInfo: EventEmitter<null> = new EventEmitter();
@@ -32,37 +32,23 @@ export class AppHeaderComponent {
     public isDatasetType(type: string): boolean {
         return type === TypeNames.datasetType;
     }
-    public getSearchValue(): string {
-        console.log(this._window.location.search.split('?id=')[1].split('&')[0]);
-        // return this._window.location.search.split('?id=')[1].split('&')[0] || this.searchValue;
-        return this.searchValue;
-    }
     public search: OperatorFunction<string, readonly DatasetIDsInterface[]> = (text$: Observable<string>) => {
         return text$.pipe(
-            debounceTime(200),
             distinctUntilChanged(),
-            map(term => this.ngTypeaheadList.map((item: DatasetIDsInterface) => item))
+            map(term => this.ngTypeaheadList ? this.ngTypeaheadList.map((item: DatasetIDsInterface) => item) : [])
         )
     }
 
-    public onSelectItem(event: { item: DatasetIDsInterface, preventDefault: () => {} }, searchValue: string): void {
+    public onSelectItem(event: NgbTypeaheadSelectItemEvent<DatasetIDsInterface>, searchValue: string): void {
         this.isSearchActive = false;
 
         if(event.item) {
-            if (event.item.__typename === TypeNames.datasetType) {
-                this.onSelectDataset.emit(event.item.id);
-            } else {
-                debugger
-                this.onInputSearch.emit(searchValue);
-            }
+            this.onSelectDataset.emit(event.item);
         }
     }
 
-    public onSearch(event: FocusEvent, value: string): void {
-        debugger
-
+    public onSearch(event: FocusEvent): void {
         this.isSearchActive = false;
-        this.onInputSearch.emit(value);
         setTimeout(() => {
             if(this.isMobileView) {
                 this.triggerMenuClick();

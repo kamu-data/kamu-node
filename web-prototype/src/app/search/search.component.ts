@@ -84,8 +84,10 @@ export class SearchComponent implements OnInit, AfterContentInit {
     }
 
     this.initTableData();
-    const currentId: string = this._window.location.search.split('?id=')[1].split('&')[0];
-    this.onSearch(currentId || "");
+    if(this._window.location.search.split('?id=').length > 1) {
+      const currentId: string = this._window.location.search.split('?id=')[1].split('&')[0];
+      this.onSearch(currentId || "");
+    }
     this.appSearchService.onSearchChanges.subscribe((value: string) => {
       this.searchValue = value;
     })
