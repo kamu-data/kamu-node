@@ -73,7 +73,12 @@ export class SearchComponent implements OnInit, AfterContentInit {
   }
 
   public ngAfterContentInit(): void {
-    this.tableData.tableSource = this.searchData
+    this.tableData.tableSource = this.searchData;
+
+    if(this._window.location.search.split('?id=').length > 1) {
+      const currentId: string = this._window.location.search.split('?id=')[1].split('&')[0];
+      this.onSearch(currentId || "");
+    }
   }
 
 
@@ -84,10 +89,6 @@ export class SearchComponent implements OnInit, AfterContentInit {
     }
 
     this.initTableData();
-    if(this._window.location.search.split('?id=').length > 1) {
-      const currentId: string = this._window.location.search.split('?id=')[1].split('&')[0];
-      this.onSearch(currentId || "");
-    }
     this.appSearchService.onSearchChanges.subscribe((value: string) => {
       this.searchValue = value;
     })
@@ -121,7 +122,7 @@ export class SearchComponent implements OnInit, AfterContentInit {
   }
 
   public onSelectDataset(id: string): void {
-    this.router.navigate(['/dataset-view'], {queryParams: {id}});
+    this.router.navigate(['/dataset-view'], {queryParams: {id, type: AppValues.urlDatasetViewOverviewType}});
   }
 
 

@@ -60,7 +60,7 @@ export class AppComponent implements OnInit {
 
           if (event.url.split('?id=').length) {
             setTimeout(() => {
-              const searchValue: string = event.url.split('?id=')[1];
+              const searchValue: string = AppValues.fixedEncodeURIComponent(event.url.split('?id=')[1].split('&')[0]);
               this.appSearchService.searchChanges(searchValue);
             })
           }
@@ -83,11 +83,10 @@ export class AppComponent implements OnInit {
   }
 
   public onSelectDataset(item: DatasetIDsInterface): void {
-    // this.appSearchService.searchChanges(item.id);
     if (item.__typename === TypeNames.datasetType) {
-      this.router.navigate(['/dataset-view'], {queryParams: {id: item.id}});
+      this.router.navigate([AppValues.urlDatasetView], {queryParams: {id: item.id, type: AppValues.urlDatasetViewOverviewType}});
     } else {
-      this.router.navigate(['search'], {queryParams: {id: item.id}});
+      this.router.navigate([AppValues.urlSearch], {queryParams: {id: item.id}});
     }
   }
 

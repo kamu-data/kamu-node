@@ -7,6 +7,7 @@ import {SideNavService} from "../services/sidenav.service";
 import {searchAdditionalButtonsEnum} from "../search/search.interface";
 import {DatasetViewTypeEnum} from "./dataset-view.interface";
 import {AppDatasetService} from "./dataset.service";
+import {Router} from "@angular/router";
 
 const ELEMENT_DATA: SearchHistoryInterface[] = [];
 
@@ -60,7 +61,8 @@ export class DatasetComponent implements OnInit, AfterContentInit {
 
   constructor(
       private appDatasetService: AppDatasetService,
-      private sidenavService: SideNavService) {
+      private sidenavService: SideNavService,
+      private router: Router) {
     this._window = window;
   }
 
@@ -72,7 +74,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     }
     this.initTableData();
 
-    this.onSearchDataset();
+    this.initDatasetViewByType();
 
     this.appDatasetService.onSearchChanges.subscribe((value: string) => {
       this.searchValue = value;
@@ -95,8 +97,27 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     return `results in ${searchDataset}`
   }
 
+  private initDatasetViewByType(): void {
+    let searchParams: string[] = this._window.location.search.split('&type=');
+
+    if (searchParams.length > 1) {
+      let type: DatasetViewTypeEnum = AppValues.fixedEncodeURIComponent(searchParams[1].split('&')[0]) as DatasetViewTypeEnum;
+
+      if (type === DatasetViewTypeEnum.metadata) {
+        this.onSearchMetadata();
+      } else {
+        this.onSearchDataset();
+      }
+    }
+  }
+
   private getDatasetId(): string {
-    return this._window.location.search.split('=')[1];
+    let searchParams: string[] = this._window.location.search.split('?id=');
+
+    if (searchParams.length > 1) {
+      return AppValues.fixedEncodeURIComponent(searchParams[1].split('&')[0]);
+    }
+    return '';
   }
 
   public ngAfterContentInit(): void {
@@ -132,16 +153,23 @@ export class DatasetComponent implements OnInit, AfterContentInit {
   }
 
   public onSearchMetadata(): void {
+    this.router.navigate([AppValues.urlDatasetView], {queryParams: {id: this.getDatasetId(), type: AppValues.urlDatasetViewMetadataType}});
+
     this.datasetViewType = DatasetViewTypeEnum.metadata;
     this.appDatasetService.onSearchMetadata(this.getDatasetId());
   }
 
   public onSearchDataset(page: number = 0): void {
+    this.router.navigate([AppValues.urlDatasetView], {queryParams: {id: this.getDatasetId(), type: AppValues.urlDatasetViewOverviewType}});
+
     this.datasetViewType = DatasetViewTypeEnum.overview;
+
     this.appDatasetService.searchDataset(this.getDatasetId(), page);
   }
 
   public onSearchLinageDataset(): void {
+    this.router.navigate([AppValues.urlDatasetView], {queryParams: {id: this.getDatasetId(), type: DatasetViewTypeEnum.linage}});
+
     this.datasetViewType = DatasetViewTypeEnum.linage;
     this.appDatasetService.onSearchLinageDataset(this.getDatasetId());
   }

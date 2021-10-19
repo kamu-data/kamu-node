@@ -8,9 +8,14 @@ export default class AppValues {
   public static urlLogin: string = 'login';
   public static urlSearch: string = 'search';
   public static urlDatasetView: string = 'dataset-view';
+  public static urlDatasetViewOverviewType: string = 'overview';
+  public static urlDatasetViewMetadataType: string = 'metadata';
   public static urlDatasetCreate: string = 'dataset-create';
   public static urlDatasetCreateSelectType: string = 'select-type';
   public static urlDatasetCreateRoot: string = 'root';
+
+
+  public static httpPattern: RegExp = new RegExp(/^(http:\/\/)|(https:\/\/)/i);
 
   public static capitalizeFirstLetter(text: string): string {
     return text.charAt(0).toUpperCase() + text.slice(1);
@@ -53,5 +58,24 @@ export default class AppValues {
      */
     public static getDateNowISO8601(): string {
         return moment().format();
+    }
+
+
+    /**
+     * Checks if ulr has a protocol (http:// or https://).
+     * In case false - adds 'https://' at the beginning of url.
+     * @param {string} url
+     * @returns {string}
+     */
+    public static normalizeUrl(url: string): string {
+        return AppValues.httpPattern.test(url) ? url : `https://${ url }`;
+    }
+
+    public static fixedEncodeURIComponent(text: string): string {
+        return encodeURIComponent(text)
+            .replace('%2C', ',')
+            .replace(/[!'"/*]/g, (c: string) => {
+                return '%' + c.charCodeAt(0).toString(16);
+            });
     }
 }
