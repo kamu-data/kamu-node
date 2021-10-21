@@ -38,13 +38,11 @@ export class AppComponent implements OnInit {
   private appHeaderInit(): void {
     this.appSearchService.onSearchChanges.subscribe((searchValue: string) => {
       debugger
-      setTimeout(() => {
         this.searchValue = searchValue;
         if (!searchValue) {
           this.ngTypeaheadList = [];
         }
         this.searchValueAddToAutocomplete();
-      })
     });
 
     this.appSearchService.onAutocompleteDatasetChanges.subscribe((data: DatasetIDsInterface[]) => {
@@ -59,10 +57,9 @@ export class AppComponent implements OnInit {
           debugger
 
           if (event.url.split('?id=').length) {
-            setTimeout(() => {
+            debugger
               const searchValue: string = AppValues.fixedEncodeURIComponent(event.url.split('?id=')[1].split('&')[0]);
               this.appSearchService.searchChanges(searchValue);
-            })
           }
         });
   }

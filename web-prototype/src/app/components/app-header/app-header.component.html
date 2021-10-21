@@ -16,7 +16,7 @@
                      id="searchInput">
                     <input type="text" data-test-id="searchInput" class="form-control"
                            id="typeahead-http" [ngbTypeahead]="search" [resultTemplate]="rt"
-                           placeholder="Search" [(ngModel)]="searchValue"
+                           placeholder="Search" [(ngModel)]="searchValue" [inputFormatter]="formatter"
                            aria-label="Search" aria-describedby="addon-wrapping"
                            (focusin)="isSearchActive = true"
                            (keyup)="onKeyUpSearch($event)"
