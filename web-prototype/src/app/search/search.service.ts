@@ -7,6 +7,7 @@ import {
     SearchOverviewDatasetsInterface,
     SearchOverviewInterface
 } from "../interface/search.interface";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Injectable()
 export class AppSearchService {
@@ -46,6 +47,8 @@ export class AppSearchService {
     public autocompleteDatasetSearch(search: string): void {
         this.searchApi.autocompleteDatasetSearch(search).subscribe((data: DatasetIDsInterface[]) => {
             this.autocompleteDatasetChanges(data);
-        })
+        }, (error: HttpErrorResponse) => {
+            this.autocompleteDatasetChanges([])
+        });
     }
 }

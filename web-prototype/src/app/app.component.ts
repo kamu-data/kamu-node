@@ -57,7 +57,6 @@ export class AppComponent implements OnInit {
           debugger
 
           if (event.url.split('?id=').length) {
-            debugger
               const searchValue: string = AppValues.fixedEncodeURIComponent(event.url.split('?id=')[1].split('&')[0]);
               this.appSearchService.searchChanges(searchValue);
           }
