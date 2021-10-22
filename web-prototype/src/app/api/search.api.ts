@@ -160,11 +160,11 @@ export class SearchApi {
             }));
     }
 
-    public searchDataset(id: string, page: number = 0): Observable<SearchHistoryInterface[]> {
+    public searchDataset(params: {id: string, numRecords?: number, page?: number}): Observable<SearchHistoryInterface[]> {
         const GET_DATA: DocumentNode = gql`
 {
   datasets {
-  byId(id: "${id}") {
+  byId(id: "${params.id}") {
     id
     createdAt
     lastUpdatedAt
@@ -180,7 +180,7 @@ export class SearchApi {
     data {
       numRecordsTotal
       estimatedSize
-      tail(numRecords: 20, format: "JSON") {
+      tail(numRecords: ${params.numRecords || 10}, format: "JSON") {
         format
         content
         __typename

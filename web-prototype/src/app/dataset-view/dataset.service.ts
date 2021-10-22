@@ -33,7 +33,7 @@ export class AppDatasetService {
         return this.searchData;
     }
     public searchDataset(id: string, page: number): void {
-        this.searchApi.searchDataset(id, page).subscribe((data: SearchHistoryInterface[]) => {
+        this.searchApi.searchDataset({id, page}).subscribe((data: SearchHistoryInterface[]) => {
           this.searchData = data;
           this.searchDataChanges(data);
         })
