@@ -1,6 +1,5 @@
-import { ModuleWithProviders, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import {SearchAdditionalButtonsComponent} from "./search-additional-buttons.component";
-import {SearchAdditionalButtonsService} from "./search-additional-buttons.service";
 import {MatMenuModule} from "@angular/material/menu";
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";

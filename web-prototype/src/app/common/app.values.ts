@@ -78,4 +78,41 @@ export default class AppValues {
                 return '%' + c.charCodeAt(0).toString(16);
             });
     }
+    /**
+     * Makes deep copy of item without binding to its memory link
+     * @param {T} item
+     * @returns {T}
+     */
+    public static deepCopy<T>(item: T): T {
+       // @ts-ignore
+        let copy;
+
+       if (null == item || "object" !== typeof item) {
+          return item;
+       }
+
+       if (item instanceof Array) {
+           copy = [];
+           item.forEach(obj => {
+              copy.push(this.deepCopy(obj));
+           });
+           // @ts-ignore
+           return copy;
+       }
+
+       if (item instanceof Object) {
+           copy = {};
+           for (let attr in item) {
+               // @ts-ignore
+               if (item.hasOwnProperty(attr)) {
+                   // @ts-ignore
+                  copy[attr] = this.deepCopy(item[attr]);
+               }
+           }
+           // @ts-ignore
+           return copy;
+       }
+
+       throw new Error("Unable to copy obj! Its type isn't supported.");
+    }
 }

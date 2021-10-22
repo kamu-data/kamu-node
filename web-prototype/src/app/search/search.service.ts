@@ -3,8 +3,6 @@ import {Observable, Subject} from "rxjs";
 import {SearchApi} from "../api/search.api";
 import {
     DatasetIDsInterface,
-    SearchHistoryInterface,
-    SearchOverviewDatasetsInterface,
     SearchOverviewInterface
 } from "../interface/search.interface";
 import {HttpErrorResponse} from "@angular/common/http";

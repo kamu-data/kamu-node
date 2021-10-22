@@ -5,22 +5,25 @@ import {ApolloQueryResult, DocumentNode, gql} from "@apollo/client/core";
 import {Observable, of} from "rxjs";
 import {
     DatasetIDsInterface,
-    PageInfoInterface,
-    SearchHistoryInterface,
+    PageInfoInterface, SearchDatasetByID,
     SearchOverviewDatasetsInterface, SearchOverviewInterface, TypeNames,
 } from "../interface/search.interface";
+import AppValues from "../common/app.values";
 
 @Injectable()
 export class SearchApi {
+    // tslint:disable-next-line: no-any
     private apollo: ApolloBase<any>;
 
     constructor(private apolloProvider: Apollo) {
         this.apollo = this.apolloProvider.use('newClientName');
     }
 
+    // tslint:disable-next-line: no-any
     public seatchIndex(): Observable<any> {
         const GET_DATA: DocumentNode = gql``
 
+        // tslint:disable-next-line: no-any
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: any) => {
                 if (result.data) {
@@ -71,6 +74,7 @@ export class SearchApi {
                 let currentPage: number = 1;
 
                 if (result.data) {
+                    // tslint:disable-next-line: no-any
                     dataset = result.data.search.query.edges.map((edge: any) => {
                         return this.clearlyData(edge);
                     })
@@ -98,7 +102,7 @@ export class SearchApi {
         }
     }
     public autocompleteDatasetSearch(id: string): Observable<DatasetIDsInterface[]> {
-        if(!id) {
+        if(id === '') {
             return of([]);
         }
         const GET_DATA: DocumentNode = gql`
@@ -114,6 +118,7 @@ export class SearchApi {
   }
 }`
 
+        // tslint:disable-next-line: no-any
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
@@ -131,6 +136,7 @@ export class SearchApi {
         return newArray;
     }
 
+    // tslint:disable-next-line: no-any
     public searchLinageDataset(id: string): Observable<any> {
         const GET_DATA: DocumentNode = gql`
 {
@@ -152,6 +158,7 @@ export class SearchApi {
   }
 }
 `;
+        // tslint:disable-next-line: no-any
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
@@ -160,7 +167,7 @@ export class SearchApi {
             }));
     }
 
-    public searchDataset(params: {id: string, numRecords?: number, page?: number}): Observable<SearchHistoryInterface[]> {
+    public searchDataset(params: {id: string, numRecords?: number, page?: number}): Observable<SearchDatasetByID> {
         const GET_DATA: DocumentNode = gql`
 {
   datasets {
@@ -193,14 +200,21 @@ export class SearchApi {
 }
 
 }`
+        // @ts-ignore
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
-                    return JSON.parse(result.data.datasets.byId.data.tail.content);
+                    // tslint:disable-next-line: no-any
+                    let datasets: any = AppValues.deepCopy(result.data.datasets.byId);
+                    datasets['data'].tail.content = JSON.parse(result.data.datasets.byId['data'].tail.content);
+                    datasets['metadata'].currentSchema.content = JSON.parse(result.data.datasets.byId['metadata'].currentSchema.content);
+
+                    return datasets as SearchDatasetByID;
                 }
             }));
     }
 
+    // tslint:disable-next-line: no-any
     public onSearchMetadata(id: string): Observable<any> {
         const GET_DATA: DocumentNode = gql`
 {
@@ -229,6 +243,7 @@ export class SearchApi {
   }
 }
 `;
+        // tslint:disable-next-line: no-any
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
@@ -239,6 +254,7 @@ export class SearchApi {
             }));
     }
 
+    // tslint:disable-next-line: no-any
     clearlyData(edge: any) {
         const object = edge.node;
         const value = 'typename';

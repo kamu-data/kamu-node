@@ -7,8 +7,7 @@ import {
 } from "@angular/core";
 import {SearchOverviewDatasetsInterface} from "../../interface/search.interface";
 import AppValues from "../../common/app.values";
-import * as moment from 'moment-timezone';
-import {Moment} from "moment-timezone";
+
 @Component({
   selector: 'app-repo-list',
   templateUrl: './repo-list.component.html',

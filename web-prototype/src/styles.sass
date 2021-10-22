@@ -230,7 +230,7 @@ router-outlet
       font-size: 30px
 .search-header-container-block
   margin-bottom: 20px
-#search
+#search, #dataset-viewer
   & .nav-tabs
     margin-bottom: 14px
     border-bottom: none
@@ -331,15 +331,16 @@ router-outlet
     height: 50px
   .app-active-button__container
     margin-top: 7px
-  #search
+  #search, #dataset-viewer
     & .search-header-container-block
       grid-template-columns: 1fr
 
 @media (max-width: 768px)
   .app-content
     grid-template-columns: 1fr
-  #search .search-result-container
-    grid-template-columns: 1fr
+  #search, #dataset-viewer
+    & .search-result-container
+      grid-template-columns: 1fr
 @media (max-width: 991px)
   #app-header
     & #appHeaderMenuButton, #appHeaderLogo, #appHeaderAdditionalBlock

@@ -22,6 +22,7 @@ import {PaginationComponent} from "./pagination.component";
     declarations: [PaginationComponent]
 })
 export class PaginationModule {
+    // tslint:disable-next-line: no-any
     public static forRoot(): ModuleWithProviders<any> {
         return {ngModule: PaginationModule};
     }

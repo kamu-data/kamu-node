@@ -11,6 +11,7 @@ import {
 import {MatTableDataSource} from "@angular/material/table";
 import AppValues from "../../common/app.values";
 
+// tslint:disable-next-line: no-any
 const ELEMENT_DATA: any[] = [];
 @Component({
   selector: 'app-dynamic-table',
@@ -19,13 +20,16 @@ const ELEMENT_DATA: any[] = [];
 })
 export class DynamicTableComponent implements OnInit, OnChanges, AfterContentInit {
   @Input() public isTableHeader: boolean;
+  // tslint:disable-next-line: no-any
   @Input() public tableColumns?: any[];
+  // tslint:disable-next-line: no-any
   @Input() public tableSource: any[];
   @Input() public isResultQuantity?: boolean = false;
   @Input() public resultUnitText: string;
   @Input() public isClickableRow: boolean = false;
   @Output() public onSelectDatasetEmit: EventEmitter<string> = new EventEmitter();
 
+  // tslint:disable-next-line: no-any
   public dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
   public displayedColumns: string[] = [];
 
@@ -55,18 +59,21 @@ export class DynamicTableComponent implements OnInit, OnChanges, AfterContentIni
     return AppValues.capitalizeFirstLetter(newColumnName);
   }
 
+  // tslint:disable-next-line: no-any
   public onSelectDataset(dataset: any): void {
     this.onSelectDatasetEmit.emit(dataset);
   }
 
+  // tslint:disable-next-line: no-any
   private renderTable(data: any[]): void {
-    if (!data.length) {
+    if (data.length === 0) {
       this.dataSource.data = [];
       return;
     }
     this.dataSource.data = [];
     this.displayedColumns = Object.keys(data[0]);
 
+    // tslint:disable-next-line: no-any
     const dataSource = this.dataSource.data;
     data.forEach((field: any) => {
       dataSource.push(field);
@@ -75,6 +82,7 @@ export class DynamicTableComponent implements OnInit, OnChanges, AfterContentIni
     this.dataSource = new MatTableDataSource(dataSource);
   }
 
+  // tslint:disable-next-line: no-any
   public searchResultQuantity(tableSource: any[] = []): string {
       if(!Array.isArray(tableSource)) {
         return '0';

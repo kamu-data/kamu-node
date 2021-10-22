@@ -22,6 +22,7 @@ import {RepoListComponent} from "./repo-list.component";
     declarations: [RepoListComponent]
 })
 export class RepoListModule {
+    // tslint:disable-next-line: no-any
     public static forRoot(): ModuleWithProviders<any> {
         return {ngModule: RepoListModule};
     }

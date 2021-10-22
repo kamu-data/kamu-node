@@ -1,11 +1,9 @@
-import {Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from "@angular/core";
-import {Observable, of, OperatorFunction, pipe} from "rxjs";
-import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
+import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from "@angular/core";
+import {Observable, OperatorFunction} from "rxjs";
+import {debounceTime, distinctUntilChanged, switchMap} from "rxjs/operators";
 import {DatasetIDsInterface, TypeNames} from "../../interface/search.interface";
 import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
-import {AppSearchService} from "../../search/search.service";
 import {SearchApi} from "../../api/search.api";
-import {subscribe} from "graphql";
 
 @Component({
   selector: 'app-header',
@@ -18,7 +16,6 @@ export class AppHeaderComponent {
     @Input() public isVisible: boolean;
 
     @Output() public onSelectDataset: EventEmitter<DatasetIDsInterface> = new EventEmitter();
-    @Output() public keyUpSearchEvent: EventEmitter<string> = new EventEmitter();
     @Output() public addNew: EventEmitter<null> = new EventEmitter();
     @Output() public userInfo: EventEmitter<null> = new EventEmitter();
 
@@ -64,10 +61,6 @@ export class AppHeaderComponent {
         }, 200)
     }
 
-    // tslint:disable-next-line: no-any
-    public onKeyUpSearch(event: any): void {
-        this.keyUpSearchEvent.emit(event['target']['value']);
-    }
     public onAddNew(): void {
         this.addNew.emit();
     }

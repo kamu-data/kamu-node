@@ -22,6 +22,7 @@ import {PaginationModule} from "../components/pagination-component/pagination.mo
     declarations: [SearchComponent]
 })
 export class SearchModule {
+    // tslint:disable-next-line: no-any
     public static forRoot(): ModuleWithProviders<any> {
         return {ngModule: SearchModule};
     }

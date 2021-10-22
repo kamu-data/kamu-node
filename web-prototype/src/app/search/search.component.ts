@@ -1,9 +1,7 @@
 import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
-import {MatTableDataSource} from '@angular/material/table';
 import {AppSearchService} from "./search.service";
 import {
   PageInfoInterface,
-  SearchHistoryInterface,
   SearchOverviewDatasetsInterface,
   SearchOverviewInterface
 } from "../interface/search.interface";
@@ -13,7 +11,6 @@ import {SearchAdditionalButtonInterface} from "../components/search-additional-b
 import {MatSidenav} from "@angular/material/sidenav";
 import {SideNavService} from "../services/sidenav.service";
 import {Router} from "@angular/router";
-import {query} from "@angular/animations";
 
 
 @Component({

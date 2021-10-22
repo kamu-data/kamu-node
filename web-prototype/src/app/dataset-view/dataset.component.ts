@@ -1,5 +1,5 @@
 import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
-import {SearchHistoryInterface} from "../interface/search.interface";
+import {DatasetInfoInterface, SearchHistoryInterface} from "../interface/search.interface";
 import AppValues from "../common/app.values";
 import {SearchAdditionalButtonInterface} from "../components/search-additional-buttons/search-additional-buttons.interface";
 import {MatSidenav} from "@angular/material/sidenav";
@@ -8,8 +8,6 @@ import {searchAdditionalButtonsEnum} from "../search/search.interface";
 import {DatasetViewTypeEnum} from "./dataset-view.interface";
 import {AppDatasetService} from "./dataset.service";
 import {Router} from "@angular/router";
-
-const ELEMENT_DATA: SearchHistoryInterface[] = [];
 
 @Component({
   selector: 'app-dataset',
@@ -20,6 +18,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
 
   @ViewChild('sidenav', {static: true}) public sidenav?: MatSidenav;
   public isMobileView: boolean = false;
+  public datasetInfo: DatasetInfoInterface;
   public searchValue: string = '';
   public isMinimizeSearchAdditionalButtons: boolean = false;
   public datasetViewType: DatasetViewTypeEnum = DatasetViewTypeEnum.overview;
@@ -37,6 +36,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     styleClassButton: 'app-active-button'
   }];
 
+  // tslint:disable-next-line: no-any
   public tableData: {
     isTableHeader: boolean,
     displayedColumns?: any[],
@@ -76,14 +76,23 @@ export class DatasetComponent implements OnInit, AfterContentInit {
 
     this.initDatasetViewByType();
 
+    this.appDatasetService.onSearchDatasetInfoChanges.subscribe((info: DatasetInfoInterface) => {
+      this.datasetInfo = info;
+    })
     this.appDatasetService.onSearchChanges.subscribe((value: string) => {
       this.searchValue = value;
     })
 
+    // tslint:disable-next-line: no-any
     this.appDatasetService.onSearchDataChanges.subscribe((data: any[]) => {
       this.tableData.tableSource = data;
     });
   }
+
+  public ngAfterContentInit(): void {
+    this.tableData.tableSource = this.searchData
+  }
+
   private initTableData(): void {
     this.tableData = {
       isTableHeader: true,
@@ -120,11 +129,8 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     return '';
   }
 
-  public ngAfterContentInit(): void {
-    this.tableData.tableSource = this.searchData
-  }
-  public onSelectDataset(dataset: any): void {
-    return;
+  public momentConverDatetoLocalWithFormat(date: string): string {
+    return AppValues.momentConverDatetoLocalWithFormat({date: new Date(date), format: 'DD MMM YYYY', isTextDate: true});
   }
 
 
