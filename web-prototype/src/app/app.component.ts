@@ -15,7 +15,6 @@ export class AppComponent implements OnInit {
   public isMobileView: boolean = false;
   public searchValue: string = '';
   public isVisible: boolean = true;
-  public ngTypeaheadList: DatasetIDsInterface[] = [];
   private appHeaderNotVisiblePages: string[] = [AppValues.urlDatasetCreate, AppValues.urlLogin];
   private _window: Window;
 
@@ -39,15 +38,6 @@ export class AppComponent implements OnInit {
     this.appSearchService.onSearchChanges.subscribe((searchValue: string) => {
       debugger
         this.searchValue = searchValue;
-        if (!searchValue) {
-          this.ngTypeaheadList = [];
-        }
-        this.searchValueAddToAutocomplete();
-    });
-
-    this.appSearchService.onAutocompleteDatasetChanges.subscribe((data: DatasetIDsInterface[]) => {
-      this.ngTypeaheadList = data;
-      this.searchValueAddToAutocomplete();
     });
 
     this.router.events
@@ -61,14 +51,6 @@ export class AppComponent implements OnInit {
               this.appSearchService.searchChanges(searchValue);
           }
         });
-  }
-
-  private searchValueAddToAutocomplete(): void {
-     let newArray: DatasetIDsInterface[] = JSON.parse(JSON.stringify(this.ngTypeaheadList));
-     if (this.searchValue) {
-       newArray.unshift({__typename: TypeNames.allDataType, id: this.searchValue});
-     }
-      this.ngTypeaheadList = newArray;
   }
 
   private checkView(): void {

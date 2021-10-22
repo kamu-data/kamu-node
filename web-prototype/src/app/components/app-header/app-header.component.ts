@@ -1,8 +1,11 @@
 import {Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from "@angular/core";
-import {Observable, OperatorFunction} from "rxjs";
-import {debounceTime, distinctUntilChanged, map} from "rxjs/operators";
+import {Observable, of, OperatorFunction, pipe} from "rxjs";
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
 import {DatasetIDsInterface, TypeNames} from "../../interface/search.interface";
 import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
+import {AppSearchService} from "../../search/search.service";
+import {SearchApi} from "../../api/search.api";
+import {subscribe} from "graphql";
 
 @Component({
   selector: 'app-header',
@@ -13,7 +16,6 @@ export class AppHeaderComponent {
     @Input() public appLogo: string;
     @Input() public isMobileView: boolean;
     @Input() public isVisible: boolean;
-    @Input() public ngTypeaheadList: DatasetIDsInterface[] = [];
 
     @Output() public onSelectDataset: EventEmitter<DatasetIDsInterface> = new EventEmitter();
     @Output() public keyUpSearchEvent: EventEmitter<string> = new EventEmitter();
@@ -25,7 +27,7 @@ export class AppHeaderComponent {
     public isSearchActive: boolean = false;
     private _window: Window;
 
-    constructor() {
+    constructor(private appSearchAPI: SearchApi) {
         this._window = window;
     }
 
@@ -34,9 +36,9 @@ export class AppHeaderComponent {
     }
     public search: OperatorFunction<string, readonly DatasetIDsInterface[]> = (text$: Observable<string>) => {
         return text$.pipe(
+            debounceTime(300),
             distinctUntilChanged(),
-            map(term => this.ngTypeaheadList ? this.ngTypeaheadList.map((item: DatasetIDsInterface) => item) : [])
-        )
+            switchMap(term => this.appSearchAPI.autocompleteDatasetSearch(term)))
     }
 
     public formatter(x: DatasetIDsInterface | string): string {

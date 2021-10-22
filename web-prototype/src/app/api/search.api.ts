@@ -7,7 +7,7 @@ import {
     DatasetIDsInterface,
     PageInfoInterface,
     SearchHistoryInterface,
-    SearchOverviewDatasetsInterface, SearchOverviewInterface,
+    SearchOverviewDatasetsInterface, SearchOverviewInterface, TypeNames,
 } from "../interface/search.interface";
 
 @Injectable()
@@ -117,9 +117,18 @@ export class SearchApi {
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
-                    return result.data.search.query.nodes;
+                    return SearchApi.searchValueAddToAutocomplete(result.data.search.query.nodes || [], id);
+                } else {
+                    return [];
                 }
             }));
+    }
+    private static searchValueAddToAutocomplete(ngTypeaheadList: DatasetIDsInterface[], searchValue: string): DatasetIDsInterface[] {
+        let newArray: DatasetIDsInterface[] = JSON.parse(JSON.stringify(ngTypeaheadList));
+        if (searchValue) {
+            newArray.unshift({__typename: TypeNames.allDataType, id: searchValue});
+        }
+        return newArray;
     }
 
     public searchLinageDataset(id: string): Observable<any> {
