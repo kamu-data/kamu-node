@@ -72,9 +72,9 @@ export class DatasetComponent implements OnInit, AfterContentInit {
       this.sidenavService.setSidenav(this.sidenav);
       this.checkWindowSize();
     }
-    this.initTableData();
-
     this.initDatasetViewByType();
+
+    this.initTableData();
 
     this.appDatasetService.onSearchDatasetInfoChanges.subscribe((info: DatasetInfoInterface) => {
       this.datasetInfo = info;
@@ -111,15 +111,21 @@ export class DatasetComponent implements OnInit, AfterContentInit {
   }
 
   private initDatasetViewByType(): void {
+    debugger
     let searchParams: string[] = this._window.location.search.split('&type=');
 
     if (searchParams.length > 1) {
       let type: DatasetViewTypeEnum = AppValues.fixedEncodeURIComponent(searchParams[1].split('&')[0]) as DatasetViewTypeEnum;
 
+      this.datasetViewType = type;
+      if (type === DatasetViewTypeEnum.overview) {
+        this.onSearchDataset();
+      }
       if (type === DatasetViewTypeEnum.metadata) {
         this.onSearchMetadata();
-      } else {
-        this.onSearchDataset();
+      }
+      if (type === DatasetViewTypeEnum.linage) {
+        this.onSearchLinageDataset();
       }
     }
   }
