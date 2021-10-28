@@ -148,13 +148,9 @@ export class SearchApi {
         currentUpstreamDependencies {
           id
           kind
-          __typename
         }
-        __typename
       }
-      __typename
     }
-    __typename
   }
 }
 `;
@@ -162,7 +158,7 @@ export class SearchApi {
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
-                    return result.data;
+                    return result.data.datasets.byId;
                 }
             }));
     }

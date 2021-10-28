@@ -5,9 +5,9 @@
                  [style]="isMinimizeSearchAdditionalButtons ? 'grid-template-columns: 1fr 0.1fr' : ''">
                 <div class="datasetViewTypeToggleGroup">
                     <mat-button-toggle-group name="datasetViewType" aria-label="Dataset View Type">
-                        <mat-button-toggle value="overview" [checked]="datasetViewType == 'overview'" (click)="onSearchDataset()">Overview</mat-button-toggle>
-                        <mat-button-toggle value="metadata" [checked]="datasetViewType == 'metadata'" (click)="onSearchMetadata()">Metadata</mat-button-toggle>
-                        <mat-button-toggle value="linage" [checked]="datasetViewType == 'linage'" (click)="onSearchLinageDataset()">Linage</mat-button-toggle>
+                        <mat-button-toggle value="overview" [checked]="datasetViewTypeOverview" (click)="onSearchDataset()">Overview</mat-button-toggle>
+                        <mat-button-toggle value="metadata" [checked]="datasetViewTypeMetadata" (click)="onSearchMetadata()">Metadata</mat-button-toggle>
+                        <mat-button-toggle value="linage" [checked]="datasetViewTypeLinage" (click)="onSearchLinageDataset()">Linage</mat-button-toggle>
                         <mat-button-toggle value="projections" disabled>Projections</mat-button-toggle>
                     </mat-button-toggle-group>
                 </div>
@@ -21,11 +21,22 @@
             <div class="search-result-container">
                 <div class="search-result-container__content">
 
-                    <app-dynamic-table [isResultQuantity]="tableData.isResultQuantity"
+                    <ng-template [ngIf]="datasetViewTypeLinage">
+                        <p>List of dependencies</p>
+                        <ul>
+                            <li *ngFor="let row of getDatasetTree(); let rowIndex = index">
+                                    <p>{{row[0]}} -> {{row[1]}}</p>
+                            </li>
+                        </ul>
+                    </ng-template>
+
+                    <ng-template [ngIf]="datasetViewTypeOverview || datasetViewTypeMetadata">
+                        <app-dynamic-table [isResultQuantity]="tableData.isResultQuantity"
                                        [isClickableRow]="tableData.isClickableRow"
                                        [resultUnitText]="getResultUnitText()"
                                        [isTableHeader]="tableData.isTableHeader" [tableSource]="tableData.tableSource"
                                        (onSelectDatasetEmit)="onSelectDataset($event)"></app-dynamic-table>
+                    </ng-template>
 
                 </div>
 

@@ -89,6 +89,10 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     });
   }
 
+  public getDatasetTree(): string[][] {
+    return this.appDatasetService.getDatasetTree;
+  }
+
   public ngAfterContentInit(): void {
     this.tableData.tableSource = this.searchData
   }
@@ -149,6 +153,16 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     }
   }
 
+  public get datasetViewTypeOverview(): boolean {
+    return this.datasetViewType === DatasetViewTypeEnum.overview;
+  }
+  public get datasetViewTypeMetadata(): boolean {
+    return this.datasetViewType === DatasetViewTypeEnum.metadata;
+  }
+  public get datasetViewTypeLinage(): boolean {
+    return this.datasetViewType === DatasetViewTypeEnum.linage;
+  }
+
   private onClickDeriveForm() {
   }
   private onClickExplore() {
@@ -177,6 +191,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     this.router.navigate([AppValues.urlDatasetView], {queryParams: {id: this.getDatasetId(), type: DatasetViewTypeEnum.linage}});
 
     this.datasetViewType = DatasetViewTypeEnum.linage;
+    this.appDatasetService.resetDatasetTree();
     this.appDatasetService.onSearchLinageDataset(this.getDatasetId());
   }
 }

@@ -119,3 +119,21 @@ export interface DatasetInfoInterface {
         currentWatermark: string
     }
 }
+export interface DatasetLinageResponse {
+    "__typename": string,
+    "id": string,
+    "kind": DatasetKindTypeNames,
+    "metadata": {
+        "__typename": string,
+        "currentUpstreamDependencies": DatasetCurrentUpstreamDependencies[]
+    }
+}
+export interface DatasetCurrentUpstreamDependencies {
+    "__typename": string,
+    "id": string,
+    "kind": DatasetKindTypeNames
+}
+export enum DatasetKindTypeNames {
+    derivative = 'DERIVATIVE',
+    root = 'ROOT'
+}
