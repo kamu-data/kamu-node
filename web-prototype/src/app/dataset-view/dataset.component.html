@@ -8,7 +8,7 @@
                         <mat-button-toggle value="overview" [checked]="datasetViewTypeOverview" (click)="onSearchDataset()">Overview</mat-button-toggle>
                         <mat-button-toggle value="metadata" [checked]="datasetViewTypeMetadata" (click)="onSearchMetadata()">Metadata</mat-button-toggle>
                         <mat-button-toggle value="linage" [checked]="datasetViewTypeLinage" (click)="onSearchLinageDataset()">Linage</mat-button-toggle>
-                        <mat-button-toggle value="projections" disabled>Projections</mat-button-toggle>
+                        <mat-button-toggle value="projections" (click)="onSearchProjections()" disabled>Projections</mat-button-toggle>
                     </mat-button-toggle-group>
                 </div>
 

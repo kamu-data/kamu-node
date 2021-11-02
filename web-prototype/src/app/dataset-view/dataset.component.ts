@@ -9,6 +9,7 @@ import {DatasetViewTypeEnum} from "./dataset-view.interface";
 import {AppDatasetService} from "./dataset.service";
 import {Router} from "@angular/router";
 
+
 @Component({
   selector: 'app-dataset',
   templateUrl: './dataset.component.html',
@@ -46,6 +47,93 @@ export class DatasetComponent implements OnInit, AfterContentInit {
   };
   public searchData: SearchHistoryInterface[] = [];
   private _window: Window;
+
+  public  options = {
+    title: {
+      text: 'Simple Graph'
+    },
+    tooltip: {},
+    animationDurationUpdate: 1500,
+    animationEasingUpdate: 'quinticInOut',
+    series: [
+      {
+        type: 'graph',
+        layout: 'none',
+        symbolSize: 60,
+        roam: true,
+        label: {
+          normal: {
+            show: true
+          }
+        },
+        edgeSymbol: ['circle', 'arrow'],
+        edgeSymbolSize: [4, 10],
+        edgeLabel: {
+          normal: {
+            textStyle: {
+              fontSize: 20
+            }
+          }
+        },
+        data: [{
+          name: 'Node 1'
+        }, {
+          name: 'Node 2'
+        }, {
+          name: 'Node 3'
+        }, {
+          name: 'Node 4'
+        }],
+        // links: [],
+        links: [{
+          source: 0,
+          target: 1,
+          symbolSize: [5, 20],
+          label: {
+            normal: {
+              show: true
+            }
+          },
+          lineStyle: {
+            normal: {
+              width: 5,
+              curveness: 0.2
+            }
+          }
+        }, {
+          source: 'Node 2',
+          target: 'Node 1',
+          label: {
+            normal: {
+              show: true
+            }
+          },
+          lineStyle: {
+            normal: { curveness: 0.2 }
+          }
+        }, {
+          source: 'Node 1',
+          target: 'Node 3'
+        }, {
+          source: 'Node 2',
+          target: 'Node 3'
+        }, {
+          source: 'Node 2',
+          target: 'Node 4'
+        }, {
+          source: 'Node 1',
+          target: 'Node 4'
+        }],
+        lineStyle: {
+          normal: {
+            opacity: 0.9,
+            width: 2,
+            curveness: 0
+          }
+        }
+      }
+    ]
+  };
 
   @HostListener('window:resize', ['$event'])
   private checkWindowSize(): void {
@@ -127,6 +215,9 @@ export class DatasetComponent implements OnInit, AfterContentInit {
       if (type === DatasetViewTypeEnum.linage) {
         this.onSearchLinageDataset();
       }
+      if (type === DatasetViewTypeEnum.projections) {
+        this.onSearchProjections();
+      }
     }
   }
 
@@ -199,5 +290,9 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     this.datasetViewType = DatasetViewTypeEnum.linage;
     this.appDatasetService.resetDatasetTree();
     this.appDatasetService.onSearchLinageDataset(this.getDatasetId());
+  }
+  public onSearchProjections(): void {
+    console.log('Projections Tab');
+    this.onSearchDataset();
   }
 }
