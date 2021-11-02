@@ -7,6 +7,7 @@ import {FormsModule} from "@angular/forms";
 import {DynamicTableModule} from "../components/dynamic-table/dynamic-table.module";
 import {SearchSidenavModule} from "../components/search-sidenav/search-sidenav.module";
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import {NgxGraphModule} from "@swimlane/ngx-graph";
 
 @NgModule({
     imports: [
@@ -19,6 +20,7 @@ import {MatButtonToggleModule} from "@angular/material/button-toggle";
         DynamicTableModule,
         SearchSidenavModule,
         SearchAdditionalButtonsModule,
+        NgxGraphModule,
     ],
   exports: [DatasetComponent],
   declarations: [DatasetComponent]

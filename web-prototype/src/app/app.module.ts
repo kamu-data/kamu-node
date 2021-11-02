@@ -35,6 +35,7 @@ import {DatasetCreateModule} from "./dataset-create/dataset-create.module";
 import {AppHeaderComponent} from "./components/app-header/app-header.component";
 import {MatOptionModule} from "@angular/material/core";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
+import {NgxGraphModule} from "@swimlane/ngx-graph";
 
 
 const Services = [
@@ -99,7 +100,8 @@ const MatModules = [
         ...MatModules,
         FormsModule,
         MatOptionModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        NgxGraphModule
     ],
     providers: [
         ...Services
