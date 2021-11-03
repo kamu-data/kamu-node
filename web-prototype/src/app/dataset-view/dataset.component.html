@@ -24,7 +24,7 @@
                     <ng-template [ngIf]="datasetViewTypeLinage">
                         <p>List of dependencies</p>
 
-                        <app-linage-graph [view]="linageGraphView"></app-linage-graph>
+                        <app-linage-graph [view]="linageGraphView" [links]="linageGraphLink" [nodes]="linageGraphNodes"></app-linage-graph>
                         <ul>
                             <li *ngFor="let row of getDatasetTree(); let rowIndex = index">
                                     <p>{{row[0]}} -> {{row[1]}}</p>

@@ -8,6 +8,8 @@ import {searchAdditionalButtonsEnum} from "../search/search.interface";
 import {DatasetViewTypeEnum} from "./dataset-view.interface";
 import {AppDatasetService} from "./dataset.service";
 import {Router} from "@angular/router";
+import {Edge} from "@swimlane/ngx-graph/lib/models/edge.model";
+import {Node} from "@swimlane/ngx-graph/lib/models/node.model";
 
 
 @Component({
@@ -19,7 +21,6 @@ export class DatasetComponent implements OnInit, AfterContentInit {
 
   @ViewChild('sidenav', {static: true}) public sidenav?: MatSidenav;
   public isMobileView = false;
-  public linageGraphView: [number, number] = [500, 600];
   public datasetInfo: DatasetInfoInterface;
   public searchValue = '';
   public isMinimizeSearchAdditionalButtons = false;
@@ -47,8 +48,13 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     isClickableRow: boolean
   };
   public searchData: SearchHistoryInterface[] = [];
-  private _window: Window;
 
+  public linageGraphView: [number, number] = [500, 600];
+  public linageGraphLink: Edge[] = [];
+  public linageGraphNodes: Node[] = [];
+
+
+  private _window: Window;
   @HostListener('window:resize', ['$event'])
   private checkWindowSize(): void {
     this.isMinimizeSearchAdditionalButtons = AppValues.isMobileView();
@@ -93,8 +99,55 @@ export class DatasetComponent implements OnInit, AfterContentInit {
   }
 
   public changeLinageGraphView(): void {
-    setTimeout(() => {
-      if (this.datasetViewType === DatasetViewTypeEnum.linage) {
+
+    if (this.datasetViewType === DatasetViewTypeEnum.linage) {
+      this.linageGraphLink = [
+          {
+            id: 'a',
+            source: 'first',
+            target: 'second',
+            label: 'is parent of'
+          }, {
+          id: 'b',
+          source: 'first',
+          target: 'c1',
+          label: 'custom label'
+        }, {
+          id: 'd',
+          source: 'first',
+          target: 'c2',
+          label: 'custom label'
+        }, {
+          id: 'e',
+          source: 'c1',
+          target: 'd',
+          label: 'first link'
+        }, {
+          id: 'f',
+          source: 'c1',
+          target: 'd',
+          label: 'second link'
+        }
+      ];
+      this.linageGraphNodes = [
+    {
+      id: 'first',
+      label: 'ca.covid19.daily-cases'
+    }, {
+      id: 'second',
+      label: 'ca.covid19.case-details'
+    }, {
+      id: 'c1',
+      label: 'ca.bccdc.covid19.case-details'
+    }, {
+      id: 'c2',
+      label: 'ca.ontario.data.covid19.case-details'
+    }, {
+      id: 'd',
+      label: 'D'
+    }
+  ];
+      setTimeout(() => {
         const searchResultContainer: HTMLElement | null = document.getElementById('searchResultContainerContent');
         if (searchResultContainer !== null) {
 
@@ -106,8 +159,8 @@ export class DatasetComponent implements OnInit, AfterContentInit {
           this.linageGraphView[0] = linageGraphViewWidth;
           this.linageGraphView[1] = searchResultContainer.offsetHeight;
         }
-      }
-    });
+      });
+    }
   }
 
   public getDatasetTree(): string[][] {
