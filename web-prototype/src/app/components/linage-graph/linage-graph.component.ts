@@ -12,15 +12,15 @@ export class LinageGraphComponent {
   @Input() public links: Edge[];
   @Input() public nodes: Node[];
 
-  public draggingEnabled: boolean = false;
-  public panningEnabled: boolean = true;
-  public zoomEnabled: boolean = true;
-  public zoomSpeed: number = 0.1;
-  public minZoomLevel: number = 0.1;
-  public maxZoomLevel: number = 4.0;
-  public panOnZoom: boolean = true;
-  public autoZoom: boolean = true;
-  public autoCenter: boolean = false;
-  public showMiniMap: boolean = true;
+  public draggingEnabled = false;
+  public panningEnabled = true;
+  public zoomEnabled = true;
+  public zoomSpeed = 0.1;
+  public minZoomLevel = 0.1;
+  public maxZoomLevel = 4.0;
+  public panOnZoom = true;
+  public autoZoom = true;
+  public autoCenter = false;
+  public showMiniMap = true;
   public miniMapPosition: MiniMapPosition = MiniMapPosition.UpperLeft;
 }

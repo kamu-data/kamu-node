@@ -123,7 +123,7 @@ export default class AppValues {
     /* eslint-disable  @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment */
     // @ts-ignore
     public static shellSort(arr: any[]) {
-     let n = arr.length;
+     const n: number = arr.length;
 
      //Start with a really large gap, and then reduce the gap until there isn't any
      //With this, the gap starts as half of the array length, and then half of that every time
@@ -131,7 +131,7 @@ export default class AppValues {
          //Do a insertion sort for each of the section the gap ends up dividing
          for (let i = gap; i < n; i += 1) {
              //We store the current varible
-             let temp = arr[i];
+             const temp = arr[i];
 
              //This is the insection sort to sort the section into order
              let j;

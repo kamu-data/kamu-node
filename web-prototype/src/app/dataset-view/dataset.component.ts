@@ -52,7 +52,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     public linageGraphView: [number, number] = [500, 600];
     public linageGraphLink: Edge[] = [];
     public linageGraphNodes: Node[] = [];
-    public isAvailableLinageGraph: boolean = false;
+    public isAvailableLinageGraph = false;
 
 
     private _window: Window;
