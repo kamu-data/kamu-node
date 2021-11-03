@@ -8,6 +8,7 @@ import {DynamicTableModule} from "../components/dynamic-table/dynamic-table.modu
 import {SearchSidenavModule} from "../components/search-sidenav/search-sidenav.module";
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import {NgxGraphModule} from "@swimlane/ngx-graph";
+import {LinageGraphModule} from "../components/linage-graph/linage-graph.module";
 
 @NgModule({
     imports: [
@@ -21,9 +22,10 @@ import {NgxGraphModule} from "@swimlane/ngx-graph";
         SearchSidenavModule,
         SearchAdditionalButtonsModule,
         NgxGraphModule,
+        LinageGraphModule
     ],
   exports: [DatasetComponent],
-  declarations: [DatasetComponent]
+    declarations: [DatasetComponent]
 })
 export class DatasetModule {
     // tslint:disable-next-line: no-any

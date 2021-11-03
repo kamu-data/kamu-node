@@ -24,40 +24,7 @@
                     <ng-template [ngIf]="datasetViewTypeLinage">
                         <p>List of dependencies</p>
 
-                        <ngx-graph
-                          class="chart-container"
-                          [view]="[800, 200]"
-                          [draggingEnabled]="false"
-                          [panningEnabled]="false"
-                          [enableZoom]="false"
-                          [showMiniMap]="false"
-                          [links]="[
-                            {
-                              id: 'a',
-                              source: 'first',
-                            target: 'second',
-                              label: 'is parent of'
-                            }, {
-                              id: 'b',
-                              source: 'first',
-                              target: 'third',
-                              label: 'custom label'
-                            }
-                          ]"
-                          [nodes]="[
-                            {
-                              id: 'first',
-                              label: 'A'
-                            }, {
-                              id: 'second',
-                              label: 'B'
-                            }, {
-                              id: 'third',
-                              label: 'C'
-                            }
-                          ]"
-                        >
-                        </ngx-graph>
+                        <app-linage-graph></app-linage-graph>
                         <ul>
                             <li *ngFor="let row of getDatasetTree(); let rowIndex = index">
                                     <p>{{row[0]}} -> {{row[1]}}</p>
