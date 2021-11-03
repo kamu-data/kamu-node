@@ -24,8 +24,7 @@ import {FormsModule} from "@angular/forms";
   declarations: [DatasetCreateComponent]
 })
 export class DatasetCreateModule {
-    // tslint:disable-next-line: no-any
-    public static forRoot(): ModuleWithProviders<any> {
+    public static forRoot(): ModuleWithProviders<DatasetCreateModule> {
     return { ngModule: DatasetCreateModule };
   }
 }

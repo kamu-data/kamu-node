@@ -11,7 +11,7 @@ import {
 import {MatTableDataSource} from "@angular/material/table";
 import AppValues from "../../common/app.values";
 
-// tslint:disable-next-line: no-any
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 const ELEMENT_DATA: any[] = [];
 @Component({
   selector: 'app-dynamic-table',
@@ -20,25 +20,24 @@ const ELEMENT_DATA: any[] = [];
 })
 export class DynamicTableComponent implements OnInit, OnChanges, AfterContentInit {
   @Input() public isTableHeader: boolean;
-  // tslint:disable-next-line: no-any
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
   @Input() public tableColumns?: any[];
-  // tslint:disable-next-line: no-any
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
   @Input() public tableSource: any[];
   @Input() public isResultQuantity?: boolean = false;
   @Input() public resultUnitText: string;
-  @Input() public isClickableRow: boolean = false;
+  @Input() public isClickableRow = false;
   @Output() public onSelectDatasetEmit: EventEmitter<string> = new EventEmitter();
 
-  // tslint:disable-next-line: no-any
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
   public dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
   public displayedColumns: string[] = [];
 
-  constructor() { }
   public ngOnInit(): void {
     this.tableSource && this.renderTable(this.tableSource);
   }
   public ngOnChanges(changes: SimpleChanges): void {
-    this.tableSource && this.renderTable(this.tableSource);
+    this.tableSource && changes && this.renderTable(this.tableSource);
   }
 
   public ngAfterContentInit(): void {
@@ -47,7 +46,7 @@ export class DynamicTableComponent implements OnInit, OnChanges, AfterContentIni
 
   public changeColumnName(columnName: string): string {
     columnName = columnName.replace('_', ' ');
-    let newColumnName: string = '';
+    let newColumnName = '';
 
     for (let i = 0; i < columnName.length; i++) {
       if (columnName.charAt(i) === columnName.charAt(i).toUpperCase()) {
@@ -59,12 +58,12 @@ export class DynamicTableComponent implements OnInit, OnChanges, AfterContentIni
     return AppValues.capitalizeFirstLetter(newColumnName);
   }
 
-  // tslint:disable-next-line: no-any
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
   public onSelectDataset(dataset: any): void {
     this.onSelectDatasetEmit.emit(dataset);
   }
 
-  // tslint:disable-next-line: no-any
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
   private renderTable(data: any[]): void {
     if (data.length === 0) {
       this.dataSource.data = [];
@@ -73,7 +72,7 @@ export class DynamicTableComponent implements OnInit, OnChanges, AfterContentIni
     this.dataSource.data = [];
     this.displayedColumns = Object.keys(data[0]);
 
-    // tslint:disable-next-line: no-any
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     const dataSource = this.dataSource.data;
     data.forEach((field: any) => {
       dataSource.push(field);
@@ -82,7 +81,7 @@ export class DynamicTableComponent implements OnInit, OnChanges, AfterContentIni
     this.dataSource = new MatTableDataSource(dataSource);
   }
 
-  // tslint:disable-next-line: no-any
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
   public searchResultQuantity(tableSource: any[] = []): string {
       if(!Array.isArray(tableSource)) {
         return '0';

@@ -21,10 +21,10 @@ import {Router} from "@angular/router";
 export class SearchComponent implements OnInit, AfterContentInit {
 
   @ViewChild('sidenav', {static: true}) public sidenav?: MatSidenav;
-  public isMobileView: boolean = false;
-  public searchValue: string = '';
-  public currentPage: number = 1;
-  public isMinimizeSearchAdditionalButtons: boolean = false;
+  public isMobileView = false;
+  public searchValue = '';
+  public currentPage = 1;
+  public isMinimizeSearchAdditionalButtons = false;
   public searchAdditionalButtonsData: SearchAdditionalButtonInterface[] = [{
     textButton: searchAdditionalButtonsEnum.Descission
   }, {
@@ -141,12 +141,16 @@ export class SearchComponent implements OnInit, AfterContentInit {
   }
 
   private onClickDeriveForm() {
+    console.log('onClickDeriveForm');
   }
   private onClickExplore() {
+    console.log('onClickExplore');
   }
   private onClickReputation() {
+    console.log('onClickReputation');
   }
   private onClickDescission() {
+    console.log('onClickDescission');
   }
 
   public onSearch(searchValue: string, page?: number): void {

@@ -12,7 +12,7 @@ import AppValues from "../common/app.values";
 
 @Injectable()
 export class SearchApi {
-    // tslint:disable-next-line: no-any
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     private apollo: ApolloBase<any>;
 
     constructor(private apolloProvider: Apollo) {
@@ -23,19 +23,19 @@ export class SearchApi {
     public seatchIndex(): Observable<any> {
         const GET_DATA: DocumentNode = gql``
 
-        // tslint:disable-next-line: no-any
+        /* eslint-disable  @typescript-eslint/no-explicit-any */
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: any) => {
                 if (result.data) {
                     return result.data.search.query.edges.map((edge: any) => {
-                        let d = Object();
+                        const d = Object();
                         d.id = edge.node.id;
                         return d;
                     })
                 }
             }));
     }
-    public searchOverview(searchQuery: string, page: number = 0): Observable<SearchOverviewInterface> {
+    public searchOverview(searchQuery: string, page = 0): Observable<SearchOverviewInterface> {
         const GET_DATA: DocumentNode = gql`
   {
   search {
@@ -70,8 +70,8 @@ export class SearchApi {
             .valueChanges.pipe(map((result: any) => {
                 let dataset: SearchOverviewDatasetsInterface[] = [];
                 let pageInfo: PageInfoInterface = SearchApi.pageInfoInit();
-                let totalCount: number = 0;
-                let currentPage: number = 1;
+                let totalCount = 0;
+                let currentPage = 1;
 
                 if (result.data) {
                     // tslint:disable-next-line: no-any
@@ -118,7 +118,7 @@ export class SearchApi {
   }
 }`
 
-        // tslint:disable-next-line: no-any
+        /* eslint-disable  @typescript-eslint/no-explicit-any */
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
@@ -129,14 +129,14 @@ export class SearchApi {
             }));
     }
     private static searchValueAddToAutocomplete(ngTypeaheadList: DatasetIDsInterface[], searchValue: string): DatasetIDsInterface[] {
-        let newArray: DatasetIDsInterface[] = JSON.parse(JSON.stringify(ngTypeaheadList));
+        const newArray: DatasetIDsInterface[] = JSON.parse(JSON.stringify(ngTypeaheadList));
         if (searchValue) {
             newArray.unshift({__typename: TypeNames.allDataType, id: searchValue});
         }
         return newArray;
     }
 
-    // tslint:disable-next-line: no-any
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     public searchLinageDataset(id: string): Observable<any> {
         const GET_DATA: DocumentNode = gql`
 {
@@ -154,7 +154,7 @@ export class SearchApi {
   }
 }
 `;
-        // tslint:disable-next-line: no-any
+        /* eslint-disable  @typescript-eslint/no-explicit-any */
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
@@ -196,17 +196,18 @@ export class SearchApi {
 }
 
 }`
-        // @ts-ignore
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
-                    // tslint:disable-next-line: no-any
-                    let datasets: any = AppValues.deepCopy(result.data.datasets.byId);
+                    /* eslint-disable  @typescript-eslint/no-explicit-any */
+                    const datasets: any = AppValues.deepCopy(result.data.datasets.byId);
                     datasets['data'].tail.content = JSON.parse(result.data.datasets.byId['data'].tail.content);
                     datasets['metadata'].currentSchema.content = JSON.parse(result.data.datasets.byId['metadata'].currentSchema.content);
 
                     return datasets as SearchDatasetByID;
                 }
+                /* eslint-disable  @typescript-eslint/no-explicit-any */
+                return {} as any;
             }));
     }
 
@@ -255,7 +256,7 @@ export class SearchApi {
         const object = edge.node;
         const value = 'typename';
         const nodeKeys: string[] = Object.keys(object).filter(key => !key.includes(value));
-        let d = Object();
+        const d = Object();
 
         nodeKeys.forEach((nodeKey: string) => {
             d[nodeKey] = edge.node[nodeKey];

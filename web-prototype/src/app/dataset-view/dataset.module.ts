@@ -28,8 +28,7 @@ import {LinageGraphModule} from "../components/linage-graph/linage-graph.module"
     declarations: [DatasetComponent]
 })
 export class DatasetModule {
-    // tslint:disable-next-line: no-any
-    public static forRoot(): ModuleWithProviders<any> {
+    public static forRoot(): ModuleWithProviders<DatasetModule> {
     return { ngModule: DatasetModule };
   }
 }

@@ -3,19 +3,19 @@ import * as moment from 'moment-timezone';
 
 @Injectable()
 export default class AppValues {
-  public static appLogo: string = 'assets/icons/kamu_logo_icon.svg';
-  public static urlProfile: string = 'profile';
-  public static urlLogin: string = 'login';
-  public static urlSearch: string = 'search';
-  public static urlDatasetView: string = 'dataset-view';
-  public static urlDatasetViewOverviewType: string = 'overview';
-  public static urlDatasetViewMetadataType: string = 'metadata';
-  public static urlDatasetCreate: string = 'dataset-create';
-  public static urlDatasetCreateSelectType: string = 'select-type';
-  public static urlDatasetCreateRoot: string = 'root';
+  public static appLogo = 'assets/icons/kamu_logo_icon.svg';
+  public static urlProfile = 'profile';
+  public static urlLogin = 'login';
+  public static urlSearch = 'search';
+  public static urlDatasetView = 'dataset-view';
+  public static urlDatasetViewOverviewType = 'overview';
+  public static urlDatasetViewMetadataType = 'metadata';
+  public static urlDatasetCreate = 'dataset-create';
+  public static urlDatasetCreateSelectType = 'select-type';
+  public static urlDatasetCreateRoot = 'root';
 
 
-  public static httpPattern: RegExp = new RegExp(/^(http:\/\/)|(https:\/\/)/i);
+  public static httpPattern = new RegExp(/^(http:\/\/)|(https:\/\/)/i);
 
   public static capitalizeFirstLetter(text: string): string {
     return text.charAt(0).toUpperCase() + text.slice(1);
@@ -83,33 +83,38 @@ export default class AppValues {
      * @param {T} item
      * @returns {T}
      */
-    public static deepCopy<T>(item: T): T {
-       // @ts-ignore
-        let copy;
+    /* eslint-disable  @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment */
+    // @ts-ignore
+    public static deepCopy<T>(item: T): any {
+        /* eslint-disable  @typescript-eslint/no-explicit-any */
+        let copy: any;
 
        if (null == item || "object" !== typeof item) {
+          /* eslint-disable  @typescript-eslint/no-explicit-any */
           return item;
        }
 
        if (item instanceof Array) {
            copy = [];
-           item.forEach(obj => {
-              copy.push(this.deepCopy(obj));
+           /* eslint-disable  @typescript-eslint/no-explicit-any */
+           item.forEach((obj: any) => {
+               return (copy as Array<any>).push(this.deepCopy(obj));
            });
-           // @ts-ignore
+
            return copy;
        }
 
        if (item instanceof Object) {
            copy = {};
-           for (let attr in item) {
+           for (const attr in item) {
+               /* eslint-disable  @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment, no-prototype-builtins */
                // @ts-ignore
-               if (item.hasOwnProperty(attr)) {
-                   // @ts-ignore
-                  copy[attr] = this.deepCopy(item[attr]);
+               if ((item as any).hasOwnProperty(attr)) {
+                   /* eslint-disable  @typescript-eslint/no-explicit-any */
+                   (copy as any)[attr] = this.deepCopy(item[attr]);
                }
            }
-           // @ts-ignore
+
            return copy;
        }
 

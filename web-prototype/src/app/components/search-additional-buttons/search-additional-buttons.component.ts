@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {SearchAdditionalButtonInterface} from "./search-additional-buttons.interface";
 
 @Component({
@@ -6,14 +6,11 @@ import {SearchAdditionalButtonInterface} from "./search-additional-buttons.inter
   templateUrl: './search-additional-buttons.component.html',
   styleUrls: ['./search-additional-buttons.component.sass']
 })
-export class SearchAdditionalButtonsComponent implements OnInit {
+export class SearchAdditionalButtonsComponent {
   @Input() public searchAdditionalButtonsData: SearchAdditionalButtonInterface[];
   @Input() public isMinimizeSearchAdditionalButtons: boolean;
   @Output() public searchAdditionalButtonsMethod: EventEmitter<string> = new EventEmitter();
-  constructor() { }
 
-  public ngOnInit(): void {
-  }
   public onClick(method: string): void {
     this.searchAdditionalButtonsMethod.emit(method);
   }

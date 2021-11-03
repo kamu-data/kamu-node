@@ -10,7 +10,7 @@ import {SearchApi} from "../../api/search.api";
   templateUrl: './app-header.component.html'
 })
 export class AppHeaderComponent {
-    @Input() public searchValue: string = '';
+    @Input() public searchValue = '';
     @Input() public appLogo: string;
     @Input() public isMobileView: boolean;
     @Input() public isVisible: boolean;
@@ -21,7 +21,7 @@ export class AppHeaderComponent {
 
     @ViewChild('appHeaderMenuButton') appHeaderMenuButton: ElementRef<HTMLElement>;
 
-    public isSearchActive: boolean = false;
+    public isSearchActive = false;
     private _window: Window;
 
     constructor(private appSearchAPI: SearchApi) {
@@ -42,7 +42,7 @@ export class AppHeaderComponent {
         return typeof x !== 'string' ? x.id : x;
     }
 
-    public onSelectItem(event: NgbTypeaheadSelectItemEvent<DatasetIDsInterface>, searchValue: string): void {
+    public onSelectItem(event: NgbTypeaheadSelectItemEvent<DatasetIDsInterface>): void {
         this.isSearchActive = false;
 
         if(event.item) {

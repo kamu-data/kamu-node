@@ -27,8 +27,7 @@ import {FormsModule} from "@angular/forms";
     declarations: [SearchSidenavComponent]
 })
 export class SearchSidenavModule {
-    // tslint:disable-next-line: no-any
-    public static forRoot(): ModuleWithProviders<any> {
+    public static forRoot(): ModuleWithProviders<SearchSidenavModule> {
         return {ngModule: SearchSidenavModule};
     }
 }

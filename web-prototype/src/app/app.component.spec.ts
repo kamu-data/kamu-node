@@ -23,7 +23,10 @@ describe('AppComponent', () => {
   it(`should have as title 'kamu-client'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('kamu-client');
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    expect(app['title']).toEqual('kamu-client');
   });
 
   it('should render title', () => {

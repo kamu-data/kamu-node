@@ -18,10 +18,10 @@ import {Router} from "@angular/router";
 export class DatasetComponent implements OnInit, AfterContentInit {
 
   @ViewChild('sidenav', {static: true}) public sidenav?: MatSidenav;
-  public isMobileView: boolean = false;
+  public isMobileView = false;
   public datasetInfo: DatasetInfoInterface;
-  public searchValue: string = '';
-  public isMinimizeSearchAdditionalButtons: boolean = false;
+  public searchValue = '';
+  public isMinimizeSearchAdditionalButtons = false;
   public datasetViewType: DatasetViewTypeEnum = DatasetViewTypeEnum.overview;
   public searchAdditionalButtonsData: SearchAdditionalButtonInterface[] = [{
     textButton: searchAdditionalButtonsEnum.Descission
@@ -37,7 +37,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     styleClassButton: 'app-active-button'
   }];
 
-  // tslint:disable-next-line: no-any
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
   public tableData: {
     isTableHeader: boolean,
     displayedColumns?: any[],
@@ -171,7 +171,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
       this.searchValue = value;
     })
 
-    // tslint:disable-next-line: no-any
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     this.appDatasetService.onSearchDataChanges.subscribe((data: any[]) => {
       this.tableData.tableSource = data;
     });
@@ -199,11 +199,10 @@ export class DatasetComponent implements OnInit, AfterContentInit {
   }
 
   private initDatasetViewByType(): void {
-    debugger
-    let searchParams: string[] = this._window.location.search.split('&type=');
+    const searchParams: string[] = this._window.location.search.split('&type=');
 
     if (searchParams.length > 1) {
-      let type: DatasetViewTypeEnum = AppValues.fixedEncodeURIComponent(searchParams[1].split('&')[0]) as DatasetViewTypeEnum;
+      const type: DatasetViewTypeEnum = AppValues.fixedEncodeURIComponent(searchParams[1].split('&')[0]) as DatasetViewTypeEnum;
 
       this.datasetViewType = type;
       if (type === DatasetViewTypeEnum.overview) {
@@ -222,7 +221,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
   }
 
   private getDatasetId(): string {
-    let searchParams: string[] = this._window.location.search.split('?id=');
+    const searchParams: string[] = this._window.location.search.split('?id=');
 
     if (searchParams.length > 1) {
       return AppValues.fixedEncodeURIComponent(searchParams[1].split('&')[0]);
@@ -260,13 +259,17 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     return this.datasetViewType === DatasetViewTypeEnum.linage;
   }
 
-  private onClickDeriveForm() {
+  private onClickDeriveForm(): void {
+    console.log('onClickDeriveForm');
   }
-  private onClickExplore() {
+  private onClickExplore(): void {
+    console.log('onClickExplore');
   }
-  private onClickReputation() {
+  private onClickReputation(): void {
+    console.log('onClickReputation');
   }
-  private onClickDescission() {
+  private onClickDescission(): void {
+    console.log('onClickDescission');
   }
 
   public onSearchMetadata(): void {
@@ -276,7 +279,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     this.appDatasetService.onSearchMetadata(this.getDatasetId());
   }
 
-  public onSearchDataset(page: number = 0): void {
+  public onSearchDataset(page = 0): void {
     this.router.navigate([AppValues.urlDatasetView], {queryParams: {id: this.getDatasetId(), type: AppValues.urlDatasetViewOverviewType}});
 
     this.datasetViewType = DatasetViewTypeEnum.overview;

@@ -4,4 +4,3 @@ export enum searchAdditionalButtonsEnum {
     Explore = 'Explore',
     DeriveForm = 'Derive form'
 }
-export interface SearchInterface { }

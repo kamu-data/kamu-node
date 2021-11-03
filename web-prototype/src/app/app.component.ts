@@ -11,10 +11,10 @@ import {DatasetIDsInterface, TypeNames} from "./interface/search.interface";
   styleUrls: ['./app.component.sass']
 })
 export class AppComponent implements OnInit {
-  public appLogo: string = `/${AppValues.appLogo}`;
-  public isMobileView: boolean = false;
-  public searchValue: string = '';
-  public isVisible: boolean = true;
+  public appLogo = `/${AppValues.appLogo}`;
+  public isMobileView = false;
+  public searchValue = '';
+  public isVisible = true;
   private appHeaderNotVisiblePages: string[] = [AppValues.urlDatasetCreate, AppValues.urlLogin];
   private _window: Window;
 
@@ -39,7 +39,7 @@ export class AppComponent implements OnInit {
         this.searchValue = searchValue;
     });
 
-    // tslint:disable-next-line: no-any
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     this.router.events
         .pipe(filter(event => event instanceof NavigationEnd))
         .subscribe((event: any) => {

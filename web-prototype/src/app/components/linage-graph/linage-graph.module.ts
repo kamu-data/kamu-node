@@ -14,8 +14,7 @@ import {NgxGraphModule} from "@swimlane/ngx-graph";
     declarations: [LinageGraphComponent]
 })
 export class LinageGraphModule {
-    // tslint:disable-next-line: no-any
-    public static forRoot(): ModuleWithProviders<any> {
+    public static forRoot(): ModuleWithProviders<LinageGraphModule> {
         return {ngModule: LinageGraphModule};
     }
 }

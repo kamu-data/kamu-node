@@ -2,7 +2,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output
 } from "@angular/core";
 import {SearchOverviewDatasetsInterface} from "../../interface/search.interface";
@@ -13,17 +12,14 @@ import AppValues from "../../common/app.values";
   templateUrl: './repo-list.component.html',
   styleUrls: ['./repo-list.sass']
 })
-export class RepoListComponent implements OnInit {
+export class RepoListComponent {
   @Input() public dataSource: SearchOverviewDatasetsInterface[];
-  @Input() public totalCount: number = 0;
+  @Input() public totalCount = 0;
   @Input() public resultUnitText: string;
   @Input() public isResultQuantity?: boolean = false;
   @Input() public isClickableRow?: boolean = false;
   @Output() public onSelectDatasetEmit: EventEmitter<string> = new EventEmitter();
 
-  constructor() { }
-  public ngOnInit(): void {
-  }
   public momentConverDatetoLocalWithFormat(date: string): string {
     return AppValues.momentConverDatetoLocalWithFormat({date: new Date(date), format: 'DD MMM YYYY', isTextDate: true});
   }

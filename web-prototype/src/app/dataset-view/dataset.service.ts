@@ -10,15 +10,16 @@ import {
     SearchHistoryInterface,
     SearchOverviewDatasetsInterface
 } from "../interface/search.interface";
-import {expand, filter, map, mergeMap, switchMap, tap} from "rxjs/operators";
+import {filter, map, mergeMap, switchMap, tap} from "rxjs/operators";
 
 @Injectable()
 export class AppDatasetService {
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     public searchData: any[] = [];
     private searchChanges$: Subject<string> = new Subject<string>();
-    // tslint:disable-next-line: no-any
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     private searchDataChanges$: Subject<any[]> = new Subject<any[]>();
-   // tslint:disable-next-line: no-any
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     private searchDatasetInfoChanges$: Subject<any> = new Subject<any>();
     private datasetTree: string[][] = [];
 
@@ -73,7 +74,7 @@ export class AppDatasetService {
 
 
     public onSearchMetadata(id: string): void {
-        // tslint:disable-next-line: no-any
+        /* eslint-disable  @typescript-eslint/no-explicit-any */
         this.searchApi.onSearchMetadata(id).subscribe((data: any) => {
             this.searchData = data;
             this.searchDataChanges(data);

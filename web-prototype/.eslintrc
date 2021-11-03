@@ -1,0 +1,17 @@
+{
+    "parserOptions": {
+      "ecmaVersion": 2021,
+      "sourceType": "module",
+      "project": ["./tsconfig.json"]
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "rules": {},
+    "ignorePatterns": ["ngx-graph", "node_modules", "src/**/**.spec.ts"]
+}

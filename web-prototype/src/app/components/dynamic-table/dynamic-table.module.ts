@@ -28,8 +28,7 @@ import {DynamicTableComponent} from "./dynamic-table.component";
     declarations: [DynamicTableComponent]
 })
 export class DynamicTableModule {
-    // tslint:disable-next-line: no-any
-    public static forRoot(): ModuleWithProviders<any> {
+    public static forRoot(): ModuleWithProviders<DynamicTableModule> {
         return {ngModule: DynamicTableModule};
     }
 }

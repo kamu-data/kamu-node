@@ -5,7 +5,6 @@ import {MatDrawerToggleResult} from "@angular/material/sidenav/drawer";
 @Injectable()
 export class SideNavService {
     private sidenav?: MatSidenav;
-    constructor() { }
 
     public setSidenav(sidenav: MatSidenav): void {
         this.sidenav = sidenav;

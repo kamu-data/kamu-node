@@ -19,7 +19,7 @@
                            placeholder="Search" [(ngModel)]="searchValue" [inputFormatter]="formatter"
                            aria-label="Search" aria-describedby="addon-wrapping"
                            (focusin)="isSearchActive = true"
-                           (selectItem)="onSelectItem($event, searchValue)"
+                           (selectItem)="onSelectItem($event)"
                            (keyup.enter)="onSearch($event)" (blur)="onSearch($event)">
                 </div>
 
