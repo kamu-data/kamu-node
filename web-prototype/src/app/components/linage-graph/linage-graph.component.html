@@ -1,6 +1,16 @@
 <ngx-graph
   class="chart-container"
-  [view]="[800, 550]"
+  [draggingEnabled]="draggingEnabled"
+  [panningEnabled]="panningEnabled"
+  [enableZoom]="zoomEnabled"
+  [zoomSpeed]="zoomSpeed"
+  [minZoomLevel]="minZoomLevel"
+  [maxZoomLevel]="maxZoomLevel"
+  [panOnZoom]="panOnZoom"
+  [autoCenter]="autoCenter"
+  [autoZoom]="autoZoom"
+  [view]="view"
+  [showMiniMap]="showMiniMap"
   [links]="[
     {
       id: 'a',
@@ -32,46 +42,27 @@
   [nodes]="[
     {
       id: 'first',
-      label: 'A'
+      label: 'ca.covid19.daily-cases'
     }, {
       id: 'second',
-      label: 'B'
+      label: 'ca.covid19.case-details'
     }, {
       id: 'c1',
-      label: 'C1'
+      label: 'ca.bccdc.covid19.case-details'
     }, {
       id: 'c2',
-      label: 'C2'
+      label: 'ca.ontario.data.covid19.case-details'
     }, {
       id: 'd',
       label: 'D'
     }
   ]"
-  [clusters]="[
-    {
-      id: 'third',
-      label: 'Cluster node',
-      childNodeIds: ['c1', 'c2']
-    }
-  ]"
-  layout="dagreCluster"
+  layout="dagre"
 >
   <ng-template #defsTemplate>
     <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
       <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
     </svg:marker>
-  </ng-template>
-
-  <ng-template #clusterTemplate let-cluster>
-    <svg:g class="node cluster">
-      <svg:rect
-        rx="5"
-        ry="5"
-        [attr.width]="cluster.dimension.width"
-        [attr.height]="cluster.dimension.height"
-        [attr.fill]="cluster.data.color"
-      />
-    </svg:g>
   </ng-template>
 
   <ng-template #nodeTemplate let-node>
@@ -91,14 +82,14 @@
     <svg:g class="edge">
       <svg:path class="line" stroke-width="2" marker-end="url(#arrow)"></svg:path>
       <svg:text class="edge-label" text-anchor="middle">
-        <textPath
-          class="text-path"
-          [attr.href]="'#' + link.id"
-          [style.dominant-baseline]="link.dominantBaseline"
-          startOffset="50%"
-        >
-          {{link.label}}
-        </textPath>
+<!--        <textPath-->
+<!--          class="text-path"-->
+<!--          [attr.href]="'#' + link.id"-->
+<!--          [style.dominant-baseline]="link.dominantBaseline"-->
+<!--          startOffset="50%"-->
+<!--        >-->
+<!--          {{link.label}}-->
+<!--        </textPath>-->
       </svg:text>
     </svg:g>
   </ng-template>

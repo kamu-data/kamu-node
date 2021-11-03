@@ -19,12 +19,12 @@
                 </search-additional-buttons>
             </div>
             <div class="search-result-container">
-                <div class="search-result-container__content">
+                <div class="search-result-container__content" id="searchResultContainerContent">
 
                     <ng-template [ngIf]="datasetViewTypeLinage">
                         <p>List of dependencies</p>
 
-                        <app-linage-graph></app-linage-graph>
+                        <app-linage-graph [view]="linageGraphView"></app-linage-graph>
                         <ul>
                             <li *ngFor="let row of getDatasetTree(); let rowIndex = index">
                                     <p>{{row[0]}} -> {{row[1]}}</p>
