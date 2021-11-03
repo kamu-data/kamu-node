@@ -1,8 +1,7 @@
-import {
-  Component, Input,
-} from "@angular/core";
+import {Component, Input,} from "@angular/core";
 import {Edge} from "@swimlane/ngx-graph/lib/models/edge.model";
 import {Node} from "@swimlane/ngx-graph/lib/models/node.model";
+import { MiniMapPosition } from "ngx-graph/projects/swimlane/ngx-graph/src/lib/enums/mini-map-position.enum";
 
 @Component({
   selector: 'app-linage-graph',
@@ -21,6 +20,7 @@ export class LinageGraphComponent {
   public maxZoomLevel: number = 4.0;
   public panOnZoom: boolean = true;
   public autoZoom: boolean = true;
-  public autoCenter: boolean = true;
+  public autoCenter: boolean = false;
   public showMiniMap: boolean = true;
+  public miniMapPosition: MiniMapPosition = MiniMapPosition.UpperLeft;
 }

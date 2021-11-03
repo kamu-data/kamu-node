@@ -21,6 +21,7 @@ export class AppDatasetService {
     private searchDataChanges$: Subject<any[]> = new Subject<any[]>();
     /* eslint-disable  @typescript-eslint/no-explicit-any */
     private searchDatasetInfoChanges$: Subject<any> = new Subject<any>();
+    private datasetTreeChanges$: Subject<string[][]> = new Subject<string[][]>();
     private datasetTree: string[][] = [];
 
     constructor(
@@ -44,6 +45,12 @@ export class AppDatasetService {
     }
     public get getSearchData(): SearchHistoryInterface[] | SearchOverviewDatasetsInterface[] {
         return this.searchData;
+    }
+    public get onDatasetTreeChanges(): Observable<string[][]> {
+        return this.datasetTreeChanges$.asObservable();
+    }
+    public datasetTreeChange(datasetTree: string[][]): void {
+        this.datasetTreeChanges$.next(datasetTree);
     }
     public get getDatasetTree(): string[][] {
         return this.datasetTree;
@@ -121,6 +128,7 @@ export class AppDatasetService {
                     this.datasetTree.push([dataset.id, dependencies.id]);
                 })
         }
+        this.datasetTreeChange(this.datasetTree);
     }
     private createDependenciesDerivativeList(dataset: DatasetLinageResponse) {
         return dataset.metadata.currentUpstreamDependencies
