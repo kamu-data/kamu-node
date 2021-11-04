@@ -18,7 +18,9 @@
                                    [isClickableRow]="tableData.isClickableRow"
                                    (onSelectDatasetEmit)="onSelectDataset($event)"></app-repo-list>
 
-                    <app-pagination [currentPage]="currentPage" [pageInfo]="tableData.pageInfo" (pageChangeEvent)="onPageChange($event)"></app-pagination>
+                    <ng-template [ngIf]="tableData.tableSource.length > 0">
+                        <app-pagination [currentPage]="currentPage" [pageInfo]="tableData.pageInfo" (pageChangeEvent)="onPageChange($event)"></app-pagination>
+                    </ng-template>
                 </div>
 
                 <div class="card">

@@ -124,9 +124,9 @@ export class SearchComponent implements OnInit, AfterContentInit {
     };
   }
 
-  public onPageChange(currentPage: number): void {
-    this.currentPage = currentPage;
-    this.onSearch(this.searchValue, currentPage - 1)
+  public onPageChange(params: {currentPage: number, isClick: boolean}): void {
+    this.currentPage = params.currentPage;
+    this.onSearch(this.searchValue, params.currentPage - 1)
   }
 
   public onSelectDataset(id: string): void {

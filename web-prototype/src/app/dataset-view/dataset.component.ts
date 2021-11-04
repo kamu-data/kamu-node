@@ -28,7 +28,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     public isMobileView = false;
     public datasetInfo: DatasetInfoInterface;
     public searchValue = '';
-    public currentPage = 0;
+    public currentPage: number;
     public isMinimizeSearchAdditionalButtons = false;
     public datasetViewType: DatasetViewTypeEnum = DatasetViewTypeEnum.overview;
     public searchAdditionalButtonsData: SearchAdditionalButtonInterface[] = [{
@@ -111,8 +111,10 @@ export class DatasetComponent implements OnInit, AfterContentInit {
           this.tableData.tableSource = data.dataset;
           this.tableData.pageInfo = data.pageInfo;
           this.tableData.totalCount = data.totalCount;
-          this.currentPage = data.currentPage;
           this.searchData = data.dataset;
+
+          setTimeout(() => this.currentPage = data.currentPage);
+
         });
     }
 
@@ -142,9 +144,9 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         this.tableData.tableSource = this.searchData
     }
 
-    public onPageChange(currentPage: number): void {
-        this.currentPage = currentPage;
-        this.initDatasetViewByType(currentPage - 1);
+    public onPageChange(params: {currentPage: number, isClick: boolean}): void {
+        this.currentPage = params.currentPage;
+         this.initDatasetViewByType(params.currentPage);
     }
 
 
@@ -194,12 +196,14 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         this.router.navigate([AppValues.urlDatasetView], {
             queryParams: {
                 id: this.getDatasetId(),
-                type: AppValues.urlDatasetViewMetadataType
+                type: AppValues.urlDatasetViewMetadataType,
+                p: currentPage
             }
         });
+        this.currentPage = currentPage;
 
         this.datasetViewType = DatasetViewTypeEnum.metadata;
-        this.appDatasetService.onSearchMetadata(this.getDatasetId(), currentPage);
+        this.appDatasetService.onSearchMetadata(this.getDatasetId(), currentPage - 1);
     }
 
     public onSearchDataset(page = 0): void {
@@ -241,6 +245,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         let uniqDatasetIdList: string[] = [];
 
         this.appDatasetService.onDatasetTreeChanges.subscribe((datasetTree: string[][]) => {
+            debugger
             this.isAvailableLinageGraph = (datasetTree.length !== 0);
             datasetTree.forEach((term: string[]) => term.forEach((id: string) => uniqDatasetIdList.push(id)));
             uniqDatasetIdList = uniqDatasetIdList.filter((x: any, y: number) => uniqDatasetIdList.indexOf(x) == y);
@@ -297,8 +302,13 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         };
     }
 
-    private initDatasetViewByType(currentPage: number = 0): void {
+    private initDatasetViewByType(currentPage?: number): void {
         const searchParams: string[] = this._window.location.search.split('&type=');
+        const searchPageParams: string[] = this._window.location.search.split('&p=');
+        let page: number = 1;
+        if (searchPageParams[1]) {
+            page = currentPage || Number(searchPageParams[1].split('&')[0]);
+        }
 
         if (searchParams.length > 1) {
             const type: DatasetViewTypeEnum = AppValues.fixedEncodeURIComponent(searchParams[1].split('&')[0]) as DatasetViewTypeEnum;
@@ -308,7 +318,8 @@ export class DatasetComponent implements OnInit, AfterContentInit {
                 this.onSearchDataset();
             }
             if (type === DatasetViewTypeEnum.metadata) {
-                this.onSearchMetadata(currentPage);
+                this.currentPage = page;
+                this.onSearchMetadata(page);
             }
             if (type === DatasetViewTypeEnum.linage) {
                 this.onSearchLinageDataset();

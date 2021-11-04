@@ -6,7 +6,7 @@
                 <div class="datasetViewTypeToggleGroup">
                     <mat-button-toggle-group name="datasetViewType" aria-label="Dataset View Type">
                         <mat-button-toggle value="overview" [checked]="datasetViewTypeOverview" (click)="onSearchDataset()">Overview</mat-button-toggle>
-                        <mat-button-toggle value="metadata" [checked]="datasetViewTypeMetadata" (click)="onSearchMetadata()">Metadata</mat-button-toggle>
+                        <mat-button-toggle value="metadata" [checked]="datasetViewTypeMetadata" (click)="onSearchMetadata(1)">Metadata</mat-button-toggle>
                         <mat-button-toggle value="linage" [checked]="datasetViewTypeLinage" (click)="onSearchLinageDataset()">Linage</mat-button-toggle>
                         <mat-button-toggle value="projections" (click)="onSearchProjections()" disabled>Projections</mat-button-toggle>
                     </mat-button-toggle-group>
@@ -30,8 +30,8 @@
 <!--                            </ul>-->
                             <app-linage-graph [view]="linageGraphView" [links]="linageGraphLink" [nodes]="linageGraphNodes"></app-linage-graph>
                         </ng-template>
-                        <ng-template [ngIf]="isAvailableLinageGraph && linageGraphLink.length === 0">
-                            <p>Current Dataset is ROOT</p>
+                        <ng-template [ngIf]="!isAvailableLinageGraph && linageGraphLink.length === 0">
+                            <p>The current dataset is root. Not enough data to build the graph.</p>
                         </ng-template>
 
                     </ng-template>
@@ -44,7 +44,7 @@
                                        (onSelectDatasetEmit)="onSelectDataset($event)"></app-dynamic-table>
 
                     </ng-template>
-                    <ng-template [ngIf]="datasetViewTypeMetadata">
+                    <ng-template [ngIf]="datasetViewTypeMetadata && tableData.tableSource.length > 0">
                         <app-pagination [currentPage]="currentPage" [pageInfo]="tableData.pageInfo" (pageChangeEvent)="onPageChange($event)"></app-pagination>
                     </ng-template>
 

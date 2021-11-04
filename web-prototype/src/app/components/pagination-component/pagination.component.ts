@@ -1,8 +1,8 @@
 import {
   Component,
   EventEmitter,
-  Input,
-  Output
+  Input, OnChanges,
+  Output, SimpleChanges
 } from "@angular/core";
 import {PageInfoInterface} from "../../interface/search.interface";
 
@@ -11,12 +11,33 @@ import {PageInfoInterface} from "../../interface/search.interface";
   templateUrl: './pagination.component.html',
   styleUrls: ['./pagination-component.sass']
 })
-export class PaginationComponent {
-  @Input()  public currentPage = 1;
+export class PaginationComponent implements OnChanges {
+  @Input()  public currentPage: number;
   @Input()  public pageInfo: PageInfoInterface;
-  @Output() public pageChangeEvent: EventEmitter<number> = new EventEmitter();
+  @Output() public pageChangeEvent: EventEmitter<{currentPage: number, isClick: boolean}> = new EventEmitter();
 
-  public onPageChange(currentPage: number) {
-    this.pageChangeEvent.emit(currentPage);
+  private previousPage: number;
+
+  public ngOnChanges(changes: SimpleChanges): void {
+    const page = changes.currentPage;
+    if (!page && !this.currentPage) {
+      this.previousPage = 1;
+      this.currentPage = 1;
+    }
+
+    if (page && !page.previousValue && page.firstChange) {
+      this.previousPage = page.currentValue;
+    }
+    if (page && page.currentValue) {
+      this.previousPage = page.currentValue;
+      this.currentPage = page.currentValue;
+    }
+  }
+
+  public onPageChange(currentPage: number, isClick: boolean = false) {
+    if (currentPage !== this.previousPage) {
+      this.previousPage = currentPage;
+      this.pageChangeEvent.emit({currentPage, isClick});
+    }
   }
 }
