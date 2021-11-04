@@ -5,7 +5,7 @@ import {ApolloQueryResult, DocumentNode, gql} from "@apollo/client/core";
 import {Observable, of} from "rxjs";
 import {
     DatasetIDsInterface,
-    PageInfoInterface, SearchDatasetByID,
+    PageInfoInterface, SearchDatasetByID, SearchMetadataNodeResponseInterface,
     SearchOverviewDatasetsInterface, SearchOverviewInterface, TypeNames,
 } from "../interface/search.interface";
 import AppValues from "../common/app.values";
@@ -76,7 +76,7 @@ export class SearchApi {
                 if (result.data) {
                     // tslint:disable-next-line: no-any
                     dataset = result.data.search.query.edges.map((edge: any) => {
-                        return this.clearlyData(edge);
+                        return this.clearlyData(edge.node);
                     })
                     pageInfo = result.data.search.query.pageInfo;
                     totalCount = result.data.search.query.totalCount;
@@ -212,54 +212,64 @@ export class SearchApi {
     }
 
     // tslint:disable-next-line: no-any
-    public onSearchMetadata(id: string): Observable<any> {
+    public onSearchMetadata(params: {id: string, numRecords?: number, page?: number}): Observable<any> {
+        debugger
         const GET_DATA: DocumentNode = gql`
 {
   datasets {
-    byId(id: "${id}") {
+    byId(id: "${params.id}") {
+      id
       metadata {
         chain {
-          blocks {
-            edges {
-              node {
-                blockHash
-                systemTime
-                __typename
-              }
-              __typename
+          blocks(perPage: ${(params.numRecords || 5).toString()}, page: ${(params.page || 0).toString()}) {
+            totalCount
+            nodes {
+              blockHash,
+              systemTime
             }
-            __typename
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              totalPages
+            }
           }
-          __typename
         }
-        __typename
       }
-      __typename
     }
-    __typename
   }
-}
-`;
+}`;
+        let datasets: SearchOverviewInterface;
+
         // tslint:disable-next-line: no-any
         return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
+                let dataset: SearchOverviewDatasetsInterface[] = [];
+                let pageInfo: PageInfoInterface = SearchApi.pageInfoInit();
+                let totalCount = 0;
+                let currentPage = params.page || 0;
+
                 if (result.data) {
-                    return result.data.datasets.byId.metadata.chain.blocks.edges.map((edge: any) => {
-                        return this.clearlyData(edge);
+                    // tslint:disable-next-line: no-any
+                    dataset = result.data.datasets.byId.metadata.chain.blocks.nodes.map((node: SearchMetadataNodeResponseInterface) => {
+                        return this.clearlyData(node);
                     });
+                    pageInfo = result.data.datasets.byId.metadata.chain.blocks.pageInfo;
+                    totalCount = result.data.datasets.byId.metadata.chain.blocks.totalCount;
                 }
+
+                return SearchApi.searchOverviewData(dataset, pageInfo, totalCount, currentPage);
             }));
     }
 
     // tslint:disable-next-line: no-any
     clearlyData(edge: any) {
-        const object = edge.node;
+        const object = edge;
         const value = 'typename';
         const nodeKeys: string[] = Object.keys(object).filter(key => !key.includes(value));
         const d = Object();
 
         nodeKeys.forEach((nodeKey: string) => {
-            d[nodeKey] = edge.node[nodeKey];
+            d[nodeKey] = (edge as any)[nodeKey];
         })
 
         return d;

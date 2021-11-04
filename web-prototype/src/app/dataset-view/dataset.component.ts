@@ -1,5 +1,10 @@
 import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
-import {DatasetInfoInterface, SearchHistoryInterface} from "../interface/search.interface";
+import {
+    DatasetInfoInterface,
+    PageInfoInterface,
+    SearchHistoryInterface, SearchOverviewDatasetsInterface,
+    SearchOverviewInterface
+} from "../interface/search.interface";
 import AppValues from "../common/app.values";
 import {SearchAdditionalButtonInterface} from "../components/search-additional-buttons/search-additional-buttons.interface";
 import {MatSidenav} from "@angular/material/sidenav";
@@ -23,6 +28,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     public isMobileView = false;
     public datasetInfo: DatasetInfoInterface;
     public searchValue = '';
+    public currentPage = 0;
     public isMinimizeSearchAdditionalButtons = false;
     public datasetViewType: DatasetViewTypeEnum = DatasetViewTypeEnum.overview;
     public searchAdditionalButtonsData: SearchAdditionalButtonInterface[] = [{
@@ -45,9 +51,11 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         displayedColumns?: any[],
         tableSource: any,
         isResultQuantity: boolean,
-        isClickableRow: boolean
+        isClickableRow: boolean,
+        pageInfo: PageInfoInterface,
+        totalCount: number
     };
-    public searchData: SearchHistoryInterface[] = [];
+    public searchData: SearchOverviewDatasetsInterface[] | SearchHistoryInterface [] = [];
 
     public linageGraphView: [number, number] = [500, 600];
     public linageGraphLink: Edge[] = [];
@@ -98,6 +106,14 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         this.appDatasetService.onSearchDataChanges.subscribe((data: any[]) => {
             this.tableData.tableSource = data;
         });
+
+        this.appDatasetService.onSearchMetadataChanges.subscribe((data: SearchOverviewInterface) => {
+          this.tableData.tableSource = data.dataset;
+          this.tableData.pageInfo = data.pageInfo;
+          this.tableData.totalCount = data.totalCount;
+          this.currentPage = data.currentPage;
+          this.searchData = data.dataset;
+        });
     }
 
     public changeLinageGraphView(): void {
@@ -126,50 +142,17 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         this.tableData.tableSource = this.searchData
     }
 
-    private initTableData(): void {
-        this.tableData = {
-            isTableHeader: true,
-            tableSource: this.searchData,
-            isResultQuantity: true,
-            isClickableRow: false
-        };
+    public onPageChange(currentPage: number): void {
+        this.currentPage = currentPage;
+        this.initDatasetViewByType(currentPage - 1);
     }
+
 
     public getResultUnitText(): string {
         const searchDataset: string = this.getDatasetId();
         return `results in ${searchDataset}`
     }
 
-    private initDatasetViewByType(): void {
-        const searchParams: string[] = this._window.location.search.split('&type=');
-
-        if (searchParams.length > 1) {
-            const type: DatasetViewTypeEnum = AppValues.fixedEncodeURIComponent(searchParams[1].split('&')[0]) as DatasetViewTypeEnum;
-
-            this.datasetViewType = type;
-            if (type === DatasetViewTypeEnum.overview) {
-                this.onSearchDataset();
-            }
-            if (type === DatasetViewTypeEnum.metadata) {
-                this.onSearchMetadata();
-            }
-            if (type === DatasetViewTypeEnum.linage) {
-                this.onSearchLinageDataset();
-            }
-            if (type === DatasetViewTypeEnum.projections) {
-                this.onSearchProjections();
-            }
-        }
-    }
-
-    private getDatasetId(): string {
-        const searchParams: string[] = this._window.location.search.split('?id=');
-
-        if (searchParams.length > 1) {
-            return AppValues.fixedEncodeURIComponent(searchParams[1].split('&')[0]);
-        }
-        return '';
-    }
 
     public momentConverDatetoLocalWithFormat(date: string): string {
         return AppValues.momentConverDatetoLocalWithFormat({
@@ -207,23 +190,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         return this.datasetViewType === DatasetViewTypeEnum.linage;
     }
 
-    private onClickDeriveForm(): void {
-        console.log('onClickDeriveForm');
-    }
-
-    private onClickExplore(): void {
-        console.log('onClickExplore');
-    }
-
-    private onClickReputation(): void {
-        console.log('onClickReputation');
-    }
-
-    private onClickDescission(): void {
-        console.log('onClickDescission');
-    }
-
-    public onSearchMetadata(): void {
+    public onSearchMetadata(currentPage: number): void {
         this.router.navigate([AppValues.urlDatasetView], {
             queryParams: {
                 id: this.getDatasetId(),
@@ -232,7 +199,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         });
 
         this.datasetViewType = DatasetViewTypeEnum.metadata;
-        this.appDatasetService.onSearchMetadata(this.getDatasetId());
+        this.appDatasetService.onSearchMetadata(this.getDatasetId(), currentPage);
     }
 
     public onSearchDataset(page = 0): void {
@@ -269,6 +236,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         this.onSearchDataset();
     }
 
+
     private prepareLinageGraph(): void {
         let uniqDatasetIdList: string[] = [];
 
@@ -296,5 +264,68 @@ export class DatasetComponent implements OnInit, AfterContentInit {
                 });
             });
         });
+    }
+
+    private onClickDeriveForm(): void {
+        console.log('onClickDeriveForm');
+    }
+
+    private onClickExplore(): void {
+        console.log('onClickExplore');
+    }
+
+    private onClickReputation(): void {
+        console.log('onClickReputation');
+    }
+
+    private onClickDescission(): void {
+        console.log('onClickDescission');
+    }
+
+    private initTableData(): void {
+        this.tableData = {
+            isTableHeader: true,
+            tableSource: this.searchData,
+            isResultQuantity: true,
+            isClickableRow: false,
+            pageInfo: {
+                hasNextPage: false,
+                hasPreviousPage: false,
+                totalPages: 1
+              },
+            totalCount: 0
+        };
+    }
+
+    private initDatasetViewByType(currentPage: number = 0): void {
+        debugger
+        const searchParams: string[] = this._window.location.search.split('&type=');
+
+        if (searchParams.length > 1) {
+            const type: DatasetViewTypeEnum = AppValues.fixedEncodeURIComponent(searchParams[1].split('&')[0]) as DatasetViewTypeEnum;
+
+            this.datasetViewType = type;
+            if (type === DatasetViewTypeEnum.overview) {
+                this.onSearchDataset();
+            }
+            if (type === DatasetViewTypeEnum.metadata) {
+                this.onSearchMetadata(currentPage);
+            }
+            if (type === DatasetViewTypeEnum.linage) {
+                this.onSearchLinageDataset();
+            }
+            if (type === DatasetViewTypeEnum.projections) {
+                this.onSearchProjections();
+            }
+        }
+    }
+
+    private getDatasetId(): string {
+        const searchParams: string[] = this._window.location.search.split('?id=');
+
+        if (searchParams.length > 1) {
+            return AppValues.fixedEncodeURIComponent(searchParams[1].split('&')[0]);
+        }
+        return '';
     }
 }

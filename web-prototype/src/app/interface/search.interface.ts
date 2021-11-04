@@ -92,6 +92,10 @@ export interface SearchDatasetByID {
         currentWatermark: string
     }
 }
+export interface SearchMetadataNodeResponseInterface {
+    blockHash: string,
+    systemTime: string
+}
 export interface SearchDatasetByIDDataInterface {
     __typename: string,
     estimatedSize: number,

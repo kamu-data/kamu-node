@@ -8,7 +8,7 @@ import {
     DatasetLinageResponse,
     SearchDatasetByID,
     SearchHistoryInterface,
-    SearchOverviewDatasetsInterface
+    SearchOverviewDatasetsInterface, SearchOverviewInterface
 } from "../interface/search.interface";
 import {filter, map, mergeMap, switchMap, tap} from "rxjs/operators";
 
@@ -21,6 +21,7 @@ export class AppDatasetService {
     private searchDataChanges$: Subject<any[]> = new Subject<any[]>();
     /* eslint-disable  @typescript-eslint/no-explicit-any */
     private searchDatasetInfoChanges$: Subject<any> = new Subject<any>();
+    private searchMetadataChanges$: Subject<SearchOverviewInterface> = new Subject<SearchOverviewInterface>();
     private datasetTreeChanges$: Subject<string[][]> = new Subject<string[][]>();
     private datasetTree: string[][] = [];
 
@@ -42,6 +43,12 @@ export class AppDatasetService {
     }
     public get onSearchDataChanges(): Observable<SearchHistoryInterface[] | SearchOverviewDatasetsInterface[]> {
        return this.searchDataChanges$.asObservable();
+    }
+    public get onSearchMetadataChanges(): Observable<SearchOverviewInterface> {
+       return this.searchMetadataChanges$.asObservable();
+    }
+    public searchMetadataChange(data: SearchOverviewInterface) {
+       return this.searchMetadataChanges$.next(data);
     }
     public get getSearchData(): SearchHistoryInterface[] | SearchOverviewDatasetsInterface[] {
         return this.searchData;
@@ -80,11 +87,12 @@ export class AppDatasetService {
     }
 
 
-    public onSearchMetadata(id: string): void {
+    public onSearchMetadata(id: string, page: number): void {
+        debugger
         /* eslint-disable  @typescript-eslint/no-explicit-any */
-        this.searchApi.onSearchMetadata(id).subscribe((data: any) => {
-            this.searchData = data;
-            this.searchDataChanges(data);
+        this.searchApi.onSearchMetadata({id, page}).subscribe((data: SearchOverviewInterface) => {
+            this.searchData = data.dataset;
+            this.searchMetadataChange(data);
         })
     }
 

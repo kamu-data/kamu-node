@@ -42,6 +42,10 @@
                                        [resultUnitText]="getResultUnitText()"
                                        [isTableHeader]="tableData.isTableHeader" [tableSource]="tableData.tableSource"
                                        (onSelectDatasetEmit)="onSelectDataset($event)"></app-dynamic-table>
+
+                    </ng-template>
+                    <ng-template [ngIf]="datasetViewTypeMetadata">
+                        <app-pagination [currentPage]="currentPage" [pageInfo]="tableData.pageInfo" (pageChangeEvent)="onPageChange($event)"></app-pagination>
                     </ng-template>
 
                 </div>

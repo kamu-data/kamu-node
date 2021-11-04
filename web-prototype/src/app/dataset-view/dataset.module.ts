@@ -9,6 +9,7 @@ import {SearchSidenavModule} from "../components/search-sidenav/search-sidenav.m
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import {NgxGraphModule} from "@swimlane/ngx-graph";
 import {LinageGraphModule} from "../components/linage-graph/linage-graph.module";
+import {PaginationModule} from "../components/pagination-component/pagination.module";
 
 @NgModule({
     imports: [
@@ -22,7 +23,8 @@ import {LinageGraphModule} from "../components/linage-graph/linage-graph.module"
         SearchSidenavModule,
         SearchAdditionalButtonsModule,
         NgxGraphModule,
-        LinageGraphModule
+        LinageGraphModule,
+        PaginationModule
     ],
   exports: [DatasetComponent],
     declarations: [DatasetComponent]
