@@ -88,7 +88,6 @@ export class AppDatasetService {
 
 
     public onSearchMetadata(id: string, page: number): void {
-        debugger
         /* eslint-disable  @typescript-eslint/no-explicit-any */
         this.searchApi.onSearchMetadata({id, page}).subscribe((data: SearchOverviewInterface) => {
             this.searchData = data.dataset;

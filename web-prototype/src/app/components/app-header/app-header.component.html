@@ -17,10 +17,11 @@
                     <input type="text" data-test-id="searchInput" class="form-control"
                            id="typeahead-http" [ngbTypeahead]="search" [resultTemplate]="rt"
                            placeholder="Search" [(ngModel)]="searchValue" [inputFormatter]="formatter"
+                           [focusFirst]="false"
                            aria-label="Search" aria-describedby="addon-wrapping"
                            (focusin)="isSearchActive = true"
                            (selectItem)="onSelectItem($event)"
-                           (keyup.enter)="onSearch($event)" (blur)="onSearch($event)">
+                           (keyup.enter)="onSearch($event, searchValue)" (blur)="onSearch($event, searchValue)">
                 </div>
 
                 <ng-template #rt let-r="result" let-t="term">

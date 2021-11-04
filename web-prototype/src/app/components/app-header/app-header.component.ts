@@ -10,7 +10,7 @@ import {SearchApi} from "../../api/search.api";
   templateUrl: './app-header.component.html'
 })
 export class AppHeaderComponent {
-    @Input() public searchValue = '';
+    @Input() public searchValue: DatasetIDsInterface = {id: '', __typename: TypeNames.allDataType};
     @Input() public appLogo: string;
     @Input() public isMobileView: boolean;
     @Input() public isVisible: boolean;
@@ -50,15 +50,34 @@ export class AppHeaderComponent {
         }
     }
 
-    public onSearch(event: FocusEvent): void {
+    public onSearch(event: FocusEvent, searchValue: DatasetIDsInterface | string): void {
         this.isSearchActive = false;
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (event["key"] === 'Enter') {
+            let searchInfo: DatasetIDsInterface;
+
+            if (typeof searchValue === 'string') {
+                searchInfo = {id: searchValue, __typename: TypeNames.allDataType};
+            } else searchInfo = searchValue;
+
+            this.onSelectDataset.emit(searchInfo);
+        }
+
+        const typeaheadInput: Element | null = document.querySelector('.typeahead-input');
+        if (typeaheadInput) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            typeaheadInput['typeahead']('close');
+        }
         setTimeout(() => {
             if(this.isMobileView) {
                 this.triggerMenuClick();
             }
 
             (event.target as HTMLElement).blur();
-        }, 200)
+        }, 200);
     }
 
     public onAddNew(): void {

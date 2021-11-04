@@ -213,7 +213,6 @@ export class SearchApi {
 
     // tslint:disable-next-line: no-any
     public onSearchMetadata(params: {id: string, numRecords?: number, page?: number}): Observable<any> {
-        debugger
         const GET_DATA: DocumentNode = gql`
 {
   datasets {

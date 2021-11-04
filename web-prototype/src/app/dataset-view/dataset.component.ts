@@ -298,7 +298,6 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     }
 
     private initDatasetViewByType(currentPage: number = 0): void {
-        debugger
         const searchParams: string[] = this._window.location.search.split('&type=');
 
         if (searchParams.length > 1) {
