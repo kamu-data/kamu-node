@@ -1,4 +1,4 @@
-import {Component, Input,} from "@angular/core";
+import {Component, EventEmitter, Input, Output,} from "@angular/core";
 import {Edge} from "@swimlane/ngx-graph/lib/models/edge.model";
 import {Node} from "@swimlane/ngx-graph/lib/models/node.model";
 import { MiniMapPosition } from "ngx-graph/projects/swimlane/ngx-graph/src/lib/enums/mini-map-position.enum";
@@ -12,6 +12,8 @@ export class LinageGraphComponent {
   @Input() public links: Edge[];
   @Input() public nodes: Node[];
 
+  @Output() public onClickNodeEvent: EventEmitter<string> = new EventEmitter();
+
   public draggingEnabled = false;
   public panningEnabled = true;
   public zoomEnabled = true;
@@ -23,4 +25,8 @@ export class LinageGraphComponent {
   public autoCenter = false;
   public showMiniMap = true;
   public miniMapPosition: MiniMapPosition = MiniMapPosition.UpperLeft;
+
+  public onClickNode(label: string): void {
+    this.onClickNodeEvent.emit(label);
+  }
 }

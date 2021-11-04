@@ -240,6 +240,11 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         this.onSearchDataset();
     }
 
+    public onClickNode(idDataset: string): void {
+        this.datasetViewType = DatasetViewTypeEnum.overview;
+        this.onSelectDataset(idDataset);
+    }
+
 
     private prepareLinageGraph(): void {
         let uniqDatasetIdList: string[] = [];
@@ -337,5 +342,9 @@ export class DatasetComponent implements OnInit, AfterContentInit {
             return AppValues.fixedEncodeURIComponent(searchParams[1].split('&')[0]);
         }
         return '';
+    }
+
+    private onSelectDataset(id: string): void {
+        this.router.navigate(['/dataset-view'], {queryParams: {id, type: AppValues.urlDatasetViewOverviewType}});
     }
 }
