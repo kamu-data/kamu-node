@@ -64,19 +64,18 @@ export class AppHeaderComponent {
 
             this.onSelectDataset.emit(searchInfo);
         }
-
-        const typeaheadInput: Element | null = document.querySelector('.typeahead-input');
-        if (typeaheadInput) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            typeaheadInput['typeahead']('close');
-        }
         setTimeout(() => {
             if(this.isMobileView) {
                 this.triggerMenuClick();
             }
 
             (event.target as HTMLElement).blur();
+            const typeaheadInput: Element | null = document.querySelector("ngb-typeahead-window");
+            if (typeaheadInput) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                document.querySelector("ngb-typeahead-window").classList.remove('show');
+            }
         }, 200);
     }
 
