@@ -29,8 +29,13 @@
         [attr.width]="node.dimension.width"
         [attr.height]="node.dimension.height"
         [attr.fill]="node.data.color"
+        [attr.cursor]="'pointer'"
+        (click)="onClickNode(node.label)"
       />
-      <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2" (click)="onClickNode(node.label)">
+      <svg:text alignment-baseline="central"
+                [attr.x]="10" [attr.y]="node.dimension.height / 2"
+                [attr.cursor]="'pointer'"
+                (click)="onClickNode(node.label)">
         {{node.label}}
       </svg:text>
     </svg:g>
