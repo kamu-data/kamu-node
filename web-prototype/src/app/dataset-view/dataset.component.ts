@@ -250,7 +250,6 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         let uniqDatasetIdList: string[] = [];
 
         this.appDatasetService.onDatasetTreeChanges.subscribe((datasetTree: string[][]) => {
-            debugger
             this.isAvailableLinageGraph = (datasetTree.length !== 0);
             datasetTree.forEach((term: string[]) => term.forEach((id: string) => uniqDatasetIdList.push(id)));
             uniqDatasetIdList = uniqDatasetIdList.filter((x: any, y: number) => uniqDatasetIdList.indexOf(x) == y);

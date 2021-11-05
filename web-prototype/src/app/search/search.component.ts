@@ -72,12 +72,7 @@ export class SearchComponent implements OnInit, AfterContentInit {
   public ngAfterContentInit(): void {
     this.tableData.tableSource = this.searchData;
 
-    if (this._window.location.search.split('?id=').length > 1) {
-      const currentId: string = this._window.location.search.split('?id=')[1].split('&')[0];
-      this.onSearch(currentId || "");
-    } else {
-      this.onSearch("");
-    }
+    this.changePageAndSearch();
   }
 
 
@@ -89,16 +84,12 @@ export class SearchComponent implements OnInit, AfterContentInit {
 
     this.initTableData();
 
-    if (this._window.location.search.split('?id=').length > 1) {
-      const currentId: string = this._window.location.search.split('?id=')[1].split('&')[0];
-      this.onSearch(currentId || "");
-    } else {
-      this.onSearch("");
-    }
+    this.changePageAndSearch();
+
 
     this.appSearchService.onSearchChanges.subscribe((value: string) => {
       this.searchValue = value;
-      this.onSearch(value);
+      this.onSearch(value, this.currentPage);
     })
 
     this.appSearchService.onSearchDataChanges.subscribe((data: SearchOverviewInterface) => {
@@ -107,6 +98,23 @@ export class SearchComponent implements OnInit, AfterContentInit {
       this.tableData.totalCount = data.totalCount;
       this.currentPage = data.currentPage;
     });
+  }
+  private changePageAndSearch(): void {
+    let page: number = 1;
+    let currentId: string = '';
+
+    if (this._window.location.search.split('?id=').length > 1) {
+      currentId = this._window.location.search.split('?id=')[1].split('&')[0];
+      this.searchValue = currentId;
+
+      const searchPageParams: string[] = this._window.location.search.split('&p=');
+      if (searchPageParams[1]) {
+        page = Number(searchPageParams[1].split('&')[0]);
+      }
+    }
+
+    this.currentPage = page;
+    this.onSearch(currentId, page);
   }
 
   private initTableData(): void {
@@ -126,7 +134,10 @@ export class SearchComponent implements OnInit, AfterContentInit {
 
   public onPageChange(params: {currentPage: number, isClick: boolean}): void {
     this.currentPage = params.currentPage;
-    this.onSearch(this.searchValue, params.currentPage - 1)
+
+    if (this.searchValue !== '') {
+       this.router.navigate([AppValues.urlSearch], {queryParams: {id: this.searchValue, p: params.currentPage}});
+    }
   }
 
   public onSelectDataset(id: string): void {
@@ -162,8 +173,8 @@ export class SearchComponent implements OnInit, AfterContentInit {
     console.log('onClickDescission');
   }
 
-  public onSearch(searchValue: string, page?: number): void {
-    this.appSearchService.search(searchValue, page);
+  public onSearch(searchValue: string, page: number = 1): void {
+    this.appSearchService.search(searchValue, page - 1);
   }
 
 }

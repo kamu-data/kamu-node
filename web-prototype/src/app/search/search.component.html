@@ -18,7 +18,7 @@
                                    [isClickableRow]="tableData.isClickableRow"
                                    (onSelectDatasetEmit)="onSelectDataset($event)"></app-repo-list>
 
-                    <ng-template [ngIf]="tableData.tableSource.length > 0">
+                    <ng-template [ngIf]="tableData.tableSource.length > 0 && tableData.pageInfo">
                         <app-pagination [currentPage]="currentPage" [pageInfo]="tableData.pageInfo" (pageChangeEvent)="onPageChange($event)"></app-pagination>
                     </ng-template>
                 </div>
