@@ -36,6 +36,7 @@ import {AppHeaderComponent} from "./components/app-header/app-header.component";
 import {MatOptionModule} from "@angular/material/core";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {NgxGraphModule} from "@swimlane/ngx-graph";
+import {GithubCallbackComponent} from "./auth/github-callback/github.callback";
 
 
 const Services = [
@@ -76,6 +77,7 @@ const MatModules = [
         AppComponent,
         AppHeaderComponent,
         LoginComponent,
+        GithubCallbackComponent,
         AccountComponent,
     ],
     imports: [

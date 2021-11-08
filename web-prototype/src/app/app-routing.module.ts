@@ -6,6 +6,7 @@ import {DatasetComponent} from "./dataset-view/dataset.component";
 import {DatasetCreateComponent} from "./dataset-create/dataset-create.component";
 import {AccountComponent} from "./auth/account/account.component";
 import AppValues from "./common/app.values";
+import {GithubCallbackComponent} from "./auth/github-callback/github.callback";
 
 const routes: Routes = [
     {path: '', redirectTo: AppValues.urlSearch, pathMatch: 'full'},
@@ -16,6 +17,7 @@ const routes: Routes = [
             {path: ':id', component: SearchComponent}
         ]
     },
+    {path: AppValues.urlGithubCallback, component: GithubCallbackComponent},
     {path: AppValues.urlLogin, component: LoginComponent},
     {path: AppValues.urlProfile, component: AccountComponent},
     {

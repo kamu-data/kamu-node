@@ -6,6 +6,7 @@ export default class AppValues {
   public static appLogo = 'assets/icons/kamu_logo_icon.svg';
   public static urlProfile = 'profile';
   public static urlLogin = 'login';
+  public static urlGithubCallback = 'github_callback';
   public static urlSearch = 'search';
   public static urlDatasetView = 'dataset-view';
   public static urlDatasetViewOverviewType = 'overview';

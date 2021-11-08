@@ -3,7 +3,11 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  github_client_id: 'ce6fe6ce924979f88d95', // your Client ID from GitHub
+  github_client_secret_id: '4b56ff98415722f4290052bad8ce2ea28d8fe5e2',
+  redirect_uri: 'http://127.0.0.1:4200/github_callback', // authentication url
+  gatekeeper: 'https://github.com/login/oauth/authorize' // url from gatekeeper
 };
 
 /*
