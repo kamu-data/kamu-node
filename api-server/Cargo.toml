@@ -25,7 +25,7 @@ async-graphql-actix-web = "*"
 
 # Tracing / logging / telemetry
 tracing = "*"  
-tracing-subscriber = "*"
+tracing-subscriber = { version = "*", features = ["env-filter"] }
 tracing-log = "*"
 tracing-bunyan-formatter = "*"
 tracing-actix-web = "*"
