@@ -15,8 +15,8 @@ import {GraphQLModule} from './graphql.module';
 import {HttpClientModule} from '@angular/common/http';
 import {MatTableModule} from "@angular/material/table";
 import {CdkTableModule} from "@angular/cdk/table";
-import {APOLLO_NAMED_OPTIONS, NamedOptions} from 'apollo-angular';
-import {HttpLink} from 'apollo-angular/http';
+import {Apollo, APOLLO_NAMED_OPTIONS, APOLLO_OPTIONS} from 'apollo-angular';
+import {HttpLink, HttpLinkHandler} from "apollo-angular-link-http";
 import {InMemoryCache} from '@apollo/client/core';
 import {SearchApi} from "./api/search.api";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -41,22 +41,22 @@ import {GithubCallbackComponent} from "./auth/github-callback/github.callback";
 
 const Services = [
     SearchApi,
+    Apollo,
+    HttpLink,
     AppSearchService,
     AppDatasetService,
     SideNavService,
     {
-        provide: APOLLO_NAMED_OPTIONS,
-        useFactory(httpLink: HttpLink): NamedOptions {
+        provide: APOLLO_OPTIONS,
+        useFactory: (httpLink: HttpLink) => {
             return {
-                newClientName: {
-                    cache: new InMemoryCache(),
-                    link: httpLink.create({
-                        uri: 'http://0.0.0.0:8080/graphql',
-                    }),
-                },
-            };
-        },
-        deps: [HttpLink],
+              cache: new InMemoryCache(),
+              link: httpLink.create({
+                uri: 'http://0.0.0.0:8080/graphql',
+              }),
+        };
+      },
+      deps: [HttpLink],
     }
 ];
 const MatModules = [

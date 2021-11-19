@@ -13,18 +13,18 @@ import AppValues from "../common/app.values";
 @Injectable()
 export class SearchApi {
     /* eslint-disable  @typescript-eslint/no-explicit-any */
-    private apollo: ApolloBase<any>;
 
-    constructor(private apolloProvider: Apollo) {
-        this.apollo = this.apolloProvider.use('newClientName');
+    constructor(private apollo: Apollo) {
+        // this.apollo = this.apolloProvider.use('newClientName');
     }
 
     // tslint:disable-next-line: no-any
     public seatchIndex(): Observable<any> {
-        const GET_DATA: DocumentNode = gql``
+        const GET_DATA = gql``;
 
         /* eslint-disable  @typescript-eslint/no-explicit-any */
-        return this.apollo.watchQuery({query: GET_DATA})
+        // @ts-ignore
+      return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: any) => {
                 if (result.data) {
                     return result.data.search.query.edges.map((edge: any) => {
@@ -45,7 +45,7 @@ export class SearchApi {
           __typename
           ... on Dataset {
             id
-            kind 
+            kind
             createdAt
             lastUpdatedAt
             __typename
@@ -66,7 +66,8 @@ export class SearchApi {
 }
 `;
 
-        return this.apollo.watchQuery({query: GET_DATA})
+        // @ts-ignore
+      return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: any) => {
                 let dataset: SearchOverviewDatasetsInterface[] = [];
                 let pageInfo: PageInfoInterface = SearchApi.pageInfoInit();
@@ -88,9 +89,9 @@ export class SearchApi {
     }
     private static searchOverviewData(dataset: SearchOverviewDatasetsInterface[], pageInfo: PageInfoInterface, totalCount: number, currentPage: number): SearchOverviewInterface {
         return {
-            dataset: dataset,
-            pageInfo: pageInfo,
-            totalCount: totalCount,
+            dataset,
+            pageInfo,
+            totalCount,
             currentPage: currentPage + 1
         };
     }
@@ -119,7 +120,8 @@ export class SearchApi {
 }`
 
         /* eslint-disable  @typescript-eslint/no-explicit-any */
-        return this.apollo.watchQuery({query: GET_DATA})
+        // @ts-ignore
+      return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
                     return SearchApi.searchValueAddToAutocomplete(result.data.search.query.nodes || [], id);
@@ -155,7 +157,8 @@ export class SearchApi {
 }
 `;
         /* eslint-disable  @typescript-eslint/no-explicit-any */
-        return this.apollo.watchQuery({query: GET_DATA})
+        // @ts-ignore
+      return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
                     return result.data.datasets.byId;
@@ -196,7 +199,8 @@ export class SearchApi {
 }
 
 }`
-        return this.apollo.watchQuery({query: GET_DATA})
+        // @ts-ignore
+      return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
                     /* eslint-disable  @typescript-eslint/no-explicit-any */
@@ -240,7 +244,8 @@ export class SearchApi {
         let datasets: SearchOverviewInterface;
 
         // tslint:disable-next-line: no-any
-        return this.apollo.watchQuery({query: GET_DATA})
+        // @ts-ignore
+      return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 let dataset: SearchOverviewDatasetsInterface[] = [];
                 let pageInfo: PageInfoInterface = SearchApi.pageInfoInit();

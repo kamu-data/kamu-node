@@ -13,7 +13,7 @@ import {DatasetIDsInterface, TypeNames} from "./interface/search.interface";
 export class AppComponent implements OnInit {
   public appLogo = `/${AppValues.appLogo}`;
   public isMobileView = false;
-  public searchValue = '';
+  public searchValue: any = '';
   public isVisible = true;
   private appHeaderNotVisiblePages: string[] = [AppValues.urlDatasetCreate, AppValues.urlLogin];
   private _window: Window;

@@ -1,16 +1,13 @@
-import {Component, EventEmitter, Input, Output,} from "@angular/core";
-import {Edge} from "@swimlane/ngx-graph/lib/models/edge.model";
-import {Node} from "@swimlane/ngx-graph/lib/models/node.model";
-import { MiniMapPosition } from "ngx-graph/projects/swimlane/ngx-graph/src/lib/enums/mini-map-position.enum";
+import {Component, EventEmitter, Input, Output} from "@angular/core";
 
 @Component({
   selector: 'app-linage-graph',
   templateUrl: './linage-graph.component.html',
 })
 export class LinageGraphComponent {
-  @Input() public view: [number, number];
-  @Input() public links: Edge[];
-  @Input() public nodes: Node[];
+  // @Input() public view: [number, number];
+  @Input() public links: any[];
+  @Input() public nodes: any[];
 
   @Output() public onClickNodeEvent: EventEmitter<string> = new EventEmitter();
 
@@ -23,8 +20,8 @@ export class LinageGraphComponent {
   public panOnZoom = true;
   public autoZoom = true;
   public autoCenter = false;
-  public showMiniMap = true;
-  public miniMapPosition: MiniMapPosition = MiniMapPosition.UpperLeft;
+  // public showMiniMap = true;
+  // public miniMapPosition: any;
 
   public onClickNode(label: string): void {
     this.onClickNodeEvent.emit(label);

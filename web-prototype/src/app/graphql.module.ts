@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {APOLLO_OPTIONS} from 'apollo-angular';
 import {InMemoryCache} from '@apollo/client/core';
-import {HttpLink, HttpLinkHandler} from 'apollo-angular/http';
+import {HttpLink, HttpLinkHandler} from "apollo-angular-link-http";
 
 const uri = 'kamu'; // <-- add the URL of the GraphQL server here
 export function createApollo(httpLink: HttpLink): { cache: InMemoryCache; link: HttpLinkHandler } {

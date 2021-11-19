@@ -343,7 +343,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         return '';
     }
 
-    private onSelectDataset(id: string): void {
+    public onSelectDataset(id: string): void {
         this.router.navigate(['/dataset-view'], {queryParams: {id, type: AppValues.urlDatasetViewOverviewType}});
     }
 }

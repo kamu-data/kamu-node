@@ -42,7 +42,7 @@ export class AppHeaderComponent {
         return typeof x !== 'string' ? x.id : x;
     }
 
-    public onSelectItem(event: NgbTypeaheadSelectItemEvent<DatasetIDsInterface>): void {
+    public onSelectItem(event: any): void {
         this.isSearchActive = false;
 
         if(event.item) {
@@ -50,7 +50,7 @@ export class AppHeaderComponent {
         }
     }
 
-    public onSearch(event: FocusEvent, searchValue: DatasetIDsInterface | string): void {
+    public onSearch(event: any, searchValue: DatasetIDsInterface | string): void {
         this.isSearchActive = false;
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
