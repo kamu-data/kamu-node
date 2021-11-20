@@ -1,4 +1,5 @@
 import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
+import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {AppSearchService} from "./search.service";
 import {
   PageInfoInterface,
@@ -135,9 +136,7 @@ export class SearchComponent implements OnInit, AfterContentInit {
   public onPageChange(params: {currentPage: number, isClick: boolean}): void {
     this.currentPage = params.currentPage;
 
-    if (this.searchValue !== '') {
-       this.router.navigate([AppValues.urlSearch], {queryParams: {id: this.searchValue, p: params.currentPage}});
-    }
+    this.router.navigate([AppValues.urlSearch], {queryParams: {id: this.searchValue, p: params.currentPage}});
   }
 
   public onSelectDataset(id: string): void {
