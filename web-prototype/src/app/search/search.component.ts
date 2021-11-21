@@ -1,17 +1,16 @@
-import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
-import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
-import {AppSearchService} from "./search.service";
+import {AppSearchService} from './search.service';
 import {
   PageInfoInterface,
   SearchOverviewDatasetsInterface,
   SearchOverviewInterface
-} from "../interface/search.interface";
-import AppValues from "../common/app.values";
-import {searchAdditionalButtonsEnum} from "./search.interface";
-import {SearchAdditionalButtonInterface} from "../components/search-additional-buttons/search-additional-buttons.interface";
-import {MatSidenav} from "@angular/material/sidenav";
-import {SideNavService} from "../services/sidenav.service";
-import {Router} from "@angular/router";
+} from '../interface/search.interface';
+import AppValues from '../common/app.values';
+import {searchAdditionalButtonsEnum} from './search.interface';
+import {SearchAdditionalButtonInterface} from '../components/search-additional-buttons/search-additional-buttons.interface';
+import {MatSidenav} from '@angular/material/sidenav';
+import {SideNavService} from '../services/sidenav.service';
+import {Router} from '@angular/router';
+import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
 
 
 @Component({
@@ -78,7 +77,7 @@ export class SearchComponent implements OnInit, AfterContentInit {
 
 
   public ngOnInit(): void {
-    if(this.sidenav) {
+    if (this.sidenav) {
       this.sidenavService.setSidenav(this.sidenav);
       this.checkWindowSize();
     }
@@ -91,7 +90,7 @@ export class SearchComponent implements OnInit, AfterContentInit {
     this.appSearchService.onSearchChanges.subscribe((value: string) => {
       this.searchValue = value;
       this.onSearch(value, this.currentPage);
-    })
+    });
 
     this.appSearchService.onSearchDataChanges.subscribe((data: SearchOverviewInterface) => {
       this.tableData.tableSource = data.dataset;
@@ -101,8 +100,8 @@ export class SearchComponent implements OnInit, AfterContentInit {
     });
   }
   private changePageAndSearch(): void {
-    let page: number = 1;
-    let currentId: string = '';
+    let page = 1;
+    let currentId = '';
 
     if (this._window.location.search.split('?id=').length > 1) {
       currentId = this._window.location.search.split('?id=')[1].split('&')[0];
