@@ -21,7 +21,6 @@ export class GithubCallbackComponent implements OnInit {
 
   public getToken(code: string) {
     return this.httpClient.post(`https://github.com/login/oauth/access_token?client_id=${environment.github_client_id}&redirect_uri=${environment.redirect_uri}&client_secret=${environment.github_client_secret_id}&code=${code}`,{}).pipe(map((res) => {
-        debugger
         // @ts-ignore
         let json = res.json();
             // @ts-ignore

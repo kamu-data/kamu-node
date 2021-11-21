@@ -95,6 +95,8 @@ export class DatasetComponent implements OnInit, AfterContentInit {
 
         this.initTableData();
 
+        this.prepareLinageGraph();
+
         this.appDatasetService.onSearchDatasetInfoChanges.subscribe((info: DatasetInfoInterface) => {
             this.datasetInfo = info;
         })
@@ -231,7 +233,6 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         this.appDatasetService.resetDatasetTree();
         this.appDatasetService.onSearchLinageDataset(this.getDatasetId());
 
-        this.prepareLinageGraph();
         this.changeLinageGraphView();
     }
 
@@ -247,6 +248,8 @@ export class DatasetComponent implements OnInit, AfterContentInit {
 
 
     private prepareLinageGraph(): void {
+        this.linageGraphNodes = [];
+        this.linageGraphLink = [];
         let uniqDatasetIdList: string[] = [];
 
         this.appDatasetService.onDatasetTreeChanges.subscribe((datasetTree: string[][]) => {

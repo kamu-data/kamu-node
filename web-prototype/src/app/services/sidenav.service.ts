@@ -24,7 +24,6 @@ export class SideNavService {
     }
 
     public toggle(): Promise<MatDrawerToggleResult> {
-        console.log(this.sidenav);
         return this.sidenav ? this.sidenav.toggle() : this.emptySidenav();
     }
 

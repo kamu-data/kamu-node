@@ -133,9 +133,13 @@ export class AppDatasetService {
             dataset.metadata.currentUpstreamDependencies
                 .forEach((dependencies: DatasetCurrentUpstreamDependencies) => {
                     this.datasetTree.push([dataset.id, dependencies.id]);
-                })
+                });
         }
+        this.datasetTree = Array.from(this.uniquedatasetTree(this.datasetTree));
         this.datasetTreeChange(this.datasetTree);
+    }
+    private uniquedatasetTree(datasetTree: string[][]) {
+        return new Map(datasetTree.map((p: string[]) => [p.join(), p])).values();
     }
     private createDependenciesDerivativeList(dataset: DatasetLinageResponse) {
         return dataset.metadata.currentUpstreamDependencies
