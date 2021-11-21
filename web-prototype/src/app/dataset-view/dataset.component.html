@@ -4,7 +4,7 @@
             <div class="search-header-container-block"
                  [style]="isMinimizeSearchAdditionalButtons ? 'grid-template-columns: 1fr 0.1fr' : ''">
                 <div class="datasetViewTypeToggleGroup">
-                    <mat-button-toggle-group name="datasetViewType" aria-label="Dataset View Type">
+                    <mat-button-toggle-group name="datasetViewType" aria-label="Dataset View Type" [value]="datasetViewType">
                         <mat-button-toggle value="overview" [checked]="datasetViewTypeOverview" (click)="onSearchDataset()">Overview</mat-button-toggle>
                         <mat-button-toggle value="metadata" [checked]="datasetViewTypeMetadata" (click)="onSearchMetadata(1)">Metadata</mat-button-toggle>
                         <mat-button-toggle value="linage" [checked]="datasetViewTypeLinage" (click)="onSearchLinageDataset()">Linage</mat-button-toggle>

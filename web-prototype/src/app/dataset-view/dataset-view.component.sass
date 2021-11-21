@@ -9,3 +9,37 @@ mat-button-toggle-group
       font-size: 15px
       color: $app-emperor
 
+mat-button-toggle-group
+  box-shadow: none
+  border-bottom: 1px solid
+  border-radius: 0
+
+mat-button-toggle
+  border: 1px rgba(0,0,0,0) solid !important
+  margin-top: 5px !important
+  padding: 0 5px !important
+  z-index: 3 !important
+  outline: none !important
+
+mat-button-toggle:hover
+  box-shadow: none !important
+  border-bottom: 1px solid !important
+  border-radius: 0 !important
+  &.mat-button-toggle-checked
+    border-bottom: 2px #000 solid !important
+
+mat-button-toggle ::ng-deep .mat-button-toggle-focus-overlay
+  background-color: transparent !important
+  opacity: 0 !important
+
+.mat-button-toggle-checked
+  border-left: none
+  border-top: none
+  border-right: none
+  border-bottom: 2px #000 solid !important
+  border-radius: 0
+  background-color: none !important
+
+.mat-button-toggle-input
+  background-color: none !important
+  padding-left: 32px !important
