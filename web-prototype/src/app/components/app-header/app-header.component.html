@@ -56,11 +56,11 @@
         </button>
         <button class="button-round" data-test-id="openUserInfo" mat-button [matMenuTriggerFor]="menu">
             <div class="img-container-round">
-                <img src="../../../assets/icons/user_icon.png" (click)="onOpenUserInfo()" alt="User icon">
+                <img [src]="(user && user.avatar_url) ? user.avatar_url : '../../../assets/icons/user_icon.png'" (click)="onOpenUserInfo()" alt="User icon">
             </div>
         </button>
         <mat-menu #menu="matMenu">
-            <p id="matmenu-signed-in-name">Signed in as <strong data-test-id="userName">Anonymous</strong></p>
+            <p id="matmenu-signed-in-name">Signed in as <strong data-test-id="userName">{{(user && user.login) ? user.login : 'Anonymous'}}</strong></p>
             <div role="none" class="dropdown-divider"></div>
 
             <button mat-menu-item data-test-id="openUserProfile">Your profile</button>

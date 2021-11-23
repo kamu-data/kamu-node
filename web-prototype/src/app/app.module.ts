@@ -7,41 +7,43 @@ import {LoginComponent} from './auth/login/login.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {environment} from '../environments/environment';
-import {MatToolbarModule} from "@angular/material/toolbar";
+import {MatToolbarModule} from '@angular/material/toolbar';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {MatFormFieldModule} from "@angular/material/form-field";
-import {MatIconModule} from "@angular/material/icon";
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
 import {GraphQLModule} from './graphql.module';
 import {HttpClientModule} from '@angular/common/http';
-import {MatTableModule} from "@angular/material/table";
-import {CdkTableModule} from "@angular/cdk/table";
+import {MatTableModule} from '@angular/material/table';
+import {CdkTableModule} from '@angular/cdk/table';
 import {Apollo, APOLLO_NAMED_OPTIONS, APOLLO_OPTIONS} from 'apollo-angular';
-import {HttpLink, HttpLinkHandler} from "apollo-angular-link-http";
+import {HttpLink, HttpLinkHandler} from 'apollo-angular-link-http';
 import {InMemoryCache} from '@apollo/client/core';
-import {SearchApi} from "./api/search.api";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {AppSearchService} from "./search/search.service";
+import {SearchApi} from './api/search.api';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {AppSearchService} from './search/search.service';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatDividerModule} from '@angular/material/divider';
-import {MatSidenavModule} from "@angular/material/sidenav";
-import {SideNavService} from "./services/sidenav.service";
-import {MatMenuModule} from "@angular/material/menu";
-import {MatButtonModule} from "@angular/material/button";
-import {SearchModule} from "./search/search.module";
-import {AccountComponent} from "./auth/account/account.component";
-import {DatasetModule} from "./dataset-view/dataset.module";
-import {AppDatasetService} from "./dataset-view/dataset.service";
-import {DatasetCreateModule} from "./dataset-create/dataset-create.module";
-import {AppHeaderComponent} from "./components/app-header/app-header.component";
-import {MatOptionModule} from "@angular/material/core";
-import {MatAutocompleteModule} from "@angular/material/autocomplete";
-import {NgxGraphModule} from "@swimlane/ngx-graph";
-import {GithubCallbackComponent} from "./auth/github-callback/github.callback";
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {SideNavService} from './services/sidenav.service';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatButtonModule} from '@angular/material/button';
+import {SearchModule} from './search/search.module';
+import {AccountComponent} from './auth/account/account.component';
+import {DatasetModule} from './dataset-view/dataset.module';
+import {AppDatasetService} from './dataset-view/dataset.service';
+import {DatasetCreateModule} from './dataset-create/dataset-create.module';
+import {AppHeaderComponent} from './components/app-header/app-header.component';
+import {MatOptionModule} from '@angular/material/core';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {NgxGraphModule} from '@swimlane/ngx-graph';
+import {GithubCallbackComponent} from './auth/github-callback/github.callback';
+import {AuthApi} from './api/auth.api';
 
 
 const Services = [
-    SearchApi,
     Apollo,
+    AuthApi,
+    SearchApi,
     HttpLink,
     AppSearchService,
     AppDatasetService,
@@ -70,7 +72,7 @@ const MatModules = [
     MatMenuModule,
     MatButtonModule,
     MatAutocompleteModule
-]
+];
 
 @NgModule({
     declarations: [

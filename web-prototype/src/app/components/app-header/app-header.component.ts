@@ -4,6 +4,7 @@ import {debounceTime, distinctUntilChanged, switchMap} from "rxjs/operators";
 import {DatasetIDsInterface, TypeNames} from "../../interface/search.interface";
 import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SearchApi} from "../../api/search.api";
+import {UserInterface} from "../../interface/auth.interface";
 
 @Component({
   selector: 'app-header',
@@ -14,6 +15,7 @@ export class AppHeaderComponent {
     @Input() public appLogo: string;
     @Input() public isMobileView: boolean;
     @Input() public isVisible: boolean;
+    @Input() public user: UserInterface;
 
     @Output() public onSelectDataset: EventEmitter<DatasetIDsInterface> = new EventEmitter();
     @Output() public addNew: EventEmitter<null> = new EventEmitter();

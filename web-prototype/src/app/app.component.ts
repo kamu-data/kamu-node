@@ -1,9 +1,11 @@
 import {Component, HostListener, OnInit} from '@angular/core';
-import AppValues from "./common/app.values";
-import {AppSearchService} from "./search/search.service";
+import AppValues from './common/app.values';
+import {AppSearchService} from './search/search.service';
 import { filter } from 'rxjs/operators';
 import {Router, NavigationEnd} from '@angular/router';
-import {DatasetIDsInterface, TypeNames} from "./interface/search.interface";
+import {DatasetIDsInterface, TypeNames} from './interface/search.interface';
+import {AuthApi} from './api/auth.api';
+import {UserInterface} from './interface/auth.interface';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +17,7 @@ export class AppComponent implements OnInit {
   public isMobileView = false;
   public searchValue: any = '';
   public isVisible = true;
+  public user: UserInterface;
   private appHeaderNotVisiblePages: string[] = [AppValues.urlDatasetCreate, AppValues.urlLogin];
   private _window: Window;
 
@@ -26,6 +29,7 @@ export class AppComponent implements OnInit {
   constructor(
       private router: Router,
       private appSearchService: AppSearchService,
+      private authApi: AuthApi
   ) {
     this._window = window;
   }
@@ -33,7 +37,20 @@ export class AppComponent implements OnInit {
   public ngOnInit(): void {
     this.checkView();
     this.appHeaderInit();
+    this.authApi.onUserChanges.subscribe((user: UserInterface) => {
+      this.user = user;
+    });
+    this.getUser();
   }
+
+  private getUser(): void {
+    if (location.href.includes(AppValues.urlLogin) || location.href.includes(AppValues.urlGithubCallback)) {
+      return;
+    } else {
+      this.authApi.getUser();
+    }
+  }
+
   private appHeaderInit(): void {
     this.appSearchService.onSearchChanges.subscribe((searchValue: string) => {
         this.searchValue = searchValue;
@@ -72,6 +89,6 @@ export class AppComponent implements OnInit {
   }
 
   public onAddNew(): void {
-    this.router.navigate(['dataset-create'])
+    this.router.navigate(['dataset-create']);
   }
 }
