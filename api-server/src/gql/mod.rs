@@ -1,3 +1,6 @@
+mod auth;
+pub(crate) use auth::*;
+
 mod dataset_data;
 pub(crate) use dataset_data::*;
 

@@ -39,6 +39,26 @@ To test GQL queries from the CLI:
 cargo run -- gql query '{ apiVersion }' | jq
 ```
 
+#### GitHub Auth
+
+To use API server for GitHub's OAuth you will need to set following environment variables:
+- `KAMU_AUTH_GITHUB_CLIENT_ID` - Client ID of your GitHub OAuth app
+- `KAMU_AUTH_GITHUB_CLIENT_SECRET` - Client secret of your GitHub OAuth app
+
+Then you can use the following mutation:
+
+```gql
+mutation GithubLogin {
+  auth {
+    githubLogin (code: "...") {
+      accessToken
+      scope
+      tokenType
+    }
+  }
+}
+```
+
 ### Web UI
 
 Prerequisites:

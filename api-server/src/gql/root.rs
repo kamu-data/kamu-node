@@ -1,7 +1,12 @@
 use async_graphql::*;
 
+use super::Auth;
 use super::Datasets;
 use super::Search;
+
+////////////////////////////////////////////////////////////////////////////////////////
+// Query
+////////////////////////////////////////////////////////////////////////////////////////
 
 pub struct Query;
 
@@ -23,10 +28,23 @@ impl Query {
     }
 }
 
-pub type Schema = async_graphql::Schema<Query, EmptyMutation, EmptySubscription>;
+////////////////////////////////////////////////////////////////////////////////////////
+// Mutation
+////////////////////////////////////////////////////////////////////////////////////////
+
+pub struct Mutation;
+
+#[Object]
+impl Mutation {
+    async fn auth(&self) -> Auth {
+        Auth
+    }
+}
+
+pub type Schema = async_graphql::Schema<Query, Mutation, EmptySubscription>;
 
 pub fn schema(catalog: dill::Catalog) -> Schema {
-    Schema::build(Query, EmptyMutation, EmptySubscription)
+    Schema::build(Query, Mutation, EmptySubscription)
         .extension(extensions::ApolloTracing)
         .data(catalog)
         .finish()

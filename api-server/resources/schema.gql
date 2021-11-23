@@ -1,4 +1,7 @@
 scalar AccountID
+type Auth {
+	githubLogin(code: String!): OauthLoginResponse!
+}
 type BlockRef {
 	name: String!
 	blockHash: Sha3256!
@@ -157,6 +160,14 @@ type MetadataChain {
 	"""
 	blocks(page: Int, perPage: Int! = 20): MetadataBlockConnection!
 }
+type Mutation {
+	auth: Auth!
+}
+type OauthLoginResponse {
+	accessToken: String!
+	scope: String!
+	tokenType: String!
+}
 type PageBasedInfo {
 	"""
 	When paginating backwards, are there more items?
@@ -213,4 +224,5 @@ type SearchResultEdge {
 scalar Sha3256
 schema {
 	query: Query
+	mutation: Mutation
 }
