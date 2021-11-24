@@ -63,14 +63,14 @@
             <p id="matmenu-signed-in-name">Signed in as <strong data-test-id="userName">{{(userInfo && userInfo.name) ? userInfo.name : 'Anonymous'}}</strong></p>
             <div role="none" class="dropdown-divider"></div>
 
-            <ng-template [ngIf]="!userInfo">
+            <ng-template [ngIf]="!(userInfo && userInfo.name)">
                 <button mat-menu-item data-test-id="openUserProfile" (click)="onLogin()">Login</button>
                 <div role="none" class="dropdown-divider"></div>
                 <button mat-menu-item data-test-id="openBillingPlan">Account & Billing</button>
                 <button mat-menu-item data-test-id="openHelp">Help</button>
             </ng-template>
 
-            <ng-template [ngIf]="userInfo">
+            <ng-template [ngIf]="(userInfo && userInfo.name)">
                 <button mat-menu-item data-test-id="openUserProfile">Your profile</button>
                 <button mat-menu-item data-test-id="openUserDatasets">Your datasets</button>
 
@@ -81,7 +81,7 @@
                 <button mat-menu-item data-test-id="openHelp">Help</button>
 
                 <div role="none" class="dropdown-divider"></div>
-                <button mat-menu-item data-test-id="openSignOut">Sign out</button>
+                <button mat-menu-item data-test-id="openSignOut" (click)="onLogOut()">Sign out</button>
             </ng-template>
         </mat-menu>
     </div>

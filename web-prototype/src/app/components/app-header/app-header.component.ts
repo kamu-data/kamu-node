@@ -26,6 +26,7 @@ export class AppHeaderComponent {
     @Output() public selectDatasetEmitter: EventEmitter<DatasetIDsInterface> = new EventEmitter();
     @Output() public addNewEmitter: EventEmitter<null> = new EventEmitter();
     @Output() public loginEmitter: EventEmitter<null> = new EventEmitter();
+    @Output() public logOutEmitter: EventEmitter<null> = new EventEmitter();
     @Output() public userProfileEmitter: EventEmitter<null> = new EventEmitter();
 
     @ViewChild('appHeaderMenuButton') appHeaderMenuButton: ElementRef<HTMLElement>;
@@ -90,6 +91,10 @@ export class AppHeaderComponent {
 
     public onLogin(): void {
         this.loginEmitter.emit();
+    }
+
+    public onLogOut(): void {
+        this.logOutEmitter.emit();
     }
 
     public onAddNew(): void {

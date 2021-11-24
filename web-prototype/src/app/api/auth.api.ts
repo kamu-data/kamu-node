@@ -8,18 +8,19 @@ import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {userResponse} from "./mock.user";
 import {subscribe} from "graphql";
+import AppValues from "../common/app.values";
 @Injectable()
 export class AuthApi {
-    private user: UserInterface;
+    private user: UserInterface | {};
     private isAuthenticated: boolean;
-    private userChanges$: Subject<UserInterface> = new Subject<UserInterface>();
+    private userChanges$: Subject<UserInterface | {}> = new Subject<UserInterface | {}>();
     constructor(private apollo: Apollo, private httpClient: HttpClient, private router: Router) {}
 
 
-    public get onUserChanges(): Observable<UserInterface> {
+    public get onUserChanges(): Observable<UserInterface | {}> {
        return this.userChanges$.asObservable();
     }
-    public userChange(user: UserInterface) {
+    public userChange(user: UserInterface | {}) {
         this.user = user;
         this.userChanges$.next(user);
     }
@@ -37,15 +38,15 @@ export class AuthApi {
 
     public getUserInfoAndToken(code: string): Observable<void> {
         return this.getAccessToken(code).pipe(map((accessToken: string) => {
-            localStorage.setItem('code', code);
-            localStorage.setItem('access_token', accessToken);
+            localStorage.setItem(AppValues.localStorageCode, code);
+            localStorage.setItem(AppValues.localStorageAccessToken, accessToken);
 
 
             this.isAuthUser = true;
             // this.authApi.getUser(accessToken);
         }, (err: any) => {
             this.isAuthUser = false;
-            localStorage.removeItem('access_token');
+            localStorage.removeItem(AppValues.localStorageAccessToken);
             AuthApi.handleError(err);
         }));
     }
@@ -88,7 +89,7 @@ export class AuthApi {
 
 
     public getUser(token: string = ''): void {
-        const localStorageAccessToken: string | null = localStorage.getItem('access_token');
+        const localStorageAccessToken: string | null = localStorage.getItem(AppValues.localStorageAccessToken);
         const accessToken: string = (token === '' && localStorageAccessToken) ? localStorageAccessToken : token;
 
       //   this.getUserRequest(accessToken).subscribe((user: UserInterface) => {
@@ -97,6 +98,14 @@ export class AuthApi {
       //       localStorage.setItem('access_token', accessToken);
       //       this.router.navigate(['/']);
       // });
+  }
+
+  public logOut(): void {
+        debugger
+        this.userChange({});
+        localStorage.removeItem(AppValues.localStorageAccessToken);
+        localStorage.removeItem(AppValues.localStorageCode);
+        this.router.navigate(['/']);
   }
 
   static handleError(error: Response): Observable<never> {

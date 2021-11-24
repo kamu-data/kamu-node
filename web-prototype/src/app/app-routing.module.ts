@@ -13,7 +13,7 @@ const githubUrl = `https://github.com/login/oauth/authorize?scope=user:email&cli
 
 const routes: Routes = [
     {path: '', redirectTo: AppValues.urlSearch, pathMatch: 'full'},
-    {path: AppValues.urlLogin, loadChildren: () => new Promise( () => { if (window.location.href.includes(AppValues.urlLogin) ) { window.location.href = githubUrl; } } ), pathMatch: 'full'},
+    {path: AppValues.urlLogin, component: LoginComponent, loadChildren: () => new Promise( () => { window.location.href = githubUrl; })},
     {
         path: AppValues.urlSearch,
         component: SearchComponent,

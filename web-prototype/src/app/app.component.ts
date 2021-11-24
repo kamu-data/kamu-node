@@ -38,7 +38,7 @@ export class AppComponent implements OnInit {
   public ngOnInit(): void {
     this.checkView();
     this.appHeaderInit();
-    this.authApi.onUserChanges.subscribe((user: UserInterface) => {
+    this.authApi.onUserChanges.subscribe((user: UserInterface | {}) => {
       this.user = AppValues.deepCopy(user);
     });
     this.authentification();
@@ -116,6 +116,9 @@ export class AppComponent implements OnInit {
   }
 
   public onLogin(): void {
-    this.router.navigate([AppValues.urlGithubCallback]);
+    this.router.navigate([AppValues.urlLogin]);
+  }
+  public onLogOut(): void {
+    this.authApi.logOut();
   }
 }
