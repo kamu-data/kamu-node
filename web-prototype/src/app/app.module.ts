@@ -38,6 +38,7 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {NgxGraphModule} from '@swimlane/ngx-graph';
 import {GithubCallbackComponent} from './auth/github-callback/github.callback';
 import {AuthApi} from './api/auth.api';
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 
 const Services = [
@@ -71,7 +72,8 @@ const MatModules = [
     MatSidenavModule,
     MatMenuModule,
     MatButtonModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatProgressSpinnerModule
 ];
 
 @NgModule({

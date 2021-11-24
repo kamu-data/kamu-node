@@ -5,7 +5,6 @@ import {HttpClient} from '@angular/common/http';
 import {catchError, map} from 'rxjs/operators';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthApi} from '../../api/auth.api';
-import {CheckAuthenticated, GetAccessTokenResponse, UserInterface} from '../../interface/auth.interface';
 
 @Component({
   selector: 'app-github-callback',
@@ -13,15 +12,21 @@ import {CheckAuthenticated, GetAccessTokenResponse, UserInterface} from '../../i
 })
 
 export class GithubCallbackComponent implements OnInit {
+    private _window: Window;
 
-  constructor(private route: ActivatedRoute,
-              private router: Router,
-              private httpClient: HttpClient,
-              private authApi: AuthApi) {
-  }
+    constructor(
+        private route: ActivatedRoute,
+        private router: Router,
+        private httpClient: HttpClient,
+        private authApi: AuthApi) {
+        this._window = window;
+    }
 
 
   ngOnInit() {
+      if (!this._window.location.search.includes('?code=')) {
+          this.router.navigate(['/']);
+      }
       this.route.queryParams.subscribe(
           (param: any) => {
               this.authApi.getUserInfoAndToken(param.code).subscribe(() => this.router.navigate(['/']));
