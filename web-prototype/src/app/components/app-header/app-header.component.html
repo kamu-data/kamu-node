@@ -59,8 +59,8 @@
                 <img [src]="(user && user.avatar_url) ? user.avatar_url : '../../../assets/icons/user_icon.png'" (click)="onOpenUserInfo()" alt="User icon">
             </div>
         </button>
-        <mat-menu #menu="matMenu">
-            <p id="matmenu-signed-in-name">Signed in as <strong data-test-id="userName">{{(user && user.login) ? user.login : 'Anonymous'}}</strong></p>
+        <mat-menu #menu="matMenu" class="app-header__user-menu">
+            <p id="matmenu-signed-in-name">Signed in as <strong data-test-id="userName">{{(user && user.name) ? user.name : 'Anonymous'}}</strong></p>
             <div role="none" class="dropdown-divider"></div>
 
             <button mat-menu-item data-test-id="openUserProfile">Your profile</button>

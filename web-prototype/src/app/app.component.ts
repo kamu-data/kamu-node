@@ -1,8 +1,8 @@
 import {Component, HostListener, OnInit} from '@angular/core';
 import AppValues from './common/app.values';
 import {AppSearchService} from './search/search.service';
-import { filter } from 'rxjs/operators';
-import {Router, NavigationEnd} from '@angular/router';
+import {debounceTime, filter} from 'rxjs/operators';
+import {Router, NavigationEnd, ActivatedRoute} from '@angular/router';
 import {DatasetIDsInterface, TypeNames} from './interface/search.interface';
 import {AuthApi} from './api/auth.api';
 import {UserInterface} from './interface/auth.interface';
@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
   }
 
   constructor(
+      private route: ActivatedRoute,
       private router: Router,
       private appSearchService: AppSearchService,
       private authApi: AuthApi
@@ -40,15 +41,32 @@ export class AppComponent implements OnInit {
     this.authApi.onUserChanges.subscribe((user: UserInterface) => {
       this.user = user;
     });
-    this.getUser();
+    this.authentification();
   }
 
-  private getUser(): void {
-    if (location.href.includes(AppValues.urlLogin) || location.href.includes(AppValues.urlGithubCallback)) {
+  authentification(): void {
+    const code: string | null = localStorage.getItem(AppValues.localStorageCode);
+
+    if (typeof code === 'string' && !this.authApi.isAuthUser) {
+      this.authApi.getUserInfoAndToken(code).subscribe();
       return;
-    } else {
-      this.authApi.getUser();
     }
+    // if (location.href.includes(AppValues.urlLogin) || location.href.includes(AppValues.urlGithubCallback)) {
+    //   debugger
+    //   if (typeof code === 'string' && this.authApi.isAuthUser) {
+    //     this.router.navigate(['/']);
+    //   } else {
+    //     return;
+    //   }
+    // }
+    // } else {
+    //   if (typeof code === 'string' && this.authApi.isAuthUser) {
+    //     this.authApi.getUserInfoAndToken(code);
+    //     return;
+    //   } else {
+    //     this.router.navigate([AppValues.urlLogin]);
+    //   }
+    // }
   }
 
   private appHeaderInit(): void {

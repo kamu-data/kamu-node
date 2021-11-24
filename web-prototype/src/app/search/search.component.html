@@ -3,11 +3,11 @@
         <div id="search">
             <div class="search-header-container-block"
                  [style]="'grid-template-columns: 1fr;'">
-                <search-additional-buttons
+                <app-search-additional-buttons
                         [searchAdditionalButtonsData]="searchAdditionalButtonsData"
                         [isMinimizeSearchAdditionalButtons]="isMinimizeSearchAdditionalButtons"
                         (searchAdditionalButtonsMethod)="onClickSearchAdditionalButton($event)">
-                </search-additional-buttons>
+                </app-search-additional-buttons>
             </div>
             <div class="search-result-container">
                 <div class="search-result-container__content">

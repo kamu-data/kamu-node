@@ -15,6 +15,9 @@ export default class AppValues {
   public static urlDatasetCreateSelectType = 'select-type';
   public static urlDatasetCreateRoot = 'root';
 
+  public static localStorageCode = 'code';
+  public static localStorageAccessToken = 'code';
+
 
   public static httpPattern = new RegExp(/^(http:\/\/)|(https:\/\/)/i);
 

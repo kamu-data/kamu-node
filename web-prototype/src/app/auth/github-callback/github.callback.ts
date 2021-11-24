@@ -20,34 +20,14 @@ export class GithubCallbackComponent implements OnInit {
               private authApi: AuthApi) {
   }
 
-  public accessToken: any;
-
-  private static handleError(error: Response): Observable<never> {
-      return throwError(`GitHub ${error.statusText || 'Server error'}`);
-  }
-
-  public getToken(code: string): Observable<GetAccessTokenResponse> {
-      return this.authApi.getAccessToken(code);
-  }
 
   ngOnInit() {
       debugger;
-      setTimeout(() => {
-          debugger;
-          this.route.queryParams.subscribe(
-              (param: any) => {
-                  debugger;
-                  const code = param.code;
-                  this.authApi.getAccessToken(code).subscribe((result: GetAccessTokenResponse) => {
-                      debugger;
-                      this.authApi.getUser(result.access_token);
-                  }, (err: any) => {
-                      debugger;
-                      localStorage.removeItem('access_token');
-                      GithubCallbackComponent.handleError(err);
-                  });
-              });
-      }, 2000);
+      this.route.queryParams.subscribe(
+          (param: any) => {
+              debugger
+              this.authApi.getUserInfoAndToken(param.code).subscribe(() => this.router.navigate(['/']));
+          });
   }
 
 }

@@ -2,7 +2,7 @@
     <div class="app-content">
         <div id="dataset-viewer">
             <div class="search-header-container-block"
-                 [style]="isMinimizeSearchAdditionalButtons ? 'grid-template-columns: 1fr 0.1fr' : ''">
+                 [style]="isMinimizeSearchAdditionalButtons ? 'grid-template-columns: 1fr 0.1fr; gap: 20px' : ''">
                 <div class="datasetViewTypeToggleGroup">
                     <mat-button-toggle-group name="datasetViewType" aria-label="Dataset View Type" [value]="datasetViewType">
                         <mat-button-toggle value="overview" [checked]="datasetViewTypeOverview" (click)="onSearchDataset()">Overview</mat-button-toggle>
@@ -12,11 +12,11 @@
                     </mat-button-toggle-group>
                 </div>
 
-                <search-additional-buttons
+                <app-search-additional-buttons
                         [searchAdditionalButtonsData]="searchAdditionalButtonsData"
                         [isMinimizeSearchAdditionalButtons]="isMinimizeSearchAdditionalButtons"
                         (searchAdditionalButtonsMethod)="onClickSearchAdditionalButton($event)">
-                </search-additional-buttons>
+                </app-search-additional-buttons>
             </div>
             <div class="search-result-container">
                 <div class="search-result-container__content" id="searchResultContainerContent">

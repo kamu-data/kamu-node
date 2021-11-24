@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {SearchAdditionalButtonInterface} from "./search-additional-buttons.interface";
 
 @Component({
-  selector: 'search-additional-buttons',
+  selector: 'app-search-additional-buttons',
   templateUrl: './search-additional-buttons.component.html',
   styleUrls: ['./search-additional-buttons.component.sass']
 })
