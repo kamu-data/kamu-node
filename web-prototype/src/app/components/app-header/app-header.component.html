@@ -6,7 +6,7 @@
     </button>
 
     <div [classList]="'app-brand'" id="appHeaderLogo">
-        <a href="/search" data-test-id="appLogo"><img [src]="appLogo" alt="Application logo"/></a>
+        <a [routerLink]="'/search'" data-test-id="appLogo"><img [src]="appLogo" alt="Application logo"/></a>
     </div>
 
     <div class="collapse navbar-collapse" id="navbarNavDropdown">

@@ -12,7 +12,7 @@
 .text-small
   font-size: 12px
 .mat-divider
-  color: #dee2e6
+  color: $app-lightGrayishBlue
 .app-active-button
   background: $app-darkSeaGreen
   border-radius: 4px
@@ -42,6 +42,7 @@
 
 .mat-menu-panel.app-header__user-menu
   background-color: white
+  border: 1px solid $app-lightGrayishBlue
   & .mat-menu-item
     background-color: white
 
@@ -242,6 +243,8 @@ router-outlet
 .search-header-container-block
   margin-bottom: 20px
 #search, #dataset-viewer
+  & .nav-link
+    cursor: pointer
   & .nav-tabs
     margin-bottom: 14px
     border-bottom: none
