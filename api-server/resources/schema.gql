@@ -6,10 +6,10 @@ type AccessToken {
 scalar AccountID
 type AccountInfo {
 	login: String!
-	avatarUrl: String!
-	gravatarId: String!
 	name: String!
-	email: String!
+	email: String
+	avatarUrl: String
+	gravatarId: String
 }
 type Auth {
 	githubLogin(code: String!): LoginResponse!

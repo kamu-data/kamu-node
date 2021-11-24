@@ -67,8 +67,8 @@ pub(crate) struct AccessToken {
 #[derive(SimpleObject, Debug, Clone, Deserialize)]
 pub(crate) struct AccountInfo {
     login: String,
-    avatar_url: String,
-    gravatar_id: String,
     name: String,
-    email: String,
+    email: Option<String>,
+    avatar_url: Option<String>,
+    gravatar_id: Option<String>,
 }
