@@ -117,6 +117,10 @@ type DatasetMetadata {
 	Current upstream dependencies of a dataset
 	"""
 	currentUpstreamDependencies: [Dataset!]!
+	"""
+	Current downstream dependencies of a dataset
+	"""
+	currentDownstreamDependencies: [Dataset!]!
 }
 type Datasets {
 	"""

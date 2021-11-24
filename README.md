@@ -51,9 +51,18 @@ Then you can use the following mutation:
 mutation GithubLogin {
   auth {
     githubLogin (code: "...") {
-      accessToken
-      scope
-      tokenType
+      token {
+        accessToken
+        scope
+        tokenType
+      }
+      accountInfo {
+        login
+        email
+        name
+        avatarUrl
+        gravatarId
+      }
     }
   }
 }

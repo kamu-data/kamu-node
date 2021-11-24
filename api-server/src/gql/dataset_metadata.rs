@@ -2,6 +2,7 @@ use async_graphql::*;
 use chrono::prelude::*;
 use kamu::domain;
 use kamu::infra;
+use opendatafabric as odf;
 
 use super::*;
 
@@ -73,6 +74,22 @@ impl DatasetMetadata {
         Ok(summary
             .dependencies
             .into_iter()
+            .map(|id| Dataset::new(id.into()))
+            .collect())
+    }
+
+    /// Current downstream dependencies of a dataset
+    async fn current_downstream_dependencies(&self, ctx: &Context<'_>) -> Result<Vec<Dataset>> {
+        let dataset_id: odf::DatasetIDBuf = self.dataset_id.clone().into();
+        let metadata_repo = from_catalog::<dyn domain::MetadataRepository>(ctx).unwrap();
+
+        // TODO: This is really slow
+        Ok(metadata_repo
+            .get_all_datasets()
+            .filter(|id| *id != dataset_id)
+            .map(|id| metadata_repo.get_summary(&id).unwrap())
+            .filter(|sum| sum.dependencies.contains(&dataset_id))
+            .map(|sum| sum.id)
             .map(|id| Dataset::new(id.into()))
             .collect())
     }
