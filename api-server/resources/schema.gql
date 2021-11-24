@@ -1,6 +1,18 @@
+type AccessToken {
+	accessToken: String!
+	scope: String!
+	tokenType: String!
+}
 scalar AccountID
+type AccountInfo {
+	login: String!
+	avatarUrl: String!
+	gravatarId: String!
+	name: String!
+	email: String!
+}
 type Auth {
-	githubLogin(code: String!): OauthLoginResponse!
+	githubLogin(code: String!): LoginResponse!
 }
 type BlockRef {
 	name: String!
@@ -122,6 +134,10 @@ Implement the DateTime<Utc> scalar
 The input/output is a string in RFC3339 format.
 """
 scalar DateTime
+type LoginResponse {
+	token: AccessToken!
+	accountInfo: AccountInfo!
+}
 type MetadataBlock {
 	blockHash: Sha3256!
 	prevBlockHash: Sha3256
@@ -162,11 +178,6 @@ type MetadataChain {
 }
 type Mutation {
 	auth: Auth!
-}
-type OauthLoginResponse {
-	accessToken: String!
-	scope: String!
-	tokenType: String!
 }
 type PageBasedInfo {
 	"""
