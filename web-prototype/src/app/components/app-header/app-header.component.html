@@ -56,24 +56,33 @@
         </button>
         <button class="button-round" data-test-id="openUserInfo" mat-button [matMenuTriggerFor]="menu">
             <div class="img-container-round">
-                <img [src]="(user && user.avatar_url) ? user.avatar_url : '../../../assets/icons/user_icon.png'" (click)="onOpenUserInfo()" alt="User icon">
+                <img [src]="(userInfo && userInfo.avatarUrl) ? userInfo.avatarUrl : '../../../assets/icons/user_icon.png'" (click)="onOpenUserInfo()" alt="User icon">
             </div>
         </button>
         <mat-menu #menu="matMenu" class="app-header__user-menu">
-            <p id="matmenu-signed-in-name">Signed in as <strong data-test-id="userName">{{(user && user.name) ? user.name : 'Anonymous'}}</strong></p>
+            <p id="matmenu-signed-in-name">Signed in as <strong data-test-id="userName">{{(userInfo && userInfo.name) ? userInfo.name : 'Anonymous'}}</strong></p>
             <div role="none" class="dropdown-divider"></div>
 
-            <button mat-menu-item data-test-id="openUserProfile">Your profile</button>
-            <button mat-menu-item data-test-id="openUserDatasets">Your datasets</button>
+            <ng-template [ngIf]="!userInfo">
+                <button mat-menu-item data-test-id="openUserProfile" (click)="onLogin()">Login</button>
+                <div role="none" class="dropdown-divider"></div>
+                <button mat-menu-item data-test-id="openBillingPlan">Account & Billing</button>
+                <button mat-menu-item data-test-id="openHelp">Help</button>
+            </ng-template>
 
-            <div role="none" class="dropdown-divider"></div>
-            <button mat-menu-item data-test-id="openBillingPlan">Account & Billing</button>
-            <button mat-menu-item data-test-id="openAnalytics">Analytics</button>
-            <button mat-menu-item data-test-id="openSettings">Settings</button>
-            <button mat-menu-item data-test-id="openHelp">Help</button>
+            <ng-template [ngIf]="userInfo">
+                <button mat-menu-item data-test-id="openUserProfile">Your profile</button>
+                <button mat-menu-item data-test-id="openUserDatasets">Your datasets</button>
 
-            <div role="none" class="dropdown-divider"></div>
-            <button mat-menu-item data-test-id="openSignOut">Sign out</button>
+                <div role="none" class="dropdown-divider"></div>
+                <button mat-menu-item data-test-id="openBillingPlan">Account & Billing</button>
+                <button mat-menu-item data-test-id="openAnalytics">Analytics</button>
+                <button mat-menu-item data-test-id="openSettings">Settings</button>
+                <button mat-menu-item data-test-id="openHelp">Help</button>
+
+                <div role="none" class="dropdown-divider"></div>
+                <button mat-menu-item data-test-id="openSignOut">Sign out</button>
+            </ng-template>
         </mat-menu>
     </div>
 

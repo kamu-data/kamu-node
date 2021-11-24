@@ -1,5 +1,6 @@
 <app-header [searchValue]="searchValue" [appLogo]="appLogo"
-   [isMobileView]="isMobileView" [isVisible]="isVisible" [user]="user"
-   (onSelectDataset)="onSelectDataset($event)"
-   (userInfo)="onOpenUserInfo()" (addNew)="onAddNew()"></app-header>
+   [isMobileView]="isMobileView" [isVisible]="isVisible" [userInfo]="user"
+   (selectDatasetEmitter)="onSelectDataset($event)"
+   (loginEmitter)="onLogin()"
+   (userProfileEmitter)="onOpenUserInfo()" (addNewEmitter)="onAddNew()"></app-header>
 <router-outlet></router-outlet>

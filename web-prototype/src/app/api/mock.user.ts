@@ -3,7 +3,7 @@ export const userResponse: UserInterface = {
   login: 'kulykivska',
   id: 87068546,
   node_id: 'MDQ6VXNlcjg3MDY4NTQ2',
-  avatar_url: 'https://avatars.githubusercontent.com/u/87068546?v=4',
+  avatarUrl: 'https://avatars.githubusercontent.com/u/87068546?v=4',
   gravatar_id: '',
   url: 'https://api.github.com/users/kulykivska',
   html_url: 'https://github.com/kulykivska',

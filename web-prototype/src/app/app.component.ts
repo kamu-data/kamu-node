@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   public searchValue: any = '';
   public isVisible = true;
   public user: UserInterface;
-  private appHeaderNotVisiblePages: string[] = [AppValues.urlDatasetCreate, AppValues.urlLogin];
+  private appHeaderNotVisiblePages: string[] = [AppValues.urlDatasetCreate, AppValues.urlLogin, AppValues.urlGithubCallback];
   private _window: Window;
 
   @HostListener('window:resize', ['$event'])
@@ -39,7 +39,7 @@ export class AppComponent implements OnInit {
     this.checkView();
     this.appHeaderInit();
     this.authApi.onUserChanges.subscribe((user: UserInterface) => {
-      this.user = user;
+      this.user = AppValues.deepCopy(user);
     });
     this.authentification();
   }
@@ -47,9 +47,13 @@ export class AppComponent implements OnInit {
   authentification(): void {
     const code: string | null = localStorage.getItem(AppValues.localStorageCode);
 
-    if (typeof code === 'string' && !this.authApi.isAuthUser) {
-      this.authApi.getUserInfoAndToken(code).subscribe();
+    if (location.href.includes(AppValues.urlLogin) || location.href.includes(AppValues.urlGithubCallback)) {
       return;
+    } else {
+      if (typeof code === 'string' && !this.authApi.isAuthUser) {
+        this.authApi.getUserInfoAndToken(code).subscribe();
+        return;
+      }
     }
     // if (location.href.includes(AppValues.urlLogin) || location.href.includes(AppValues.urlGithubCallback)) {
     //   debugger
@@ -103,10 +107,15 @@ export class AppComponent implements OnInit {
   }
 
   public onOpenUserInfo(): void {
+    // tslint:disable-next-line:no-console
     console.info('click onOpenUserInfo');
   }
 
   public onAddNew(): void {
     this.router.navigate(['dataset-create']);
+  }
+
+  public onLogin(): void {
+    this.router.navigate([AppValues.urlGithubCallback]);
   }
 }

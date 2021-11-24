@@ -36,9 +36,7 @@ export class AuthApi {
     }
 
     public getUserInfoAndToken(code: string): Observable<void> {
-        debugger
         return this.getAccessToken(code).pipe(map((accessToken: string) => {
-            debugger
             localStorage.setItem('code', code);
             localStorage.setItem('access_token', accessToken);
 
@@ -53,7 +51,6 @@ export class AuthApi {
     }
 
     public getAccessToken(code: string): Observable<string> {
-        debugger;
 
         const GET_DATA: DocumentNode = gql`mutation GithubLogin {
   auth {
@@ -76,34 +73,21 @@ export class AuthApi {
 
         /* eslint-disable  @typescript-eslint/no-explicit-any */
         // @ts-ignore
-        // return this.apollo.watchQuery({query: GET_DATA})
-        //     .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
-        //         debugger;
-        //         const login = result as AuthQueryResult;
-        //         if (login.data) {
-        //             const accountInfo: UserInterface = login.data.auth.githubLogin.accountInfo;
-        //             this.userChange(accountInfo);
-        //             return login.data.auth.githubLogin.token.accessToken;
-        //         }
-        //     }));
+        return this.apollo.mutate({mutation: GET_DATA}).pipe(map((result: ApolloQueryResult<any>) => {
+                const login = result as AuthQueryResult;
+                if (login.data) {
+                    const accountInfo: UserInterface = login.data.auth.githubLogin.accountInfo;
+                    this.userChange(accountInfo);
+                    return login.data.auth.githubLogin.token.accessToken;
+                }
+            }));
 
-        this.userChange(userResponse);
-        return of('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');
-    }
-
-
-    public getUserRequest(token: string): Observable<UserInterface> {
-
-        debugger
-        // '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'
         // this.userChange(userResponse);
-        // return of(userResponse);
-        return this.httpClient.get('https://api.github.com/user', {headers: {token}}) as Observable<UserInterface>;
-
+        // return of('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');
     }
+
 
     public getUser(token: string = ''): void {
-        debugger;
         const localStorageAccessToken: string | null = localStorage.getItem('access_token');
         const accessToken: string = (token === '' && localStorageAccessToken) ? localStorageAccessToken : token;
 

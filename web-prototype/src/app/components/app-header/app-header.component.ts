@@ -1,8 +1,14 @@
-import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from "@angular/core";
+import {
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    Output,
+    ViewChild
+} from "@angular/core";
 import {Observable, OperatorFunction} from "rxjs";
 import {debounceTime, distinctUntilChanged, switchMap} from "rxjs/operators";
 import {DatasetIDsInterface, TypeNames} from "../../interface/search.interface";
-import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SearchApi} from "../../api/search.api";
 import {UserInterface} from "../../interface/auth.interface";
 
@@ -15,11 +21,12 @@ export class AppHeaderComponent {
     @Input() public appLogo: string;
     @Input() public isMobileView: boolean;
     @Input() public isVisible: boolean;
-    @Input() public user: UserInterface;
+    @Input() public userInfo: UserInterface;
 
-    @Output() public onSelectDataset: EventEmitter<DatasetIDsInterface> = new EventEmitter();
-    @Output() public addNew: EventEmitter<null> = new EventEmitter();
-    @Output() public userInfo: EventEmitter<null> = new EventEmitter();
+    @Output() public selectDatasetEmitter: EventEmitter<DatasetIDsInterface> = new EventEmitter();
+    @Output() public addNewEmitter: EventEmitter<null> = new EventEmitter();
+    @Output() public loginEmitter: EventEmitter<null> = new EventEmitter();
+    @Output() public userProfileEmitter: EventEmitter<null> = new EventEmitter();
 
     @ViewChild('appHeaderMenuButton') appHeaderMenuButton: ElementRef<HTMLElement>;
 
@@ -48,7 +55,7 @@ export class AppHeaderComponent {
         this.isSearchActive = false;
 
         if(event.item) {
-            this.onSelectDataset.emit(event.item);
+            this.selectDatasetEmitter.emit(event.item);
         }
     }
 
@@ -64,7 +71,7 @@ export class AppHeaderComponent {
                 searchInfo = {id: searchValue, __typename: TypeNames.allDataType};
             } else searchInfo = searchValue;
 
-            this.onSelectDataset.emit(searchInfo);
+            this.selectDatasetEmitter.emit(searchInfo);
         }
         setTimeout(() => {
             if(this.isMobileView) {
@@ -81,11 +88,15 @@ export class AppHeaderComponent {
         }, 200);
     }
 
+    public onLogin(): void {
+        this.loginEmitter.emit();
+    }
+
     public onAddNew(): void {
-        this.addNew.emit();
+        this.addNewEmitter.emit();
     }
     public onOpenUserInfo(): void {
-        this.userInfo.emit();
+        this.userProfileEmitter.emit();
     }
 
     public triggerMenuClick(): void {

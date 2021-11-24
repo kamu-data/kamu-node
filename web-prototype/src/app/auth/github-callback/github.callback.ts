@@ -22,10 +22,8 @@ export class GithubCallbackComponent implements OnInit {
 
 
   ngOnInit() {
-      debugger;
       this.route.queryParams.subscribe(
           (param: any) => {
-              debugger
               this.authApi.getUserInfoAndToken(param.code).subscribe(() => this.router.navigate(['/']));
           });
   }
