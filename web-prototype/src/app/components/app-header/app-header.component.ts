@@ -5,12 +5,12 @@ import {
     Input,
     Output,
     ViewChild
-} from "@angular/core";
-import {Observable, OperatorFunction} from "rxjs";
-import {debounceTime, distinctUntilChanged, switchMap} from "rxjs/operators";
-import {DatasetIDsInterface, TypeNames} from "../../interface/search.interface";
-import {SearchApi} from "../../api/search.api";
-import {UserInterface} from "../../interface/auth.interface";
+} from '@angular/core';
+import {Observable, OperatorFunction} from 'rxjs';
+import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
+import {DatasetIDsInterface, TypeNames} from '../../interface/search.interface';
+import {SearchApi} from '../../api/search.api';
+import {UserInterface} from '../../interface/auth.interface';
 
 @Component({
   selector: 'app-header',
@@ -45,7 +45,7 @@ export class AppHeaderComponent {
         return text$.pipe(
             debounceTime(300),
             distinctUntilChanged(),
-            switchMap(term => this.appSearchAPI.autocompleteDatasetSearch(term)))
+            switchMap(term => this.appSearchAPI.autocompleteDatasetSearch(term)));
     }
 
     public formatter(x: DatasetIDsInterface | string): string {
@@ -53,10 +53,18 @@ export class AppHeaderComponent {
     }
 
     public onSelectItem(event: any): void {
+        event.preventDefault();
         this.isSearchActive = false;
 
-        if(event.item) {
+        if (event.item) {
             this.selectDatasetEmitter.emit(event.item);
+
+            setTimeout(() => {
+                const typeaheadInput: HTMLElement | null = document.getElementById('typeahead-http');
+                if (typeaheadInput) {
+                    typeaheadInput.blur();
+                }
+            }, 200);
         }
     }
 
@@ -65,26 +73,26 @@ export class AppHeaderComponent {
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        if (event["key"] === 'Enter') {
+        if (event.key === 'Enter') {
             let searchInfo: DatasetIDsInterface;
 
             if (typeof searchValue === 'string') {
                 searchInfo = {id: searchValue, __typename: TypeNames.allDataType};
-            } else searchInfo = searchValue;
+            } else { searchInfo = searchValue; }
 
             this.selectDatasetEmitter.emit(searchInfo);
         }
         setTimeout(() => {
-            if(this.isMobileView) {
+            if (this.isMobileView) {
                 this.triggerMenuClick();
             }
 
             (event.target as HTMLElement).blur();
-            const typeaheadInput: Element | null = document.querySelector("ngb-typeahead-window");
+            const typeaheadInput: Element | null = document.querySelector('ngb-typeahead-window');
             if (typeaheadInput) {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
-                document.querySelector("ngb-typeahead-window").classList.remove('show');
+                document.querySelector('ngb-typeahead-window').classList.remove('show');
             }
         }, 200);
     }

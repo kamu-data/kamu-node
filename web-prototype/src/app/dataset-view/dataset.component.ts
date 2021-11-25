@@ -12,9 +12,10 @@ import {SideNavService} from "../services/sidenav.service";
 import {searchAdditionalButtonsEnum} from "../search/search.interface";
 import {DatasetViewTypeEnum} from "./dataset-view.interface";
 import {AppDatasetService} from "./dataset.service";
-import {Router} from "@angular/router";
+import {NavigationEnd, Router} from "@angular/router";
 import {Edge} from "@swimlane/ngx-graph/lib/models/edge.model";
 import {Node} from "@swimlane/ngx-graph/lib/models/node.model";
+import {filter} from "rxjs/operators";
 
 
 @Component({
@@ -87,10 +88,16 @@ export class DatasetComponent implements OnInit, AfterContentInit {
 
 
     public ngOnInit(): void {
+        debugger
         if (this.sidenav) {
             this.sidenavService.setSidenav(this.sidenav);
             this.checkWindowSize();
         }
+        this.router.events
+        .pipe(filter(event => event instanceof NavigationEnd))
+        .subscribe((event: any) => {
+            this.initDatasetViewByType();
+        });
         this.initDatasetViewByType();
 
         this.initTableData();
@@ -208,7 +215,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         this.appDatasetService.onSearchMetadata(this.getDatasetId(), currentPage - 1);
     }
 
-    public onSearchDataset(page = 0): void {
+    public onSearchDataset(page = 0): void {debugger
         this.router.navigate([AppValues.urlDatasetView], {
             queryParams: {
                 id: this.getDatasetId(),

@@ -1,7 +1,7 @@
 import {Component, HostListener, OnInit} from '@angular/core';
 import AppValues from './common/app.values';
 import {AppSearchService} from './search/search.service';
-import {debounceTime, filter} from 'rxjs/operators';
+import {filter} from 'rxjs/operators';
 import {Router, NavigationEnd, ActivatedRoute} from '@angular/router';
 import {DatasetIDsInterface, TypeNames} from './interface/search.interface';
 import {AuthApi} from './api/auth.api';
@@ -55,22 +55,6 @@ export class AppComponent implements OnInit {
         return;
       }
     }
-    // if (location.href.includes(AppValues.urlLogin) || location.href.includes(AppValues.urlGithubCallback)) {
-    //   debugger
-    //   if (typeof code === 'string' && this.authApi.isAuthUser) {
-    //     this.router.navigate(['/']);
-    //   } else {
-    //     return;
-    //   }
-    // }
-    // } else {
-    //   if (typeof code === 'string' && this.authApi.isAuthUser) {
-    //     this.authApi.getUserInfoAndToken(code);
-    //     return;
-    //   } else {
-    //     this.router.navigate([AppValues.urlLogin]);
-    //   }
-    // }
   }
 
   private appHeaderInit(): void {
