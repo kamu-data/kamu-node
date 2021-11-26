@@ -13,6 +13,7 @@ const githubUrl = `https://github.com/login/oauth/authorize?scope=user:email&cli
 
 const routes: Routes = [
     {path: '', redirectTo: AppValues.urlSearch, pathMatch: 'full'},
+    {path: AppValues.urlGithubCallback, component: GithubCallbackComponent},
     {path: AppValues.urlLogin, component: LoginComponent, loadChildren: () => new Promise( () => { window.location.href = githubUrl; })},
     {
         path: AppValues.urlSearch,
@@ -22,22 +23,24 @@ const routes: Routes = [
         ]
     },
     {
-        path: AppValues.urlGithubCallback, component: GithubCallbackComponent
-    },
-    {path: AppValues.urlProfile, component: AccountComponent},
-    {
-        path: AppValues.urlDatasetView,
-        component: DatasetComponent,
+        path: ':username',
         children: [
-            {path: ':id', component: DatasetComponent}
-        ]
-    },
-    {
-        path: AppValues.urlDatasetCreate,
-        component: DatasetCreateComponent,
-        children: [
-            {path: '', redirectTo: AppValues.urlDatasetCreateSelectType, pathMatch: 'full'},
-            {path: AppValues.urlDatasetCreateRoot, component: DatasetCreateComponent}
+            {path: AppValues.urlProfile, component: AccountComponent},
+            {
+                path: AppValues.urlDatasetView,
+                component: DatasetComponent,
+                children: [
+                    {path: ':id', component: DatasetComponent}
+                ]
+            },
+            {
+                path: AppValues.urlDatasetCreate,
+                component: DatasetCreateComponent,
+                children: [
+                    {path: '', redirectTo: AppValues.urlDatasetCreateSelectType, pathMatch: 'full'},
+                    {path: AppValues.urlDatasetCreateRoot, component: DatasetCreateComponent}
+                ]
+            }
         ]
     }
 ];

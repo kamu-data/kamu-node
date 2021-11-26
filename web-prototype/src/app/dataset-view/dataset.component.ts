@@ -4,18 +4,18 @@ import {
     PageInfoInterface,
     SearchHistoryInterface, SearchOverviewDatasetsInterface,
     SearchOverviewInterface
-} from "../interface/search.interface";
-import AppValues from "../common/app.values";
-import {SearchAdditionalButtonInterface} from "../components/search-additional-buttons/search-additional-buttons.interface";
-import {MatSidenav} from "@angular/material/sidenav";
-import {SideNavService} from "../services/sidenav.service";
-import {searchAdditionalButtonsEnum} from "../search/search.interface";
-import {DatasetViewTypeEnum} from "./dataset-view.interface";
-import {AppDatasetService} from "./dataset.service";
-import {NavigationEnd, Router} from "@angular/router";
-import {Edge} from "@swimlane/ngx-graph/lib/models/edge.model";
-import {Node} from "@swimlane/ngx-graph/lib/models/node.model";
-import {filter} from "rxjs/operators";
+} from '../interface/search.interface';
+import AppValues from '../common/app.values';
+import {SearchAdditionalButtonInterface} from '../components/search-additional-buttons/search-additional-buttons.interface';
+import {MatSidenav} from '@angular/material/sidenav';
+import {SideNavService} from '../services/sidenav.service';
+import {searchAdditionalButtonsEnum} from '../search/search.interface';
+import {DatasetViewTypeEnum} from './dataset-view.interface';
+import {AppDatasetService} from './dataset.service';
+import {NavigationEnd, Router} from '@angular/router';
+import {Edge} from '@swimlane/ngx-graph/lib/models/edge.model';
+import {Node} from '@swimlane/ngx-graph/lib/models/node.model';
+import {filter} from 'rxjs/operators';
 
 
 @Component({
@@ -88,7 +88,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
 
 
     public ngOnInit(): void {
-        debugger
+        debugger;
         if (this.sidenav) {
             this.sidenavService.setSidenav(this.sidenav);
             this.checkWindowSize();
@@ -106,10 +106,10 @@ export class DatasetComponent implements OnInit, AfterContentInit {
 
         this.appDatasetService.onSearchDatasetInfoChanges.subscribe((info: DatasetInfoInterface) => {
             this.datasetInfo = info;
-        })
+        });
         this.appDatasetService.onSearchChanges.subscribe((value: string) => {
             this.searchValue = value;
-        })
+        });
 
         /* eslint-disable  @typescript-eslint/no-explicit-any */
         this.appDatasetService.onSearchDataChanges.subscribe((data: any[]) => {
@@ -150,18 +150,18 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     }
 
     public ngAfterContentInit(): void {
-        this.tableData.tableSource = this.searchData
+        this.tableData.tableSource = this.searchData;
     }
 
     public onPageChange(params: {currentPage: number, isClick: boolean}): void {
         this.currentPage = params.currentPage;
-         this.initDatasetViewByType(params.currentPage);
+        this.initDatasetViewByType(params.currentPage);
     }
 
 
     public getResultUnitText(): string {
         const searchDataset: string = this.getDatasetId();
-        return `results in ${searchDataset}`
+        return `results in ${searchDataset}`;
     }
 
 
@@ -202,7 +202,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     }
 
     public onSearchMetadata(currentPage: number): void {
-        this.router.navigate([AppValues.urlDatasetView], {
+        this.router.navigate([AppValues.defaultUsername, AppValues.urlDatasetView], {
             queryParams: {
                 id: this.getDatasetId(),
                 type: AppValues.urlDatasetViewMetadataType,
@@ -215,8 +215,9 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         this.appDatasetService.onSearchMetadata(this.getDatasetId(), currentPage - 1);
     }
 
-    public onSearchDataset(page = 0): void {debugger
-        this.router.navigate([AppValues.urlDatasetView], {
+    public onSearchDataset(page = 0): void {
+        debugger;
+        this.router.navigate([AppValues.defaultUsername, AppValues.urlDatasetView], {
             queryParams: {
                 id: this.getDatasetId(),
                 type: AppValues.urlDatasetViewOverviewType
@@ -229,7 +230,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     }
 
     public onSearchLinageDataset(): void {
-        this.router.navigate([AppValues.urlDatasetView], {
+        this.router.navigate([AppValues.defaultUsername, AppValues.urlDatasetView], {
             queryParams: {
                 id: this.getDatasetId(),
                 type: DatasetViewTypeEnum.linage
@@ -278,7 +279,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
 
             uniqDatasetIdList.forEach((id: string) => {
                 this.linageGraphNodes.push({
-                    id: id,
+                    id,
                     label: id
                 });
             });
@@ -319,7 +320,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     private initDatasetViewByType(currentPage?: number): void {
         const searchParams: string[] = this._window.location.search.split('&type=');
         const searchPageParams: string[] = this._window.location.search.split('&p=');
-        let page: number = 1;
+        let page = 1;
         if (searchPageParams[1]) {
             page = currentPage || Number(searchPageParams[1].split('&')[0]);
         }
@@ -354,6 +355,6 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     }
 
     public onSelectDataset(id: string): void {
-        this.router.navigate(['/dataset-view'], {queryParams: {id, type: AppValues.urlDatasetViewOverviewType}});
+        this.router.navigate([AppValues.defaultUsername, AppValues.urlDatasetView], {queryParams: {id, type: AppValues.urlDatasetViewOverviewType}});
     }
 }

@@ -84,7 +84,7 @@ export class AppComponent implements OnInit {
 
   public onSelectDataset(item: DatasetIDsInterface): void {
     if (item.__typename === TypeNames.datasetType) {
-      this.router.navigate([AppValues.urlDatasetView], {queryParams: {id: item.id, type: AppValues.urlDatasetViewOverviewType}});
+      this.router.navigate([ AppValues.defaultUsername, AppValues.urlDatasetView ], {queryParams: {id: item.id, type: AppValues.urlDatasetViewOverviewType}});
     } else {
       this.router.navigate([AppValues.urlSearch], {queryParams: {id: item.id, p: 1}});
     }

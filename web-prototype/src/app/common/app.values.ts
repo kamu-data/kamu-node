@@ -18,6 +18,8 @@ export default class AppValues {
   public static localStorageCode = 'code';
   public static localStorageAccessToken = 'code';
 
+  public static defaultUsername = 'anonymous';
+
 
   public static httpPattern = new RegExp(/^(http:\/\/)|(https:\/\/)/i);
 

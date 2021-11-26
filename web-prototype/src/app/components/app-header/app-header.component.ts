@@ -11,6 +11,7 @@ import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
 import {DatasetIDsInterface, TypeNames} from '../../interface/search.interface';
 import {SearchApi} from '../../api/search.api';
 import {UserInterface} from '../../interface/auth.interface';
+import AppValues from "../../common/app.values";
 
 @Component({
   selector: 'app-header',
@@ -31,6 +32,7 @@ export class AppHeaderComponent {
 
     @ViewChild('appHeaderMenuButton') appHeaderMenuButton: ElementRef<HTMLElement>;
 
+    public defaultUsername: string = AppValues.defaultUsername;
     public isSearchActive = false;
     private _window: Window;
 

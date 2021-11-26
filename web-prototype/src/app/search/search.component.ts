@@ -139,7 +139,8 @@ export class SearchComponent implements OnInit, AfterContentInit {
   }
 
   public onSelectDataset(id: string): void {
-    this.router.navigate(['/dataset-view'], {queryParams: {id, type: AppValues.urlDatasetViewOverviewType}});
+    debugger
+    this.router.navigate([AppValues.defaultUsername, AppValues.urlDatasetView], {queryParams: {id, type: AppValues.urlDatasetViewOverviewType}});
   }
 
 

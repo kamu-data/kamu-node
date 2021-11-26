@@ -34,18 +34,6 @@
                     </div>
                 </ng-template>
             </li>
-            <!--                <li class="nav-item">-->
-            <!--                    <a class="nav-link py-2 border-md-0 border-top border-md-top-0 border-white-fade" href="#">Home <span class="sr-only">(current)</span></a>-->
-            <!--                </li>-->
-            <!--                <li class="nav-item">-->
-            <!--                    <a class="nav-link py-2 border-md-0 border-top border-md-top-0 border-white-fade" href="#">Features</a>-->
-            <!--                </li>-->
-            <!--                <li class="nav-item">-->
-            <!--                    <a class="nav-link py-2 border-md-0 border-top border-md-top-0 border-white-fade" href="#">Pricing</a>-->
-            <!--                </li>-->
-            <!--                <li class="nav-item">-->
-            <!--                    <a class="nav-link py-2 border-md-0 border-top border-md-top-0 border-white-fade" href="#">Pricing</a>-->
-            <!--                </li>-->
         </ul>
     </div>
 
@@ -60,7 +48,7 @@
             </div>
         </button>
         <mat-menu #menu="matMenu" class="app-header__user-menu">
-            <p id="matmenu-signed-in-name">Signed in as <strong data-test-id="userName">{{(userInfo && userInfo.name) ? userInfo.name : 'Anonymous'}}</strong></p>
+            <p id="matmenu-signed-in-name">Signed in as <strong data-test-id="userName">{{(userInfo && userInfo.name) ? userInfo.name : defaultUsername}}</strong></p>
             <div role="none" class="dropdown-divider"></div>
 
             <ng-template [ngIf]="!(userInfo && userInfo.name)">
