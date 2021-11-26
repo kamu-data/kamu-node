@@ -29,6 +29,7 @@ export class AppHeaderComponent {
     @Output() public loginEmitter: EventEmitter<null> = new EventEmitter();
     @Output() public logOutEmitter: EventEmitter<null> = new EventEmitter();
     @Output() public userProfileEmitter: EventEmitter<null> = new EventEmitter();
+    @Output() public onClickAppLogoEmitter: EventEmitter<null> = new EventEmitter();
 
     @ViewChild('appHeaderMenuButton') appHeaderMenuButton: ElementRef<HTMLElement>;
 
@@ -54,8 +55,13 @@ export class AppHeaderComponent {
         return typeof x !== 'string' ? x.id : x;
     }
 
+    public onClickInput(): void {
+        const typeaheadInput: HTMLElement | null = document.getElementById('typeahead-http');
+        if (typeaheadInput) {
+            typeaheadInput.focus();
+        }
+    }
     public onSelectItem(event: any): void {
-        event.preventDefault();
         this.isSearchActive = false;
 
         if (event.item) {
@@ -66,7 +72,7 @@ export class AppHeaderComponent {
                 if (typeaheadInput) {
                     typeaheadInput.blur();
                 }
-            }, 200);
+            });
         }
     }
 
@@ -119,5 +125,8 @@ export class AppHeaderComponent {
         el.focus();
         el.click();
         el.blur();
+    }
+    public onClickAppLogo(): void {
+        this.onClickAppLogoEmitter.emit();
     }
 }

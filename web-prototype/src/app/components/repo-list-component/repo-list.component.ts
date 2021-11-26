@@ -21,7 +21,8 @@ export class RepoListComponent {
   @Output() public onSelectDatasetEmit: EventEmitter<string> = new EventEmitter();
 
   public momentConverDatetoLocalWithFormat(date: string): string {
-    return AppValues.momentConverDatetoLocalWithFormat({date: new Date(date), format: 'DD MMM YYYY', isTextDate: true});
+    debugger
+    return AppValues.momentConverDatetoLocalWithFormat({date: new Date(String(date)), format: 'DD MMM YYYY', isTextDate: true});
   }
   public onSelectDataset(id: string): void {
     this.onSelectDatasetEmit.emit(id);

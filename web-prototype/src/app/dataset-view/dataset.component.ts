@@ -88,7 +88,6 @@ export class DatasetComponent implements OnInit, AfterContentInit {
 
 
     public ngOnInit(): void {
-        debugger;
         if (this.sidenav) {
             this.sidenavService.setSidenav(this.sidenav);
             this.checkWindowSize();
@@ -167,7 +166,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
 
     public momentConverDatetoLocalWithFormat(date: string): string {
         return AppValues.momentConverDatetoLocalWithFormat({
-            date: new Date(date),
+            date: new Date(String(date)),
             format: 'DD MMM YYYY',
             isTextDate: true
         });
@@ -216,7 +215,6 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     }
 
     public onSearchDataset(page = 0): void {
-        debugger;
         this.router.navigate([AppValues.defaultUsername, AppValues.urlDatasetView], {
             queryParams: {
                 id: this.getDatasetId(),

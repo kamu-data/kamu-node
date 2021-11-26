@@ -6,7 +6,7 @@
     </button>
 
     <div [classList]="'app-brand'" id="appHeaderLogo">
-        <a [routerLink]="'/search'" data-test-id="appLogo"><img [src]="appLogo" alt="Application logo"/></a>
+        <button (click)="onClickAppLogo()" data-test-id="appLogo"><img [src]="appLogo" alt="Application logo"/></button>
     </div>
 
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
@@ -20,6 +20,7 @@
                            [focusFirst]="false"
                            aria-label="Search" aria-describedby="addon-wrapping"
                            (focusin)="isSearchActive = true"
+                           (click)="onClickInput()"
                            (selectItem)="onSelectItem($event)"
                            (keyup.enter)="onSearch($event, searchValue)" (blur)="onSearch($event, searchValue)">
                 </div>

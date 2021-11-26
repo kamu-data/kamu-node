@@ -101,7 +101,6 @@ export class AuthApi {
   }
 
   public logOut(): void {
-        debugger
         this.userChange({});
         localStorage.removeItem(AppValues.localStorageAccessToken);
         localStorage.removeItem(AppValues.localStorageCode);

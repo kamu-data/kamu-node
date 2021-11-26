@@ -41,8 +41,10 @@ export default class AppValues {
    */
    public static momentConverDatetoLocalWithFormat(dateParams: {date: Date, format?: string, isTextDate?: boolean}): string {
        const stringDate: string = new Date(dateParams.date).toString();
-       const UTCStringDate: string = stringDate.split('.')[0] + '.000Z';
-       const ISOStringDate: string = new Date(UTCStringDate).toISOString();
+
+       // solution for all browsers
+       const UTCStringDate: string = moment(stringDate).format('YYYY-MM-DDTHH:mm:ss.sss');
+       const ISOStringDate: string = new Date(String(UTCStringDate)).toISOString();
 
        if (dateParams.isTextDate) {
            if (moment(dateParams.date).isSame(moment().subtract(1, 'day'), "day")) {
