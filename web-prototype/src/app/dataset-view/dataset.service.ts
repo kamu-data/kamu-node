@@ -11,6 +11,7 @@ import {
     SearchOverviewDatasetsInterface, SearchOverviewInterface
 } from "../interface/search.interface";
 import {filter, map, mergeMap, switchMap, tap} from "rxjs/operators";
+import {subscribe} from "graphql";
 
 @Injectable()
 export class AppDatasetService {
@@ -101,7 +102,12 @@ export class AppDatasetService {
                 this.changeDatasetTree(result);
             }),
             switchMap((result: DatasetLinageResponse) => {
-                return this.recursive(result.metadata.currentUpstreamDependencies);
+                debugger
+                if (result.kind === DatasetKindTypeNames.derivative) {
+                    return this.recursive(result.metadata.currentDownstreamDependencies);
+                } else {
+                    return this.recursiveUpstreamDependencies(result.id);
+                }
             })
         ).subscribe(() => {
             console.log(this.datasetTree);
@@ -128,13 +134,24 @@ export class AppDatasetService {
         );
     }
 
+    public recursiveUpstreamDependencies(id: string): Observable<DatasetCurrentUpstreamDependencies[]> {
+        return this.searchApi.searchLinageDatasetUpstreamDependencies(id).pipe(
+                    map((result: DatasetLinageResponse) => {
+                        this.changeDatasetTree(result);
+                        return result;
+                    }),
+                    mergeMap((result: DatasetLinageResponse) => {
+                        const dependenciesDerivativeList: DatasetCurrentUpstreamDependencies[] = this.createDependenciesRootList(result);
+                        return this.recursiveUpstreamDependencies(dependenciesDerivativeList);
+                    })
+                );
+    }
+
     private changeDatasetTree(dataset: DatasetLinageResponse) {
-        if (dataset.kind === DatasetKindTypeNames.derivative) {
-            dataset.metadata.currentUpstreamDependencies
-                .forEach((dependencies: DatasetCurrentUpstreamDependencies) => {
-                    this.datasetTree.push([dataset.id, dependencies.id]);
-                });
-        }
+        dataset.metadata.currentDownstreamDependencies
+            .forEach((dependencies: DatasetCurrentUpstreamDependencies) => {
+                this.datasetTree.push([dataset.id, dependencies.id]);
+            });
         this.datasetTree = Array.from(this.uniquedatasetTree(this.datasetTree));
         this.datasetTreeChange(this.datasetTree);
     }
@@ -142,8 +159,13 @@ export class AppDatasetService {
         return new Map(datasetTree.map((p: string[]) => [p.join(), p])).values();
     }
     private createDependenciesDerivativeList(dataset: DatasetLinageResponse) {
-        return dataset.metadata.currentUpstreamDependencies
+        return dataset.metadata.currentDownstreamDependencies
             .filter((dependencies: DatasetCurrentUpstreamDependencies) => dependencies.kind === DatasetKindTypeNames.derivative);
+
+    }
+    private createDependenciesRootList(dataset: DatasetLinageResponse) {
+        return dataset.metadata.currentDownstreamDependencies
+            .filter((dependencies: DatasetCurrentUpstreamDependencies) => dependencies.kind === DatasetKindTypeNames.root);
 
     }
 }

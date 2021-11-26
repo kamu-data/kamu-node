@@ -147,7 +147,7 @@ export class SearchApi {
       id
       kind
       metadata {
-        currentUpstreamDependencies {
+        currentDownstreamDependencies {
           id
           kind
         }
@@ -159,6 +159,33 @@ export class SearchApi {
         /* eslint-disable  @typescript-eslint/no-explicit-any */
         // @ts-ignore
       return this.apollo.watchQuery({query: GET_DATA})
+            .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
+                if (result.data) {
+                    return result.data.datasets.byId;
+                }
+            }));
+    }
+
+    public searchLinageDatasetUpstreamDependencies(id: string): Observable<any> {
+        const GET_DATA: DocumentNode = gql`
+{
+  datasets {
+    byId(id: "${id}") {
+      id
+      kind
+      metadata {
+        currentUpstreamDependencies {
+          id
+          kind
+        }
+      }
+    }
+  }
+}
+`;
+        /* eslint-disable  @typescript-eslint/no-explicit-any */
+        // @ts-ignore
+        return this.apollo.watchQuery({query: GET_DATA})
             .valueChanges.pipe(map((result: ApolloQueryResult<any>) => {
                 if (result.data) {
                     return result.data.datasets.byId;

@@ -23,7 +23,9 @@ export class LinageGraphComponent {
   public showMiniMap = true;
   public miniMapPosition: any;
 
-  public onClickNode(label: string): void {
+  public onClickNode(node: any, label: string): void {
+    debugger
+    console.log(node);
     this.onClickNodeEvent.emit(label);
   }
 }
