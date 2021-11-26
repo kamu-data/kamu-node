@@ -28,7 +28,7 @@
 <!--                                        <p>{{row[0]}} -> {{row[1]}}</p>-->
 <!--                                </li>-->
 <!--                            </ul>-->
-                            <app-linage-graph [links]="linageGraphLink" [nodes]="linageGraphNodes" (onClickNodeEvent)="onClickNode($event)"></app-linage-graph>
+                            <app-linage-graph [view]="linageGraphView" [links]="linageGraphLink" [nodes]="linageGraphNodes" (onClickNodeEvent)="onClickNode($event)"></app-linage-graph>
                         </ng-template>
                         <ng-template [ngIf]="!isAvailableLinageGraph && linageGraphLink.length === 0">
                             <p>The current dataset is root. Not enough data to build the graph.</p>

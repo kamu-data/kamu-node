@@ -5,7 +5,7 @@ import {Component, EventEmitter, Input, Output} from "@angular/core";
   templateUrl: './linage-graph.component.html',
 })
 export class LinageGraphComponent {
-  // @Input() public view: [number, number];
+  @Input() public view: [number, number];
   @Input() public links: any[];
   @Input() public nodes: any[];
 
@@ -20,8 +20,8 @@ export class LinageGraphComponent {
   public panOnZoom = true;
   public autoZoom = true;
   public autoCenter = false;
-  // public showMiniMap = true;
-  // public miniMapPosition: any;
+  public showMiniMap = true;
+  public miniMapPosition: any;
 
   public onClickNode(label: string): void {
     this.onClickNodeEvent.emit(label);
