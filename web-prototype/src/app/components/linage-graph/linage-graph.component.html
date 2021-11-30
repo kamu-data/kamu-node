@@ -68,11 +68,9 @@
         [attr.height]="cluster.dimension.height"
         [attr.fill]="cluster.data.customColor || cluster.data.color"
       />
-      <ng-template [ngIf]="cluster.label">
         <svg:text alignment-baseline="central" [attr.x]="cluster.dimension.width / 2.6" [attr.y]="10">
           {{cluster.label}}
         </svg:text>
-      </ng-template>
     </svg:g>
   </ng-template>
 </ngx-graph>

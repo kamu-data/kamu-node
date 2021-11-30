@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {Apollo, ApolloBase} from "apollo-angular";
 import {map} from "rxjs/operators";
 import {ApolloQueryResult, DocumentNode, gql} from "@apollo/client/core";
-import {Observable, of} from "rxjs";
+import {Observable, of, throwError} from "rxjs";
 import {
     DatasetIDsInterface,
     PageInfoInterface, SearchDatasetByID, SearchMetadataNodeResponseInterface,
@@ -140,6 +140,10 @@ export class SearchApi {
 
     /* eslint-disable  @typescript-eslint/no-explicit-any */
     public searchLinageDataset(id: string): Observable<any> {
+        if (typeof id !== 'string') {
+            return throwError('Empty ID');
+        }
+
         const GET_DATA: DocumentNode = gql`
 {
   datasets {
@@ -167,6 +171,10 @@ export class SearchApi {
     }
 
     public searchLinageDatasetUpstreamDependencies(id: string): Observable<any> {
+        debugger
+        if (typeof id !== 'string') {
+            return throwError('Empty ID');
+        }
         const GET_DATA: DocumentNode = gql`
 {
   datasets {

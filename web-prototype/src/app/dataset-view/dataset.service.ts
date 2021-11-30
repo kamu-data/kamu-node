@@ -121,12 +121,15 @@ export class AppDatasetService {
             tap((result: DatasetLinageResponse) => {
                 this.changeDatasetTree(result);
             }),
+            // @ts-ignore
             switchMap((result: DatasetLinageResponse) => {
                 debugger
                 if (result.kind === DatasetKindTypeNames.derivative) {
                     return this.recursiveUpstreamDependencies(result.id);
                 } else {
-                    return this.recursive(result.metadata.currentDownstreamDependencies);
+                    if (typeof result.metadata.currentDownstreamDependencies !== 'undefined') {
+                        return this.recursive(result.metadata.currentDownstreamDependencies);
+                    }
                 }
             })
         ).subscribe(() => {
@@ -146,6 +149,7 @@ export class AppDatasetService {
                         return result;
                     }),
                     mergeMap((result: DatasetLinageResponse) => {
+                        // @ts-ignore
                         const dependenciesDerivativeList: DatasetCurrentUpstreamDependencies[] = this.createDependenciesDerivativeList(result);
                         return this.recursive(dependenciesDerivativeList);
                     })
@@ -155,13 +159,16 @@ export class AppDatasetService {
     }
 
     public recursiveUpstreamDependencies(id: string): Observable<DatasetCurrentUpstreamDependencies[]> {
+        // @ts-ignore
         return this.searchApi.searchLinageDatasetUpstreamDependencies(id).pipe(
                     map((result: DatasetLinageResponse) => {
                         this.changeDatasetTree(result);
                         return result;
                     }),
                     mergeMap((result: DatasetLinageResponse) => {
+                        // @ts-ignore
                         const dependenciesDerivativeList: DatasetCurrentUpstreamDependencies[] = this.createDependenciesRootList(result);
+                        // @ts-ignore
                         return this.recursiveUpstreamDependencies(dependenciesDerivativeList);
                     })
                 );
