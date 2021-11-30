@@ -129,8 +129,8 @@ export interface DatasetLinageResponse {
     kind: DatasetKindTypeNames;
     metadata: {
         __typename: string;
-        currentDownstreamDependencies: DatasetCurrentUpstreamDependencies[];
-        // "currentUpstreamDependencies": DatasetCurrentUpstreamDependencies[]
+        currentDownstreamDependencies?: DatasetCurrentUpstreamDependencies[];
+        currentUpstreamDependencies?: DatasetCurrentUpstreamDependencies[]
     };
 }
 export interface DatasetCurrentUpstreamDependencies {
