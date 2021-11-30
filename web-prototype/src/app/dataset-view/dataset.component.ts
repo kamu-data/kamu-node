@@ -260,11 +260,13 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         this.linageGraphClusters = [{
             id: DatasetKindTypeNames.root + '_cluster',
             label: DatasetKindTypeNames.root,
+            data: {customColor: '#A52A2A59'},
             position: {x: 10, y: 10},
             childNodeIds: []
         }, {
             id: DatasetKindTypeNames.derivative + '_cluster',
             label: DatasetKindTypeNames.derivative,
+            data: {customColor: '#00800039'},
             position: {x: 10, y: 10},
             childNodeIds: []
         }];
@@ -297,7 +299,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
                 this.linageGraphNodes.push({
                     id,
                     label: id,
-                    data: {customColor: oneOfTheKindInfo[0] && oneOfTheKindInfo[0].kind === DatasetKindTypeNames.root ? "#a52a2a" : "#008000"}
+                    data: {customColor: oneOfTheKindInfo[0] && oneOfTheKindInfo[0].kind === DatasetKindTypeNames.root ? "rgba(165,42,42,0.35)" : "#008000"}
                 });
             });
         });
