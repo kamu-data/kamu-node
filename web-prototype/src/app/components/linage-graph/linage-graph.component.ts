@@ -1,6 +1,5 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange, SimpleChanges} from "@angular/core";
-import {ClusterNode} from "@swimlane/ngx-graph/lib/models/node.model";
-import {DagreNodesOnlyLayout} from "@swimlane/ngx-graph";
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange, SimpleChanges} from '@angular/core';
+import {ClusterNode} from '@swimlane/ngx-graph/lib/models/node.model';
 
 @Component({
   selector: 'app-linage-graph',
@@ -29,18 +28,16 @@ export class LinageGraphComponent implements OnChanges, OnInit {
   public graphNodes: any[];
 
   public ngOnInit(): void {
-    debugger
     this.graphNodes = this.nodes || [];
     this.graphClusters = this.graphClusters || [];
   }
   public ngOnChanges(changes: SimpleChanges): void {
-    debugger
+    debugger;
     const clusters: SimpleChange = changes.clusters;
     const nodes: SimpleChange = changes.nodes;
     if (clusters) {
       if (typeof clusters.currentValue !== 'undefined' && clusters.currentValue !== clusters.previousValue) {
         if (typeof clusters.currentValue !== 'undefined') {
-          debugger
           this.graphClusters = clusters.currentValue.filter((cluster: ClusterNode) => cluster.childNodeIds && cluster.childNodeIds.length !== 0);
         }
       }
@@ -48,7 +45,6 @@ export class LinageGraphComponent implements OnChanges, OnInit {
     if (nodes) {
       if (typeof nodes.currentValue !== 'undefined' && nodes.currentValue !== nodes.previousValue) {
         if (typeof nodes.currentValue !== 'undefined') {
-          debugger
           this.graphNodes = nodes.currentValue;
         }
       }
@@ -56,7 +52,6 @@ export class LinageGraphComponent implements OnChanges, OnInit {
   }
 
   public onClickNode(node: any, label: string): void {
-    debugger
     console.log(node);
     this.onClickNodeEvent.emit(label);
   }
