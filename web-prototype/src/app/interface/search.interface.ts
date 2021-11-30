@@ -52,6 +52,11 @@ export interface SearchOverviewInterface {
     currentPage: number;
 }
 
+export interface DatasetKindInterface {
+    id: string;
+    kind: DatasetKindTypeNames;
+}
+
 export interface PageInfoInterface {
     hasNextPage: boolean;
     hasPreviousPage: boolean;

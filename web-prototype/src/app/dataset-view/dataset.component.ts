@@ -1,6 +1,6 @@
 import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {
-    DatasetInfoInterface,
+    DatasetInfoInterface, DatasetKindInterface, DatasetKindTypeNames,
     PageInfoInterface,
     SearchHistoryInterface, SearchOverviewDatasetsInterface,
     SearchOverviewInterface
@@ -267,18 +267,24 @@ export class DatasetComponent implements OnInit, AfterContentInit {
             this.linageGraphLink = [];
 
             datasetTree.forEach((term: string[], index: number) => {
+                debugger
                 this.linageGraphLink.push({
                     id: `${term[0]}__and__${term[1]}__${index}`,
                     source: term[0],
                     target: term[1],
-                    label: `${term[0]}__and__${term[1]}__${index}`
+                    label: `${term[0]}__and__${term[1]}__${index}`,
                 });
             });
 
             uniqDatasetIdList.forEach((id: string) => {
+                const oneOfTheKindInfo: DatasetKindInterface[] =
+                    this.appDatasetService.kindInfo.filter((dataset: DatasetKindInterface) => dataset.id === id);
+
+
                 this.linageGraphNodes.push({
                     id,
-                    label: id
+                    label: id,
+                    data: {customColor: oneOfTheKindInfo[0] && oneOfTheKindInfo[0].kind === DatasetKindTypeNames.root ? "#a52a2a" : "#008000"}
                 });
             });
         });

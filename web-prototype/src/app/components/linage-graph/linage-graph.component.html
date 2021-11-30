@@ -28,7 +28,7 @@
       <svg:rect
         [attr.width]="node.dimension.width"
         [attr.height]="node.dimension.height"
-        [attr.fill]="node.data.color"
+        [attr.fill]="node.data.customColor || node.data.color"
         [attr.cursor]="'pointer'"
         (click)="onClickNode(node, node.label)"
       />

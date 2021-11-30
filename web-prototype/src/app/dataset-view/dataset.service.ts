@@ -3,7 +3,7 @@ import {from, Observable, Subject} from "rxjs";
 import {SearchApi} from "../api/search.api";
 import {
     DatasetCurrentUpstreamDependencies,
-    DatasetInfoInterface,
+    DatasetInfoInterface, DatasetKindInterface,
     DatasetKindTypeNames,
     DatasetLinageResponse,
     SearchDatasetByID,
@@ -25,6 +25,7 @@ export class AppDatasetService {
     private searchMetadataChanges$: Subject<SearchOverviewInterface> = new Subject<SearchOverviewInterface>();
     private datasetTreeChanges$: Subject<string[][]> = new Subject<string[][]>();
     private datasetTree: string[][] = [];
+    private datasetKindInfo: DatasetKindInterface[] = [];
 
     constructor(
         private searchApi: SearchApi
@@ -62,6 +63,9 @@ export class AppDatasetService {
     }
     public get getDatasetTree(): string[][] {
         return this.datasetTree;
+    }
+    public get kindInfo(): DatasetKindInterface[] {
+        return this.datasetKindInfo;
     }
     public resetDatasetTree(): void {
         this.datasetTree = [];
@@ -152,12 +156,14 @@ export class AppDatasetService {
             dataset.metadata.currentUpstreamDependencies
                 .forEach((dependencies: DatasetCurrentUpstreamDependencies) => {
                     this.datasetTree.push([dataset.id, dependencies.id]);
+                    this.datasetKindInfo.push({id: dataset.id, kind: dataset.kind});
                 });
         }
         if (dataset.metadata.currentDownstreamDependencies) {
             dataset.metadata.currentDownstreamDependencies
                 .forEach((dependencies: DatasetCurrentUpstreamDependencies) => {
                     this.datasetTree.push([dataset.id, dependencies.id]);
+                    this.datasetKindInfo.push({id: dataset.id, kind: dataset.kind});
                 });
         }
         this.datasetTree = Array.from(this.uniquedatasetTree(this.datasetTree));
