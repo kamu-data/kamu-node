@@ -253,10 +253,13 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         this.onSelectDataset(idDataset);
     }
 
-
-    private prepareLinageGraph(): void {
+    private initLinageGraphProperty(): void {
         this.linageGraphNodes = [];
         this.linageGraphLink = [];
+    }
+
+    private prepareLinageGraph(): void {
+        this.initLinageGraphProperty();
         this.linageGraphClusters = [{
             id: DatasetKindTypeNames.root + '_cluster',
             label: DatasetKindTypeNames.root,
@@ -278,8 +281,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
             datasetTree.forEach((term: string[]) => term.forEach((id: string) => uniqDatasetIdList.push(id)));
             uniqDatasetIdList = uniqDatasetIdList.filter((x: any, y: number) => uniqDatasetIdList.indexOf(x) == y);
 
-            this.linageGraphNodes = [];
-            this.linageGraphLink = [];
+            this.initLinageGraphProperty();
 
             datasetTree.forEach((term: string[], index: number) => {
                 debugger

@@ -13,8 +13,8 @@
   [showMiniMap]="showMiniMap"
   [miniMapPosition]="miniMapPosition"
   [links]="links"
-  [nodes]="nodes"
-  [clusters]="linageGraphClusters"
+  [nodes]="graphNodes"
+  [clusters]="graphClusters"
 
   [view]="view"
   layout="dagreCluster"
@@ -62,15 +62,10 @@
   <ng-template #clusterTemplate let-cluster>
     <svg:g class="node cluster">
       <svg:rect
-        rx="5"
-        ry="5"
         [attr.width]="cluster.dimension.width"
         [attr.height]="cluster.dimension.height"
         [attr.fill]="cluster.data.customColor || cluster.data.color"
       />
-        <svg:text alignment-baseline="central" [attr.x]="cluster.dimension.width / 2.6" [attr.y]="10">
-          {{cluster.label}}
-        </svg:text>
     </svg:g>
   </ng-template>
 </ngx-graph>
