@@ -14,7 +14,7 @@ import {DatasetViewTypeEnum} from './dataset-view.interface';
 import {AppDatasetService} from './dataset.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {Edge} from '@swimlane/ngx-graph/lib/models/edge.model';
-import {Node} from '@swimlane/ngx-graph/lib/models/node.model';
+import {ClusterNode, Node} from '@swimlane/ngx-graph/lib/models/node.model';
 import {filter} from 'rxjs/operators';
 
 
@@ -61,6 +61,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     public linageGraphView: [number, number] = [500, 600];
     public linageGraphLink: Edge[] = [];
     public linageGraphNodes: Node[] = [];
+    public linageGraphClusters: ClusterNode[] = [];
     public isAvailableLinageGraph = false;
 
 
@@ -256,6 +257,18 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     private prepareLinageGraph(): void {
         this.linageGraphNodes = [];
         this.linageGraphLink = [];
+        this.linageGraphClusters = [{
+            id: DatasetKindTypeNames.root + '_cluster',
+            label: DatasetKindTypeNames.root,
+            position: {x: 10, y: 10},
+            childNodeIds: []
+        }, {
+            id: DatasetKindTypeNames.derivative + '_cluster',
+            label: DatasetKindTypeNames.derivative,
+            position: {x: 10, y: 10},
+            childNodeIds: []
+        }];
+
         let uniqDatasetIdList: string[] = [];
 
         this.appDatasetService.onDatasetTreeChanges.subscribe((datasetTree: string[][]) => {
@@ -288,6 +301,21 @@ export class DatasetComponent implements OnInit, AfterContentInit {
                 });
             });
         });
+
+        this.appDatasetService.onKindInfoChanges.subscribe((datasetList: DatasetKindInterface[]) => {
+            datasetList.forEach((dataset: DatasetKindInterface) => {
+                this.linageGraphClusters = this.linageGraphClusters.map((cluster: ClusterNode) => {
+                    if (typeof cluster.childNodeIds === 'undefined') {
+                        cluster.childNodeIds = [];
+                    }
+
+                    if (cluster.label === dataset.kind) {
+                        cluster.childNodeIds.push(dataset.id);
+                    }
+                    return cluster;
+                });
+            });
+        })
     }
 
     private onClickDeriveForm(): void {

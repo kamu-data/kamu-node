@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {from, Observable, Subject} from "rxjs";
+import {from, Observable, pipe, Subject} from "rxjs";
 import {SearchApi} from "../api/search.api";
 import {
     DatasetCurrentUpstreamDependencies,
@@ -10,13 +10,14 @@ import {
     SearchHistoryInterface,
     SearchOverviewDatasetsInterface, SearchOverviewInterface
 } from "../interface/search.interface";
-import {filter, map, mergeMap, switchMap, tap} from "rxjs/operators";
+import {distinct, filter, map, mergeMap, switchMap, tap} from "rxjs/operators";
 import {subscribe} from "graphql";
 
 @Injectable()
 export class AppDatasetService {
     /* eslint-disable  @typescript-eslint/no-explicit-any */
     public searchData: any[] = [];
+    private kindInfoChanges$: Subject<DatasetKindInterface[]> = new Subject<DatasetKindInterface[]>();
     private searchChanges$: Subject<string> = new Subject<string>();
     /* eslint-disable  @typescript-eslint/no-explicit-any */
     private searchDataChanges$: Subject<any[]> = new Subject<any[]>();
@@ -46,6 +47,12 @@ export class AppDatasetService {
     public get onSearchDataChanges(): Observable<SearchHistoryInterface[] | SearchOverviewDatasetsInterface[]> {
        return this.searchDataChanges$.asObservable();
     }
+    public get onKindInfoChanges(): Observable<DatasetKindInterface[]> {
+        return this.kindInfoChanges$.asObservable();
+    }
+    public kindInfoChanges(datasetList: DatasetKindInterface[]): void {
+        this.kindInfoChanges$.next(datasetList);
+    }
     public get onSearchMetadataChanges(): Observable<SearchOverviewInterface> {
        return this.searchMetadataChanges$.asObservable();
     }
@@ -67,6 +74,15 @@ export class AppDatasetService {
     public get kindInfo(): DatasetKindInterface[] {
         return this.datasetKindInfo;
     }
+    public setKindInfo(dataset: DatasetKindInterface): void {
+        debugger
+        if (this.datasetKindInfo.some((realDataset: DatasetKindInterface) => realDataset.id === dataset.id)) {
+            return;
+        }
+        this.datasetKindInfo.push({id: dataset.id, kind: dataset.kind});
+        this.kindInfoChanges(this.datasetKindInfo);
+    }
+
     public resetDatasetTree(): void {
         this.datasetTree = [];
     }
@@ -156,14 +172,16 @@ export class AppDatasetService {
             dataset.metadata.currentUpstreamDependencies
                 .forEach((dependencies: DatasetCurrentUpstreamDependencies) => {
                     this.datasetTree.push([dataset.id, dependencies.id]);
-                    this.datasetKindInfo.push({id: dataset.id, kind: dataset.kind});
+                    this.setKindInfo(dataset);
+                    this.setKindInfo(dependencies);
                 });
         }
         if (dataset.metadata.currentDownstreamDependencies) {
             dataset.metadata.currentDownstreamDependencies
                 .forEach((dependencies: DatasetCurrentUpstreamDependencies) => {
                     this.datasetTree.push([dataset.id, dependencies.id]);
-                    this.datasetKindInfo.push({id: dataset.id, kind: dataset.kind});
+                    this.setKindInfo(dataset);
+                    this.setKindInfo(dependencies);
                 });
         }
         this.datasetTree = Array.from(this.uniquedatasetTree(this.datasetTree));

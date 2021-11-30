@@ -8,6 +8,7 @@ export class LinageGraphComponent {
   @Input() public view: [number, number];
   @Input() public links: any[];
   @Input() public nodes: any[];
+  @Input() public linageGraphClusters: any[];
 
   @Output() public onClickNodeEvent: EventEmitter<string> = new EventEmitter();
 
