@@ -59,7 +59,8 @@
         [attr.height]="cluster.dimension.height"
         [attr.fill]="cluster.data.customColor || cluster.data.color"
       />
-      <svg:text class="edge-label" text-anchor="middle">
+      <svg:text>
+        {{cluster.label}}
       </svg:text>
     </svg:g>
   </ng-template>
