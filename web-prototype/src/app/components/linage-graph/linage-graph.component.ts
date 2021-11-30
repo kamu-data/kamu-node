@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange, SimpleChanges} from "@angular/core";
 import {ClusterNode} from "@swimlane/ngx-graph/lib/models/node.model";
+import {DagreNodesOnlyLayout} from "@swimlane/ngx-graph";
 
 @Component({
   selector: 'app-linage-graph',
@@ -30,7 +31,7 @@ export class LinageGraphComponent implements OnChanges, OnInit {
   public ngOnInit(): void {
     debugger
     this.graphNodes = this.nodes || [];
-    // this.graphClusters = this.graphClusters || [];
+    this.graphClusters = this.graphClusters || [];
   }
   public ngOnChanges(changes: SimpleChanges): void {
     debugger

@@ -74,6 +74,10 @@ export class AppDatasetService {
     public get kindInfo(): DatasetKindInterface[] {
         return this.datasetKindInfo;
     }
+    public resetKindInfo(): void {
+        this.datasetKindInfo = [];
+        this.kindInfoChanges([]);
+    }
     public setKindInfo(dataset: DatasetKindInterface): void {
         debugger
         if (this.datasetKindInfo.some((realDataset: DatasetKindInterface) => realDataset.id === dataset.id)) {
@@ -169,7 +173,12 @@ export class AppDatasetService {
                         // @ts-ignore
                         const dependenciesDerivativeList: DatasetCurrentUpstreamDependencies[] = this.createDependenciesRootList(result);
                         // @ts-ignore
-                        return this.recursiveUpstreamDependencies(dependenciesDerivativeList);
+
+                        return from(dependenciesDerivativeList).pipe(
+                            mergeMap((currentUpstreamDependencies: DatasetCurrentUpstreamDependencies) => {
+                                return this.recursiveUpstreamDependencies(currentUpstreamDependencies.id);
+                            })
+                        )
                     })
                 );
     }
