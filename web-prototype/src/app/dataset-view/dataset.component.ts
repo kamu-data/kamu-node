@@ -259,6 +259,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     }
 
     private prepareLinageGraph(): void {
+        this.appDatasetService.resetDatasetTree();
         this.initLinageGraphProperty();
         this.linageGraphClusters = [{
             id: DatasetKindTypeNames.root + '_cluster',
