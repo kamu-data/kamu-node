@@ -7,11 +7,12 @@ import {ModalSpinnerComponent} from "../components/modal/modal-spinner.component
 export interface ModalCommandInterface {
     type: string;
     context?: ModalArgumentsInterface | {};
-
+    buttonCount: number;
 }
 
 
 export interface ModalArgumentsInterface {
+    buttonCount?: number;
     title?: string;
     message?: string;
     bigTextBlock?: string;

@@ -377,11 +377,14 @@ router-outlet
     //width: 70%
     max-width: 300px
     min-height: 80px
-    padding: 1.5em
     border: 1px solid $app-nero
-    border-radius: 20px
+    border-radius: 4px
     text-align: center
-
+.modal__dialog__header-block
+  width: 100%
+  padding: 1.5em
+.modal__dialog__footer-block
+  width: 100%
 .modal__content .modal__bigtest-dialog
     width: 90vw
     max-width: none
@@ -402,36 +405,6 @@ router-outlet
         vertical-align: baseline
         text-decoration-skip-ink: none
         font-style: normal
-.modal__paypal
-    background-color: rgba(245, 245, 245, 0.88)
-    @extend .modal__dialog
-    & h3
-        width: 70%
-        margin: 6px auto 20px
-    & span
-        float: right
-        font-weight: 600
-        color: $app-nero
-        font-size: 16px
-    & input
-        height: 30px
-        border-radius: 7px
-        margin-bottom: 17px
-    & [data-test-id='cancelButton']
-        cursor: pointer
-
-.modal__categories
-    padding-top: 45px
-    border-radius: 20px
-    background: #ddd
-    /* box-shadow: 0 0 30px 10px rgba(0,0,0,0.25); */
-    /* background-color: rgba(0,0,0,0.5); */
-    /* background: radial-gradient(circle farthest-side at center center, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.25)); */
-    height: 500px
-    display: flex
-    flex-wrap: wrap
-    align-items: flex-start
-    justify-content: center
 
 .modal__header
     font-size: 1.25em
@@ -501,7 +474,7 @@ router-outlet
         font-size: 24px
         width: 100%
 .base_modal__content
-    background: transparent
+    background: #0000007a
     flex-direction: column
     justify-content: center
     align-items: center
@@ -556,18 +529,15 @@ router-outlet
     margin: 1em 0
     word-break: break-word
 .button__default
-    color: $black-6-opacity
     background-color: white
     @extend .button
     @extend %border-gray
 
 .modal__btn
     @extend .button__default
-    margin: 0 0.5em
-    min-width: 80px
-    border-radius: 10px
+    border-radius: 0px 0px 4px 4px
+    min-width: 100%
     font-weight: bold
-    color: blue !important
 
 .modal__btn-first
     width: 100%
@@ -597,7 +567,6 @@ router-outlet
 %border-none
     border: 0px
 %border-gray
-    border-radius: 0px
     border: 1px solid $verylightgrey
 %border-green
     border-radius: 5px

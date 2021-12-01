@@ -55,7 +55,19 @@ export class ModalComponent implements OnInit {
     ngOnInit() {
         this.modalService.getCommand()
             .subscribe((command: ModalCommandInterface) => {
-                this._execute(command);
+            if (command.context) {
+                // @ts-ignore
+                command.context.buttonCount = 0;
+                ['yesButtonText', 'noButtonText', 'lastButtonText', 'tooLastButtonText']
+                    .forEach((btnName: string) => {
+                        // @ts-ignore
+                        if (command.context[btnName]) {
+                            // @ts-ignore
+                            command.context.buttonCount += 1;
+                        }
+                    });
+            }
+            this._execute(command);
             });
     }
 
@@ -80,6 +92,7 @@ export class ModalComponent implements OnInit {
         this.componentRef   = this.container.createComponent(factory);
 
         const instance        = this.componentRef.instance as DynamicComponent;
+        debugger
         instance.context    = Object.assign(command.context, {_close: this._close.bind(this)});
 
         this._handleKBD(command.type);

@@ -161,7 +161,6 @@ export class SearchComponent implements OnInit, AfterContentInit {
     }
 
     this.modalService.warning({
-      title: 'Warning',
       message: 'Feature will be soon',
       yesButtonText: 'Ok'
     });
