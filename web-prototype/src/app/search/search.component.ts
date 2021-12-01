@@ -11,7 +11,6 @@ import {MatSidenav} from '@angular/material/sidenav';
 import {SideNavService} from '../services/sidenav.service';
 import {Router} from '@angular/router';
 import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
-import {ModalService} from "../components/modal/modal.service";
 
 
 @Component({
@@ -67,7 +66,6 @@ export class SearchComponent implements OnInit, AfterContentInit {
       private router: Router,
       private appSearchService: AppSearchService,
       private sidenavService: SideNavService,
-      private modalService: ModalService
   ) {
       this._window = window;
   }
@@ -145,39 +143,6 @@ export class SearchComponent implements OnInit, AfterContentInit {
     this.router.navigate([AppValues.defaultUsername, AppValues.urlDatasetView], {queryParams: {id, type: AppValues.urlDatasetViewOverviewType}});
   }
 
-
-  public onClickSearchAdditionalButton(method: string) {
-    if (method === searchAdditionalButtonsEnum.DeriveForm) {
-      this.onClickDeriveForm();
-    }
-    if (method === searchAdditionalButtonsEnum.Reputation) {
-      this.onClickReputation();
-    }
-    if (method === searchAdditionalButtonsEnum.Explore) {
-      this.onClickExplore();
-    }
-    if (method === searchAdditionalButtonsEnum.Descission) {
-      this.onClickDescission();
-    }
-
-    this.modalService.warning({
-      message: 'Feature will be soon',
-      yesButtonText: 'Ok'
-    });
-  }
-
-  private onClickDeriveForm() {
-    console.log('onClickDeriveForm');
-  }
-  private onClickExplore() {
-    console.log('onClickExplore');
-  }
-  private onClickReputation() {
-    console.log('onClickReputation');
-  }
-  private onClickDescission() {
-    console.log('onClickDescission');
-  }
 
   public onSearch(searchValue: string, page: number = 1): void {
     this.appSearchService.search(searchValue, page - 1);

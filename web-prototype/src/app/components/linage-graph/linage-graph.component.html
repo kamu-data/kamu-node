@@ -14,10 +14,9 @@
   [miniMapPosition]="miniMapPosition"
   [links]="links"
   [nodes]="graphNodes"
-  [clusters]="graphClusters"
 
   [view]="view"
-  layout="dagreCluster"
+  layout="dagre"
 >
   <ng-template #defsTemplate>
     <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
@@ -52,16 +51,16 @@
     </svg:g>
   </ng-template>
 
-  <ng-template #clusterTemplate let-cluster>
-    <svg:g class="node cluster">
-      <svg:rect
-        [attr.width]="cluster.dimension.width"
-        [attr.height]="cluster.dimension.height"
-        [attr.fill]="cluster.data.customColor || cluster.data.color"
-      />
-      <svg:text>
-        {{cluster.label}}
-      </svg:text>
-    </svg:g>
-  </ng-template>
+<!--  <ng-template #clusterTemplate let-cluster>-->
+<!--    <svg:g class="node cluster">-->
+<!--      <svg:rect-->
+<!--        [attr.width]="cluster.dimension.width"-->
+<!--        [attr.height]="cluster.dimension.height"-->
+<!--        [attr.fill]="cluster.data.customColor || cluster.data.color"-->
+<!--      />-->
+<!--      <svg:text>-->
+<!--        {{cluster.label}}-->
+<!--      </svg:text>-->
+<!--    </svg:g>-->
+<!--  </ng-template>-->
 </ngx-graph>

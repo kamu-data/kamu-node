@@ -16,6 +16,7 @@ import {NavigationEnd, Router} from '@angular/router';
 import {Edge} from '@swimlane/ngx-graph/lib/models/edge.model';
 import {ClusterNode, Node} from '@swimlane/ngx-graph/lib/models/node.model';
 import {filter} from 'rxjs/operators';
+import {ModalService} from "../components/modal/modal.service";
 
 
 @Component({
@@ -83,7 +84,8 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     constructor(
         private appDatasetService: AppDatasetService,
         private sidenavService: SideNavService,
-        private router: Router) {
+        private router: Router,
+        private modalService: ModalService) {
         this._window = window;
     }
 
@@ -187,6 +189,10 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         if (method === searchAdditionalButtonsEnum.Descission) {
             this.onClickDescission();
         }
+        this.modalService.warning({
+          message: 'Feature will be soon',
+          yesButtonText: 'Ok'
+        });
     }
 
     public get datasetViewTypeOverview(): boolean {

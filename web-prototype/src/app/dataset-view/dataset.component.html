@@ -23,11 +23,6 @@
 
                     <ng-template [ngIf]="datasetViewTypeLinage">
                         <ng-template [ngIf]="isAvailableLinageGraph && linageGraphLink.length !== 0">
-<!--                            <ul>-->
-<!--                                <li *ngFor="let row of getDatasetTree(); let rowIndex = index">-->
-<!--                                        <p>{{row[0]}} -> {{row[1]}}</p>-->
-<!--                                </li>-->
-<!--                            </ul>-->
                             <app-linage-graph [view]="linageGraphView" [links]="linageGraphLink" [nodes]="linageGraphNodes" [clusters]="linageGraphClusters" (onClickNodeEvent)="onClickNode($event)"></app-linage-graph>
                         </ng-template>
                         <ng-template [ngIf]="!isAvailableLinageGraph && linageGraphLink.length === 0">

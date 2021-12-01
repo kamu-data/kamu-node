@@ -245,6 +245,11 @@ router-outlet
       font-size: 30px
 .search-header-container-block
   margin-bottom: 20px
+
+#search .search-result-container
+  grid-template-columns: 1fr
+#dataset-viewer .search-result-container
+  grid-template-columns: 1fr 0.25fr
 #search, #dataset-viewer
   & .nav-link
     cursor: pointer
@@ -253,7 +258,6 @@ router-outlet
     border-bottom: none
   & .search-result-container
     display: grid
-    grid-template-columns: 1fr 0.25fr
     grid-gap: 25px
   & table
     width: 100%
@@ -382,7 +386,7 @@ router-outlet
     text-align: center
     opacity: 0
     transition: transform 1s linear
-    animation: ani 2.5s forwards
+    animation: ani 1.5s forwards
 .modal__dialog__header-block
   width: 100%
   padding: 1.5em
