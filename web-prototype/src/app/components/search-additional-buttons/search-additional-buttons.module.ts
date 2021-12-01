@@ -4,6 +4,7 @@ import {MatMenuModule} from "@angular/material/menu";
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
 import {CommonModule} from "@angular/common";
+import {NgbPopoverModule} from "@ng-bootstrap/ng-bootstrap";
 
 
 @NgModule({
@@ -11,7 +12,8 @@ import {CommonModule} from "@angular/common";
         MatMenuModule,
         MatIconModule,
         MatButtonModule,
-        CommonModule
+        CommonModule,
+        NgbPopoverModule
     ],
   exports: [SearchAdditionalButtonsComponent],
   declarations: [SearchAdditionalButtonsComponent]

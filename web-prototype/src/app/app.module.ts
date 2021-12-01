@@ -39,6 +39,7 @@ import {NgxGraphModule} from '@swimlane/ngx-graph';
 import {GithubCallbackComponent} from './auth/github-callback/github.callback';
 import {AuthApi} from './api/auth.api';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {ModalModule} from "./components/modal/modal.module";
 
 
 const Services = [
@@ -88,6 +89,7 @@ const MatModules = [
         AppRoutingModule,
         DatasetModule,
         DatasetCreateModule,
+        ModalModule.forRoot(),
         SearchModule.forRoot(),
 
 

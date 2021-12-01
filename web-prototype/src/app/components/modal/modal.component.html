@@ -1,0 +1,78 @@
+<nav *ngIf="isVisible" class="navbar navbar-expand-lg navbar-dark bg-dark" id="app-header">
+    <button #appHeaderMenuButton id="appHeaderMenuButton" class="navbar-toggler" data-test-id="appHeaderMenuButton"
+            type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div [classList]="'app-brand'" id="appHeaderLogo">
+        <button (click)="onClickAppLogo()" data-test-id="appLogo"><img [src]="appLogo" alt="Application logo"/></button>
+    </div>
+
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+            <li [classList]="'nav-item searchInputContainer ' + (isSearchActive ? 'active-search-input' : '')">
+                <div class="input-group flex-nowrap flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 js-jump-to"
+                     id="searchInput">
+                    <input type="text" data-test-id="searchInput" class="form-control"
+                           id="typeahead-http" [ngbTypeahead]="search" [resultTemplate]="rt"
+                           placeholder="Search" [(ngModel)]="searchValue" [inputFormatter]="formatter"
+                           [focusFirst]="false"
+                           aria-label="Search" aria-describedby="addon-wrapping"
+                           (focusin)="isSearchActive = true"
+                           (click)="onClickInput()"
+                           (selectItem)="onSelectItem($event)"
+                           (keyup.enter)="onSearch($event, searchValue)" (blur)="onSearch($event, searchValue)">
+                </div>
+
+                <ng-template #rt let-r="result" let-t="term">
+                    <div>
+                        <i class="bi bi-journal-album mr-2"></i>
+                        <ngb-highlight [result]="r.id" [term]="t.id"></ngb-highlight>
+                    </div>
+                    <div class="border rounded-1 flex-shrink-0 color-bg-tertiary px-1 f6 color-text-tertiary ml-1 jump-to-badge-jump">
+                        {{ isDatasetType(r['__typename']) ? 'Jump to' : 'All Kamu' }} <span class="d-inline-block ml-1 v-align-middle"><i class="bi bi-arrow-return-left"></i></span>
+                    </div>
+                </ng-template>
+            </li>
+        </ul>
+    </div>
+
+    <div id="appHeaderAdditionalBlock" class="app-header__right-column">
+        <button class="app-header__right-column__addnew-block" (click)="onAddNew()" data-test-id="addNewBlock">
+            <span><i class="bi bi-plus-circle"></i></span>
+            <span class="app-header__right-column__label">New</span>
+        </button>
+        <button class="button-round" data-test-id="openUserInfo" mat-button [matMenuTriggerFor]="menu">
+            <div class="img-container-round">
+                <img [src]="(userInfo && userInfo.avatarUrl) ? userInfo.avatarUrl : '../../../assets/icons/user_icon.png'" (click)="onOpenUserInfo()" alt="User icon">
+            </div>
+        </button>
+        <mat-menu #menu="matMenu" class="app-header__user-menu">
+            <p id="matmenu-signed-in-name">Signed in as <strong data-test-id="userName">{{(userInfo && userInfo.name) ? userInfo.name : defaultUsername}}</strong></p>
+            <div role="none" class="dropdown-divider"></div>
+
+            <ng-template [ngIf]="!(userInfo && userInfo.name)">
+                <button mat-menu-item data-test-id="openUserProfile" (click)="onLogin()">Login</button>
+                <div role="none" class="dropdown-divider"></div>
+                <button mat-menu-item data-test-id="openBillingPlan">Account & Billing</button>
+                <button mat-menu-item data-test-id="openHelp">Help</button>
+            </ng-template>
+
+            <ng-template [ngIf]="(userInfo && userInfo.name)">
+                <button mat-menu-item data-test-id="openUserProfile">Your profile</button>
+                <button mat-menu-item data-test-id="openUserDatasets">Your datasets</button>
+
+                <div role="none" class="dropdown-divider"></div>
+                <button mat-menu-item data-test-id="openBillingPlan">Account & Billing</button>
+                <button mat-menu-item data-test-id="openAnalytics">Analytics</button>
+                <button mat-menu-item data-test-id="openSettings">Settings</button>
+                <button mat-menu-item data-test-id="openHelp">Help</button>
+
+                <div role="none" class="dropdown-divider"></div>
+                <button mat-menu-item data-test-id="openSignOut" (click)="onLogOut()">Sign out</button>
+            </ng-template>
+        </mat-menu>
+    </div>
+
+</nav>

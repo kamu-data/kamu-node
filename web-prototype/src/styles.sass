@@ -366,3 +366,243 @@ router-outlet
       order: 1
     & .navbar-nav
       margin: 20px auto
+
+
+// MODAL MODULE
+
+.modal__dialog, .modal__bigtest-dialog
+    margin: 0 auto
+    background: white
+    box-sizing: border-box
+    //width: 70%
+    max-width: 300px
+    min-height: 80px
+    padding: 1.5em
+    border: 1px solid $app-nero
+    border-radius: 20px
+    text-align: center
+
+.modal__content .modal__bigtest-dialog
+    width: 90vw
+    max-width: none
+
+.modal__bigtext-block
+    display: block
+    width: 100%
+    height: 60vh
+    overflow-y: scroll
+    margin-bottom: 26px
+.modal__bigtext-block__container
+    text-align: left
+    font-size: 14pt
+    font-family: "Helvetica Neue"
+    a
+        color: #0087ff
+        text-decoration: underline
+        vertical-align: baseline
+        text-decoration-skip-ink: none
+        font-style: normal
+.modal__paypal
+    background-color: rgba(245, 245, 245, 0.88)
+    @extend .modal__dialog
+    & h3
+        width: 70%
+        margin: 6px auto 20px
+    & span
+        float: right
+        font-weight: 600
+        color: $app-nero
+        font-size: 16px
+    & input
+        height: 30px
+        border-radius: 7px
+        margin-bottom: 17px
+    & [data-test-id='cancelButton']
+        cursor: pointer
+
+.modal__categories
+    padding-top: 45px
+    border-radius: 20px
+    background: #ddd
+    /* box-shadow: 0 0 30px 10px rgba(0,0,0,0.25); */
+    /* background-color: rgba(0,0,0,0.5); */
+    /* background: radial-gradient(circle farthest-side at center center, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.25)); */
+    height: 500px
+    display: flex
+    flex-wrap: wrap
+    align-items: flex-start
+    justify-content: center
+
+.modal__header
+    font-size: 1.25em
+    margin-bottom: 1em
+
+.modal__header-black
+    @extend .modal__header
+    color: black
+    font-size: 1.4em
+
+.modal__header-error
+    @extend .modal__header
+    color: red
+
+.modal__header-warning
+    @extend .modal__header
+    color: $warning
+
+.modal__header-ok
+    @extend .modal__header
+    color: darkgreen
+
+.modal__header-info
+    @extend .modal__header
+    color: #4494ff
+.link-green
+    color: $green-100
+    &__inline
+        border-bottom: 1px $green-100 solid
+.cache-modal
+    &__content
+        flex-direction: column
+        justify-content: center
+        align-items: center
+        position: fixed
+        right: 0
+        left: 0
+        bottom: 0
+        display: flex
+        z-index: 2000
+        max-width: 560px
+        min-width: 320px
+        margin: 0 auto
+        background: white
+        box-sizing: border-box
+        border: 1px solid #c9c7cb
+        &__header
+            width: 100%
+            text-align: right
+        &__dialog
+            margin: 0
+            text-align: center
+            width: 100%
+            &__privacy-policy-text
+                margin: 20px 2%
+                > a
+                    @extend .link-green
+                    @extend .link-green__inline
+    &__close-btn
+        background: transparent
+        border: none
+        cursor: pointer
+        display: flex
+        justify-content: flex-end
+        align-items: center
+        color: $app-nero
+        font-size: 24px
+        width: 100%
+.base_modal__content
+    background: transparent
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    position: fixed
+    top: 0
+    right: 0
+    left: 0
+    display: flex
+
+.modal__content
+    @extend .base_modal__content
+    bottom: 0
+    z-index: 2000
+.modal__content__unsupported-account
+    @extend .base_modal__content
+    bottom: 0
+    z-index: 1001
+
+.modal__body
+    @extend .text-center
+    margin: 0 auto
+    background: white
+    width: 70%
+    max-width: 320px
+    min-height: 80px
+    padding: 1.5em 2em 1em
+    border-radius: 20px
+
+.modal__img
+    display: flex
+    width: auto
+    padding: 0 0 1em
+    min-width: 30%
+    min-height: 13%
+    position: relative
+    background: url(./assets/icons/loadinfo.net.gif) no-repeat center
+    & img
+        max-height: calc(100vh - 180px)
+        max-width: 100%
+        margin: 0 auto
+    //& .modal__btn
+    //    position: absolute
+    //    bottom: 0
+    //    left: calc(50%)
+    //    transform: translateX(-40px)
+.modal__dialog__unsupported-account
+    @extend .modal__dialog
+    & a
+        color: $blue
+
+.modal__msg
+    margin: 1em 0
+    word-break: break-word
+.button__default
+    color: $black-6-opacity
+    background-color: white
+    @extend .button
+    @extend %border-gray
+
+.modal__btn
+    @extend .button__default
+    margin: 0 0.5em
+    min-width: 80px
+    border-radius: 10px
+    font-weight: bold
+    color: blue !important
+
+.modal__btn-first
+    width: 100%
+    margin: 0
+
+.modal__btn-last
+    @extend .modal__btn-first
+    margin-top: 1em
+
+.upload
+    background-color: black
+.button
+    height: 40px
+    cursor: pointer
+    font-family: 'Avenir', sans-serif
+    &:focus
+        outline: none
+    &[disabled]
+        opacity: 0.7
+    & img
+        height: 100%
+    & .fa
+        color: inherit
+    &:active
+        background: linear-gradient(to bottom, rgba(204,204,204,0.8) 100%, #eee 0%)
+/******** MIXINZ ********/
+%border-none
+    border: 0px
+%border-gray
+    border-radius: 0px
+    border: 1px solid $verylightgrey
+%border-green
+    border-radius: 5px
+    border: 1px solid #CEE794
+%border-darkgreentea
+    border: 1px solid $darkgreentea
+%button-gradient
+    background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(237,237,237,1) 100%)

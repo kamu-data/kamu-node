@@ -11,6 +11,7 @@ import {MatSidenav} from '@angular/material/sidenav';
 import {SideNavService} from '../services/sidenav.service';
 import {Router} from '@angular/router';
 import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
+import {ModalService} from "../components/modal/modal.service";
 
 
 @Component({
@@ -65,7 +66,9 @@ export class SearchComponent implements OnInit, AfterContentInit {
   constructor(
       private router: Router,
       private appSearchService: AppSearchService,
-      private sidenavService: SideNavService) {
+      private sidenavService: SideNavService,
+      private modalService: ModalService
+  ) {
       this._window = window;
   }
 
@@ -156,6 +159,12 @@ export class SearchComponent implements OnInit, AfterContentInit {
     if (method === searchAdditionalButtonsEnum.Descission) {
       this.onClickDescission();
     }
+
+    this.modalService.warning({
+      title: 'Warning',
+      message: 'Feature will be soon',
+      yesButtonText: 'Ok'
+    });
   }
 
   private onClickDeriveForm() {
