@@ -32,7 +32,6 @@ export class LinageGraphComponent implements OnChanges, OnInit {
     this.graphClusters = this.graphClusters || [];
   }
   public ngOnChanges(changes: SimpleChanges): void {
-    debugger;
     const clusters: SimpleChange = changes.clusters;
     const nodes: SimpleChange = changes.nodes;
     if (clusters) {

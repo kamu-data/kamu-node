@@ -286,7 +286,6 @@ export class DatasetComponent implements OnInit, AfterContentInit {
             this.initLinageGraphProperty();
 
             datasetTree.forEach((term: string[], index: number) => {
-                debugger
                 this.linageGraphLink.push({
                     id: `${term[0]}__and__${term[1]}__${index}`,
                     source: term[0],

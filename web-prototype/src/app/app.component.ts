@@ -83,7 +83,6 @@ export class AppComponent implements OnInit {
   }
 
   public onSelectDataset(item: DatasetIDsInterface): void {
-    debugger
     console.log('item.__typename: ' + item.__typename + ' ; ' + 'item.id:' + item.id);
     if (item.__typename === TypeNames.datasetType) {
       this.router.navigate([ AppValues.defaultUsername, AppValues.urlDatasetView ], {queryParams: {id: item.id, type: AppValues.urlDatasetViewOverviewType}});
@@ -102,7 +101,7 @@ export class AppComponent implements OnInit {
   }
 
   public onAddNew(): void {
-    this.router.navigate(['dataset-create']);
+    this.router.navigate([AppValues.defaultUsername, AppValues.urlDatasetCreate]);
   }
 
   public onLogin(): void {

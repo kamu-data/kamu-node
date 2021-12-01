@@ -79,7 +79,6 @@ export class AppDatasetService {
         this.kindInfoChanges([]);
     }
     public setKindInfo(dataset: DatasetKindInterface): void {
-        debugger
         if (this.datasetKindInfo.some((realDataset: DatasetKindInterface) => realDataset.id === dataset.id)) {
             return;
         }
@@ -127,7 +126,6 @@ export class AppDatasetService {
             }),
             // @ts-ignore
             switchMap((result: DatasetLinageResponse) => {
-                debugger
                 if (result.kind === DatasetKindTypeNames.derivative) {
                     return this.recursiveUpstreamDependencies(result.id);
                 } else {

@@ -171,7 +171,6 @@ export class SearchApi {
     }
 
     public searchLinageDatasetUpstreamDependencies(id: string): Observable<any> {
-        debugger
         if (typeof id !== 'string') {
             return throwError('Empty ID');
         }

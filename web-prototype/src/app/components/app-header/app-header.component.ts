@@ -79,17 +79,6 @@ export class AppHeaderComponent {
     public onSearch(event: any, searchValue: DatasetIDsInterface | string): void {
         this.isSearchActive = false;
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        if (event.key === 'Enter') {
-            let searchInfo: DatasetIDsInterface;
-
-            if (typeof searchValue === 'string') {
-                searchInfo = {id: searchValue, __typename: TypeNames.allDataType};
-            } else { searchInfo = searchValue; }
-
-            this.selectDatasetEmitter.emit(searchInfo);
-        }
         setTimeout(() => {
             if (this.isMobileView) {
                 this.triggerMenuClick();
