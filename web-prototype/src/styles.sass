@@ -380,6 +380,9 @@ router-outlet
     border: 1px solid $app-nero
     border-radius: 4px
     text-align: center
+    opacity: 0
+    transition: transform 1s linear
+    animation: ani 2.5s forwards
 .modal__dialog__header-block
   width: 100%
   padding: 1.5em
@@ -388,7 +391,13 @@ router-outlet
 .modal__content .modal__bigtest-dialog
     width: 90vw
     max-width: none
-
+@keyframes ani
+  0%
+    opacity: 0
+    transform: translateY(-50%)
+  100%
+    opacity: 1
+    transform: translateY(0%)
 .modal__bigtext-block
     display: block
     width: 100%
