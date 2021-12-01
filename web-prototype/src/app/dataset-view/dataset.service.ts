@@ -25,7 +25,7 @@ export class AppDatasetService {
     private searchDatasetInfoChanges$: Subject<any> = new Subject<any>();
     private searchMetadataChanges$: Subject<SearchOverviewInterface> = new Subject<SearchOverviewInterface>();
     private datasetTreeChanges$: Subject<string[][]> = new Subject<string[][]>();
-    private datasetTree: string[][] = [];
+    private datasetTree: {id: string, kind: DatasetKindTypeNames}[][] = [];
     private datasetKindInfo: DatasetKindInterface[] = [];
 
     constructor(
@@ -62,10 +62,10 @@ export class AppDatasetService {
     public get getSearchData(): SearchHistoryInterface[] | SearchOverviewDatasetsInterface[] {
         return this.searchData;
     }
-    public get onDatasetTreeChanges(): Observable<string[][]> {
+    public get onDatasetTreeChanges(): Observable<{id: string, kind: DatasetKindTypeNames}> {
         return this.datasetTreeChanges$.asObservable();
     }
-    public datasetTreeChange(datasetTree: string[][]): void {
+    public datasetTreeChange(datasetTree: {id: string, kind: DatasetKindTypeNames}): void {
         this.datasetTreeChanges$.next(datasetTree);
     }
     public get getDatasetTree(): string[][] {
@@ -185,7 +185,7 @@ export class AppDatasetService {
         if (dataset.metadata.currentUpstreamDependencies) {
             dataset.metadata.currentUpstreamDependencies
                 .forEach((dependencies: DatasetCurrentUpstreamDependencies) => {
-                    this.datasetTree.push([dataset.id, dependencies.id]);
+                    this.datasetTree.push([{id: dataset.id, kind: dataset.kind}, {id: dependencies.id, kind: dependencies.kind}]);
                     this.setKindInfo(dataset);
                     this.setKindInfo(dependencies);
                 });
@@ -193,12 +193,11 @@ export class AppDatasetService {
         if (dataset.metadata.currentDownstreamDependencies) {
             dataset.metadata.currentDownstreamDependencies
                 .forEach((dependencies: DatasetCurrentUpstreamDependencies) => {
-                    this.datasetTree.push([dataset.id, dependencies.id]);
+                    this.datasetTree.push([{id: dataset.id, kind: dataset.kind}, {id: dependencies.id, kind: dependencies.kind}]);
                     this.setKindInfo(dataset);
                     this.setKindInfo(dependencies);
                 });
         }
-        this.datasetTree = Array.from(this.uniquedatasetTree(this.datasetTree));
         this.datasetTreeChange(this.datasetTree);
     }
     private uniquedatasetTree(datasetTree: string[][]) {

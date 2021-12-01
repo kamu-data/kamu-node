@@ -16,7 +16,7 @@ import {NavigationEnd, Router} from '@angular/router';
 import {Edge} from '@swimlane/ngx-graph/lib/models/edge.model';
 import {ClusterNode, Node} from '@swimlane/ngx-graph/lib/models/node.model';
 import {filter} from 'rxjs/operators';
-import {ModalService} from "../components/modal/modal.service";
+import {ModalService} from '../components/modal/modal.service';
 
 
 @Component({
@@ -284,19 +284,30 @@ export class DatasetComponent implements OnInit, AfterContentInit {
 
         let uniqDatasetIdList: string[] = [];
 
-        this.appDatasetService.onDatasetTreeChanges.subscribe((datasetTree: string[][]) => {
+        this.appDatasetService.onDatasetTreeChanges.subscribe((datasetTree: {id: string, kind: DatasetKindTypeNames}) => {
             this.isAvailableLinageGraph = (datasetTree.length !== 0);
-            datasetTree.forEach((term: string[]) => term.forEach((id: string) => uniqDatasetIdList.push(id)));
+            datasetTree.forEach((term: {id: string, kind: DatasetKindTypeNames}[]) => term.forEach((termInfo: {id: string, kind: DatasetKindTypeNames}) => uniqDatasetIdList.push(termInfo.id)));
             uniqDatasetIdList = uniqDatasetIdList.filter((x: any, y: number) => uniqDatasetIdList.indexOf(x) == y);
 
             this.initLinageGraphProperty();
 
-            datasetTree.forEach((term: string[], index: number) => {
+            datasetTree.forEach((term: {id: string, kind: DatasetKindTypeNames}[], index: number) => {
+                debugger;
+                let source: string = term[0].id;
+                let target: string = term[1].id;
+                term.forEach((termInfo: {id: string, kind: DatasetKindTypeNames}) => {
+                    if (termInfo.kind === DatasetKindTypeNames.root) {
+                        source = termInfo.id;
+                    } else {
+                        target = termInfo.id;
+                    }
+                });
+
                 this.linageGraphLink.push({
-                    id: `${term[0]}__and__${term[1]}__${index}`,
-                    source: term[0],
-                    target: term[1],
-                    label: `${term[0]}__and__${term[1]}__${index}`,
+                    id: `${source}__and__${target}`,
+                    source,
+                    target,
+                    label: `${source}__and__${target}`,
                 });
             });
 
@@ -308,9 +319,35 @@ export class DatasetComponent implements OnInit, AfterContentInit {
                 this.linageGraphNodes.push({
                     id,
                     label: id,
-                    data: {customColor: oneOfTheKindInfo[0] && oneOfTheKindInfo[0].kind === DatasetKindTypeNames.root ? "rgba(165,42,42,0.35)" : "#008000"}
+                    data: {
+                        kind: oneOfTheKindInfo[0] && oneOfTheKindInfo[0].kind,
+                        customColor: oneOfTheKindInfo[0] && oneOfTheKindInfo[0].kind === DatasetKindTypeNames.root ? 'rgba(165,42,42,0.35)' : '#008000'}
                 });
             });
+
+            if (this.linageGraphNodes.length >= 1) {
+                const linageGraphAllNodes: Node[] = this.linageGraphNodes.filter((n: Node) => n.data.kind === DatasetKindTypeNames.root);
+                const linageGraphDerivativeNodes: Node[] = this.linageGraphNodes.filter((n: Node) => n.data.kind === DatasetKindTypeNames.derivative);
+                linageGraphDerivativeNodes.forEach((n: Node) => {
+                    linageGraphAllNodes.push(n);
+                });
+
+                linageGraphAllNodes.forEach((n: Node, index: number) => {
+                    debugger;
+                    n.id = String(index);
+                    this.linageGraphLink.forEach((e: Edge) => {
+                        debugger;
+                        if (e.source === n.label) {
+                            e.source = n.id;
+                        }
+                        if (e.target === n.label) {
+                            e.target = n.id;
+                        }
+                    });
+                });
+
+                this.linageGraphNodes = linageGraphAllNodes;
+            }
         });
 
         this.appDatasetService.onKindInfoChanges.subscribe((datasetList: DatasetKindInterface[]) => {
@@ -326,7 +363,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
                     return cluster;
                 });
             });
-        })
+        });
     }
 
     private onClickDeriveForm(): void {
