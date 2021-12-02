@@ -147,7 +147,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
         }
     }
 
-    public getDatasetTree(): string[][] {
+    public getDatasetTree(): { id: string, kind: DatasetKindTypeNames }[][] {
         return this.appDatasetService.getDatasetTree;
     }
 
