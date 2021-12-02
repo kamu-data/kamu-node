@@ -1,17 +1,18 @@
 import {Injectable} from "@angular/core";
-import {from, Observable, pipe, Subject} from "rxjs";
+import {from, Observable, Subject} from "rxjs";
 import {SearchApi} from "../api/search.api";
 import {
     DatasetCurrentUpstreamDependencies,
-    DatasetInfoInterface, DatasetKindInterface,
+    DatasetInfoInterface,
+    DatasetKindInterface,
     DatasetKindTypeNames,
     DatasetLinageResponse,
     SearchDatasetByID,
     SearchHistoryInterface,
-    SearchOverviewDatasetsInterface, SearchOverviewInterface
+    SearchOverviewDatasetsInterface,
+    SearchOverviewInterface
 } from "../interface/search.interface";
-import {distinct, filter, map, mergeMap, switchMap, tap} from "rxjs/operators";
-import {subscribe} from "graphql";
+import {filter, map, mergeMap, switchMap, tap} from "rxjs/operators";
 
 @Injectable()
 export class AppDatasetService {
@@ -153,7 +154,19 @@ export class AppDatasetService {
                     mergeMap((result: DatasetLinageResponse) => {
                         // @ts-ignore
                         const dependenciesDerivativeList: DatasetCurrentUpstreamDependencies[] = this.createDependenciesDerivativeList(result);
-                        return this.recursive(dependenciesDerivativeList);
+                        // @ts-ignore
+                        return from(dependenciesDerivativeList).pipe(
+                            // tslint:disable-next-line:no-shadowed-variable
+                            mergeMap((currentUpstreamDependencies: DatasetCurrentUpstreamDependencies) => {
+                                if (currentUpstreamDependencies.kind === DatasetKindTypeNames.derivative) {
+                                    return this.recursiveUpstreamDependencies(currentUpstreamDependencies.id);
+                                } else {
+                                    if (typeof result.metadata.currentDownstreamDependencies !== 'undefined') {
+                                        return this.recursive(result.metadata.currentDownstreamDependencies);
+                                    }
+                                }
+                            })
+                        )
                     })
                 )
             })
@@ -169,14 +182,20 @@ export class AppDatasetService {
                     }),
                     mergeMap((result: DatasetLinageResponse) => {
                         // @ts-ignore
-                        const dependenciesDerivativeList: DatasetCurrentUpstreamDependencies[] = this.createDependenciesRootList(result);
-                        // @ts-ignore
-
-                        return from(dependenciesDerivativeList).pipe(
-                            mergeMap((currentUpstreamDependencies: DatasetCurrentUpstreamDependencies) => {
-                                return this.recursiveUpstreamDependencies(currentUpstreamDependencies.id);
-                            })
-                        )
+                        // const dependenciesDerivativeList: DatasetCurrentUpstreamDependencies[] = this.createDependenciesDerivativeList(result);
+                        if (result.kind === DatasetKindTypeNames.derivative && result.metadata.currentUpstreamDependencies?.length >= 1) {
+                            return from(result.metadata.currentUpstreamDependencies).pipe(
+                                mergeMap((datasetCurrentUpstreamDependencies: DatasetCurrentUpstreamDependencies) => {
+                                    if (datasetCurrentUpstreamDependencies.kind === DatasetKindTypeNames.root) {
+                                        return datasetCurrentUpstreamDependencies;
+                                    }
+                                    return this.recursiveUpstreamDependencies(datasetCurrentUpstreamDependencies.id);
+                                }));
+                        } else {
+                            if (typeof result.metadata.currentDownstreamDependencies !== 'undefined') {
+                                return this.recursive(result.metadata.currentDownstreamDependencies);
+                            }
+                        }
                     })
                 );
     }

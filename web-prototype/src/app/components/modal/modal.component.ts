@@ -92,7 +92,6 @@ export class ModalComponent implements OnInit {
         this.componentRef   = this.container.createComponent(factory);
 
         const instance        = this.componentRef.instance as DynamicComponent;
-        debugger
         instance.context    = Object.assign(command.context, {_close: this._close.bind(this)});
 
         this._handleKBD(command.type);

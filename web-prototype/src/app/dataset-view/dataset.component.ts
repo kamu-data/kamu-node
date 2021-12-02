@@ -292,7 +292,6 @@ export class DatasetComponent implements OnInit, AfterContentInit {
             this.initLinageGraphProperty();
 
             datasetTree.forEach((term: {id: string, kind: DatasetKindTypeNames}[], index: number) => {
-                debugger;
                 let source: string = term[0].id;
                 let target: string = term[1].id;
                 term.forEach((termInfo: {id: string, kind: DatasetKindTypeNames}) => {
@@ -333,10 +332,8 @@ export class DatasetComponent implements OnInit, AfterContentInit {
                 });
 
                 linageGraphAllNodes.forEach((n: Node, index: number) => {
-                    debugger;
                     n.id = String(index);
                     this.linageGraphLink.forEach((e: Edge) => {
-                        debugger;
                         if (e.source === n.label) {
                             e.source = n.id;
                         }
