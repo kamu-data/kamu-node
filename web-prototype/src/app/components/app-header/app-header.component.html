@@ -55,19 +55,19 @@
             <ng-template [ngIf]="!(userInfo && userInfo.name)">
                 <button mat-menu-item data-test-id="openUserProfile" (click)="onLogin()">Login</button>
                 <div role="none" class="dropdown-divider"></div>
-                <button mat-menu-item data-test-id="openBillingPlan">Account & Billing</button>
-                <button mat-menu-item data-test-id="openHelp">Help</button>
+                <button mat-menu-item data-test-id="openBillingPlan" (click)="onBilling()">Account & Billing</button>
+                <button mat-menu-item data-test-id="openHelp" (click)="onHelp()">Help</button>
             </ng-template>
 
             <ng-template [ngIf]="(userInfo && userInfo.name)">
-                <button mat-menu-item data-test-id="openUserProfile">Your profile</button>
-                <button mat-menu-item data-test-id="openUserDatasets">Your datasets</button>
+                <button mat-menu-item data-test-id="openUserProfile"(click)="onUserProfile()">Your profile</button>
+                <button mat-menu-item data-test-id="openUserDatasets" (click)="onUserDatasets()">Your datasets</button>
 
                 <div role="none" class="dropdown-divider"></div>
-                <button mat-menu-item data-test-id="openBillingPlan">Account & Billing</button>
-                <button mat-menu-item data-test-id="openAnalytics">Analytics</button>
-                <button mat-menu-item data-test-id="openSettings">Settings</button>
-                <button mat-menu-item data-test-id="openHelp">Help</button>
+                <button mat-menu-item data-test-id="openBillingPlan" (click)="onBilling()">Account & Billing</button>
+                <button mat-menu-item data-test-id="openAnalytics" (click)="onAnalytics()">Analytics</button>
+                <button mat-menu-item data-test-id="openSettings" (click)="onSettings()">Settings</button>
+                <button mat-menu-item data-test-id="openHelp" (click)="onHelp()">Help</button>
 
                 <div role="none" class="dropdown-divider"></div>
                 <button mat-menu-item data-test-id="openSignOut" (click)="onLogOut()">Sign out</button>

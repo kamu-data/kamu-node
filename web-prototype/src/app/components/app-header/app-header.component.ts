@@ -30,6 +30,12 @@ export class AppHeaderComponent {
     @Output() public logOutEmitter: EventEmitter<null> = new EventEmitter();
     @Output() public userProfileEmitter: EventEmitter<null> = new EventEmitter();
     @Output() public onClickAppLogoEmitter: EventEmitter<null> = new EventEmitter();
+    @Output() public onClickSettingsEmitter: EventEmitter<null> = new EventEmitter();
+    @Output() public onClickHelpEmitter: EventEmitter<null> = new EventEmitter();
+    @Output() public onClickAnalyticsEmitter: EventEmitter<null> = new EventEmitter();
+    @Output() public onClickBillingEmitter: EventEmitter<null> = new EventEmitter();
+    @Output() public onClickUserDatasetsEmitter: EventEmitter<null> = new EventEmitter();
+    @Output() public onClickUserProfileEmitter: EventEmitter<null> = new EventEmitter();
 
     @ViewChild('appHeaderMenuButton') appHeaderMenuButton: ElementRef<HTMLElement>;
 
@@ -117,5 +123,27 @@ export class AppHeaderComponent {
     }
     public onClickAppLogo(): void {
         this.onClickAppLogoEmitter.emit();
+    }
+    public onHelp(): void {
+        this.onClickHelpEmitter.emit();
+    }
+
+    public onSettings(): void {
+        this.onClickSettingsEmitter.emit();
+    }
+
+    public onAnalytics(): void {
+        this.onClickAnalyticsEmitter.emit();
+    }
+    public onBilling(): void {
+        this.onClickBillingEmitter.emit();
+    }
+
+    public onUserDatasets(): void {
+        this.onClickUserDatasetsEmitter.emit();
+    }
+
+    public onUserProfile(): void {
+        this.onClickUserProfileEmitter.emit();
     }
 }

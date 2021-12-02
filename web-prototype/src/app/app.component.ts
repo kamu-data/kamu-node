@@ -6,6 +6,7 @@ import {Router, NavigationEnd, ActivatedRoute} from '@angular/router';
 import {DatasetIDsInterface, TypeNames} from './interface/search.interface';
 import {AuthApi} from './api/auth.api';
 import {UserInterface} from './interface/auth.interface';
+import {ModalService} from "./components/modal/modal.service";
 
 @Component({
   selector: 'app-root',
@@ -30,7 +31,8 @@ export class AppComponent implements OnInit {
       private route: ActivatedRoute,
       private router: Router,
       private appSearchService: AppSearchService,
-      private authApi: AuthApi
+      private authApi: AuthApi,
+      private modalService: ModalService
   ) {
     this._window = window;
   }
@@ -109,5 +111,41 @@ export class AppComponent implements OnInit {
   }
   public onLogOut(): void {
     this.authApi.logOut();
+  }
+  public onUserProfile(): void {
+    this.modalService.warning({
+      message: 'Feature will be soon',
+      yesButtonText: 'Ok'
+    });
+  }
+  public onUserDatasets(): void {
+    this.modalService.warning({
+      message: 'Feature will be soon',
+      yesButtonText: 'Ok'
+    });
+  }
+  public onBilling(): void {
+    this.modalService.warning({
+      message: 'Feature will be soon',
+      yesButtonText: 'Ok'
+    });
+  }
+  public onAnalytics(): void {
+    this.modalService.warning({
+      message: 'Feature will be soon',
+      yesButtonText: 'Ok'
+    });
+  }
+  public onSettings(): void {
+    this.modalService.warning({
+      message: 'Feature will be soon',
+      yesButtonText: 'Ok'
+    });
+  }
+  public onHelp(): void {
+    this.modalService.warning({
+      message: 'Feature will be soon',
+      yesButtonText: 'Ok'
+    });
   }
 }
