@@ -52,6 +52,7 @@ export class ModalService {
     public close(): void {
         this.showModal$.next({
             context:    {},
+            buttonCount: 0,
             type:       'blank'
         });
     }
@@ -90,7 +91,8 @@ export class ModalService {
         }
         this.showModal$.next({
             type:       'dialog',
-            context
+            context,
+            buttonCount: 0
         });
 
         return new Promise(resolve => {
@@ -101,7 +103,8 @@ export class ModalService {
     private _showFilter(context: ModalArgumentsInterface): Promise<{}> {
         this.showModal$.next({
             type:       'filter',
-            context
+            context,
+            buttonCount: 0
         });
 
         return new Promise(resolve => {
@@ -116,7 +119,8 @@ export class ModalService {
             type:       'image',
             context:    {
                 message:    url
-            }
+            },
+            buttonCount: 0
         });
     }
 
@@ -126,7 +130,8 @@ export class ModalService {
     public showSpinner(): void {
         this.showModal$.next({
             type:       'spinner',
-            context:    {}
+            context:    {},
+            buttonCount: 0
         });
     }
 
@@ -136,7 +141,8 @@ export class ModalService {
     public showUpload(): void {
         this.showModal$.next({
             type:       'upload',
-            context:    {}
+            context:    {},
+            buttonCount: 0
         });
     }
 

@@ -284,13 +284,14 @@ export class DatasetComponent implements OnInit, AfterContentInit {
 
         let uniqDatasetIdList: string[] = [];
 
-        this.appDatasetService.onDatasetTreeChanges.subscribe((datasetTree: {id: string, kind: DatasetKindTypeNames}) => {
+        this.appDatasetService.onDatasetTreeChanges.subscribe((datasetTree: {id: string, kind: DatasetKindTypeNames}[][]) => {
             this.isAvailableLinageGraph = (datasetTree.length !== 0);
             datasetTree.forEach((term: {id: string, kind: DatasetKindTypeNames}[]) => term.forEach((termInfo: {id: string, kind: DatasetKindTypeNames}) => uniqDatasetIdList.push(termInfo.id)));
-            uniqDatasetIdList = uniqDatasetIdList.filter((x: any, y: number) => uniqDatasetIdList.indexOf(x) == y);
+            uniqDatasetIdList = uniqDatasetIdList.filter((x: any, y: number) => uniqDatasetIdList.indexOf(x) === y);
 
             this.initLinageGraphProperty();
 
+            if (datasetTree.length) {
             datasetTree.forEach((term: {id: string, kind: DatasetKindTypeNames}[], index: number) => {
                 let source: string = term[0].id;
                 let target: string = term[1].id;
@@ -344,6 +345,7 @@ export class DatasetComponent implements OnInit, AfterContentInit {
                 });
 
                 this.linageGraphNodes = linageGraphAllNodes;
+            }
             }
         });
 

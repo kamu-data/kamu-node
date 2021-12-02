@@ -63,10 +63,10 @@ export class AppDatasetService {
     public get getSearchData(): SearchHistoryInterface[] | SearchOverviewDatasetsInterface[] {
         return this.searchData;
     }
-    public get onDatasetTreeChanges(): Observable<{id: string, kind: DatasetKindTypeNames}> {
+    public get onDatasetTreeChanges(): Observable<{id: string, kind: DatasetKindTypeNames}[][]> {
         return this.datasetTreeChanges$.asObservable();
     }
-    public datasetTreeChange(datasetTree: {id: string, kind: DatasetKindTypeNames}): void {
+    public datasetTreeChange(datasetTree: {id: string, kind: DatasetKindTypeNames}[][]): void {
         this.datasetTreeChanges$.next(datasetTree);
     }
     public get getDatasetTree(): string[][] {
@@ -185,7 +185,7 @@ export class AppDatasetService {
                         // const dependenciesDerivativeList: DatasetCurrentUpstreamDependencies[] = this.createDependenciesDerivativeList(result);
                         if (result.kind === DatasetKindTypeNames.derivative && result.metadata.currentUpstreamDependencies?.length >= 1) {
                             return from(result.metadata.currentUpstreamDependencies).pipe(
-                                mergeMap((datasetCurrentUpstreamDependencies: DatasetCurrentUpstreamDependencies) => {
+                                mergeMap((datasetCurrentUpstreamDependencies: DatasetCurrentUpstreamDependencies, index: number) => {
                                     if (datasetCurrentUpstreamDependencies.kind === DatasetKindTypeNames.root) {
                                         return datasetCurrentUpstreamDependencies;
                                     }
