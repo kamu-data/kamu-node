@@ -25,7 +25,7 @@ export class AppDatasetService {
     /* eslint-disable  @typescript-eslint/no-explicit-any */
     private searchDatasetInfoChanges$: Subject<any> = new Subject<any>();
     private searchMetadataChanges$: Subject<SearchOverviewInterface> = new Subject<SearchOverviewInterface>();
-    private datasetTreeChanges$: Subject<string[][]> = new Subject<string[][]>();
+    private datasetTreeChanges$: Subject<{ id: string, kind: DatasetKindTypeNames }[][]> = new Subject<{ id: string, kind: DatasetKindTypeNames }[][]>();
     private datasetTree: {id: string, kind: DatasetKindTypeNames}[][] = [];
     private datasetKindInfo: DatasetKindInterface[] = [];
 
@@ -69,7 +69,7 @@ export class AppDatasetService {
     public datasetTreeChange(datasetTree: {id: string, kind: DatasetKindTypeNames}[][]): void {
         this.datasetTreeChanges$.next(datasetTree);
     }
-    public get getDatasetTree(): string[][] {
+    public get getDatasetTree(): { id: string, kind: DatasetKindTypeNames }[][] {
         return this.datasetTree;
     }
     public get kindInfo(): DatasetKindInterface[] {
