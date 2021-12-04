@@ -1,4 +1,4 @@
-import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
+import {AfterContentInit, Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
     DatasetInfoInterface, DatasetKindInterface, DatasetKindTypeNames,
     PageInfoInterface,
@@ -24,7 +24,7 @@ import {ModalService} from '../components/modal/modal.service';
     templateUrl: './dataset.component.html',
     styleUrls: ['./dataset-view.component.sass']
 })
-export class DatasetComponent implements OnInit, AfterContentInit {
+export class DatasetComponent implements OnInit, AfterContentInit, OnDestroy {
 
     @ViewChild('sidenav', {static: true}) public sidenav?: MatSidenav;
     public isMobileView = false;
@@ -397,6 +397,10 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     }
 
     private initDatasetViewByType(currentPage?: number): void {
+        if (this.appDatasetService.onSearchLinageDatasetSubscribtion) {
+            this.appDatasetService.onSearchLinageDatasetSubscribtion.unsubscribe();
+        }
+        this.appDatasetService.resetDatasetTree();
         const searchParams: string[] = this._window.location.search.split('&type=');
         const searchPageParams: string[] = this._window.location.search.split('&p=');
         let page = 1;
@@ -434,6 +438,16 @@ export class DatasetComponent implements OnInit, AfterContentInit {
     }
 
     public onSelectDataset(id: string): void {
-        this.router.navigate([AppValues.defaultUsername, AppValues.urlDatasetView], {queryParams: {id, type: AppValues.urlDatasetViewOverviewType}});
+        this.router.navigate([AppValues.defaultUsername, AppValues.urlDatasetView], {
+            queryParams: {
+                id,
+                type: AppValues.urlDatasetViewOverviewType
+            }
+        });
+    }
+    ngOnDestroy() {
+        if (this.appDatasetService.onSearchLinageDatasetSubscribtion) {
+            this.appDatasetService.onSearchLinageDatasetSubscribtion.unsubscribe();
+        }
     }
 }

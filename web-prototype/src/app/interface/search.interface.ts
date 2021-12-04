@@ -132,16 +132,14 @@ export interface DatasetLinageResponse {
     __typename: string;
     id: string;
     kind: DatasetKindTypeNames;
-    metadata: {
-        __typename: string;
-        currentDownstreamDependencies?: DatasetCurrentUpstreamDependencies[];
-        currentUpstreamDependencies?: DatasetCurrentUpstreamDependencies[]
-    };
+    metadata: DatasetCurrentUpstreamDependencies;
 }
 export interface DatasetCurrentUpstreamDependencies {
     __typename: string;
     id: string;
     kind: DatasetKindTypeNames;
+    currentDownstreamDependencies?: DatasetLinageResponse[];
+    currentUpstreamDependencies?: DatasetLinageResponse[]
 }
 export enum DatasetKindTypeNames {
     derivative = 'DERIVATIVE',

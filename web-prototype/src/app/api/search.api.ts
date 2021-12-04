@@ -154,6 +154,12 @@ export class SearchApi {
         currentDownstreamDependencies {
           id
           kind
+          metadata {
+            currentDownstreamDependencies {
+              id
+              kind
+            }
+          }
         }
       }
     }
@@ -184,6 +190,12 @@ export class SearchApi {
         currentUpstreamDependencies {
           id
           kind
+          metadata {
+            currentUpstreamDependencies {
+              id
+              kind
+            }
+          }
         }
       }
     }
