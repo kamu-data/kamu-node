@@ -147,6 +147,7 @@ export class AppDatasetService {
             map((result: DatasetLinageResponse) => {
                 return result;
             }),
+            // @ts-ignore
             expand((result: DatasetLinageResponse) => {
                 if (result.kind === DatasetKindTypeNames.root && !result.metadata.currentUpstreamDependencies?.length
                     || result.kind === DatasetKindTypeNames.derivative && !result.metadata.currentUpstreamDependencies?.length) {
@@ -154,10 +155,17 @@ export class AppDatasetService {
                     return this.searchApi.searchLinageDataset(result.id).pipe(
                         flatMap((result2: DatasetLinageResponse) => {
                             this.changeDatasetTree(result2);
+                            // @ts-ignore
                             return from(result2.metadata.currentDownstreamDependencies).pipe(
                                 flatMap((d: DatasetLinageResponse) => {
-                                    if (!d.metadata.currentDownstreamDependencies?.length || d.metadata.currentDownstreamDependencies?.length && d.metadata.currentDownstreamDependencies.some((upDep: DatasetLinageResponse) => upDep.kind === DatasetKindTypeNames.root) ||
-                                        d['currentDownstreamDependencies']?.length && d['currentDownstreamDependencies'].some((upDep: DatasetLinageResponse) => upDep.kind === DatasetKindTypeNames.root)) {
+                                    // @ts-ignore
+                                    if (!d.metadata.currentDownstreamDependencies?.length || d.metadata.currentDownstreamDependencies?.length
+                                        // @ts-ignore
+                                        && d.metadata.currentDownstreamDependencies.some((upDep: DatasetLinageResponse) => upDep.kind === DatasetKindTypeNames.root)
+                                        // @ts-ignore
+                                        || d['currentDownstreamDependencies']?.length
+                                        // @ts-ignore
+                                        && d['currentDownstreamDependencies'].some((upDep: DatasetLinageResponse) => upDep.kind === DatasetKindTypeNames.root)) {
                                         return empty();
                                     }
                                     return of(d);
@@ -168,15 +176,25 @@ export class AppDatasetService {
                     return this.searchApi.searchLinageDatasetUpstreamDependencies(result.id).pipe(
                         flatMap((result2: DatasetLinageResponse) => {
                             this.changeDatasetTree(result2);
+                            // @ts-ignore
                             return from(result2.metadata.currentUpstreamDependencies).pipe(
+                                // @ts-ignore
                                 flatMap((d: DatasetLinageResponse) => {
                                     if (
                                         this.datasetTree.some((r: { id: string, kind: DatasetKindTypeNames }[]) => r[0].id === result2.id && r[0].id === d.id)
                                     ) {
                                         return empty();
                                     }
-                                    if (!d.metadata.currentUpstreamDependencies?.length || d.metadata.currentUpstreamDependencies?.length && d.metadata.currentUpstreamDependencies.some((upDep: DatasetLinageResponse) => upDep.kind === DatasetKindTypeNames.root) ||
-                                        d['currentUpstreamDependencies']?.length && d['currentUpstreamDependencies'].some((upDep: DatasetLinageResponse) => upDep.kind === DatasetKindTypeNames.root)) {
+                                    if (!d.metadata.currentUpstreamDependencies?.length
+                                        || d.metadata.currentUpstreamDependencies?.length
+                                        // @ts-ignore
+                                        && d.metadata.currentUpstreamDependencies
+                                            .some((upDep: DatasetLinageResponse) => upDep.kind === DatasetKindTypeNames.root)
+                                        // @ts-ignore
+                                        || d['currentUpstreamDependencies']?.length
+                                        // @ts-ignore
+                                        && d['currentUpstreamDependencies']
+                                            .some((upDep: DatasetLinageResponse) => upDep.kind === DatasetKindTypeNames.root)) {
                                         return empty();
                                     }
                                     return of(d);
