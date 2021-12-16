@@ -27,6 +27,7 @@ type Accounts {
 }
 type Auth {
 	githubLogin(code: String!): LoginResponse!
+	accountInfo(accessToken: String!): AccountInfo!
 }
 type BlockRef {
 	name: String!

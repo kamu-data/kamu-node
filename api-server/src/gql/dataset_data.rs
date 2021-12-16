@@ -43,10 +43,7 @@ impl DatasetData {
 
         let query_svc = from_catalog::<dyn domain::QueryService>(ctx).unwrap();
         let df = query_svc.tail(&self.dataset_id, num_records.unwrap_or(20))?;
-
-        // TODO: Swithc to actix 3.x-beta or move to a different web server that is not lagging behind
-        let runtime = tokio::runtime::Runtime::new().unwrap();
-        let records = runtime.block_on(df.collect())?;
+        let records = df.collect().await?;
 
         let mut buf = Vec::new();
 
