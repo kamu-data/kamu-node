@@ -124,6 +124,12 @@ async fn run_server(
     let routes = index
         .or(graphql)
         .or(playground)
+        .with(
+            warp::cors()
+                .allow_any_origin()
+                .allow_methods(["GET", "POST"])
+                .allow_headers(["content-type"]),
+        )
         .with(warp::trace::request());
 
     warp::serve(routes).run((address, http_port)).await;
