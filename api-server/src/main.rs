@@ -2,8 +2,7 @@ mod cli_parser;
 
 use std::path::{Path, PathBuf};
 
-use actix_web as ws;
-use async_graphql_actix_web as ws_gql;
+use async_graphql_warp::GraphQLResponse;
 use clap::value_t_or_exit;
 use url::Url;
 
@@ -15,37 +14,34 @@ const DEFAULT_LOGGING_CONFIG: &str = "info";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-async fn index_route() -> ws::Result<ws::HttpResponse> {
-    Ok(ws::HttpResponse::Ok()
-        .content_type("text/html; charset=utf-8")
-        .body(
-            r#"
-            <h1>Kamu API Server</h1>
-            <ul>
-                <li><a href="/graphql">GraphQL Endpoint</a></li>
-                <li><a href="/playground">GraphQL Playground</a></li>
-            </ul>
-            "#,
-        ))
+async fn index_route() -> &'static str {
+    r#"
+    <h1>Kamu API Server</h1>
+    <ul>
+        <li><a href="/graphql">GraphQL Endpoint</a></li>
+        <li><a href="/playground">GraphQL Playground</a></li>
+    </ul>
+    "#
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 async fn graphql_route(
-    req: ws_gql::Request,
-    schema: ws::web::Data<kamu_api_server::gql::Schema>,
-) -> ws_gql::Response {
-    schema.execute(req.into_inner()).await.into()
+    (schema, request): (kamu_api_server::gql::Schema, async_graphql::Request),
+) -> Result<GraphQLResponse, std::convert::Infallible> {
+    Ok(GraphQLResponse::from(schema.execute(request).await))
 }
 
-async fn playground_route() -> ws::Result<ws::HttpResponse> {
+/////////////////////////////////////////////////////////////////////////////////////////
+
+async fn playground_route() -> warp::http::Result<warp::http::Response<String>> {
     use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
 
-    Ok(ws::HttpResponse::Ok()
-        .content_type("text/html; charset=utf-8")
+    warp::http::Response::builder()
+        .header("content-type", "text/html; charset=utf-8")
         .body(playground_source(
             GraphQLPlaygroundConfig::new("/graphql").subscription_endpoint("/graphql"),
-        )))
+        ))
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -96,8 +92,12 @@ async fn gql_query(query: &str, full: bool, catalog: dill::Catalog) -> String {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-async fn run_server(address: &str, http_port: u16, catalog: dill::Catalog) -> std::io::Result<()> {
-    use actix_web::{http, middleware, web, App, HttpServer};
+async fn run_server(
+    address: std::net::IpAddr,
+    http_port: u16,
+    catalog: dill::Catalog,
+) -> std::io::Result<()> {
+    use warp::Filter;
 
     tracing::info!(
         "HTTP server: \n\
@@ -107,35 +107,32 @@ async fn run_server(address: &str, http_port: u16, catalog: dill::Catalog) -> st
         port = http_port
     );
 
-    HttpServer::new(move || {
-        App::new()
-            .data(kamu_api_server::gql::schema(catalog.clone()))
-            .wrap(middleware::Compress::default())
-            .wrap(
-                actix_cors::Cors::default()
-                    // TODO: Security
-                    .allow_any_origin()
-                    //.allowed_origin("http://127.0.0.1:8080")
-                    .allowed_methods(vec!["GET", "POST"])
-                    .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-                    .allowed_header(http::header::CONTENT_TYPE)
-                    .supports_credentials()
-                    .max_age(3600),
-            )
-            .wrap(tracing_actix_web::TracingLogger)
-            .service(web::resource("/").route(web::get().to(index_route)))
-            .service(web::resource("/graphql").route(web::post().to(graphql_route)))
-            .service(web::resource("/playground").route(web::get().to(playground_route)))
-    })
-    .bind((address, http_port))?
-    .workers(1)
-    .run()
-    .await
+    let index = warp::path::end().and(warp::get()).then(index_route);
+
+    let graphql = warp::path("graphql")
+        .and(warp::path::end())
+        .and(async_graphql_warp::graphql(kamu_api_server::gql::schema(
+            catalog.clone(),
+        )))
+        .and_then(graphql_route);
+
+    let playground = warp::path("playground")
+        .and(warp::path::end())
+        .and(warp::get())
+        .then(playground_route);
+
+    let routes = index
+        .or(graphql)
+        .or(playground)
+        .with(warp::trace::request());
+
+    warp::serve(routes).run((address, http_port)).await;
+    Ok(())
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#[actix_web::main]
+#[tokio::main]
 async fn main() -> std::io::Result<()> {
     init_logging();
 
@@ -184,7 +181,7 @@ async fn main() -> std::io::Result<()> {
         },
         ("run", Some(sub)) => {
             run_server(
-                sub.value_of("address").unwrap(),
+                sub.value_of("address").unwrap().parse().unwrap(),
                 value_t_or_exit!(sub.value_of("http-port"), u16),
                 catalog,
             )

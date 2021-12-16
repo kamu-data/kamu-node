@@ -6,7 +6,7 @@ edition = "2018"
 
 [dependencies]
 # Kamu
-dill = { version = "~0.2.0" }
+dill = "^0.2"
 opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
 kamu = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
 
@@ -16,20 +16,18 @@ kamu = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
 # kamu = { path = "../../kamu-cli/kamu-core" }
 
 # HTTP
-actix-web = "*"
-actix-cors = "*"
-reqwest = { version = "*", features = ["blocking", "json"] }  # TODO: Use non-blocking after switching to tokio 1.0
+warp = "*"
+reqwest = { version = "*", features = ["json"] }  # TODO: Use non-blocking after switching to tokio 1.0
 
 # GraphQL
 async-graphql = { version = "*", features = ["chrono", "url", "apollo_tracing"] }
-async-graphql-actix-web = "*"
+async-graphql-warp = "*"
 
 # Tracing / logging / telemetry
 tracing = "*"  
 tracing-subscriber = { version = "*", features = ["env-filter"] }
 tracing-log = "*"
 tracing-bunyan-formatter = "*"
-tracing-actix-web = "*"
 
 # Utils
 chrono = "*"
