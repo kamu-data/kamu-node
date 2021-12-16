@@ -92,13 +92,6 @@ pub(crate) struct AccessToken {
     token_type: String,
 }
 
-#[derive(Deserialize)]
-pub struct AccessTokenError {
-    error: String,
-    error_description: Option<String>,
-    error_uri: Option<String>,
-}
-
 #[derive(SimpleObject, Debug, Clone, Deserialize)]
 pub(crate) struct AccountInfo {
     login: String,
