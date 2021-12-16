@@ -17,7 +17,7 @@ impl Auth {
             ("code", code),
         ];
 
-        let client = reqwest::blocking::Client::builder()
+        let client = reqwest::Client::builder()
             .user_agent(concat!(
                 env!("CARGO_PKG_NAME"),
                 "/",
@@ -29,9 +29,11 @@ impl Auth {
             .post("https://github.com/login/oauth/access_token")
             .header(reqwest::header::ACCEPT, "application/json")
             .form(&params)
-            .send()?
+            .send()
+            .await?
             .error_for_status()?
-            .text()?;
+            .text()
+            .await?;
 
         let token = serde_json::from_str::<AccessToken>(&body)
             .unwrap_or_else(|_| panic!("Failed auth with error: {:?}", body));
@@ -40,9 +42,11 @@ impl Auth {
             .get("https://api.github.com/user")
             .bearer_auth(&token.access_token)
             .header(reqwest::header::ACCEPT, "application/vnd.github.v3+json")
-            .send()?
+            .send()
+            .await?
             .error_for_status()?
-            .json::<AccountInfo>()?;
+            .json::<AccountInfo>()
+            .await?;
 
         Ok(LoginResponse {
             token,

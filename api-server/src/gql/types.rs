@@ -174,28 +174,27 @@ impl ScalarType for DatasetID {
 /////////////////////////////////////////////////////////////////////////////////////////
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) struct AccountID(odf::UsernameBuf);
+pub(crate) struct AccountID(String);
 
-impl From<odf::UsernameBuf> for AccountID {
-    fn from(value: odf::UsernameBuf) -> Self {
-        AccountID(value)
+impl From<&str> for AccountID {
+    fn from(value: &str) -> Self {
+        AccountID(value.to_owned())
     }
 }
 
-impl Into<odf::UsernameBuf> for AccountID {
-    fn into(self) -> odf::UsernameBuf {
-        self.0
+impl From<String> for AccountID {
+    fn from(value: String) -> Self {
+        AccountID(value)
     }
 }
 
 impl Into<String> for AccountID {
     fn into(self) -> String {
-        self.0.into()
+        self.0
     }
 }
-
 impl Deref for AccountID {
-    type Target = odf::Username;
+    type Target = String;
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -205,8 +204,7 @@ impl Deref for AccountID {
 impl ScalarType for AccountID {
     fn parse(value: Value) -> InputValueResult<Self> {
         if let Value::String(value) = &value {
-            let val = odf::UsernameBuf::try_from(value.as_str())?;
-            Ok(val.into())
+            Ok(AccountID::from(value.as_str()))
         } else {
             Err(InputValueError::expected_type(value))
         }
@@ -214,6 +212,13 @@ impl ScalarType for AccountID {
 
     fn to_value(&self) -> Value {
         Value::String(self.0.to_string())
+    }
+}
+
+impl AccountID {
+    // TODO: UNMOCK: Account ID
+    pub fn mock() -> Self {
+        Self("123".to_owned())
     }
 }
 

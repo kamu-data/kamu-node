@@ -74,7 +74,7 @@ impl DatasetMetadata {
         Ok(summary
             .dependencies
             .into_iter()
-            .map(|id| Dataset::new(id.into()))
+            .map(|id| Dataset::new(AccountID::mock(), id.into()))
             .collect())
     }
 
@@ -90,7 +90,7 @@ impl DatasetMetadata {
             .map(|id| metadata_repo.get_summary(&id).unwrap())
             .filter(|sum| sum.dependencies.contains(&dataset_id))
             .map(|sum| sum.id)
-            .map(|id| Dataset::new(id.into()))
+            .map(|id| Dataset::new(AccountID::mock(), id.into()))
             .collect())
     }
 }

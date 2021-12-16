@@ -3,6 +3,10 @@ type AccessToken {
 	scope: String!
 	tokenType: String!
 }
+interface Account {
+	id: AccountID!
+	name: String!
+}
 scalar AccountID
 type AccountInfo {
 	login: String!
@@ -10,6 +14,16 @@ type AccountInfo {
 	email: String
 	avatarUrl: String
 	gravatarId: String
+}
+type Accounts {
+	"""
+	Returns account by its ID
+	"""
+	byId(accountId: AccountID!): Account
+	"""
+	Returns account by its name
+	"""
+	byName(name: String!): Account
 }
 type Auth {
 	githubLogin(code: String!): LoginResponse!
@@ -37,8 +51,19 @@ enum DataSliceFormat {
 	CSV
 }
 type Dataset {
-	datasetId: DatasetID!
+	"""
+	Unique identifier of the dataset
+	"""
 	id: DatasetID!
+	"""
+	Returns the user or organization that owns this dataset
+	"""
+	owner: Account!
+	"""
+	Symbolic name of the dataset.
+	Name can change over the dataset's lifetime. For unique identifier use `id()`.
+	"""
+	name: String!
 	"""
 	Returns the kind of a dataset (Root or Derivative)
 	"""
@@ -126,11 +151,11 @@ type Datasets {
 	"""
 	Returns dataset by its ID
 	"""
-	byId(id: DatasetID!): Dataset
+	byId(datasetId: DatasetID!): Dataset
 	"""
 	Returns datasets belonging to the specified account
 	"""
-	byAccount(id: AccountID!, page: Int, perPage: Int! = 15): DatasetConnection!
+	byAccountId(accountId: AccountID!, page: Int, perPage: Int! = 15): DatasetConnection!
 }
 """
 Implement the DateTime<Utc> scalar
@@ -183,6 +208,16 @@ type MetadataChain {
 type Mutation {
 	auth: Auth!
 }
+type Organization implements Account {
+	"""
+	Unique identifier of this organization account
+	"""
+	id: AccountID!
+	"""
+	Symbolic name
+	"""
+	name: String!
+}
 type PageBasedInfo {
 	"""
 	When paginating backwards, are there more items?
@@ -206,6 +241,10 @@ type Query {
 	Dataset-related functionality group
 	"""
 	datasets: Datasets!
+	"""
+	Account-related functionality group
+	"""
+	accounts: Accounts!
 	"""
 	Search-related functionality group
 	"""
@@ -237,6 +276,16 @@ type SearchResultEdge {
 	node: SearchResult!
 }
 scalar Sha3256
+type User implements Account {
+	"""
+	Unique identifier of this user account
+	"""
+	id: AccountID!
+	"""
+	Symbolic name
+	"""
+	name: String!
+}
 schema {
 	query: Query
 	mutation: Mutation

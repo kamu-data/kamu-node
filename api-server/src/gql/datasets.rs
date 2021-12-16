@@ -10,11 +10,11 @@ pub(crate) struct Datasets;
 #[Object]
 impl Datasets {
     /// Returns dataset by its ID
-    async fn by_id(&self, ctx: &Context<'_>, id: DatasetID) -> Result<Option<Dataset>> {
+    async fn by_id(&self, ctx: &Context<'_>, dataset_id: DatasetID) -> Result<Option<Dataset>> {
         let cat = ctx.data::<dill::Catalog>().unwrap();
         let metadata_repo = cat.get_one::<dyn domain::MetadataRepository>().unwrap();
-        match metadata_repo.get_metadata_chain(&id) {
-            Ok(_) => Ok(Some(Dataset::new(id))),
+        match metadata_repo.get_metadata_chain(&dataset_id) {
+            Ok(_) => Ok(Some(Dataset::new(AccountID::mock(), dataset_id))),
             Err(domain::DomainError::DoesNotExist { .. }) => Ok(None),
             Err(e) => Err(e.into()),
         }
@@ -22,10 +22,10 @@ impl Datasets {
 
     // TODO: Multitenancy
     /// Returns datasets belonging to the specified account
-    async fn by_account(
+    async fn by_account_id(
         &self,
         ctx: &Context<'_>,
-        _id: AccountID,
+        account_id: AccountID,
         page: Option<usize>,
         #[graphql(default = 15)] per_page: usize,
     ) -> Result<DatasetConnection> {
@@ -38,7 +38,7 @@ impl Datasets {
             .get_all_datasets()
             .skip(page * per_page)
             .take(per_page)
-            .map(|id| Dataset::new(id.into()))
+            .map(|dataset_id| Dataset::new(account_id.clone(), dataset_id.into()))
             .collect();
 
         // TODO: Slow but temporary

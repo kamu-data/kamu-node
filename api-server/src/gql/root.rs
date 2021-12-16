@@ -1,5 +1,6 @@
 use async_graphql::*;
 
+use super::Accounts;
 use super::Auth;
 use super::Datasets;
 use super::Search;
@@ -20,6 +21,11 @@ impl Query {
     /// Dataset-related functionality group
     async fn datasets(&self) -> Datasets {
         Datasets
+    }
+
+    /// Account-related functionality group
+    async fn accounts(&self) -> Accounts {
+        Accounts
     }
 
     /// Search-related functionality group

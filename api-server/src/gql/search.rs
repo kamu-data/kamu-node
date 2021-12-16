@@ -1,7 +1,7 @@
 use async_graphql::*;
 use kamu::domain;
 
-use super::{page_based_connection, Dataset};
+use super::{page_based_connection, AccountID, Dataset};
 
 ///////////////////////////////////////////////////////////////////////////////
 // Search
@@ -29,7 +29,7 @@ impl Search {
             .filter(|id| id.contains(&query))
             .skip(page * per_page)
             .take(per_page)
-            .map(|id| SearchResult::Dataset(Dataset::new(id.into())))
+            .map(|id| SearchResult::Dataset(Dataset::new(AccountID::mock(), id.into())))
             .collect();
 
         // TODO: Slow but temporary
