@@ -13,6 +13,10 @@
   font-size: 12px
 .mat-divider
   color: $app-lightGrayishBlue
+.datasetViewTypeToggleGroup
+  & .mat-button-toggle-disabled .mat-button-toggle-button
+    cursor: not-allowed
+    color: rgb(0 0 0 / 51%)
 .app-active-button
   background: $app-darkSeaGreen
   border-radius: 4px
@@ -249,7 +253,7 @@ router-outlet
 #search .search-result-container
   grid-template-columns: 1fr
 #dataset-viewer .search-result-container
-  grid-template-columns: 1fr 0.25fr
+  grid-template-columns: 0.25fr 1fr
 #search, #dataset-viewer
   & .nav-link
     cursor: pointer

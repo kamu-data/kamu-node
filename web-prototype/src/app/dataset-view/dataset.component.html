@@ -21,6 +21,20 @@
                 </app-search-additional-buttons>
             </div>
             <div class="search-result-container">
+                <div class="card">
+                    <nav class="navbar navbar-expand">
+                        <div class="navbar-nav dataset-info">
+                            <ng-template [ngIf]="datasetInfo">
+                                <div><b>Created At:</b> <p>{{ momentConverDatetoLocalWithFormat(datasetInfo.createdAt) }}</p></div>
+                                <div><b>Last Updated At:</b> <p>{{ momentConverDatetoLocalWithFormat(datasetInfo.lastUpdatedAt) }}</p></div>
+                                <div><b>Estimated Size:</b> <p>{{ datasetInfo.estimatedSize | number:'1.0-0' }}</p></div>
+                                <div><b>Num Records Total:</b> <p>{{ datasetInfo.numRecordsTotal | number:'1.0-0'}}</p></div>
+                                <div><b>Current Watermark:</b> <p>{{ momentConverDatetoLocalWithFormat(datasetInfo.metadata.currentWatermark) }}</p></div>
+                            </ng-template>
+                        </div>
+                    </nav>
+                </div>
+
                 <div class="search-result-container__content" id="searchResultContainerContent">
 
                     <ng-template [ngIf]="datasetViewTypeLinage">
@@ -47,19 +61,6 @@
 
                 </div>
 
-                <div class="card">
-                    <nav class="navbar navbar-expand">
-                        <div class="navbar-nav dataset-info">
-                            <ng-template [ngIf]="datasetInfo">
-                                <div><b>Created At:</b> <p>{{ momentConverDatetoLocalWithFormat(datasetInfo.createdAt) }}</p></div>
-                                <div><b>Last Updated At:</b> <p>{{ momentConverDatetoLocalWithFormat(datasetInfo.lastUpdatedAt) }}</p></div>
-                                <div><b>Estimated Size:</b> <p>{{ datasetInfo.estimatedSize | number:'1.0-0' }}</p></div>
-                                <div><b>Num Records Total:</b> <p>{{ datasetInfo.numRecordsTotal | number:'1.0-0'}}</p></div>
-                                <div><b>Current Watermark:</b> <p>{{ momentConverDatetoLocalWithFormat(datasetInfo.metadata.currentWatermark) }}</p></div>
-                            </ng-template>
-                        </div>
-                    </nav>
-                </div>
             </div>
         </div>
     </div>
