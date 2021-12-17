@@ -3,6 +3,32 @@
         <div id="search">
 
             <div class="search-result-container">
+                <div class="card">
+                    <nav class="navbar navbar-expand">
+                        <div>
+                            <h3>Filters</h3>
+                            <h3>Search for:</h3>
+                            <ul>
+                                <li><h4>datasets</h4></li>
+                                <li><h4>collections</h4></li>
+                                <li><h4>users</h4></li>
+                                <li><h4>organizations</h4></li>
+                            </ul>
+                            <h3>Datasets::</h3>
+                            <ul>
+                                <li><h4>root</h4></li>
+                                <li><h4>derivative</h4></li>
+                                <li><h4>updated within:</h4>
+                                    <ul>
+                                        <li><h4>last day</h4></li>
+                                        <li><h4>last month</h4></li>
+                                        <li><h4>last year</h4></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
                 <div class="search-result-container__content">
                     <app-repo-list [dataSource]="tableData.tableSource"
                                    [resultUnitText]="tableData.resultUnitText"
@@ -15,14 +41,6 @@
                         <app-pagination [currentPage]="currentPage" [pageInfo]="tableData.pageInfo" (pageChangeEvent)="onPageChange($event)"></app-pagination>
                     </ng-template>
                 </div>
-
-<!--                <div class="card">-->
-<!--                    <nav class="navbar navbar-expand">-->
-<!--                        <div class="navbar-nav">-->
-<!--                            <h3>Additional info block</h3>-->
-<!--                        </div>-->
-<!--                    </nav>-->
-<!--                </div>-->
             </div>
         </div>
     </div>
