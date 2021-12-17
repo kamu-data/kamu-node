@@ -7,6 +7,7 @@ import {FormsModule} from "@angular/forms";
 import {MatChipsModule} from "@angular/material/chips";
 import {MatDividerModule} from '@angular/material/divider';
 import {RepoListComponent} from "./repo-list.component";
+import {MatSelectModule} from "@angular/material/select";
 
 @NgModule({
     imports: [
@@ -17,6 +18,7 @@ import {RepoListComponent} from "./repo-list.component";
         CommonModule,
         FormsModule,
         MatChipsModule,
+        MatSelectModule,
     ],
     exports: [RepoListComponent],
     declarations: [RepoListComponent]

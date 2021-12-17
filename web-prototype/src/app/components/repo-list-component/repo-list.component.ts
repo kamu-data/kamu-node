@@ -19,6 +19,7 @@ export class RepoListComponent {
   @Input() public isResultQuantity?: boolean = false;
   @Input() public isClickableRow?: boolean = false;
   @Output() public onSelectDatasetEmit: EventEmitter<string> = new EventEmitter();
+  @Input() public sortOptions: {value: string, label: string, active: boolean}[];
 
   public momentConverDatetoLocalWithFormat(date: string): string {
     return AppValues.momentConverDatetoLocalWithFormat({date: new Date(String(date)), format: 'DD MMM YYYY', isTextDate: true});

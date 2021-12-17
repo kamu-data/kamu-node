@@ -1,7 +1,16 @@
-<div class="d-flex flex-column flex-md-row flex-justify-between border-bottom pb-3 position-relative" *ngIf="isResultQuantity">
-    <h2>
+<div class="d-flex flex-column flex-md-row flex-justify-between border-bottom pb-3 position-relative justify-content-between align-content-center align-items-baseline" *ngIf="isResultQuantity">
+    <h2 class="repo-list-total-count">
         {{ totalCount }} {{resultUnitText}}
     </h2>
+    <div class="hero-image-bedrooms form-group">
+      <div class="form-control input-group justify-content-left align-items-center">
+          <p class="m-auto position-absolute">Sort:</p>
+          <select title="Bedrooms" id="sortOptions" class="border-0">
+            <option *ngFor="let keys of sortOptions"
+                value="{{keys?.value}}" [selected]="keys.active">{{keys?.label}}</option>
+          </select>
+      </div>
+    </div>
 </div>
 <div *ngFor="let row of dataSource; let rowIndex = index">
     <div class="repo-list-container py-2">
@@ -21,6 +30,7 @@
             <div class="repo-list-container__additional-block mt-2">
                 <p class="text-small color-text-secondary mr-3">MIT license</p>
                 <p class="text-small color-text-secondary">Updated on {{momentConverDatetoLocalWithFormat(row.lastUpdatedAt)}}</p>
+                <ngb-rating [rate]="4.5" [max]="5" [readonly]="true"></ngb-rating>
             </div>
         </div>
     </div>

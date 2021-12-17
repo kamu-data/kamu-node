@@ -39,13 +39,20 @@ export class SearchComponent implements OnInit, AfterContentInit {
     styleClassButton: 'app-active-button'
   }];
 
+  private sortOptions: {value: string, label: string, active: boolean}[] = [
+      {value: 'best', label: 'Best match', active: true},
+      {value: 'recently', label: 'Recently indexed', active: false},
+      {value: 'least', label: 'Least recently indexed', active: false},
+  ];
+
   public tableData: {
     tableSource: SearchOverviewDatasetsInterface[],
     isResultQuantity: boolean,
     resultUnitText: string,
     isClickableRow: boolean,
     pageInfo: PageInfoInterface,
-    totalCount: number
+    totalCount: number,
+    sortOptions: {value: string, label: string, active: boolean}[]
   };
   public searchData: SearchOverviewDatasetsInterface[] = [];
   private _window: Window;
@@ -129,7 +136,8 @@ export class SearchComponent implements OnInit, AfterContentInit {
         hasPreviousPage: false,
         totalPages: 1
       },
-      totalCount: 0
+      totalCount: 0,
+      sortOptions: this.sortOptions
     };
   }
 

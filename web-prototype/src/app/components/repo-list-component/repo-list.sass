@@ -19,8 +19,18 @@
     cursor: pointer
     text-decoration: underline
     background: none
+.repo-list-total-count
+  margin: 0
+#sortOptions
+  color: $app-dark
+  margin-left: 50px
+  transition: .2s cubic-bezier(0.3, 0, 0.5, 1)
+  &:focus-visible
+    outline: none
 .repo-list-container__additional-block
   display: flex
+  > *
+    margin-right: 10px
 .repo-list-container__description
   font-size: 14px
 .mat-standard-chip
