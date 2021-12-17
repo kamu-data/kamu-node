@@ -147,7 +147,7 @@ export class SearchApi {
         const GET_DATA: DocumentNode = gql`
 {
   datasets {
-    byId(id: "${id}") {
+    byId(datasetId: "${id}") {
       id
       kind
       metadata {
@@ -183,7 +183,7 @@ export class SearchApi {
         const GET_DATA: DocumentNode = gql`
 {
   datasets {
-    byId(id: "${id}") {
+    byId(datasetId: "${id}") {
       id
       kind
       metadata {
@@ -216,7 +216,7 @@ export class SearchApi {
         const GET_DATA: DocumentNode = gql`
 {
   datasets {
-  byId(id: "${params.id}") {
+  byId(datasetId: "${params.id}") {
     id
     createdAt
     lastUpdatedAt
@@ -266,7 +266,7 @@ export class SearchApi {
         const GET_DATA: DocumentNode = gql`
 {
   datasets {
-    byId(id: "${params.id}") {
+    byId(datasetId: "${params.id}") {
       id
       metadata {
         chain {

@@ -199,12 +199,24 @@ export class DatasetComponent implements OnInit, AfterContentInit, OnDestroy {
         return this.datasetViewType === DatasetViewTypeEnum.overview;
     }
 
+    public get datasetViewTypeData(): boolean {
+        return this.datasetViewType === DatasetViewTypeEnum.data;
+    }
+
     public get datasetViewTypeMetadata(): boolean {
         return this.datasetViewType === DatasetViewTypeEnum.metadata;
     }
 
+    public get datasetViewTypeHistory(): boolean {
+        return this.datasetViewType === DatasetViewTypeEnum.history;
+    }
+
     public get datasetViewTypeLinage(): boolean {
         return this.datasetViewType === DatasetViewTypeEnum.linage;
+    }
+
+    public get datasetViewTypeDiscussions(): boolean {
+        return this.datasetViewType === DatasetViewTypeEnum.discussions;
     }
 
     public onSearchMetadata(currentPage: number): void {
@@ -219,6 +231,17 @@ export class DatasetComponent implements OnInit, AfterContentInit, OnDestroy {
 
         this.datasetViewType = DatasetViewTypeEnum.metadata;
         this.appDatasetService.onSearchMetadata(this.getDatasetId(), currentPage - 1);
+    }
+    public onSearchDataForDataset(): void {
+        console.log('onSearchDataForDataset');
+    }
+
+    public onSearchDataForHistory(): void {
+        console.log('onSearchDataForHistory');
+    }
+
+    public onSearchDiscussions(): void {
+        console.log('onSearchDiscussions');
     }
 
     public onSearchDataset(page = 0): void {
@@ -249,7 +272,7 @@ export class DatasetComponent implements OnInit, AfterContentInit, OnDestroy {
         this.changeLinageGraphView();
     }
 
-    public onSearchProjections(): void {
+    public onSearcDiscussions(): void {
         console.log('Projections Tab');
         this.onSearchDataset();
     }
@@ -422,8 +445,8 @@ export class DatasetComponent implements OnInit, AfterContentInit, OnDestroy {
             if (type === DatasetViewTypeEnum.linage) {
                 this.onSearchLinageDataset();
             }
-            if (type === DatasetViewTypeEnum.projections) {
-                this.onSearchProjections();
+            if (type === DatasetViewTypeEnum.discussions) {
+                this.onSearchDiscussions();
             }
         }
     }
