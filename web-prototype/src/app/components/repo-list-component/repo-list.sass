@@ -2,11 +2,23 @@
 .repo-list-container
   width: 100%
   display: grid
-  grid-template-columns: 0.01fr 1fr
+  grid-template-columns: 1fr
   grid-template-rows: 1fr
+.signed-commit__popup-header .mat-typography h3
+    margin: 0 !important
+
+::ng-deep ngb-popover-window.bs-popover-left>.arrow
+  display: none
+
+::ng-deep ngb-popover-window .popover-header
+  margin: 0
+  
 .repo-list-container__title-row
   display: flex
-  justify-content: left
+  justify-content: space-between
+  &__dataset-name
+    display: flex
+    justify-content: left
   & i
     margin-right: 8px
 .repo-list-container__title
@@ -50,11 +62,13 @@
   & .signer
     display: block
     font-weight: 600
+    font-size: 14px
 .signed-commit-footer
-  font-size: 12px
-  line-height: 1.5
   &__id
-    color: $app-versatileBusinessDark
+    color: $app-nero
+  & span, a
+    font-size: 12px
+    line-height: 1.5
 .verified
   color: $app-success
 .verified-commit

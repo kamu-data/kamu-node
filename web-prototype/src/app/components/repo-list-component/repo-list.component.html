@@ -15,14 +15,14 @@
 </div>
 <div *ngFor="let row of dataSource; let rowIndex = index">
     <div class="repo-list-container py-2">
-        <div>
-            <div class="repo-list-container__title-row">
+        <div class="repo-list-container__title-row">
+            <div class="repo-list-container__title-row__dataset-name">
                 <i class="bi bi-journal-album"></i>
                 <button class="repo-list-container__title mb-1 pl-0"
                         (click)="isClickableRow && onSelectDataset(row.id)">{{row.id}}</button>
             </div>
             <div>
-                <ng-template #popTitle>
+                <ng-template #popTitle class="signed-commit__popup-header">
                     <div class="signed-commit-header d-grid">
                         <div class="pr-1">
                             <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
@@ -47,13 +47,13 @@
                         Sergii Mikhtoniuk
                       </span>
                     </div>
-                    <div class="signed-commit-footer p-3 rounded-bottom-2">
+                    <div class="signed-commit-footer p-1">
                         <span class="d-block">GPG key ID: <span class="signed-commit-footer__id">7D279F791DB8E4F7</span></span>
                         <a href="https://docs.github.com/github/authenticating-to-github/displaying-verification-statuses-for-all-of-your-commits">
                             Learn about vigilant mode</a>.
                     </div>
                 </ng-template>
-                <button type="button" class="btn btn-outline-secondary mr-2" placement="bottom"
+                <button type="button" class="btn btn-outline-secondary mr-2" placement="left"
                         ngbPopover="Verified" [popoverTitle]="popTitle" [ngbPopover]="popContent">
                     Verified
                 </button>
