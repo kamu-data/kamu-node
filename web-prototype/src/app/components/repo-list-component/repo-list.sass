@@ -12,7 +12,7 @@
 
 ::ng-deep ngb-popover-window .popover-header
   margin: 0
-  
+
 .repo-list-container__title-row
   display: flex
   justify-content: space-between
@@ -69,8 +69,16 @@
   & span, a
     font-size: 12px
     line-height: 1.5
-.verified
-  color: $app-success
+.signed-commit-badge
+  user-select: none
+  background: none
+  vertical-align: middle
+  border-color: $verylightgrey
+  &.verified
+    color: $app-success
+  &:hover
+    border-color: $app-harmonies
+    text-decoration: none
 .verified-commit
   display: inline-block
   overflow: visible !important
@@ -79,6 +87,14 @@
 .signed-commit-verified-label
   color: $app-success
   white-space: nowrap
+.signed-commit-badge-small
+  display: inline-block
+  padding: 0 7px
+  font-size: 12px
+  font-weight: 500
+  line-height: 18px
+  border: 1px solid $verylightgrey
+  border-radius: 2em
 #sortOptions
   color: $app-dark
   z-index: 1
