@@ -13,7 +13,7 @@ impl Datasets {
     async fn by_id(&self, ctx: &Context<'_>, dataset_id: DatasetID) -> Result<Option<Dataset>> {
         let cat = ctx.data::<dill::Catalog>().unwrap();
         let metadata_repo = cat.get_one::<dyn domain::MetadataRepository>().unwrap();
-        match metadata_repo.get_metadata_chain(&dataset_id) {
+        match metadata_repo.get_metadata_chain(&dataset_id.as_local_ref()) {
             Ok(_) => Ok(Some(Dataset::new(AccountID::mock(), dataset_id))),
             Err(domain::DomainError::DoesNotExist { .. }) => Ok(None),
             Err(e) => Err(e.into()),
@@ -38,7 +38,7 @@ impl Datasets {
             .get_all_datasets()
             .skip(page * per_page)
             .take(per_page)
-            .map(|dataset_id| Dataset::new(account_id.clone(), dataset_id.into()))
+            .map(|hdl| Dataset::new(account_id.clone(), hdl.id.into()))
             .collect();
 
         // TODO: Slow but temporary

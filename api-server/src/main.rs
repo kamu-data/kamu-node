@@ -256,10 +256,10 @@ fn init_metadata_repo_from_synced_repo(repo_url: Url, catalog: &mut dill::Catalo
         .get_one::<dyn kamu::domain::MetadataRepository>()
         .unwrap();
 
-    let repo_id = opendatafabric::RepositoryID::new_unchecked("remote");
+    let repo_name = opendatafabric::RepositoryName::new_unchecked("remote");
 
-    let _ = metadata_repo.delete_repository(repo_id);
-    metadata_repo.add_repository(repo_id, repo_url).unwrap();
+    let _ = metadata_repo.delete_repository(&repo_name);
+    metadata_repo.add_repository(&repo_name, repo_url).unwrap();
 
     // Run first iteration synchronously to catch any misconfiguration
     let start = chrono::Utc::now();
@@ -268,7 +268,7 @@ fn init_metadata_repo_from_synced_repo(repo_url: Url, catalog: &mut dill::Catalo
             catalog.get_one().unwrap(),
             catalog.get_one().unwrap(),
             catalog.get_one().unwrap(),
-            repo_id,
+            &repo_name,
         ) {
             Ok(_) => break,
             Err(
@@ -288,5 +288,5 @@ fn init_metadata_repo_from_synced_repo(repo_url: Url, catalog: &mut dill::Catalo
     }
 
     let catalog = catalog.clone();
-    std::thread::spawn(move || kamu_api_server::repo_sync::repo_sync_loop(catalog, repo_id));
+    std::thread::spawn(move || kamu_api_server::repo_sync::repo_sync_loop(catalog, &repo_name));
 }

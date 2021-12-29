@@ -14,6 +14,7 @@ impl Accounts {
     }
 
     /// Returns account by its name
+    #[allow(unused_variables)]
     async fn by_name(&self, _ctx: &Context<'_>, name: String) -> Result<Option<Account>> {
         Ok(Some(Account::User(User::new(AccountID::mock()))))
     }

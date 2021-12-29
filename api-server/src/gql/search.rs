@@ -26,16 +26,16 @@ impl Search {
 
         let nodes: Vec<_> = metadata_repo
             .get_all_datasets()
-            .filter(|id| id.contains(&query))
+            .filter(|hdl| hdl.name.contains(&query))
             .skip(page * per_page)
             .take(per_page)
-            .map(|id| SearchResult::Dataset(Dataset::new(AccountID::mock(), id.into())))
+            .map(|hdl| SearchResult::Dataset(Dataset::new(AccountID::mock(), hdl.id.into())))
             .collect();
 
         // TODO: Slow but temporary
         let total_count = metadata_repo
             .get_all_datasets()
-            .filter(|id| id.contains(&query))
+            .filter(|hdl| hdl.name.contains(&query))
             .count();
 
         Ok(SearchResultConnection::new(

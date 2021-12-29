@@ -31,7 +31,7 @@ type Auth {
 }
 type BlockRef {
 	name: String!
-	blockHash: Sha3256!
+	blockHash: Multihash!
 }
 type DataSchema {
 	format: DataSchemaFormat!
@@ -169,8 +169,8 @@ type LoginResponse {
 	accountInfo: AccountInfo!
 }
 type MetadataBlock {
-	blockHash: Sha3256!
-	prevBlockHash: Sha3256
+	blockHash: Multihash!
+	prevBlockHash: Multihash
 	systemTime: DateTime!
 	outputWatermark: DateTime
 }
@@ -200,12 +200,13 @@ type MetadataChain {
 	"""
 	Returns a metadata block corresponding to the specified hash
 	"""
-	blockByHash(hash: Sha3256!): MetadataBlock
+	blockByHash(hash: Multihash!): MetadataBlock
 	"""
 	Iterates all metadata blocks in the reverse chronological order
 	"""
 	blocks(page: Int, perPage: Int! = 20): MetadataBlockConnection!
 }
+scalar Multihash
 type Mutation {
 	auth: Auth!
 }
@@ -276,11 +277,11 @@ type SearchResultConnection {
 type SearchResultEdge {
 	node: SearchResult!
 }
-scalar Sha3256
 type User implements Account {
 	"""
 	Unique identifier of this user account
 	"""
+	accountId: AccountID!
 	id: AccountID!
 	"""
 	Symbolic name

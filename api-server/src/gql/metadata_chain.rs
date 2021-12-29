@@ -4,7 +4,7 @@ use kamu::domain;
 use opendatafabric as odf;
 
 use super::utils::from_catalog;
-use super::{page_based_connection, DatasetID, Sha3_256};
+use super::{page_based_connection, DatasetID, Multihash};
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // MetadataBlock
@@ -12,8 +12,8 @@ use super::{page_based_connection, DatasetID, Sha3_256};
 
 #[derive(SimpleObject, Debug, Clone)]
 pub(crate) struct MetadataBlock {
-    block_hash: Sha3_256,
-    prev_block_hash: Option<Sha3_256>,
+    block_hash: Multihash,
+    prev_block_hash: Option<Multihash>,
     system_time: DateTime<Utc>,
     //pub output_slice: Option<DataSlice>,
     output_watermark: Option<DateTime<Utc>>,
@@ -22,13 +22,13 @@ pub(crate) struct MetadataBlock {
     //pub vocab: Option<DatasetVocabulary>,
 }
 
-impl From<odf::MetadataBlock> for MetadataBlock {
-    fn from(val: odf::MetadataBlock) -> Self {
+impl MetadataBlock {
+    pub fn new(hash: odf::Multihash, block: odf::MetadataBlock) -> Self {
         Self {
-            block_hash: val.block_hash.into(),
-            prev_block_hash: val.prev_block_hash.map(|v| v.into()),
-            system_time: val.system_time,
-            output_watermark: val.output_watermark,
+            block_hash: hash.into(),
+            prev_block_hash: block.prev_block_hash.map(|v| v.into()),
+            system_time: block.system_time,
+            output_watermark: block.output_watermark,
         }
     }
 }
@@ -40,7 +40,7 @@ impl From<odf::MetadataBlock> for MetadataBlock {
 #[derive(SimpleObject)]
 pub(crate) struct BlockRef {
     name: String,
-    block_hash: Sha3_256,
+    block_hash: Multihash,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -61,7 +61,7 @@ impl MetadataChain {
     #[graphql(skip)]
     fn get_chain(&self, ctx: &Context<'_>) -> Result<Box<dyn domain::MetadataChain>> {
         let metadata_repo = from_catalog::<dyn domain::MetadataRepository>(ctx).unwrap();
-        Ok(metadata_repo.get_metadata_chain(&self.dataset_id)?)
+        Ok(metadata_repo.get_metadata_chain(&self.dataset_id.as_local_ref())?)
     }
 
     /// Returns all named metadata block references
@@ -77,10 +77,12 @@ impl MetadataChain {
     async fn block_by_hash(
         &self,
         ctx: &Context<'_>,
-        hash: Sha3_256,
+        hash: Multihash,
     ) -> Result<Option<MetadataBlock>> {
         let chain = self.get_chain(ctx)?;
-        Ok(chain.get_block(&hash).map(|b| b.into()))
+        Ok(chain
+            .get_block(&hash)
+            .map(|b| MetadataBlock::new(hash.into(), b)))
     }
 
     // TODO: Add ref parameter (defaulting to "head")
@@ -100,7 +102,7 @@ impl MetadataChain {
             .iter_blocks()
             .skip(page * per_page)
             .take(per_page)
-            .map(|block| block.into())
+            .map(|(hash, block)| MetadataBlock::new(hash, block))
             .collect();
 
         // TODO: Slow but temporary

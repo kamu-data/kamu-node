@@ -84,32 +84,32 @@ pub struct PageBasedInfo {
 ////////////////////////////////////////////////////////////////////////////////////////
 
 #[derive(Debug, Clone)]
-pub(crate) struct Sha3_256(odf::Sha3_256);
+pub(crate) struct Multihash(odf::Multihash);
 
-impl From<odf::Sha3_256> for Sha3_256 {
-    fn from(value: odf::Sha3_256) -> Self {
-        Sha3_256(value)
+impl From<odf::Multihash> for Multihash {
+    fn from(value: odf::Multihash) -> Self {
+        Multihash(value)
     }
 }
 
-impl Into<odf::Sha3_256> for Sha3_256 {
-    fn into(self) -> odf::Sha3_256 {
+impl Into<odf::Multihash> for Multihash {
+    fn into(self) -> odf::Multihash {
         self.0
     }
 }
 
-impl Deref for Sha3_256 {
-    type Target = odf::Sha3_256;
+impl Deref for Multihash {
+    type Target = odf::Multihash;
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
 
 #[Scalar]
-impl ScalarType for Sha3_256 {
+impl ScalarType for Multihash {
     fn parse(value: Value) -> InputValueResult<Self> {
         if let Value::String(value) = &value {
-            let sha = odf::Sha3_256::try_from(value.as_str())?;
+            let sha = odf::Multihash::from_multibase_str(value.as_str())?;
             Ok(sha.into())
         } else {
             Err(InputValueError::expected_type(value))
@@ -126,23 +126,23 @@ impl ScalarType for Sha3_256 {
 /////////////////////////////////////////////////////////////////////////////////////////
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) struct DatasetID(odf::DatasetIDBuf);
+pub(crate) struct DatasetID(odf::DatasetID);
 
-impl From<odf::DatasetIDBuf> for DatasetID {
-    fn from(value: odf::DatasetIDBuf) -> Self {
+impl From<odf::DatasetID> for DatasetID {
+    fn from(value: odf::DatasetID) -> Self {
         DatasetID(value)
     }
 }
 
-impl Into<odf::DatasetIDBuf> for DatasetID {
-    fn into(self) -> odf::DatasetIDBuf {
+impl Into<odf::DatasetID> for DatasetID {
+    fn into(self) -> odf::DatasetID {
         self.0
     }
 }
 
 impl Into<String> for DatasetID {
     fn into(self) -> String {
-        self.0.into()
+        self.0.to_did_string()
     }
 }
 
@@ -157,7 +157,55 @@ impl Deref for DatasetID {
 impl ScalarType for DatasetID {
     fn parse(value: Value) -> InputValueResult<Self> {
         if let Value::String(value) = &value {
-            let val = odf::DatasetIDBuf::try_from(value.as_str())?;
+            let val = odf::DatasetID::try_from(value.as_str())?;
+            Ok(val.into())
+        } else {
+            Err(InputValueError::expected_type(value))
+        }
+    }
+
+    fn to_value(&self) -> Value {
+        Value::String(self.0.to_string())
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// DatasetName
+/////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct DatasetName(odf::DatasetName);
+
+impl From<odf::DatasetName> for DatasetName {
+    fn from(value: odf::DatasetName) -> Self {
+        DatasetName(value)
+    }
+}
+
+impl Into<odf::DatasetName> for DatasetName {
+    fn into(self) -> odf::DatasetName {
+        self.0
+    }
+}
+
+impl Into<String> for DatasetName {
+    fn into(self) -> String {
+        self.0.into()
+    }
+}
+
+impl Deref for DatasetName {
+    type Target = odf::DatasetName;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[Scalar]
+impl ScalarType for DatasetName {
+    fn parse(value: Value) -> InputValueResult<Self> {
+        if let Value::String(value) = &value {
+            let val = odf::DatasetName::try_from(value.as_str())?;
             Ok(val.into())
         } else {
             Err(InputValueError::expected_type(value))

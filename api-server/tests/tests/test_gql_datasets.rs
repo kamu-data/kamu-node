@@ -27,7 +27,7 @@ async fn dataset_by_id_does_not_exist() {
         .unwrap();
     let schema = kamu_api_server::gql::schema(cat);
     let res = schema
-        .execute("{ datasets { byId (datasetId: \"test\") { id } } }")
+        .execute("{ datasets { byId (datasetId: \"did:odf:z4k88e8n8Je6fC9Lz9FHrZ7XGsikEyBwTwtMBzxp4RH9pbWn4UM\") { name } } }")
         .await;
     assert_eq!(
         res.data,
@@ -52,10 +52,10 @@ async fn dataset_by_id() {
         .unwrap();
 
     let metadata_repo = cat.get_one::<dyn MetadataRepository>().unwrap();
-    metadata_repo
+    let (dataset_handle, _) = metadata_repo
         .add_dataset(
             MetadataFactory::dataset_snapshot()
-                .id("foo")
+                .name("foo")
                 .source(MetadataFactory::dataset_source_root().build())
                 .build(),
         )
@@ -63,7 +63,10 @@ async fn dataset_by_id() {
 
     let schema = kamu_api_server::gql::schema(cat);
     let res = schema
-        .execute("{ datasets { byId (datasetId: \"foo\") { id } } }")
+        .execute(format!(
+            "{{ datasets {{ byId (datasetId: \"{}\") {{ name }} }} }}",
+            dataset_handle.id
+        ))
         .await;
     assert!(res.is_ok());
     assert_eq!(
@@ -71,7 +74,7 @@ async fn dataset_by_id() {
         value!({
             "datasets": {
                 "byId": {
-                    "id": "foo",
+                    "name": "foo",
                 }
             }
         })

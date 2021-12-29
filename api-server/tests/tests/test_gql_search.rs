@@ -20,7 +20,7 @@ async fn query() {
     metadata_repo
         .add_dataset(
             MetadataFactory::dataset_snapshot()
-                .id("foo")
+                .name("foo")
                 .source(MetadataFactory::dataset_source_root().build())
                 .build(),
         )
@@ -36,7 +36,7 @@ async fn query() {
                 nodes {
                   __typename
                   ... on Dataset {
-                    id
+                    name
                   }
                 }
                 totalCount
@@ -78,7 +78,7 @@ async fn query() {
                 nodes {
                   __typename
                   ... on Dataset {
-                    id
+                    name
                   }
                 }
                 totalCount
@@ -101,7 +101,7 @@ async fn query() {
                 "query": {
                     "nodes": [{
                         "__typename": "Dataset",
-                        "id": "foo",
+                        "name": "foo",
                     }],
                     "totalCount": 1,
                     "pageInfo": {

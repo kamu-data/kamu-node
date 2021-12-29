@@ -20,14 +20,14 @@ impl DatasetData {
     async fn num_records_total(&self, ctx: &Context<'_>) -> Result<u64> {
         let cat = ctx.data::<dill::Catalog>().unwrap();
         let metadata_repo = cat.get_one::<dyn domain::MetadataRepository>().unwrap();
-        let summary = metadata_repo.get_summary(&self.dataset_id)?;
+        let summary = metadata_repo.get_summary(&self.dataset_id.as_local_ref())?;
         Ok(summary.num_records)
     }
 
     /// An estimated size of data on disk not accounting for replication or caching
     async fn estimated_size(&self, ctx: &Context<'_>) -> Result<u64> {
         let metadata_repo = from_catalog::<dyn domain::MetadataRepository>(ctx).unwrap();
-        let summary = metadata_repo.get_summary(&self.dataset_id)?;
+        let summary = metadata_repo.get_summary(&self.dataset_id.as_local_ref())?;
         Ok(summary.data_size)
     }
 
@@ -42,7 +42,7 @@ impl DatasetData {
         use kamu::infra::utils::records_writers::*;
 
         let query_svc = from_catalog::<dyn domain::QueryService>(ctx).unwrap();
-        let df = query_svc.tail(&self.dataset_id, num_records.unwrap_or(20))?;
+        let df = query_svc.tail(&self.dataset_id.as_local_ref(), num_records.unwrap_or(20))?;
         let records = df.collect().await?;
 
         let mut buf = Vec::new();
