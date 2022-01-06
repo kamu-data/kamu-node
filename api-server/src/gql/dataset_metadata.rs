@@ -3,6 +3,7 @@ use chrono::prelude::*;
 use kamu::domain;
 use kamu::infra;
 use opendatafabric as odf;
+use opendatafabric::IntoDataStreamBlock;
 
 use super::*;
 
@@ -35,8 +36,8 @@ impl DatasetMetadata {
         let chain = self.get_chain(ctx)?;
         Ok(chain
             .iter_blocks_ref(&domain::BlockRef::Head)
-            .filter_map(|(_, b)| b.output_watermark)
-            .next())
+            .filter_map(|(_, b)| b.into_data_stream_block())
+            .find_map(|b| b.event.output_watermark))
     }
 
     /// Latest data schema

@@ -3,7 +3,6 @@ mod cli_parser;
 use std::path::{Path, PathBuf};
 
 use async_graphql_warp::GraphQLResponse;
-use clap::value_t_or_exit;
 use url::Url;
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -168,12 +167,12 @@ async fn main() -> std::io::Result<()> {
     }
 
     match matches.subcommand() {
-        ("gql", Some(sub)) => match sub.subcommand() {
-            ("schema", _) => {
+        Some(("gql", sub)) => match sub.subcommand() {
+            Some(("schema", _)) => {
                 println!("{}", kamu_api_server::gql::schema(catalog).sdl());
                 Ok(())
             }
-            ("query", Some(qsub)) => {
+            Some(("query", qsub)) => {
                 let result = gql_query(
                     qsub.value_of("query").unwrap(),
                     qsub.is_present("full"),
@@ -185,10 +184,10 @@ async fn main() -> std::io::Result<()> {
             }
             _ => unimplemented!(),
         },
-        ("run", Some(sub)) => {
+        Some(("run", sub)) => {
             run_server(
                 sub.value_of("address").unwrap().parse().unwrap(),
-                value_t_or_exit!(sub.value_of("http-port"), u16),
+                sub.value_of_t_or_exit("http-port"),
                 catalog,
             )
             .await

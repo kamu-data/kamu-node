@@ -4,6 +4,7 @@ use std::path::PathBuf;
 use kamu::domain::*;
 use kamu::infra;
 use kamu::testing::MetadataFactory;
+use opendatafabric::*;
 
 #[test]
 fn update_schema_dump() {
@@ -26,7 +27,7 @@ async fn dataset_by_id_does_not_exist() {
     cat.bind::<dyn MetadataRepository, infra::MetadataRepositoryNull>()
         .unwrap();
     let schema = kamu_api_server::gql::schema(cat);
-    let res = schema
+    let res = schema 
         .execute("{ datasets { byId (datasetId: \"did:odf:z4k88e8n8Je6fC9Lz9FHrZ7XGsikEyBwTwtMBzxp4RH9pbWn4UM\") { name } } }")
         .await;
     assert_eq!(
@@ -56,7 +57,8 @@ async fn dataset_by_id() {
         .add_dataset(
             MetadataFactory::dataset_snapshot()
                 .name("foo")
-                .source(MetadataFactory::dataset_source_root().build())
+                .kind(DatasetKind::Root)
+                .push_event(MetadataFactory::set_polling_source().build())
                 .build(),
         )
         .unwrap();

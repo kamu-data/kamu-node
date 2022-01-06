@@ -1,7 +1,6 @@
 use async_graphql::*;
 use chrono::prelude::*;
 use kamu::domain;
-use kamu::infra;
 
 use super::*;
 
@@ -45,10 +44,7 @@ impl Dataset {
     async fn kind(&self, ctx: &Context<'_>) -> Result<DatasetKind> {
         let metadata_repo = from_catalog::<dyn domain::MetadataRepository>(ctx).unwrap();
         let summary = metadata_repo.get_summary(&self.id.as_local_ref())?;
-        Ok(match summary.kind {
-            infra::DatasetKind::Root => DatasetKind::Root,
-            infra::DatasetKind::Derivative => DatasetKind::Derivative,
-        })
+        Ok(summary.kind.into())
     }
 
     /// Access to the data of the dataset

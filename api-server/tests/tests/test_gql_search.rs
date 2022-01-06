@@ -3,6 +3,7 @@ use async_graphql::*;
 use kamu::domain::*;
 use kamu::infra;
 use kamu::testing::MetadataFactory;
+use opendatafabric::*;
 
 #[tokio::test]
 async fn query() {
@@ -21,7 +22,8 @@ async fn query() {
         .add_dataset(
             MetadataFactory::dataset_snapshot()
                 .name("foo")
-                .source(MetadataFactory::dataset_source_root().build())
+                .kind(DatasetKind::Root)
+                .push_event(MetadataFactory::set_polling_source().build())
                 .build(),
         )
         .unwrap();
@@ -58,9 +60,9 @@ async fn query() {
             "search": {
                 "query": {
                     "nodes": [],
-                    "totalCount": 0,
+                    "totalCount": 0i32,
                     "pageInfo": {
-                        "totalPages": 0,
+                        "totalPages": 0i32,
                         "hasNextPage": false,
                         "hasPreviousPage": false,
                     }
@@ -103,9 +105,9 @@ async fn query() {
                         "__typename": "Dataset",
                         "name": "foo",
                     }],
-                    "totalCount": 1,
+                    "totalCount": 1i32,
                     "pageInfo": {
-                        "totalPages": 1,
+                        "totalPages": 1i32,
                         "hasNextPage": false,
                         "hasPreviousPage": false,
                     }

@@ -280,6 +280,15 @@ pub(crate) enum DatasetKind {
     Derivative,
 }
 
+impl From<odf::DatasetKind> for DatasetKind {
+    fn from(v: odf::DatasetKind) -> Self {
+        match v {
+            odf::DatasetKind::Root => DatasetKind::Root,
+            odf::DatasetKind::Derivative => DatasetKind::Derivative,
+        }
+    }
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // DataSchema
 /////////////////////////////////////////////////////////////////////////////////////////

@@ -28,7 +28,8 @@ impl MetadataBlock {
             block_hash: hash.into(),
             prev_block_hash: block.prev_block_hash.map(|v| v.into()),
             system_time: block.system_time,
-            output_watermark: block.output_watermark,
+            // TODO
+            output_watermark: None,
         }
     }
 }
