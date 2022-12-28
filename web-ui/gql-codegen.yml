@@ -1,8 +1,0 @@
-overwrite: true
-schema: "../api-server/resources/schema.gql"
-generates:
-  src/lib/kamu.d.ts:
-    plugins:
-      - "typescript"
-      - "typescript-operations"
-      - "typescript-graphql-files-modules"
