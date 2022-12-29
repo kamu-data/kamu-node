@@ -1,0 +1,19 @@
+@startuml decision-structural
+left to right direction
+
+rectangle "Client" as CL
+rectangle "CDN Network" as CDNN {
+    collections "Edge Node" as CDN
+}
+rectangle Region <<cloud provider>> as CLOUD {
+    rectangle "Static Storage" as S3
+    rectangle "Reverse Proxy" as LB
+    collections "Backend" as BE
+}
+
+CL --> CDN: GET kamu.dev/...
+CDN --> S3: GET /static/*
+CDN --> LB: GET /*
+LB --> BE: REST, GQL, ODF
+
+@enduml

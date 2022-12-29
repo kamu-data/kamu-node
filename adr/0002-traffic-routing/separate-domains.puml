@@ -1,0 +1,23 @@
+@startuml separate-domains
+
+collections "Client" as CL
+collections "CDN" as CDN
+collections "Backend" as BE
+
+== Frontend request ==
+
+CL -> CDN: GET /*\nHost: kamu.dev
+activate CDN
+
+CDN -> CL: HTML, CSS, JS, images...
+deactivate CDN
+
+
+== API request ==
+
+CL -> BE: GET /*\nHost: api.kamu.dev
+activate BE
+BE -> CL: ...
+deactivate BE
+
+@enduml

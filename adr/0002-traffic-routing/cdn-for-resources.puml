@@ -1,0 +1,39 @@
+@startuml cdn-for-resources
+
+collections "Client" as CL
+participant "Reverse Proxy" as LB
+collections "Backend" as BE
+collections "CDN" as CDN
+
+== Frontend request ==
+
+CL -> LB: GET /{frontend-like}\nHost: kamu.dev
+activate LB
+
+LB -> CL: index.html
+deactivate LB
+note right
+    Proxy serves static HTML in response where all
+    resources are fetched from CDN-backed domain
+end note
+
+loop foreach resource
+    CL -> CDN: GET /*\nHost: static.kamu.dev
+    activate CDN
+    CDN -> CL: resource
+    deactivate CDN
+end
+
+
+== API request ==
+
+CL -> LB: GET /{backend-like}\nHost: kamu.dev
+activate LB
+LB -> "Backend" as BE: 
+activate BE
+BE -> LB
+deactivate BE
+LB -> CL
+deactivate LB
+
+@enduml

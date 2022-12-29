@@ -1,0 +1,57 @@
+@startuml decision-sequence
+
+collections "Client" as CL
+collections "CDN" as CDN
+participant "Reverse Proxy" as LB
+collections "Backend" as BE
+
+== Frontend request ==
+
+CL -> CDN: GET /{frontend-like}\nHost: kamu.dev
+activate CDN
+note right
+    CDN can't tell if its a frontend or API request
+    so it directs it to the proxy
+end note
+CDN -> LB
+activate LB
+note right
+    Proxy serves static HTML in response
+    where all resources have clear /static prefix
+end note
+LB -> CDN: index.html
+deactivate LB
+CDN -> CL: index.html
+deactivate CDN
+
+loop foreach resource
+    CL -> CDN: GET /static/*\nHost: kamu.dev
+    activate CDN
+    note right
+        Now CDN knows for sure that this is a static content
+    end note
+    CDN -> CL: resource
+    deactivate CDN
+end
+
+
+== API request ==
+
+CL -> CDN: GET /{backend-like}\nHost: kamu.dev
+activate CDN
+note right
+    Traffic still flows via CDN node to provide
+    DDoS protection and connection multiplexing
+end note
+CDN -> LB
+activate LB
+LB -> BE
+activate BE
+BE -> LB
+deactivate BE
+LB -> CDN
+deactivate LB
+CDN -> CL
+deactivate CDN
+
+@enduml

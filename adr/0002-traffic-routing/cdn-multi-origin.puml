@@ -1,0 +1,29 @@
+@startuml cdn-multi-origin
+
+collections "Client" as CL
+collections "CDN" as CDN
+collections "Backend" as BE
+
+== Frontend request ==
+
+CL -> CDN: GET /{frontend-like}\nHost: kamu.dev
+activate CDN
+CDN -> CL: index.html
+deactivate CDN
+
+loop foreach resource
+    CL -> CDN: GET /static/*\nHost: kamu.dev
+    activate CDN
+    CDN -> CL: resource
+    deactivate CDN
+end
+
+
+== API request ==
+
+CL -> BE: GET /api/*\nHost: kamu.dev
+activate BE
+BE -> CL: API response
+deactivate BE
+
+@enduml
