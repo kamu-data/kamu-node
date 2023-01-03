@@ -15,7 +15,7 @@ We need to decide how traffic gets routed between the clients and the frontend, 
     - and resources: CSS, fonts, images, videos ...
   - All these can be served as static files
 - Backend is dynamic:
-  - It will provide multiple APIs and serve different types of clients:
+  - It will provide multiple APIs and serve several types of clients:
     - Frontend (via GQL)
     - Kamu API (REST / GQL) - for automation, B2B integrations
     - Data APIs (ODF, Kafka, MQTT) - data transfer, ingest, egress
@@ -33,7 +33,7 @@ We need to decide how traffic gets routed between the clients and the frontend, 
   - We are likely to grow beyond one region
   - May need to route/restrict traffic based on geolocation/geofencing
 - **Load balancing & Failover**
-  - When one region is in trouble we should be able to redirect traffic to the health one
+  - When one region is in trouble, we should be able to redirect traffic to the health one
 - **Blue/Green Deployments**
   - Should be able to do smooth automated gradual rollouts and roll-backs of backend versions
 - **Traffic prioritization**
@@ -173,7 +173,7 @@ We will use a combination of Options 2 and 3:
   - `/static/*` - will point to static storage (e.g. S3)
   - `/*` - all other requests will be handed over to backends via reverse proxy
 - Reverse proxy (e.g. AWS ELB/ALB)
-  - Will conain a more elaborate set of rules to differentiate between frontend and backend requests, e.g.
+  - Will contain a more elaborate set of rules to differentiate between frontend and backend requests, e.g.
     - `/graphql` -> Kamu GQL API worker pool
     - `/api/*` -> Kamu REST API worker pool
     - `/{account}/{dataset}/{refs|blocks|data|checkpoints|pull|push}` -> ODF data API worker pool
@@ -207,7 +207,7 @@ We will use a combination of Options 2 and 3:
   - Reverse proxies can flexibly direct traffic between different pools of workers allowing progressive rollouts
   - Exact technologies to use for that are deemed out of scope of this ADR
 - ❔ **Traffic prioritization**
-  - Requires further work - deaming out of scope of this ADR
+  - Requires further work - deeming out of scope of this ADR
 - ✅ **DDoS**
   - Backend is not directly exposed to external traffic and protected by CDN
 - ✅ **On-prem**
