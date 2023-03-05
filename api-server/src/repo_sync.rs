@@ -1,12 +1,11 @@
 use std::sync::Arc;
 
-use kamu::{
-    domain::{MetadataRepository, SyncError, SyncOptions, SyncResult, SyncService},
-    infra::RepositoryFactory,
-};
-use opendatafabric::{RemoteDatasetName, RepositoryName};
+use kamu::domain::*;
+use opendatafabric::RepositoryName;
 
-pub fn repo_sync_loop(catalog: dill::Catalog, repo_name: &RepositoryName) {
+/////////////////////////////////////////////////////////////////////////////////////////
+
+pub async fn repo_sync_loop(catalog: dill::Catalog, repo_name: RepositoryName) {
     let _panic_guard = KillProcessOnPanic;
     loop {
         {
@@ -16,27 +15,45 @@ pub fn repo_sync_loop(catalog: dill::Catalog, repo_name: &RepositoryName) {
                 catalog.get_one().unwrap(),
                 catalog.get_one().unwrap(),
                 catalog.get_one().unwrap(),
-                repo_name,
+                &repo_name,
             )
+            .await
             .expect("Aborting on sync error");
         }
-        std::thread::sleep(std::time::Duration::from_secs(5));
+
+        tokio::time::sleep(std::time::Duration::from_secs(5)).await;
     }
 }
 
-pub fn sync_all_from_repo(
-    metadata_repo: Arc<dyn MetadataRepository>,
-    repo_factory: Arc<RepositoryFactory>,
+/////////////////////////////////////////////////////////////////////////////////////////
+
+pub async fn sync_all_from_repo(
+    local_repo: Arc<dyn LocalDatasetRepository>,
+    search_svc: Arc<dyn SearchService>,
     sync_svc: Arc<dyn SyncService>,
     repo_name: &RepositoryName,
 ) -> Result<(), SyncError> {
-    let datasets_to_sync =
-        get_all_remote_datasets(metadata_repo.as_ref(), repo_factory.as_ref(), repo_name)?;
+    use futures::TryStreamExt;
 
-    let local_datasets_to_delete: Vec<_> = metadata_repo
+    // TODO: This will hit the search limit
+    let datasets_to_sync = search_svc
+        .search(
+            None,
+            SearchOptions {
+                repository_names: vec![repo_name.clone()],
+            },
+        )
+        .await
+        .int_err()?
+        .datasets;
+
+    let local_datasets_to_delete: Vec<_> = local_repo
         .get_all_datasets()
-        .filter(|hdl| !datasets_to_sync.iter().any(|rn| rn.dataset() == hdl.name))
-        .collect();
+        .try_filter(|hdl| {
+            std::future::ready(!datasets_to_sync.iter().any(|rn| *rn.dataset() == hdl.name))
+        })
+        .try_collect()
+        .await?;
 
     if !local_datasets_to_delete.is_empty() {
         tracing::info!(
@@ -46,33 +63,42 @@ pub fn sync_all_from_repo(
 
         // TODO: Handle dangling dependency issue
         for hdl in &local_datasets_to_delete {
-            metadata_repo.delete_dataset(&hdl.as_local_ref()).unwrap();
+            local_repo
+                .delete_dataset(&hdl.as_local_ref())
+                .await
+                .int_err()?;
         }
     }
 
     tracing::debug!("Syncing {} datasets", datasets_to_sync.len());
 
-    let sync_results = sync_svc.sync_from_multi(
-        &mut datasets_to_sync
-            .iter()
-            .map(|r| (r.as_remote_ref(), r.dataset())),
-        SyncOptions {},
-        None,
-    );
+    let sync_results = sync_svc
+        .sync_multi(
+            &mut datasets_to_sync
+                .iter()
+                .map(|r| (r.as_any_ref(), r.dataset().as_any_ref())),
+            SyncOptions {
+                trust_source: Some(true),
+                create_if_not_exists: true,
+                force: false,
+            },
+            None,
+        )
+        .await;
 
     let mut up_to_date = 0;
     let mut updated = 0;
     let mut diverged = Vec::new();
 
-    for ((remote, local), res) in sync_results {
-        match res {
+    for sync_res in sync_results {
+        match sync_res.result {
             Ok(r) => match r {
                 SyncResult::UpToDate { .. } => up_to_date += 1,
                 SyncResult::Updated { .. } => updated += 1,
             },
-            Err(SyncError::DatasetsDiverged { .. }) => diverged.push((remote, local)),
+            Err(SyncError::DatasetsDiverged { .. }) => diverged.push((sync_res.src, sync_res.dst)),
             Err(e) => {
-                tracing::error!("Failed to sync dataset {}: {}", remote, e);
+                tracing::error!("Failed to sync dataset {}: {}", sync_res.src, e);
                 return Err(e);
             }
         }
@@ -83,17 +109,21 @@ pub fn sync_all_from_repo(
 
         // TODO: Handle dangling dependency issue
         for (_, local) in &diverged {
-            metadata_repo.delete_dataset(&local.as_local_ref()).unwrap();
+            local_repo
+                .delete_dataset(&local.as_local_ref().unwrap())
+                .await
+                .int_err()?;
         }
 
-        let sync_results =
-            sync_svc.sync_from_multi(&mut diverged.iter().cloned(), SyncOptions {}, None);
+        let sync_results = sync_svc
+            .sync_multi(&mut diverged.iter().cloned(), SyncOptions::default(), None)
+            .await;
 
-        for ((remote, _), res) in sync_results {
-            match res {
+        for sync_res in sync_results {
+            match sync_res.result {
                 Ok(_) => updated += 1,
                 Err(e) => {
-                    tracing::error!("Failed to re-sync dataset {}: {}", remote, e);
+                    tracing::error!("Failed to re-sync dataset {}: {}", sync_res.src, e);
                     return Err(e);
                 }
             }
@@ -119,26 +149,7 @@ pub fn sync_all_from_repo(
     Ok(())
 }
 
-fn get_all_remote_datasets(
-    metadata_repo: &dyn MetadataRepository,
-    repo_factory: &RepositoryFactory,
-    repo_name: &RepositoryName,
-) -> Result<Vec<RemoteDatasetName>, SyncError> {
-    let repo = metadata_repo.get_repository(repo_name).unwrap();
-    let repo_client = repo_factory.get_repository_client(&repo).unwrap();
-
-    let rc = repo_client.lock().unwrap();
-
-    // TODO: This will hit the search limit
-    let res = rc.search(None)?;
-
-    // TODO: Avoid the need for re-mapping names
-    Ok(res
-        .datasets
-        .into_iter()
-        .map(|r| RemoteDatasetName::new(repo_name, r.account().as_ref(), &r.dataset()))
-        .collect())
-}
+/////////////////////////////////////////////////////////////////////////////////////////
 
 struct KillProcessOnPanic;
 

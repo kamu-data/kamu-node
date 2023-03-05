@@ -1,30 +1,35 @@
 [package]
 name = "kamu-api-server"
 version = "0.1.0"
-authors = ["Sergii Mikhtoniuk <mikhtoniuk@gmail.com>"]
-edition = "2018"
+authors = ["Sergii Mikhtoniuk <smikhtoniuk@kamu.dev>"]
+edition = "2021"
 
 [dependencies]
 # Kamu
-dill = "^0.2"
+dill = "~0.3"
 opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
 kamu = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
+kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
 
 # Kamu (dev)
 # dill = { path = "../../dill" }
 # opendatafabric = { path = "../../kamu-cli/opendatafabric" }
 # kamu = { path = "../../kamu-cli/kamu-core" }
+# kamu-adapter-graphql = { path = "../../kamu-cli/kamu-adapter-graphql" }
 
-# HTTP
-warp = "*"
-reqwest = { version = "*", features = ["json"] }  # TODO: Use non-blocking after switching to tokio 1.0
-
-# GraphQL
+# APIs
+http = "*"
+hyper = "*"
+tower = { version = "*" }
+tower-http = { version = "*", features = ["trace", "cors"] }
+axum = { version = "*", features = ["ws"] }
+axum-extra = { version = "*", features = ["async-read-body"] }
 async-graphql = { version = "*", features = ["chrono", "url", "apollo_tracing"] }
-async-graphql-warp = "*"
+async-graphql-axum = "*"
 
 # Tracing / logging / telemetry
-tracing = "*"  
+tracing = "*"
+tracing-appender = "*"
 tracing-subscriber = { version = "*", features = ["env-filter"] }
 tracing-log = "*"
 tracing-bunyan-formatter = "*"
@@ -32,12 +37,18 @@ tracing-bunyan-formatter = "*"
 # Utils
 chrono = "*"
 clap = "*"
+futures = "*"
 indoc = "*"
 serde = "*"
 serde_json = "*"
 tokio = { version = "*", features = ["macros"] }
+tokio-util = { version = "*", features = ["rt"] }
 url = "*"
 
 
 [dev-dependencies]
 tempfile = "*"
+rand = "^0.8"
+indoc = "*"  # Compile-time unindent
+env_logger = "*"
+test-log = { version = "*", features = ["trace"] }

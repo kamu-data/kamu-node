@@ -1,12 +1,7 @@
 name: build
 on: [push]
-#on:
-#  push:
-#    branches:
-#      - master
-#  pull_request:
-#    branches:
-#      - master
+env:
+  RUST_BACKTRACE: "1"
 jobs:
   test_linux:
     name: Test / Linux
@@ -18,6 +13,5 @@ jobs:
           components: rustfmt
       - run: cargo build
       - run: cargo test --verbose
-      - run: cat api-server/resources/schema.gql
       - run: git diff
       - run: git diff-index --quiet HEAD  # Ensure all generated files are up-to-date

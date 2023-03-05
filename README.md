@@ -1,20 +1,18 @@
 <div align="center">
-  <h1>Kamu Platform</h1>
-  <p>
-    <strong>World's first decentralized data warehouse</strong>
-  </p>
-  <p>
+<h1>Kamu Platform</h1>
+<p><strong>Planet-scale data pipeline</strong></p>
+  
+<p>
 
-[![build](https://github.com/kamu-data/kamu-platform/workflows/build/badge.svg)](https://github.com/kamu-data/kamu-platform/actions)
-[![Release](https://github.com/kamu-data/kamu-platform/workflows/release/badge.svg)](https://github.com/kamu-data/kamu-platform/actions)
+[![Release](https://img.shields.io/github/v/release/kamu-data/kamu-platform?include_prereleases&logo=rust&logoColor=orange&style=for-the-badge)](https://github.com/kamu-data/kamu-platform/releases/latest)
+[![CI](https://img.shields.io/github/actions/workflow/status/kamu-data/kamu-platform/build.yaml?logo=githubactions&label=CI&logoColor=white&style=for-the-badge&branch=master)](https://github.com/kamu-data/kamu-platform/actions)
+[![Chat](https://shields.io/discord/898726370199359498?style=for-the-badge&logo=discord&label=Discord)](https://discord.gg/nU6TXRQNXC)
 
-  </p>
+</p>
 </div>
 
-## Getting Started
 
-### API Server
-
+## API Server
 Prerequisites:
 * Install `rustup`
 * Install `bunyan` crate (`cargo install bunyan`) to get human-readable log output when running services in the foreground
@@ -22,7 +20,7 @@ Prerequisites:
 To run API server using local `kamu` workspace:
 
 ```bash
-cargo run -- --metadata-repo file:///home/me/workspace run | bunyan
+cargo run -- --local-repo /home/me/workspace/.kamu run | bunyan
 ```
 
 To control log verbosity use the standard `RUST_LOG` env var:
@@ -39,8 +37,18 @@ To test GQL queries from the CLI:
 cargo run -- gql query '{ apiVersion }' | jq
 ```
 
-#### GitHub Auth
 
+### Synchronization with Remote Repository
+Until we implement support for operating over remote storage API server has a temporary option that will continuously monitor a remote repository (e.g. S3 bucket) and will sync all changes into local workspace. This only works for read-only synchronization and all changes to local workspace will be overwritten upon every sync.
+
+To use it:
+
+```bash
+cargo run -- --local-repo /tmp/kamu_local_repo --repo-url s3://example.com/kamu_repo run | bunyan
+```
+
+
+### GitHub Auth
 To use API server for GitHub's OAuth you will need to set following environment variables:
 - `KAMU_AUTH_GITHUB_CLIENT_ID` - Client ID of your GitHub OAuth app
 - `KAMU_AUTH_GITHUB_CLIENT_SECRET` - Client secret of your GitHub OAuth app
@@ -62,62 +70,6 @@ mutation GithubLogin {
         name
         avatarUrl
         gravatarId
-      }
-    }
-  }
-}
-```
-
-### Web UI
-
-Prerequisites:
-* Install `nvm`
-* Install latest `nodejs` (`nvm install node`)
-* Fetch dependencies (`cd web-ui; npm install`)
-
-Web UI requires a running API Server, so you should either follow the above steps to set it up, or, if you are not planning to do any backend development, you can get the latest version with the following command:
-
-```bash
-# Get the latest version
-docker pull kamudata/api-server:latest-with-data
-
-# Run with example data
-docker run -it --rm -p 8080:8080 kamudata/api-server:latest-with-data
-
-# Run with a local kamu workspace
-docker run -it --rm -p 8080:8080 -v /my/workspace:/opt/kamu/workspace:ro kamudata/api-server:latest-with-data
-
-# This image also comes with `kamu-cli` pre-installed so you can mess around with data without installing it on your host
-docker run -it --rm --entrypoint bash kamudata/api-server:latest-with-data
-$ kamu list
-```
-
-Once you have the API server running, you can start Web UI in development mode:
-
-```bash
-npm run dev -- --open
-```
-
-The GQL schema can be explored using `playground` at http://127.0.0.1:8080/playground, and also available in full [here](/api-server/resources/schema.gql).
-
-## GraphQL snippets
-
-Working with unions in search results:
-
-```gql
-{
-  search {
-    query(query: "", perPage: 10, page: 0) {
-      totalCount
-      nodes {
-        ... on Dataset {
-          id
-        }
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-        totalPages
       }
     }
   }

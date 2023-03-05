@@ -2,45 +2,112 @@ mod cli_parser;
 
 use std::path::{Path, PathBuf};
 
-use async_graphql_warp::GraphQLResponse;
+use kamu::domain;
+use kamu::infra;
+use tracing::info;
 use url::Url;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 const BINARY_NAME: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
-const DEFAULT_LOGGING_CONFIG: &str = "info";
+
+const DEFAULT_LOGGING_CONFIG: &str = "info,tower_http=trace";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-async fn index_route() -> &'static str {
-    r#"
-    <h1>Kamu API Server</h1>
-    <ul>
-        <li><a href="/graphql">GraphQL Endpoint</a></li>
-        <li><a href="/playground">GraphQL Playground</a></li>
-    </ul>
-    "#
-}
+#[tokio::main]
+async fn main() -> Result<(), hyper::Error> {
+    init_logging();
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    let mut b = dill::CatalogBuilder::new();
 
-async fn graphql_route(
-    (schema, request): (kamu_api_server::gql::Schema, async_graphql::Request),
-) -> Result<GraphQLResponse, std::convert::Infallible> {
-    Ok(GraphQLResponse::from(schema.execute(request).await))
-}
+    b.add::<infra::QueryServiceImpl>();
+    b.bind::<dyn domain::QueryService, infra::QueryServiceImpl>();
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    b.add::<infra::LocalDatasetRepositoryImpl>();
+    b.bind::<dyn domain::LocalDatasetRepository, infra::LocalDatasetRepositoryImpl>();
 
-async fn playground_route() -> warp::http::Result<warp::http::Response<String>> {
-    use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
+    b.add::<infra::RemoteRepositoryRegistryImpl>();
+    b.bind::<dyn domain::RemoteRepositoryRegistry, infra::RemoteRepositoryRegistryImpl>();
 
-    warp::http::Response::builder()
-        .header("content-type", "text/html; charset=utf-8")
-        .body(playground_source(
-            GraphQLPlaygroundConfig::new("/graphql").subscription_endpoint("/graphql"),
-        ))
+    b.add::<infra::DatasetFactoryImpl>();
+    b.bind::<dyn domain::DatasetFactory, infra::DatasetFactoryImpl>();
+
+    b.add::<infra::SyncServiceImpl>();
+    b.bind::<dyn domain::SyncService, infra::SyncServiceImpl>();
+
+    b.add::<infra::SearchServiceImpl>();
+    b.bind::<dyn domain::SearchService, infra::SearchServiceImpl>();
+
+    // TODO: Externalize configuration
+    b.add_value(infra::IpfsGateway {
+        url: Url::parse("http://localhost:8080").unwrap(),
+        pre_resolve_dnslink: true,
+    });
+    b.add_value(kamu::infra::utils::ipfs_wrapper::IpfsClient::default());
+
+    let matches = cli_parser::cli(BINARY_NAME, VERSION).get_matches();
+
+    let repo_url = matches.get_one::<Url>("repo-url").cloned();
+
+    let local_repo = matches
+        .get_one::<PathBuf>("local-repo")
+        .cloned()
+        .unwrap_or_else(|| find_workspace());
+
+    info!(
+        version = VERSION,
+        args = ?std::env::args().collect::<Vec<_>>(),
+        repo_url = ?repo_url,
+        local_repo = %local_repo.display(),
+        "Initializing {}",
+        BINARY_NAME
+    );
+
+    let workspace_layout = infra::WorkspaceLayout::new(&local_repo);
+    b.add_value(workspace_layout.clone());
+
+    let catalog = b.build();
+
+    // TODO: Using a thread pool to spawn a sync task because sync future is ?Send
+    // and does not work with tokio::spawn() which implies that future can bounce between threads
+    let pool = tokio_util::task::LocalPoolHandle::new(1);
+
+    if let Some(repo_url) = &repo_url {
+        init_from_synced_repo(repo_url, &workspace_layout, &catalog, &pool).await
+    } else {
+        init_from_local_workspace(&workspace_layout)
+    }
+
+    match matches.subcommand() {
+        Some(("gql", sub)) => match sub.subcommand() {
+            Some(("schema", _)) => {
+                println!("{}", kamu_adapter_graphql::schema(catalog).sdl());
+                Ok(())
+            }
+            Some(("query", qsub)) => {
+                let result = gql_query(
+                    qsub.get_one("query").map(String::as_str).unwrap(),
+                    qsub.get_flag("full"),
+                    catalog,
+                )
+                .await;
+                print!("{}", result);
+                Ok(())
+            }
+            _ => unimplemented!(),
+        },
+        Some(("run", sub)) => {
+            run_server(
+                sub.get_one("address").map(|a| *a),
+                sub.get_one("http-port").map(|p| *p),
+                catalog,
+            )
+            .await
+        }
+        _ => unimplemented!(),
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -48,10 +115,7 @@ async fn playground_route() -> warp::http::Result<warp::http::Response<String>> 
 fn init_logging() {
     use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
     use tracing_log::LogTracer;
-    use tracing_subscriber::{layer::SubscriberExt, EnvFilter, Registry};
-
-    // Redirect all standard logging to tracing events
-    LogTracer::init().expect("Failed to set LogTracer");
+    use tracing_subscriber::{layer::SubscriberExt, EnvFilter};
 
     // Use configuration from RUST_LOG env var if provided
     let env_filter = EnvFilter::try_from_default_env()
@@ -60,10 +124,14 @@ fn init_logging() {
     // TODO: Use non-blocking writer?
     // Configure Bunyan JSON formatter
     let formatting_layer = BunyanFormattingLayer::new(BINARY_NAME.to_owned(), std::io::stdout);
-    let subscriber = Registry::default()
+
+    let subscriber = tracing_subscriber::registry()
         .with(env_filter)
         .with(JsonStorageLayer)
         .with(formatting_layer);
+
+    // Redirect all standard logging to tracing events
+    LogTracer::init().expect("Failed to set LogTracer");
 
     tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber");
 }
@@ -71,7 +139,7 @@ fn init_logging() {
 /////////////////////////////////////////////////////////////////////////////////////////
 
 async fn gql_query(query: &str, full: bool, catalog: dill::Catalog) -> String {
-    let gql_schema = kamu_api_server::gql::schema(catalog);
+    let gql_schema = kamu_adapter_graphql::schema(catalog);
     let response = gql_schema.execute(query).await;
 
     if full {
@@ -92,107 +160,97 @@ async fn gql_query(query: &str, full: bool, catalog: dill::Catalog) -> String {
 /////////////////////////////////////////////////////////////////////////////////////////
 
 async fn run_server(
-    address: std::net::IpAddr,
-    http_port: u16,
+    address: Option<std::net::IpAddr>,
+    http_port: Option<u16>,
     catalog: dill::Catalog,
-) -> std::io::Result<()> {
-    use warp::Filter;
+) -> Result<(), hyper::Error> {
+    use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+
+    let gql_schema = kamu_adapter_graphql::schema(catalog);
+
+    let app = axum::Router::new()
+        .route("/", axum::routing::get(root_handler))
+        .route(
+            "/graphql",
+            axum::routing::get(graphql_playground_handler).post(graphql_handler),
+        )
+        .layer(
+            tower::ServiceBuilder::new()
+                .layer(tower_http::trace::TraceLayer::new_for_http())
+                .layer(
+                    tower_http::cors::CorsLayer::new()
+                        .allow_origin(tower_http::cors::Any)
+                        .allow_methods(vec![http::Method::GET, http::Method::POST])
+                        .allow_headers(tower_http::cors::Any),
+                )
+                .layer(axum::extract::Extension(gql_schema)),
+        );
+
+    let addr = SocketAddr::from((
+        address.unwrap_or(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1))),
+        http_port.unwrap_or(0),
+    ));
+
+    let server = axum::Server::bind(&addr).serve(app.into_make_service());
 
     tracing::info!(
-        "HTTP server: \n\
-         - Server root: http://{addr}:{port}\n\
-         - GraphQL playground: http://{addr}:{port}/playground",
-        addr = address,
-        port = http_port
+        http_endpoint = format!("http://{}", server.local_addr()),
+        "Serving traffic"
     );
 
-    let index = warp::path::end().and(warp::get()).then(index_route);
-
-    let graphql = warp::path("graphql")
-        .and(warp::path::end())
-        .and(async_graphql_warp::graphql(kamu_api_server::gql::schema(
-            catalog.clone(),
-        )))
-        .and_then(graphql_route);
-
-    let playground = warp::path("playground")
-        .and(warp::path::end())
-        .and(warp::get())
-        .then(playground_route);
-
-    let routes = index
-        .or(graphql)
-        .or(playground)
-        .with(
-            warp::cors()
-                .allow_any_origin()
-                .allow_methods(["GET", "POST"])
-                .allow_headers(["content-type"]),
-        )
-        .with(warp::trace::request());
-
-    warp::serve(routes).run((address, http_port)).await;
-    Ok(())
+    server.await
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
+// Routes
+/////////////////////////////////////////////////////////////////////////////////////////
 
-#[tokio::main]
-async fn main() -> std::io::Result<()> {
-    init_logging();
-
-    let mut catalog = dill::Catalog::new();
-
-    catalog.add::<kamu::infra::QueryServiceImpl>();
-    catalog
-        .bind::<dyn kamu::domain::QueryService, kamu::infra::QueryServiceImpl>()
-        .unwrap();
-
-    let matches = cli_parser::cli(BINARY_NAME, VERSION).get_matches();
-
-    let cwd = Path::new(".").canonicalize().unwrap();
-    let metadata_repo_url = Url::parse(
-        matches
-            .value_of("metadata-repo")
-            .unwrap_or(Url::from_file_path(&cwd).unwrap().as_str()),
+async fn root_handler() -> impl axum::response::IntoResponse {
+    axum::response::Html(
+        r#"
+        <h1>Kamu API Server</h1>
+        <ul>
+            <li><a href="/graphql">GraphQL Endpoint</a></li>
+            <li><a href="/graphql">GraphQL Playground</a></li>
+        </ul>
+        "#,
     )
-    .unwrap();
+}
 
-    match metadata_repo_url.scheme() {
-        "file" => init_metadata_repo_from_local_workspace(
-            &metadata_repo_url.to_file_path().unwrap(),
-            &mut catalog,
-        ),
-        _ => init_metadata_repo_from_synced_repo(metadata_repo_url, &mut catalog),
+async fn graphql_handler(
+    schema: axum::extract::Extension<kamu_adapter_graphql::Schema>,
+    req: async_graphql_axum::GraphQLRequest,
+) -> async_graphql_axum::GraphQLResponse {
+    schema.execute(req.into_inner()).await.into()
+}
+
+async fn graphql_playground_handler() -> impl axum::response::IntoResponse {
+    axum::response::Html(async_graphql::http::playground_source(
+        async_graphql::http::GraphQLPlaygroundConfig::new("/graphql"),
+    ))
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Workspace
+/////////////////////////////////////////////////////////////////////////////////////////
+
+pub fn find_workspace() -> PathBuf {
+    let cwd = Path::new(".").canonicalize().unwrap();
+    if let Some(ws) = find_workspace_rec(&cwd) {
+        ws
+    } else {
+        cwd.join(".kamu")
     }
+}
 
-    match matches.subcommand() {
-        Some(("gql", sub)) => match sub.subcommand() {
-            Some(("schema", _)) => {
-                println!("{}", kamu_api_server::gql::schema(catalog).sdl());
-                Ok(())
-            }
-            Some(("query", qsub)) => {
-                let result = gql_query(
-                    qsub.value_of("query").unwrap(),
-                    qsub.is_present("full"),
-                    catalog,
-                )
-                .await;
-                print!("{}", result);
-                Ok(())
-            }
-            _ => unimplemented!(),
-        },
-        Some(("run", sub)) => {
-            run_server(
-                sub.value_of("address").unwrap().parse().unwrap(),
-                sub.value_of_t_or_exit("http-port"),
-                catalog,
-            )
-            .await
-        }
-        _ => unimplemented!(),
+fn find_workspace_rec(p: &Path) -> Option<PathBuf> {
+    let root_dir = p.join(".kamu");
+    if root_dir.exists() {
+        Some(root_dir)
+    } else if let Some(parent) = p.parent() {
+        find_workspace_rec(parent)
+    } else {
+        None
     }
 }
 
@@ -200,65 +258,48 @@ async fn main() -> std::io::Result<()> {
 // Workspace Init
 /////////////////////////////////////////////////////////////////////////////////////////
 
-fn init_metadata_repo_from_local_workspace(workspace_root_dir: &Path, catalog: &mut dill::Catalog) {
-    let workspace_layout = kamu::infra::WorkspaceLayout::new(&workspace_root_dir);
-    if !workspace_layout.kamu_root_dir.exists() {
+fn init_from_local_workspace(workspace_layout: &infra::WorkspaceLayout) {
+    if !workspace_layout.root_dir.exists() {
         panic!(
             "Directory is not a kamu workspace: {}",
-            workspace_root_dir.display()
+            workspace_layout.root_dir.display()
         );
     }
-    let volume_layout = kamu::infra::VolumeLayout::new(&workspace_layout.local_volume_dir);
-
-    catalog.add::<kamu::infra::MetadataRepositoryImpl>();
-    catalog
-        .bind::<dyn kamu::domain::MetadataRepository, kamu::infra::MetadataRepositoryImpl>()
-        .unwrap();
-
-    catalog.add_value(workspace_layout);
-    catalog.add_value(volume_layout);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-fn init_metadata_repo_from_synced_repo(repo_url: Url, catalog: &mut dill::Catalog) {
-    let workspace_root_dir = PathBuf::from(
-        std::env::var("KAMU_SYNC_DIR")
-            .ok()
-            .expect("Please specify the directory where to store local copy of the repository using KAMU_SYNC_DIR env var"),
-    );
-
-    let workspace_layout = kamu::infra::WorkspaceLayout::new(&workspace_root_dir);
-    if !workspace_layout.kamu_root_dir.exists() {
+async fn init_from_synced_repo(
+    repo_url: &Url,
+    workspace_layout: &infra::WorkspaceLayout,
+    catalog: &dill::Catalog,
+    pool: &tokio_util::task::LocalPoolHandle,
+) {
+    if !workspace_layout.root_dir.exists() {
         tracing::info!(
-            message = "Creating local workspace as sync target from repository",
-            ?workspace_root_dir,
             repo_url = repo_url.to_string().as_str(),
+            workspace_root_dir = %workspace_layout.root_dir.display(),
+            message = "Creating local workspace as sync target from repository",
         );
-        kamu::infra::WorkspaceLayout::create(&workspace_root_dir).unwrap();
+        kamu::infra::WorkspaceLayout::create(&workspace_layout.root_dir).unwrap();
     } else {
         tracing::info!(
-            message = "Using existing workspace as sync target from repository",
-            ?workspace_root_dir,
             repo_url = repo_url.to_string().as_str(),
+            workspace_root_dir = %workspace_layout.root_dir.display(),
+            message = "Using existing workspace as sync target from repository",
         );
     }
 
-    init_metadata_repo_from_local_workspace(&workspace_root_dir, catalog);
-    catalog.add::<kamu::infra::RepositoryFactory>();
-    catalog.add::<kamu::infra::SyncServiceImpl>();
-    catalog
-        .bind::<dyn kamu::domain::SyncService, kamu::infra::SyncServiceImpl>()
-        .unwrap();
-
-    let metadata_repo = catalog
-        .get_one::<dyn kamu::domain::MetadataRepository>()
+    let repo_reg = catalog
+        .get_one::<dyn domain::RemoteRepositoryRegistry>()
         .unwrap();
 
     let repo_name = opendatafabric::RepositoryName::new_unchecked("remote");
 
-    let _ = metadata_repo.delete_repository(&repo_name);
-    metadata_repo.add_repository(&repo_name, repo_url).unwrap();
+    let _ = repo_reg.delete_repository(&repo_name);
+    repo_reg
+        .add_repository(&repo_name, repo_url.clone())
+        .unwrap();
 
     // Run first iteration synchronously to catch any misconfiguration
     let start = chrono::Utc::now();
@@ -268,11 +309,11 @@ fn init_metadata_repo_from_synced_repo(repo_url: Url, catalog: &mut dill::Catalo
             catalog.get_one().unwrap(),
             catalog.get_one().unwrap(),
             &repo_name,
-        ) {
+        )
+        .await
+        {
             Ok(_) => break,
-            Err(
-                kamu::domain::SyncError::IOError(_) | kamu::domain::SyncError::ProtocolError(_),
-            ) => {
+            Err(domain::SyncError::Internal(_)) => {
                 tracing::warn!("Failed to do initial sync from repo, waiting a bit longer");
                 ()
             }
@@ -286,6 +327,6 @@ fn init_metadata_repo_from_synced_repo(repo_url: Url, catalog: &mut dill::Catalo
         }
     }
 
-    let catalog = catalog.clone();
-    std::thread::spawn(move || kamu_api_server::repo_sync::repo_sync_loop(catalog, &repo_name));
+    let cat = catalog.clone();
+    pool.spawn_pinned(move || kamu_api_server::repo_sync::repo_sync_loop(cat, repo_name));
 }
