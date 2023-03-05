@@ -14,21 +14,17 @@ jobs:
       matrix:
         target:
           - x86_64-unknown-linux-gnu
-          #- x86_64-unknown-linux-musl
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1  # Uses rust-toolchain file
         with:
+          components: rustfmt
           target: ${{ matrix.target }}
           override: true
-          components: rustfmt
-      - uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: build
-          args: --release --target=${{ matrix.target }}
-      #- name: Rename binary
-      #  run: mv target/${{ matrix.target }}/release/${{ env.PACKAGE_NAME }} target/${{ matrix.target }}/release/${{ env.BINARY_NAME }}
+      - name: Install cross
+        run: cargo install cross --locked
+      - name: Build
+        run: cross build --release --target=${{ matrix.target }}
       - uses: actions/upload-artifact@v2
         with:
           name: ${{ env.PACKAGE_NAME }}-${{ matrix.target }}
@@ -59,7 +55,6 @@ jobs:
       matrix:
         target:
           - x86_64-unknown-linux-gnu
-          #- x86_64-unknown-linux-musl
     steps:
       - name: Download Artifact
         uses: actions/download-artifact@v2
