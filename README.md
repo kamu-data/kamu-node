@@ -1,7 +1,7 @@
 <div align="center">
-<h1>Kamu Platform</h1>
-<p><strong>Planet-scale data pipeline</strong></p>
-  
+
+<img alt="kamu - planet-scale data pipeline" src="docs/readme_files/kamu_logo.png" width=300/>
+
 <p>
 
 [![Release](https://img.shields.io/github/v/release/kamu-data/kamu-platform?include_prereleases&logo=rust&logoColor=orange&style=for-the-badge)](https://github.com/kamu-data/kamu-platform/releases/latest)
