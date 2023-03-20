@@ -3,14 +3,26 @@ on: [push]
 env:
   RUST_BACKTRACE: "1"
 jobs:
+  check_fmt:
+    name: Check / Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1 # Uses rust-toolchain file
+        with:
+          components: rustfmt
+      - name: cargo fmt --check
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --check
+
   test_linux:
     name: Test / Linux
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1  # Uses rust-toolchain file
-        with:
-          components: rustfmt
       - run: cargo build
       - run: cargo test --verbose
       - run: git diff

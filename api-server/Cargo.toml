@@ -6,16 +6,10 @@ edition = "2021"
 
 [dependencies]
 # Kamu
-dill = "~0.3"
-opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
-kamu = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
-kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", branch = "master" }
-
-# Kamu (dev)
-# dill = { path = "../../dill" }
-# opendatafabric = { path = "../../kamu-cli/opendatafabric" }
-# kamu = { path = "../../kamu-cli/kamu-core" }
-# kamu-adapter-graphql = { path = "../../kamu-cli/kamu-adapter-graphql" }
+dill = { workspace= true }
+opendatafabric = { workspace= true }
+kamu = { workspace= true }
+kamu-adapter-graphql = { workspace= true }
 
 # APIs
 http = "*"
