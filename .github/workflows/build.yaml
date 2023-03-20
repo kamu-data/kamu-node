@@ -1,5 +1,12 @@
 name: build
-on: [push]
+on:
+  push:
+    paths-ignore:
+      - "docs/**"
+      - "images/**"
+      - "**.md"
+  # manual trigger
+  workflow_dispatch: {}
 env:
   RUST_BACKTRACE: "1"
 jobs:
