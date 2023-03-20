@@ -15,7 +15,7 @@ api-server:
 .PHONY: api-server-push
 api-server-push:
 	docker push $(IMAGE_REPO)/kamu-api-server:$(API_SERVER_VERSION)
-	docker tag $(IMAGE_REPO)/kamu-api-server:$(API_SERVER_VERSION) $(IMAGE_REPO)/api-server:latest
+	docker tag $(IMAGE_REPO)/kamu-api-server:$(API_SERVER_VERSION) $(IMAGE_REPO)/kamu-api-server:latest
 	docker push $(IMAGE_REPO)/kamu-api-server:latest
 
 
