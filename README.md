@@ -38,13 +38,12 @@ cargo run -- gql query '{ apiVersion }' | jq
 ```
 
 
-### Synchronization with Remote Repository
-Until we implement support for operating over remote storage API server has a temporary option that will continuously monitor a remote repository (e.g. S3 bucket) and will sync all changes into local workspace. This only works for read-only synchronization and all changes to local workspace will be overwritten upon every sync.
+### API Server with Remote Repository (S3 bucket)
 
 To use it:
 
 ```bash
-cargo run -- --local-repo /tmp/kamu_local_repo --repo-url s3://example.com/kamu_repo run | bunyan
+cargo run -- --repo-url s3://example.com/kamu_repo run | bunyan
 ```
 
 

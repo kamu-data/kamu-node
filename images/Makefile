@@ -1,6 +1,6 @@
 IMAGE_REPO = ghcr.io/kamu-data
-KAMU_VERSION = 0.115.0
-API_SERVER_VERSION = 0.2.0
+KAMU_VERSION = 0.119.0
+API_SERVER_VERSION = 0.3.0
 
 
 .PHONY: api-server

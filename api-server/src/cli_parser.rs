@@ -19,7 +19,7 @@ pub fn cli(binary_name: &'static str, version: &'static str) -> Command {
             Arg::new("repo-url")
                 .long("repo-url")
                 .value_parser(value_parse_metadata_repo)
-                .help("URL of the remote dataset repository to sync data from"),
+                .help("URL of the remote dataset repository"),
             Arg::new("local-repo")
                 .long("local-repo")
                 .value_parser(value_parser!(PathBuf))
