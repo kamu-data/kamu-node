@@ -2,8 +2,12 @@ mod cli_parser;
 
 use std::path::{Path, PathBuf};
 
+use dill::CatalogBuilder;
 use kamu::domain;
+use kamu::domain::DatasetRepository;
 use kamu::infra;
+use kamu::infra::utils::s3_context::S3Context;
+use kamu::infra::DatasetRepositoryS3;
 use tracing::info;
 use url::Url;
 
@@ -16,69 +20,63 @@ const DEFAULT_LOGGING_CONFIG: &str = "info,tower_http=trace";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+enum RunMode {
+    LocalWorkspace,
+    RemoteS3Url,
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 #[tokio::main]
 async fn main() -> Result<(), hyper::Error> {
     init_logging();
 
-    let mut b = dill::CatalogBuilder::new();
-
-    b.add::<infra::QueryServiceImpl>();
-    b.bind::<dyn domain::QueryService, infra::QueryServiceImpl>();
-
-    b.add::<infra::LocalDatasetRepositoryImpl>();
-    b.bind::<dyn domain::LocalDatasetRepository, infra::LocalDatasetRepositoryImpl>();
-
-    b.add::<infra::RemoteRepositoryRegistryImpl>();
-    b.bind::<dyn domain::RemoteRepositoryRegistry, infra::RemoteRepositoryRegistryImpl>();
-
-    b.add::<infra::DatasetFactoryImpl>();
-    b.bind::<dyn domain::DatasetFactory, infra::DatasetFactoryImpl>();
-
-    b.add::<infra::SyncServiceImpl>();
-    b.bind::<dyn domain::SyncService, infra::SyncServiceImpl>();
-
-    b.add::<infra::SearchServiceImpl>();
-    b.bind::<dyn domain::SearchService, infra::SearchServiceImpl>();
-
-    // TODO: Externalize configuration
-    b.add_value(infra::IpfsGateway {
-        url: Url::parse("http://localhost:8080").unwrap(),
-        pre_resolve_dnslink: true,
-    });
-    b.add_value(kamu::infra::utils::ipfs_wrapper::IpfsClient::default());
-
     let matches = cli_parser::cli(BINARY_NAME, VERSION).get_matches();
 
     let repo_url = matches.get_one::<Url>("repo-url").cloned();
+    let local_repo_path = matches.get_one::<PathBuf>("local-repo").cloned();
 
-    let local_repo = matches
-        .get_one::<PathBuf>("local-repo")
-        .cloned()
-        .unwrap_or_else(|| find_workspace());
+    let catalog = if let (Some(_), Some(_)) = (&repo_url, &local_repo_path) {
+        panic!("Cannot use '--repo-url' and '--local-repo' at the same time.");
+    } else if let (Some(repo_url), None) = (&repo_url, &local_repo_path) {
+        info!(
+            version = VERSION,
+            args = ?std::env::args().collect::<Vec<_>>(),
+            repo_url = %repo_url,
+            "Initializing (remote storage) {}",
+            BINARY_NAME
+        );
 
-    info!(
-        version = VERSION,
-        args = ?std::env::args().collect::<Vec<_>>(),
-        repo_url = ?repo_url,
-        local_repo = %local_repo.display(),
-        "Initializing {}",
-        BINARY_NAME
-    );
+        let mut b = init_dependencies(RunMode::RemoteS3Url);
 
-    let workspace_layout = infra::WorkspaceLayout::new(&local_repo);
-    b.add_value(workspace_layout.clone());
+        let (endpoint, bucket, key_prefix) = S3Context::split_url(&repo_url);
+        let s3_context = S3Context::from_items(endpoint.clone(), bucket, key_prefix).await;
+        b.add_value(DatasetRepositoryS3::new(s3_context, endpoint.unwrap()))
+            .bind::<dyn DatasetRepository, DatasetRepositoryS3>();
 
-    let catalog = b.build();
-
-    // TODO: Using a thread pool to spawn a sync task because sync future is ?Send
-    // and does not work with tokio::spawn() which implies that future can bounce between threads
-    let pool = tokio_util::task::LocalPoolHandle::new(1);
-
-    if let Some(repo_url) = &repo_url {
-        init_from_synced_repo(repo_url, &workspace_layout, &catalog, &pool).await
+        b
     } else {
-        init_from_local_workspace(&workspace_layout)
+        let local_repo = local_repo_path.unwrap_or_else(|| find_workspace());
+
+        info!(
+            version = VERSION,
+            args = ?std::env::args().collect::<Vec<_>>(),
+            local_repo = %local_repo.display(),
+            "Initializing (local storage) {}",
+            BINARY_NAME
+        );
+
+        let mut b = init_dependencies(RunMode::LocalWorkspace);
+
+        let workspace_layout = infra::WorkspaceLayout::new(&local_repo);
+        b.add_value(workspace_layout.clone());
+
+        init_from_local_workspace(&workspace_layout);
+
+        b
     }
+    .build();
 
     match matches.subcommand() {
         Some(("gql", sub)) => match sub.subcommand() {
@@ -138,6 +136,48 @@ fn init_logging() {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
+    let mut b = dill::CatalogBuilder::new();
+
+    b.add::<infra::QueryServiceImpl>();
+    b.bind::<dyn domain::QueryService, infra::QueryServiceImpl>();
+
+    match run_mode {
+        RunMode::LocalWorkspace => {
+            b.add::<infra::DatasetRepositoryLocalFs>();
+            b.bind::<dyn domain::DatasetRepository, infra::DatasetRepositoryLocalFs>();
+        }
+        RunMode::RemoteS3Url => {
+            // Don't register, it is hard to inject arguments, so a manual add is necessary
+            // b.add::<infra::DatasetRepositoryS3>();
+            // b.bind::<dyn domain::DatasetRepository, infra::DatasetRepositoryS3>();
+        }
+    }
+
+    b.add::<infra::RemoteRepositoryRegistryImpl>();
+    b.bind::<dyn domain::RemoteRepositoryRegistry, infra::RemoteRepositoryRegistryImpl>();
+
+    b.add::<infra::DatasetFactoryImpl>();
+    b.bind::<dyn domain::DatasetFactory, infra::DatasetFactoryImpl>();
+
+    b.add::<infra::SyncServiceImpl>();
+    b.bind::<dyn domain::SyncService, infra::SyncServiceImpl>();
+
+    b.add::<infra::SearchServiceImpl>();
+    b.bind::<dyn domain::SearchService, infra::SearchServiceImpl>();
+
+    // TODO: Externalize configuration
+    b.add_value(infra::IpfsGateway {
+        url: Url::parse("http://localhost:8080").unwrap(),
+        pre_resolve_dnslink: true,
+    });
+    b.add_value(kamu::infra::utils::ipfs_wrapper::IpfsClient::default());
+
+    b
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 async fn gql_query(query: &str, full: bool, catalog: dill::Catalog) -> String {
     let gql_schema = kamu_adapter_graphql::schema(catalog);
     let response = gql_schema.execute(query).await;
@@ -159,6 +199,14 @@ async fn gql_query(query: &str, full: bool, catalog: dill::Catalog) -> String {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+// Extractor of dataset identity for smart transfer protocol
+#[derive(serde::Deserialize)]
+struct DatasetByName {
+    dataset_name: opendatafabric::DatasetName,
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 async fn run_server(
     address: Option<std::net::IpAddr>,
     http_port: Option<u16>,
@@ -166,13 +214,23 @@ async fn run_server(
 ) -> Result<(), hyper::Error> {
     use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
-    let gql_schema = kamu_adapter_graphql::schema(catalog);
+    let gql_schema = kamu_adapter_graphql::schema(catalog.clone());
 
     let app = axum::Router::new()
         .route("/", axum::routing::get(root_handler))
         .route(
             "/graphql",
             axum::routing::get(graphql_playground_handler).post(graphql_handler),
+        )
+        .nest(
+            "/:dataset_name",
+            kamu_adapter_http::smart_transfer_protocol_routes()
+                .layer(kamu_adapter_http::DatasetResolverLayer::new(
+                    |axum::extract::Path(p): axum::extract::Path<DatasetByName>| {
+                        p.dataset_name.as_local_ref()
+                    },
+                ))
+                .layer(axum::extract::Extension(catalog)),
         )
         .layer(
             tower::ServiceBuilder::new()
@@ -268,65 +326,3 @@ fn init_from_local_workspace(workspace_layout: &infra::WorkspaceLayout) {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-
-async fn init_from_synced_repo(
-    repo_url: &Url,
-    workspace_layout: &infra::WorkspaceLayout,
-    catalog: &dill::Catalog,
-    pool: &tokio_util::task::LocalPoolHandle,
-) {
-    if !workspace_layout.root_dir.exists() {
-        tracing::info!(
-            repo_url = repo_url.to_string().as_str(),
-            workspace_root_dir = %workspace_layout.root_dir.display(),
-            message = "Creating local workspace as sync target from repository",
-        );
-        kamu::infra::WorkspaceLayout::create(&workspace_layout.root_dir).unwrap();
-    } else {
-        tracing::info!(
-            repo_url = repo_url.to_string().as_str(),
-            workspace_root_dir = %workspace_layout.root_dir.display(),
-            message = "Using existing workspace as sync target from repository",
-        );
-    }
-
-    let repo_reg = catalog
-        .get_one::<dyn domain::RemoteRepositoryRegistry>()
-        .unwrap();
-
-    let repo_name = opendatafabric::RepositoryName::new_unchecked("remote");
-
-    let _ = repo_reg.delete_repository(&repo_name);
-    repo_reg
-        .add_repository(&repo_name, repo_url.clone())
-        .unwrap();
-
-    // Run first iteration synchronously to catch any misconfiguration
-    let start = chrono::Utc::now();
-    loop {
-        match kamu_api_server::repo_sync::sync_all_from_repo(
-            catalog.get_one().unwrap(),
-            catalog.get_one().unwrap(),
-            catalog.get_one().unwrap(),
-            &repo_name,
-        )
-        .await
-        {
-            Ok(_) => break,
-            Err(domain::SyncError::Internal(_)) => {
-                tracing::warn!("Failed to do initial sync from repo, waiting a bit longer");
-                ()
-            }
-            e @ _ => e.expect("Terminating on sync failure"),
-        }
-
-        std::thread::sleep(std::time::Duration::from_secs(1));
-
-        if chrono::Utc::now() - start > chrono::Duration::seconds(10) {
-            break;
-        }
-    }
-
-    let cat = catalog.clone();
-    pool.spawn_pinned(move || kamu_api_server::repo_sync::repo_sync_loop(cat, repo_name));
-}
