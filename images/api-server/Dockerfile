@@ -15,7 +15,7 @@ RUN wget -q https://github.com/kamu-data/kamu-platform/releases/download/v${API_
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 # S3-based:
-CMD ["/opt/kamu/kamu-api-server --repo-url s3+https://s3.us-west-2.amazonaws.com/datasets.kamu.dev/ run --address 0.0.0.0 --http-port 80"]
+CMD ["/opt/kamu/kamu-api-server --repo-url=s3+https://s3.us-west-2.amazonaws.com/datasets.kamu.dev/ run --address=0.0.0.0 --http-port=80"]
 # Local repository:
 # CMD ["/opt/kamu/kamu-api-server --local-repo /opt/kamu/workspace run --address 0.0.0.0 --http-port 80"]
 EXPOSE 80/tcp
