@@ -1291,8 +1291,8 @@ checksum = "13418e745008f7349ec7e449155f419a61b92b58a99cc3616942b926825ec76b"
 
 [[package]]
 name = "container-runtime"
-version = "0.126.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.126.0#3d27060986906efe5cd82d989475cf669fe441f9"
+version = "0.126.2"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.126.2#07b0d7cbd2c9a8d3798b245bf55c0701d1f1fe7a"
 dependencies = [
  "async-trait",
  "cfg-if",
@@ -2430,8 +2430,8 @@ dependencies = [
 
 [[package]]
 name = "kamu"
-version = "0.126.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.126.0#3d27060986906efe5cd82d989475cf669fe441f9"
+version = "0.126.2"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.126.2#07b0d7cbd2c9a8d3798b245bf55c0701d1f1fe7a"
 dependencies = [
  "arrow",
  "arrow-digest",
@@ -2439,6 +2439,7 @@ dependencies = [
  "async-stream",
  "async-trait",
  "aws-config",
+ "aws-credential-types",
  "aws-sdk-s3",
  "aws-smithy-http",
  "bytes",
@@ -2489,8 +2490,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-graphql"
-version = "0.126.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.126.0#3d27060986906efe5cd82d989475cf669fe441f9"
+version = "0.126.2"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.126.2#07b0d7cbd2c9a8d3798b245bf55c0701d1f1fe7a"
 dependencies = [
  "async-graphql",
  "chrono",
@@ -2508,8 +2509,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-http"
-version = "0.126.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.126.0#3d27060986906efe5cd82d989475cf669fe441f9"
+version = "0.126.2"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.126.2#07b0d7cbd2c9a8d3798b245bf55c0701d1f1fe7a"
 dependencies = [
  "async-trait",
  "axum",
@@ -2970,8 +2971,8 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 
 [[package]]
 name = "opendatafabric"
-version = "0.126.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.126.0#3d27060986906efe5cd82d989475cf669fe441f9"
+version = "0.126.2"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.126.2#07b0d7cbd2c9a8d3798b245bf55c0701d1f1fe7a"
 dependencies = [
  "bs58",
  "byteorder",

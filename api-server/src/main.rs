@@ -52,9 +52,11 @@ async fn main() -> Result<(), hyper::Error> {
         b.add_value(infra::DatasetRepositoryS3::new(s3_context.clone()))
             .bind::<dyn domain::DatasetRepository, infra::DatasetRepositoryS3>();
 
+        let s3_credentials = s3_context.credentials().await;
+
         b.add_value(infra::ObjectStoreBuilderS3::new(
-            s3_context.bucket,
-            s3_context.endpoint.unwrap(),
+            s3_context,
+            s3_credentials,
             false,
         ))
         .bind::<dyn domain::ObjectStoreBuilder, infra::ObjectStoreBuilderS3>();
