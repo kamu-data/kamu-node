@@ -4,10 +4,8 @@ use std::path::{Path, PathBuf};
 
 use dill::CatalogBuilder;
 use kamu::domain;
-use kamu::domain::DatasetRepository;
 use kamu::infra;
 use kamu::infra::utils::s3_context::S3Context;
-use kamu::infra::DatasetRepositoryS3;
 use tracing::info;
 use url::Url;
 
@@ -50,10 +48,16 @@ async fn main() -> Result<(), hyper::Error> {
 
         let mut b = init_dependencies(RunMode::RemoteS3Url);
 
-        let (endpoint, bucket, key_prefix) = S3Context::split_url(&repo_url);
-        let s3_context = S3Context::from_items(endpoint.clone(), bucket, key_prefix).await;
-        b.add_value(DatasetRepositoryS3::new(s3_context, endpoint.unwrap()))
-            .bind::<dyn DatasetRepository, DatasetRepositoryS3>();
+        let s3_context = S3Context::from_url(&repo_url).await;
+        b.add_value(infra::DatasetRepositoryS3::new(s3_context.clone()))
+            .bind::<dyn domain::DatasetRepository, infra::DatasetRepositoryS3>();
+
+        b.add_value(infra::ObjectStoreBuilderS3::new(
+            s3_context.bucket,
+            s3_context.endpoint.unwrap(),
+            false,
+        ))
+        .bind::<dyn domain::ObjectStoreBuilder, infra::ObjectStoreBuilderS3>();
 
         b
     } else {
@@ -142,12 +146,22 @@ fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
     b.add::<infra::QueryServiceImpl>();
     b.bind::<dyn domain::QueryService, infra::QueryServiceImpl>();
 
+    b.add::<infra::ObjectStoreRegistryImpl>();
+    b.bind::<dyn domain::ObjectStoreRegistry, infra::ObjectStoreRegistryImpl>();
+
     match run_mode {
         RunMode::LocalWorkspace => {
             b.add::<infra::DatasetRepositoryLocalFs>();
             b.bind::<dyn domain::DatasetRepository, infra::DatasetRepositoryLocalFs>();
+
+            b.add::<infra::ObjectStoreBuilderLocalFs>();
+            b.bind::<dyn domain::ObjectStoreBuilder, infra::ObjectStoreBuilderLocalFs>();
         }
         RunMode::RemoteS3Url => {
+            // Don't register, it is hard to inject arguments, so a manual add is necessary
+            // b.add::<infra::ObjectStoreBuilderS3>();
+            // b.bind::<dyn domain::ObjectStoreBuilder, infra::ObjectStoreBuilderS3>();
+
             // Don't register, it is hard to inject arguments, so a manual add is necessary
             // b.add::<infra::DatasetRepositoryS3>();
             // b.bind::<dyn domain::DatasetRepository, infra::DatasetRepositoryS3>();
