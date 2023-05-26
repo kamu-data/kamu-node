@@ -5,7 +5,7 @@ members = ["api-server"]
 [workspace.dependencies]
 # Kamu
 dill = "0.5"
-opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.124.1" }
-kamu = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.124.1" }
-kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.124.1" }
-kamu-adapter-http = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.124.1" }
+opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.126.2" }
+kamu = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.126.2" }
+kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.126.2" }
+kamu-adapter-http = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.126.2" }
