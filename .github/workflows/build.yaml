@@ -8,14 +8,16 @@ on:
   # manual trigger
   workflow_dispatch: {}
 env:
+  RUST_LOG: "debug"
+  RUST_LOG_SPAN_EVENTS: "new,close"
   RUST_BACKTRACE: "1"
 jobs:
-  check_fmt:
-    name: Check / Formatting
+  lint_fmt:
+    name: Lint / Formatting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1 # Uses rust-toolchain file
+      - uses: actions-rs/toolchain@v1
         with:
           components: rustfmt
       - name: cargo fmt --check
@@ -24,13 +26,31 @@ jobs:
           command: fmt
           args: --check
 
-  test_linux:
-    name: Test / Linux
+  lint_deps:
+    name: Lint / Dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1  # Uses rust-toolchain file
-      - run: cargo build
-      - run: cargo test --verbose
-      - run: git diff
-      - run: git diff-index --quiet HEAD  # Ensure all generated files are up-to-date
+      - uses: actions-rs/toolchain@v1
+      - run: cargo install --locked cargo-deny
+      - run: cargo deny check
+
+  test_linux:
+    name: Test / Linux
+    runs-on: ubuntu-latest
+    env:
+      CARGO_FLAGS: --profile ci --features kamu/ftp
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+      - uses: swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
+      - name: build
+        run: cargo test ${{ env.CARGO_FLAGS }} --no-run
+      # - name: pull test images
+      #   run: cargo test ${{ env.CARGO_FLAGS }} test_setup_pull_images -- --nocapture
+      - name: run tests
+        run: cargo test ${{ env.CARGO_FLAGS }}
+      - name: check git diff 
+        run: git diff && git diff-index --quiet HEAD

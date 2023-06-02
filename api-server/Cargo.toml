@@ -5,52 +5,57 @@ authors = [
     "Sergii Mikhtoniuk <smikhtoniuk@kamu.dev>",
     "Sergiy Zaychenko <szaychenko@kamu.dev>",
 ]
-edition = "2021"
+edition.workspace = true
+readme = "../README.md"
+license-file = "../LICENSE.txt"
+publish = false
+homepage = "https://github.com/kamu-data/kamu-platform"
+repository = "https://github.com/kamu-data/kamu-platform"
+
 
 [dependencies]
 # Kamu
-dill = { workspace = true }
-opendatafabric = { workspace = true }
-kamu = { workspace = true }
-kamu-adapter-graphql = { workspace = true }
-kamu-adapter-http = { workspace = true }
+dill = "0.5"
+opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.128.0", version = "0.128.0" }
+kamu = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.128.0", version = "0.128.0" }
+kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.128.0", version = "0.128.0" }
+kamu-adapter-http = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.128.0", version = "0.128.0" }
 
 # APIs
-http = "*"
-hyper = "*"
-tower = { version = "*" }
-tower-http = { version = "*", features = ["trace", "cors"] }
-axum = { version = "*", features = ["ws"] }
-axum-extra = { version = "*", features = ["async-read-body"] }
-async-graphql = { version = "*", features = [
+http = "0.2"
+hyper = "0.14"
+tower = { version = "0.4" }
+tower-http = { version = "0.4", features = ["trace", "cors"] }
+axum = { version = "0.6", features = ["ws"] }
+axum-extra = { version = "0.7", features = ["async-read-body"] }
+async-graphql = { version = "5", features = [
     "chrono",
     "url",
     "apollo_tracing",
 ] }
-async-graphql-axum = "*"
+async-graphql-axum = "5"
 
 # Tracing / logging / telemetry
-tracing = "*"
-tracing-appender = "*"
-tracing-subscriber = { version = "*", features = ["env-filter"] }
-tracing-log = "*"
-tracing-bunyan-formatter = "*"
+tracing = "0.1"
+tracing-appender = "0.2"
+tracing-subscriber = { version = "0.3", default-features = false, features = ["env-filter"] }
+tracing-log = "0.1"
+tracing-bunyan-formatter = "0.3"
 
 # Utils
-chrono = "*"
-clap = "*"
-futures = "*"
-indoc = "*"
-serde = "*"
-serde_json = "*"
-tokio = { version = "*", features = ["macros"] }
-tokio-util = { version = "*", features = ["rt"] }
-url = "*"
+chrono = "0.4"
+clap = "4"
+futures = "0.3"
+indoc = "2"
+serde = "1"
+serde_json = "1"
+tokio = { version = "1", default-features = false, features = ["macros"] }
+tokio-util = { version = "0.7", default-features = false, features = ["rt"] }
+url = "2"
 
 
 [dev-dependencies]
-tempfile = "*"
-rand = "^0.8"
-indoc = "*"                                        # Compile-time unindent
-env_logger = "*"
-test-log = { version = "*", features = ["trace"] }
+tempfile = "3"
+rand = "0.8"
+env_logger = "0.10"
+test-log = { version = "0.2", features = ["trace"] }

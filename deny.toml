@@ -1,0 +1,80 @@
+[bans]
+# Forbid multiple versions of same dependency (with some exceptions)
+# TODO: Change to "deny" once we crack down on duplication
+multiple-versions = "warn"
+# Avoid adding dependencies to this list as this slows down compilation.
+# Find another ways to avoid duplication.
+skip-tree = [
+]
+
+# We should always specify version ranges
+wildcards = "deny"
+
+# We specify features explicitly to avoid bloat
+workspace-default-features = "deny"
+features = [
+]
+
+deny = [
+    ### Crates we shouldn't use ####
+    # Use `md-5` instead, which is part of the RustCrypto ecosystem
+    { name = "md5" },
+    # TODO: We should decide whether to stick with rustls or openssl and deny one of them
+
+    ### Creates we deny multiple versions of (until we flip to skip-tree) ###
+    { name = "arrow", deny-multiple-versions = true },
+    { name = "axum", deny-multiple-versions = true },
+    { name = "datafusion", deny-multiple-versions = true },
+    # { name = "rustls", deny-multiple-versions = true },
+    { name = "tokio", deny-multiple-versions = true },
+]
+
+
+[licenses]
+allow = [
+    "Apache-2.0",
+    "CC0-1.0",
+    "0BSD",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "MIT",
+    "MPL-2.0",
+    "Zlib",
+    "OpenSSL",
+]
+copyleft = "deny"
+private = { ignore = true }
+
+[[licenses.exceptions]]
+allow = ["Unicode-DFS-2016"]
+name = "unicode-ident"
+
+
+[[licenses.clarify]]
+name = "ring"
+expression = "MIT AND ISC AND OpenSSL"
+license-files = [
+    { path = "LICENSE", hash = 0xbd0eed23 }
+]
+
+
+[sources]
+unknown-git = "deny"
+unknown-registry = "deny"
+allow-org = { github = ["kamu-data"] }
+
+
+[advisories]
+vulnerability = "warn"
+unmaintained = "warn"
+unsound = "warn"
+yanked = "deny"
+notice = "warn"
+ignore = [
+    # https://rustsec.org/advisories/RUSTSEC-2020-0071
+    # Ignoring it until `chrono` updates to new version of `time` crate.
+    # We are not affected by this voulnerability as `chrono` doesn't call the affected code.
+    "RUSTSEC-2020-0071",
+]
+
