@@ -1,6 +1,6 @@
 [package]
 name = "kamu-api-server"
-version = "0.5.0"
+version = "0.5.1"
 authors = [
     "Sergii Mikhtoniuk <smikhtoniuk@kamu.dev>",
     "Sergiy Zaychenko <szaychenko@kamu.dev>",
@@ -38,7 +38,9 @@ async-graphql-axum = "5"
 # Tracing / logging / telemetry
 tracing = "0.1"
 tracing-appender = "0.2"
-tracing-subscriber = { version = "0.3", default-features = false, features = ["env-filter"] }
+tracing-subscriber = { version = "0.3", default-features = false, features = [
+    "env-filter",
+] }
 tracing-log = "0.1"
 tracing-bunyan-formatter = "0.3"
 
