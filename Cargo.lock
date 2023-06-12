@@ -1297,8 +1297,8 @@ checksum = "13418e745008f7349ec7e449155f419a61b92b58a99cc3616942b926825ec76b"
 
 [[package]]
 name = "container-runtime"
-version = "0.128.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.0#639e7a6f7cbe7680addf0866c980142c05c5283b"
+version = "0.128.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.1#83b5ef68ba2082594fcbc14822bee5382c4c6ba7"
 dependencies = [
  "async-trait",
  "cfg-if",
@@ -2362,8 +2362,8 @@ checksum = "8bb03732005da905c88227371639bf1ad885cc712789c011c31c5fb3ab3ccf02"
 
 [[package]]
 name = "internal-error"
-version = "0.128.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.0#639e7a6f7cbe7680addf0866c980142c05c5283b"
+version = "0.128.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.1#83b5ef68ba2082594fcbc14822bee5382c4c6ba7"
 dependencies = [
  "thiserror",
 ]
@@ -2444,10 +2444,9 @@ dependencies = [
 
 [[package]]
 name = "kamu"
-version = "0.128.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.0#639e7a6f7cbe7680addf0866c980142c05c5283b"
+version = "0.128.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.1#83b5ef68ba2082594fcbc14822bee5382c4c6ba7"
 dependencies = [
- "arrow-digest",
  "async-recursion",
  "async-stream",
  "async-trait",
@@ -2472,10 +2471,11 @@ dependencies = [
  "indoc",
  "internal-error",
  "itertools",
+ "kamu-core",
+ "kamu-data-utils",
  "libc",
  "object_store",
  "opendatafabric",
- "pathdiff",
  "pin-project",
  "rand 0.8.5",
  "regex",
@@ -2497,15 +2497,14 @@ dependencies = [
  "tracing",
  "trust-dns-resolver",
  "url",
- "users",
  "walkdir",
  "zip",
 ]
 
 [[package]]
 name = "kamu-adapter-graphql"
-version = "0.128.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.0#639e7a6f7cbe7680addf0866c980142c05c5283b"
+version = "0.128.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.1#83b5ef68ba2082594fcbc14822bee5382c4c6ba7"
 dependencies = [
  "async-graphql",
  "chrono",
@@ -2513,7 +2512,9 @@ dependencies = [
  "dill",
  "futures",
  "indoc",
- "kamu",
+ "kamu-core",
+ "kamu-data-utils",
+ "kamu-task-system",
  "opendatafabric",
  "reqwest",
  "serde",
@@ -2523,15 +2524,14 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-http"
-version = "0.128.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.0#639e7a6f7cbe7680addf0866c980142c05c5283b"
+version = "0.128.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.1#83b5ef68ba2082594fcbc14822bee5382c4c6ba7"
 dependencies = [
  "async-trait",
  "axum",
  "axum-extra",
  "bytes",
  "chrono",
- "container-runtime",
  "dill",
  "flate2",
  "futures",
@@ -2554,7 +2554,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-api-server"
-version = "0.5.1"
+version = "0.5.2"
 dependencies = [
  "async-graphql",
  "async-graphql-axum",
@@ -2586,6 +2586,63 @@ dependencies = [
  "tracing-bunyan-formatter",
  "tracing-log",
  "tracing-subscriber",
+ "url",
+]
+
+[[package]]
+name = "kamu-core"
+version = "0.128.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.1#83b5ef68ba2082594fcbc14822bee5382c4c6ba7"
+dependencies = [
+ "async-stream",
+ "async-trait",
+ "bytes",
+ "chrono",
+ "container-runtime",
+ "datafusion",
+ "futures",
+ "internal-error",
+ "object_store",
+ "opendatafabric",
+ "pathdiff",
+ "pin-project",
+ "serde",
+ "serde_with",
+ "thiserror",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "kamu-data-utils"
+version = "0.128.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.1#83b5ef68ba2082594fcbc14822bee5382c4c6ba7"
+dependencies = [
+ "arrow-digest",
+ "datafusion",
+ "digest 0.10.7",
+ "opendatafabric",
+ "sha3",
+ "tracing",
+]
+
+[[package]]
+name = "kamu-task-system"
+version = "0.128.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.1#83b5ef68ba2082594fcbc14822bee5382c4c6ba7"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "internal-error",
+ "kamu-core",
+ "opendatafabric",
+ "serde",
+ "serde_with",
+ "thiserror",
+ "tokio-stream",
+ "tracing",
  "url",
 ]
 
@@ -2971,8 +3028,8 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 
 [[package]]
 name = "opendatafabric"
-version = "0.128.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.0#639e7a6f7cbe7680addf0866c980142c05c5283b"
+version = "0.128.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.1#83b5ef68ba2082594fcbc14822bee5382c4c6ba7"
 dependencies = [
  "bs58",
  "byteorder",
@@ -4600,16 +4657,6 @@ name = "urlencoding"
 version = "2.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e8db7427f936968176eaa7cdf81b7f98b980b18495ec28f1b5791ac3bfe3eea9"
-
-[[package]]
-name = "users"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24cc0f6d6f267b73e5a2cadf007ba8f9bc39c6a6f9666f8cf25ea809a153b032"
-dependencies = [
- "libc",
- "log",
-]
 
 [[package]]
 name = "utf-8"

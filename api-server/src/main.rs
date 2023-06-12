@@ -3,9 +3,6 @@ mod cli_parser;
 use std::path::{Path, PathBuf};
 
 use dill::CatalogBuilder;
-use kamu::domain;
-use kamu::infra;
-use kamu::infra::utils::s3_context::S3Context;
 use tracing::info;
 use url::Url;
 
@@ -48,18 +45,18 @@ async fn main() -> Result<(), hyper::Error> {
 
         let mut b = init_dependencies(RunMode::RemoteS3Url);
 
-        let s3_context = S3Context::from_url(&repo_url).await;
-        b.add_value(infra::DatasetRepositoryS3::new(s3_context.clone()))
-            .bind::<dyn domain::DatasetRepository, infra::DatasetRepositoryS3>();
+        let s3_context = kamu::utils::s3_context::S3Context::from_url(&repo_url).await;
+        b.add_value(kamu::DatasetRepositoryS3::new(s3_context.clone()))
+            .bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>();
 
         let s3_credentials = s3_context.credentials().await;
 
-        b.add_value(infra::ObjectStoreBuilderS3::new(
+        b.add_value(kamu::ObjectStoreBuilderS3::new(
             s3_context,
             s3_credentials,
             false,
         ))
-        .bind::<dyn domain::ObjectStoreBuilder, infra::ObjectStoreBuilderS3>();
+        .bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderS3>();
 
         b
     } else {
@@ -75,7 +72,7 @@ async fn main() -> Result<(), hyper::Error> {
 
         let mut b = init_dependencies(RunMode::LocalWorkspace);
 
-        let workspace_layout = infra::WorkspaceLayout::new(&local_repo);
+        let workspace_layout = kamu::WorkspaceLayout::new(&local_repo);
         b.add_value(workspace_layout.clone());
 
         init_from_local_workspace(&workspace_layout);
@@ -145,19 +142,19 @@ fn init_logging() {
 fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
     let mut b = dill::CatalogBuilder::new();
 
-    b.add::<infra::QueryServiceImpl>();
-    b.bind::<dyn domain::QueryService, infra::QueryServiceImpl>();
+    b.add::<kamu::QueryServiceImpl>();
+    b.bind::<dyn kamu::domain::QueryService, kamu::QueryServiceImpl>();
 
-    b.add::<infra::ObjectStoreRegistryImpl>();
-    b.bind::<dyn domain::ObjectStoreRegistry, infra::ObjectStoreRegistryImpl>();
+    b.add::<kamu::ObjectStoreRegistryImpl>();
+    b.bind::<dyn kamu::domain::ObjectStoreRegistry, kamu::ObjectStoreRegistryImpl>();
 
     match run_mode {
         RunMode::LocalWorkspace => {
-            b.add::<infra::DatasetRepositoryLocalFs>();
-            b.bind::<dyn domain::DatasetRepository, infra::DatasetRepositoryLocalFs>();
+            b.add::<kamu::DatasetRepositoryLocalFs>();
+            b.bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryLocalFs>();
 
-            b.add::<infra::ObjectStoreBuilderLocalFs>();
-            b.bind::<dyn domain::ObjectStoreBuilder, infra::ObjectStoreBuilderLocalFs>();
+            b.add::<kamu::ObjectStoreBuilderLocalFs>();
+            b.bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderLocalFs>();
         }
         RunMode::RemoteS3Url => {
             // Don't register, it is hard to inject arguments, so a manual add is necessary
@@ -170,24 +167,24 @@ fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
         }
     }
 
-    b.add::<infra::RemoteRepositoryRegistryImpl>();
-    b.bind::<dyn domain::RemoteRepositoryRegistry, infra::RemoteRepositoryRegistryImpl>();
+    b.add::<kamu::RemoteRepositoryRegistryImpl>();
+    b.bind::<dyn kamu::domain::RemoteRepositoryRegistry, kamu::RemoteRepositoryRegistryImpl>();
 
-    b.add::<infra::DatasetFactoryImpl>();
-    b.bind::<dyn domain::DatasetFactory, infra::DatasetFactoryImpl>();
+    b.add::<kamu::DatasetFactoryImpl>();
+    b.bind::<dyn kamu::domain::DatasetFactory, kamu::DatasetFactoryImpl>();
 
-    b.add::<infra::SyncServiceImpl>();
-    b.bind::<dyn domain::SyncService, infra::SyncServiceImpl>();
+    b.add::<kamu::SyncServiceImpl>();
+    b.bind::<dyn kamu::domain::SyncService, kamu::SyncServiceImpl>();
 
-    b.add::<infra::SearchServiceImpl>();
-    b.bind::<dyn domain::SearchService, infra::SearchServiceImpl>();
+    b.add::<kamu::SearchServiceImpl>();
+    b.bind::<dyn kamu::domain::SearchService, kamu::SearchServiceImpl>();
 
     // TODO: Externalize configuration
-    b.add_value(infra::IpfsGateway {
+    b.add_value(kamu::IpfsGateway {
         url: Url::parse("http://localhost:8080").unwrap(),
         pre_resolve_dnslink: true,
     });
-    b.add_value(kamu::infra::utils::ipfs_wrapper::IpfsClient::default());
+    b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
 
     b
 }
@@ -332,7 +329,7 @@ fn find_workspace_rec(p: &Path) -> Option<PathBuf> {
 // Workspace Init
 /////////////////////////////////////////////////////////////////////////////////////////
 
-fn init_from_local_workspace(workspace_layout: &infra::WorkspaceLayout) {
+fn init_from_local_workspace(workspace_layout: &kamu::WorkspaceLayout) {
     if !workspace_layout.root_dir.exists() {
         panic!(
             "Directory is not a kamu workspace: {}",
