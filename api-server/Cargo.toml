@@ -1,6 +1,6 @@
 [package]
 name = "kamu-api-server"
-version = "0.5.3"
+version = "0.5.4"
 authors = [
     "Sergii Mikhtoniuk <smikhtoniuk@kamu.dev>",
     "Sergiy Zaychenko <szaychenko@kamu.dev>",
@@ -16,10 +16,10 @@ repository = "https://github.com/kamu-data/kamu-platform"
 [dependencies]
 # Kamu
 dill = "0.5"
-opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.128.2", version = "0.128.2" }
-kamu = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.128.2", version = "0.128.2" }
-kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.128.2", version = "0.128.2" }
-kamu-adapter-http = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.128.2", version = "0.128.2" }
+opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.128.3", version = "0.128.3" }
+kamu = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.128.3", version = "0.128.3" }
+kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.128.3", version = "0.128.3" }
+kamu-adapter-http = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.128.3", version = "0.128.3" }
 
 # APIs
 http = "0.2"

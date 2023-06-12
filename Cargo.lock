@@ -449,6 +449,8 @@ dependencies = [
  "static_assertions",
  "tempfile",
  "thiserror",
+ "tracing",
+ "tracing-futures",
  "url",
 ]
 
@@ -1297,8 +1299,8 @@ checksum = "13418e745008f7349ec7e449155f419a61b92b58a99cc3616942b926825ec76b"
 
 [[package]]
 name = "container-runtime"
-version = "0.128.2"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.2#fe6b0b197f5bb512574bf842e18c360a46544994"
+version = "0.128.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.3#922769b66b12bca001f263651a8b9a16f424d5df"
 dependencies = [
  "async-trait",
  "cfg-if",
@@ -2362,8 +2364,8 @@ checksum = "8bb03732005da905c88227371639bf1ad885cc712789c011c31c5fb3ab3ccf02"
 
 [[package]]
 name = "internal-error"
-version = "0.128.2"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.2#fe6b0b197f5bb512574bf842e18c360a46544994"
+version = "0.128.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.3#922769b66b12bca001f263651a8b9a16f424d5df"
 dependencies = [
  "thiserror",
 ]
@@ -2444,8 +2446,8 @@ dependencies = [
 
 [[package]]
 name = "kamu"
-version = "0.128.2"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.2#fe6b0b197f5bb512574bf842e18c360a46544994"
+version = "0.128.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.3#922769b66b12bca001f263651a8b9a16f424d5df"
 dependencies = [
  "async-recursion",
  "async-stream",
@@ -2503,8 +2505,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-graphql"
-version = "0.128.2"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.2#fe6b0b197f5bb512574bf842e18c360a46544994"
+version = "0.128.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.3#922769b66b12bca001f263651a8b9a16f424d5df"
 dependencies = [
  "async-graphql",
  "chrono",
@@ -2524,8 +2526,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-http"
-version = "0.128.2"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.2#fe6b0b197f5bb512574bf842e18c360a46544994"
+version = "0.128.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.3#922769b66b12bca001f263651a8b9a16f424d5df"
 dependencies = [
  "async-trait",
  "axum",
@@ -2554,7 +2556,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-api-server"
-version = "0.5.3"
+version = "0.5.4"
 dependencies = [
  "async-graphql",
  "async-graphql-axum",
@@ -2591,8 +2593,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-core"
-version = "0.128.2"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.2#fe6b0b197f5bb512574bf842e18c360a46544994"
+version = "0.128.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.3#922769b66b12bca001f263651a8b9a16f424d5df"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -2617,8 +2619,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-data-utils"
-version = "0.128.2"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.2#fe6b0b197f5bb512574bf842e18c360a46544994"
+version = "0.128.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.3#922769b66b12bca001f263651a8b9a16f424d5df"
 dependencies = [
  "arrow-digest",
  "datafusion",
@@ -2630,8 +2632,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system"
-version = "0.128.2"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.2#fe6b0b197f5bb512574bf842e18c360a46544994"
+version = "0.128.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.3#922769b66b12bca001f263651a8b9a16f424d5df"
 dependencies = [
  "async-trait",
  "chrono",
@@ -3028,8 +3030,8 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 
 [[package]]
 name = "opendatafabric"
-version = "0.128.2"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.2#fe6b0b197f5bb512574bf842e18c360a46544994"
+version = "0.128.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.128.3#922769b66b12bca001f263651a8b9a16f424d5df"
 dependencies = [
  "bs58",
  "byteorder",
@@ -4469,6 +4471,18 @@ checksum = "0955b8137a1df6f1a2e9a37d8a6656291ff0297c1a97c24e0d8425fe2312f79a"
 dependencies = [
  "once_cell",
  "valuable",
+]
+
+[[package]]
+name = "tracing-futures"
+version = "0.2.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "97d095ae15e245a057c8e8451bab9b3ee1e1f68e9ba2b4fbc18d0ac5237835f2"
+dependencies = [
+ "futures",
+ "futures-task",
+ "pin-project",
+ "tracing",
 ]
 
 [[package]]
