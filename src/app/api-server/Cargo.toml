@@ -1,25 +1,25 @@
 [package]
 name = "kamu-api-server"
-version = "0.5.6"
-authors = [
-    "Sergii Mikhtoniuk <smikhtoniuk@kamu.dev>",
-    "Sergiy Zaychenko <szaychenko@kamu.dev>",
-]
-edition.workspace = true
-readme = "../README.md"
-license-file = "../LICENSE.txt"
-publish = false
-homepage = "https://github.com/kamu-data/kamu-platform"
-repository = "https://github.com/kamu-data/kamu-platform"
+description = "Kamu Compute Node API component"
+version = { workspace = true }
+homepage = { workspace = true }
+repository = { workspace = true }
+authors = { workspace = true }
+readme = { workspace = true }
+license-file = { workspace = true }
+keywords = { workspace = true }
+include = { workspace = true }
+edition = { workspace = true }
+publish = { workspace = true }
 
 
 [dependencies]
 # Kamu
-dill = "0.5"
-opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.128.5", version = "0.128.5" }
-kamu = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.128.5", version = "0.128.5" }
-kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.128.5", version = "0.128.5" }
-kamu-adapter-http = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.128.5", version = "0.128.5" }
+dill = "0.6"
+opendatafabric = { workspace = true }
+kamu = { workspace = true }
+kamu-adapter-graphql = { workspace = true }
+kamu-adapter-http = { workspace = true }
 
 # APIs
 http = "0.2"

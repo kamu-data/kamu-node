@@ -1,8 +1,17 @@
-mod cli_parser;
+// Copyright Kamu Data, Inc. and contributors. All rights reserved.
+//
+// Use of this software is governed by the Business Source License
+// included in the LICENSE file.
+//
+// As of the Change Date specified in that file, in accordance with
+// the Business Source License, use of this software will be governed
+// by the Apache License, Version 2.0.
 
 use std::path::{Path, PathBuf};
 
 use dill::CatalogBuilder;
+use kamu::utils::smart_transfer_protocol::SmartTransferProtocolClient;
+use kamu::WorkspaceLayout;
 use tracing::info;
 use url::Url;
 
@@ -15,69 +24,76 @@ const DEFAULT_LOGGING_CONFIG: &str = "info,tower_http=trace";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-enum RunMode {
-    LocalWorkspace,
+#[derive(Debug, Clone)]
+pub enum RunMode {
+    LocalWorkspace(WorkspaceLayout),
     RemoteS3Url,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#[tokio::main]
-async fn main() -> Result<(), hyper::Error> {
+pub async fn run() -> Result<(), hyper::Error> {
     init_logging();
 
-    let matches = cli_parser::cli(BINARY_NAME, VERSION).get_matches();
+    let matches = crate::cli_parser::cli(BINARY_NAME, VERSION).get_matches();
 
     let repo_url = matches.get_one::<Url>("repo-url").cloned();
     let local_repo_path = matches.get_one::<PathBuf>("local-repo").cloned();
 
-    let catalog = if let (Some(_), Some(_)) = (&repo_url, &local_repo_path) {
-        panic!("Cannot use '--repo-url' and '--local-repo' at the same time.");
-    } else if let (Some(repo_url), None) = (&repo_url, &local_repo_path) {
-        info!(
-            version = VERSION,
-            args = ?std::env::args().collect::<Vec<_>>(),
-            repo_url = %repo_url,
-            "Initializing (remote storage) {}",
-            BINARY_NAME
-        );
+    let catalog = match (repo_url, local_repo_path) {
+        (Some(_), Some(_)) => {
+            panic!("Cannot use '--repo-url' and '--local-repo' at the same time.")
+        }
+        (Some(repo_url), None) => {
+            info!(
+                version = VERSION,
+                args = ?std::env::args().collect::<Vec<_>>(),
+                repo_url = %repo_url,
+                "Initializing (remote storage) {}",
+                BINARY_NAME
+            );
 
-        let mut b = init_dependencies(RunMode::RemoteS3Url);
+            let mut b = init_dependencies(RunMode::RemoteS3Url);
 
-        let s3_context = kamu::utils::s3_context::S3Context::from_url(&repo_url).await;
-        b.add_value(kamu::DatasetRepositoryS3::new(s3_context.clone()))
-            .bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>();
+            // TODO: Move below into `init_dependencies` by resolving the credentials
+            // lazily, so that catalog initialization in CI tests does not fail.
+            // Optionally validate credentials on app startup
+            let s3_context = kamu::utils::s3_context::S3Context::from_url(&repo_url).await;
+            b.add_value(kamu::DatasetRepositoryS3::new(s3_context.clone()))
+                .bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>();
 
-        let s3_credentials = s3_context.credentials().await;
+            let s3_credentials = s3_context.credentials().await;
 
-        b.add_value(kamu::ObjectStoreBuilderS3::new(
-            s3_context,
-            s3_credentials,
-            false,
-        ))
-        .bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderS3>();
+            b.add_value(kamu::ObjectStoreBuilderS3::new(
+                s3_context,
+                s3_credentials,
+                false,
+            ))
+            .bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderS3>();
 
-        b
-    } else {
-        let local_repo = local_repo_path.unwrap_or_else(|| find_workspace());
+            b
+        }
+        (None, local_repo_path) => {
+            let local_repo = local_repo_path.unwrap_or_else(|| find_workspace());
 
-        info!(
-            version = VERSION,
-            args = ?std::env::args().collect::<Vec<_>>(),
-            local_repo = %local_repo.display(),
-            "Initializing (local storage) {}",
-            BINARY_NAME
-        );
+            info!(
+                version = VERSION,
+                args = ?std::env::args().collect::<Vec<_>>(),
+                local_repo = %local_repo.display(),
+                "Initializing (local storage) {}",
+                BINARY_NAME
+            );
 
-        let mut b = init_dependencies(RunMode::LocalWorkspace);
+            let workspace_layout = kamu::WorkspaceLayout::new(&local_repo);
+            if !workspace_layout.root_dir.exists() {
+                panic!(
+                    "Directory is not a kamu workspace: {}",
+                    workspace_layout.root_dir.display()
+                );
+            }
 
-        let workspace_layout = kamu::WorkspaceLayout::new(&local_repo);
-        b.add_value(workspace_layout.clone());
-
-        init_from_local_workspace(&workspace_layout);
-
-        b
+            init_dependencies(RunMode::LocalWorkspace(workspace_layout))
+        }
     }
     .build();
 
@@ -116,7 +132,8 @@ async fn main() -> Result<(), hyper::Error> {
 fn init_logging() {
     use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
     use tracing_log::LogTracer;
-    use tracing_subscriber::{layer::SubscriberExt, EnvFilter};
+    use tracing_subscriber::layer::SubscriberExt;
+    use tracing_subscriber::EnvFilter;
 
     // Use configuration from RUST_LOG env var if provided
     let env_filter = EnvFilter::try_from_default_env()
@@ -139,7 +156,7 @@ fn init_logging() {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
+pub fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
     let mut b = dill::CatalogBuilder::new();
 
     b.add::<kamu::QueryServiceImpl>();
@@ -149,7 +166,9 @@ fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
     b.bind::<dyn kamu::domain::ObjectStoreRegistry, kamu::ObjectStoreRegistryImpl>();
 
     match run_mode {
-        RunMode::LocalWorkspace => {
+        RunMode::LocalWorkspace(workspace_layout) => {
+            b.add_value(workspace_layout);
+
             b.add::<kamu::DatasetRepositoryLocalFs>();
             b.bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryLocalFs>();
 
@@ -157,13 +176,15 @@ fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
             b.bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderLocalFs>();
         }
         RunMode::RemoteS3Url => {
-            // Don't register, it is hard to inject arguments, so a manual add is necessary
-            // b.add::<infra::ObjectStoreBuilderS3>();
-            // b.bind::<dyn domain::ObjectStoreBuilder, infra::ObjectStoreBuilderS3>();
+            // Don't register, it is hard to inject arguments, so a manual add
+            // is necessary b.add::<infra::ObjectStoreBuilderS3>();
+            // b.bind::<dyn domain::ObjectStoreBuilder,
+            // infra::ObjectStoreBuilderS3>();
 
-            // Don't register, it is hard to inject arguments, so a manual add is necessary
-            // b.add::<infra::DatasetRepositoryS3>();
-            // b.bind::<dyn domain::DatasetRepository, infra::DatasetRepositoryS3>();
+            // Don't register, it is hard to inject arguments, so a manual add
+            // is necessary b.add::<infra::DatasetRepositoryS3>();
+            // b.bind::<dyn domain::DatasetRepository,
+            // infra::DatasetRepositoryS3>();
         }
     }
 
@@ -178,6 +199,9 @@ fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
 
     b.add::<kamu::SearchServiceImpl>();
     b.bind::<dyn kamu::domain::SearchService, kamu::SearchServiceImpl>();
+
+    b.add::<kamu_adapter_http::SmartTransferProtocolClientWs>();
+    b.bind::<dyn SmartTransferProtocolClient, kamu_adapter_http::SmartTransferProtocolClientWs>();
 
     // TODO: Externalize configuration
     b.add_value(kamu::IpfsGateway {
@@ -322,19 +346,6 @@ fn find_workspace_rec(p: &Path) -> Option<PathBuf> {
         find_workspace_rec(parent)
     } else {
         None
-    }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-// Workspace Init
-/////////////////////////////////////////////////////////////////////////////////////////
-
-fn init_from_local_workspace(workspace_layout: &kamu::WorkspaceLayout) {
-    if !workspace_layout.root_dir.exists() {
-        panic!(
-            "Directory is not a kamu workspace: {}",
-            workspace_layout.root_dir.display()
-        );
     }
 }
 

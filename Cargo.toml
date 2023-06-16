@@ -1,10 +1,36 @@
 [workspace]
-members = ["api-server"]
+members = [
+    # Utils
+    "src/utils/repo-tools",
+    # Apps
+    "src/app/api-server",
+]
 resolver = "2"
 
 
+[workspace.dependencies]
+# kamu-cli repo
+opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.129.0", version = "0.129.0", default-features = false }
+kamu = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.129.0", version = "0.129.0", default-features = false }
+kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.129.0", version = "0.129.0", default-features = false }
+kamu-adapter-http = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.129.0", version = "0.129.0", default-features = false }
+
+
 [workspace.package]
+version = "0.5.6"
 edition = "2021"
+homepage = "https://github.com/kamu-data/kamu-platform"
+repository = "https://github.com/kamu-data/kamu-platform"
+authors = ["Kamu Data Inc. <dev@kamu.dev>"]
+readme = "README.md"
+license-file = "LICENSE.txt"
+keywords = ["data", "collaboration", "etl", "pipeline", "provenance", "blockchain"]
+include = [
+    "benches/*.rs",
+    "src/**/*.rs",
+    "Cargo.toml",
+]
+publish = false
 
 
 [profile.dev]
