@@ -12,11 +12,11 @@ use std::path::PathBuf;
 use clap::*;
 use indoc::indoc;
 
-pub fn cli(binary_name: &'static str, version: &'static str) -> Command {
-    Command::new(binary_name)
+pub fn cli() -> Command {
+    Command::new(crate::BINARY_NAME)
         .subcommand_required(true)
         .arg_required_else_help(true)
-        .version(version)
+        .version(crate::VERSION)
         .after_help(indoc!(
             r"
             To get help around individual commands use:

@@ -7,8 +7,10 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-mod app;
-mod cli_parser;
+pub(crate) mod app;
+pub(crate) mod cli_parser;
+pub(crate) mod gql_server;
+pub(crate) mod http_server;
 
 pub use app::*;
 pub use cli_parser::*;

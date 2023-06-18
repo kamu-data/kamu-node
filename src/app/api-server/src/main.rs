@@ -9,10 +9,9 @@
 
 #[tokio::main]
 async fn main() {
-    let runtime = tokio::runtime::Runtime::new().unwrap();
-    let result = runtime.block_on(kamu_api_server::run());
+    let matches = kamu_api_server::cli().get_matches();
 
-    match result {
+    match kamu_api_server::run(matches).await {
         Ok(_) => {}
         Err(_) => std::process::exit(1),
     }

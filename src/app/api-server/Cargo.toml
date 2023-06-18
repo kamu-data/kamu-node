@@ -16,8 +16,11 @@ publish = { workspace = true }
 [dependencies]
 # Kamu
 dill = "0.6"
+container-runtime = { workspace = true }
+internal-error = { workspace = true }
 opendatafabric = { workspace = true }
 kamu = { workspace = true }
+kamu-task-system-inmem = { workspace = true }
 kamu-adapter-graphql = { workspace = true }
 kamu-adapter-http = { workspace = true }
 
@@ -45,6 +48,7 @@ tracing-log = "0.1"
 tracing-bunyan-formatter = "0.3"
 
 # Utils
+async-trait = { version = "0.1", default-features = false }
 chrono = "0.4"
 clap = "4"
 futures = "0.3"

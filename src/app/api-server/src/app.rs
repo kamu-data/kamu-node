@@ -10,6 +10,7 @@
 use std::path::{Path, PathBuf};
 
 use dill::CatalogBuilder;
+use internal_error::*;
 use kamu::utils::smart_transfer_protocol::SmartTransferProtocolClient;
 use kamu::WorkspaceLayout;
 use tracing::info;
@@ -17,8 +18,8 @@ use url::Url;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-const BINARY_NAME: &str = env!("CARGO_PKG_NAME");
-const VERSION: &str = env!("CARGO_PKG_VERSION");
+pub const BINARY_NAME: &str = env!("CARGO_PKG_NAME");
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 const DEFAULT_LOGGING_CONFIG: &str = "info,tower_http=trace";
 
@@ -32,10 +33,8 @@ pub enum RunMode {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-pub async fn run() -> Result<(), hyper::Error> {
+pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
     init_logging();
-
-    let matches = crate::cli_parser::cli(BINARY_NAME, VERSION).get_matches();
 
     let repo_url = matches.get_one::<Url>("repo-url").cloned();
     let local_repo_path = matches.get_one::<PathBuf>("local-repo").cloned();
@@ -74,7 +73,10 @@ pub async fn run() -> Result<(), hyper::Error> {
             b
         }
         (None, local_repo_path) => {
-            let local_repo = local_repo_path.unwrap_or_else(|| find_workspace());
+            let local_repo = local_repo_path
+                .unwrap_or_else(|| find_workspace())
+                .canonicalize()
+                .unwrap();
 
             info!(
                 version = VERSION,
@@ -104,7 +106,7 @@ pub async fn run() -> Result<(), hyper::Error> {
                 Ok(())
             }
             Some(("query", qsub)) => {
-                let result = gql_query(
+                let result = crate::gql_server::gql_query(
                     qsub.get_one("query").map(String::as_str).unwrap(),
                     qsub.get_flag("full"),
                     catalog,
@@ -116,12 +118,25 @@ pub async fn run() -> Result<(), hyper::Error> {
             _ => unimplemented!(),
         },
         Some(("run", sub)) => {
-            run_server(
+            let server = crate::http_server::build_server(
                 sub.get_one("address").map(|a| *a),
                 sub.get_one("http-port").map(|p| *p),
-                catalog,
-            )
-            .await
+                catalog.clone(),
+            );
+
+            tracing::info!(
+                http_endpoint = format!("http://{}", server.local_addr()),
+                "Serving traffic"
+            );
+
+            let task_executor = catalog
+                .get_one::<dyn kamu_task_system_inmem::domain::TaskExecutor>()
+                .unwrap();
+
+            tokio::select! {
+                res = server => { res.int_err() },
+                res = task_executor.run() => { res.int_err() },
+            }
         }
         _ => unimplemented!(),
     }
@@ -134,6 +149,11 @@ fn init_logging() {
     use tracing_log::LogTracer;
     use tracing_subscriber::layer::SubscriberExt;
     use tracing_subscriber::EnvFilter;
+
+    // Logging may be already initialized when running under tests
+    if tracing::dispatcher::has_been_set() {
+        return;
+    }
 
     // Use configuration from RUST_LOG env var if provided
     let env_filter = EnvFilter::try_from_default_env()
@@ -159,11 +179,68 @@ fn init_logging() {
 pub fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
     let mut b = dill::CatalogBuilder::new();
 
-    b.add::<kamu::QueryServiceImpl>();
-    b.bind::<dyn kamu::domain::QueryService, kamu::QueryServiceImpl>();
+    b.add::<container_runtime::ContainerRuntime>();
+    b.add_value(container_runtime::ContainerRuntimeConfig {
+        runtime: container_runtime::ContainerRuntimeType::Podman,
+        network_ns: container_runtime::NetworkNamespaceType::Private,
+    });
+
+    b.add::<kamu::EngineProvisionerLocal>();
+    b.bind::<dyn kamu::domain::EngineProvisioner, kamu::EngineProvisionerLocal>();
+    // TODO: Externalize config
+    b.add_value(kamu::EngineProvisionerLocalConfig {
+        max_concurrency: Some(2),
+        ..Default::default()
+    });
+
+    b.add::<kamu::DatasetFactoryImpl>();
+    b.bind::<dyn kamu::domain::DatasetFactory, kamu::DatasetFactoryImpl>();
 
     b.add::<kamu::ObjectStoreRegistryImpl>();
     b.bind::<dyn kamu::domain::ObjectStoreRegistry, kamu::ObjectStoreRegistryImpl>();
+
+    b.add::<kamu::RemoteRepositoryRegistryImpl>();
+    b.bind::<dyn kamu::domain::RemoteRepositoryRegistry, kamu::RemoteRepositoryRegistryImpl>();
+
+    b.add::<kamu::RemoteAliasesRegistryImpl>();
+    b.bind::<dyn kamu::domain::RemoteAliasesRegistry, kamu::RemoteAliasesRegistryImpl>();
+
+    b.add::<kamu_adapter_http::SmartTransferProtocolClientWs>();
+    b.bind::<dyn SmartTransferProtocolClient, kamu_adapter_http::SmartTransferProtocolClientWs>();
+
+    b.add::<kamu::SyncServiceImpl>();
+    b.bind::<dyn kamu::domain::SyncService, kamu::SyncServiceImpl>();
+
+    b.add::<kamu::IngestServiceImpl>();
+    b.bind::<dyn kamu::domain::IngestService, kamu::IngestServiceImpl>();
+
+    b.add::<kamu::TransformServiceImpl>();
+    b.bind::<dyn kamu::domain::TransformService, kamu::TransformServiceImpl>();
+
+    b.add::<kamu::VerificationServiceImpl>();
+    b.bind::<dyn kamu::domain::VerificationService, kamu::VerificationServiceImpl>();
+
+    b.add::<kamu::PullServiceImpl>();
+    b.bind::<dyn kamu::domain::PullService, kamu::PullServiceImpl>();
+
+    b.add::<kamu::QueryServiceImpl>();
+    b.bind::<dyn kamu::domain::QueryService, kamu::QueryServiceImpl>();
+
+    // TODO: Externalize configuration
+    b.add_value(kamu::IpfsGateway {
+        url: Url::parse("http://localhost:8080").unwrap(),
+        pre_resolve_dnslink: true,
+    });
+    b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
+
+    b.add::<kamu_task_system_inmem::TaskSchedulerInMemory>();
+    b.bind::<dyn kamu_task_system_inmem::domain::TaskScheduler, kamu_task_system_inmem::TaskSchedulerInMemory>();
+
+    b.add::<kamu_task_system_inmem::TaskSystemEventStoreInMemory>();
+    b.bind::<dyn kamu_task_system_inmem::domain::TaskSystemEventStore, kamu_task_system_inmem::TaskSystemEventStoreInMemory>();
+
+    b.add::<kamu_task_system_inmem::TaskExecutorInMemory>();
+    b.bind::<dyn kamu_task_system_inmem::domain::TaskExecutor, kamu_task_system_inmem::TaskExecutorInMemory>();
 
     match run_mode {
         RunMode::LocalWorkspace(workspace_layout) => {
@@ -188,141 +265,7 @@ pub fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
         }
     }
 
-    b.add::<kamu::RemoteRepositoryRegistryImpl>();
-    b.bind::<dyn kamu::domain::RemoteRepositoryRegistry, kamu::RemoteRepositoryRegistryImpl>();
-
-    b.add::<kamu::DatasetFactoryImpl>();
-    b.bind::<dyn kamu::domain::DatasetFactory, kamu::DatasetFactoryImpl>();
-
-    b.add::<kamu::SyncServiceImpl>();
-    b.bind::<dyn kamu::domain::SyncService, kamu::SyncServiceImpl>();
-
-    b.add::<kamu::SearchServiceImpl>();
-    b.bind::<dyn kamu::domain::SearchService, kamu::SearchServiceImpl>();
-
-    b.add::<kamu_adapter_http::SmartTransferProtocolClientWs>();
-    b.bind::<dyn SmartTransferProtocolClient, kamu_adapter_http::SmartTransferProtocolClientWs>();
-
-    // TODO: Externalize configuration
-    b.add_value(kamu::IpfsGateway {
-        url: Url::parse("http://localhost:8080").unwrap(),
-        pre_resolve_dnslink: true,
-    });
-    b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
-
     b
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-async fn gql_query(query: &str, full: bool, catalog: dill::Catalog) -> String {
-    let gql_schema = kamu_adapter_graphql::schema(catalog);
-    let response = gql_schema.execute(query).await;
-
-    if full {
-        serde_json::to_string_pretty(&response).unwrap()
-    } else {
-        if response.is_ok() {
-            serde_json::to_string_pretty(&response.data).unwrap()
-        } else {
-            for err in &response.errors {
-                eprintln!("{}", err)
-            }
-            // TODO: Error should be propagated as bad exit code
-            "".to_owned()
-        }
-    }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-// Extractor of dataset identity for smart transfer protocol
-#[derive(serde::Deserialize)]
-struct DatasetByName {
-    dataset_name: opendatafabric::DatasetName,
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-async fn run_server(
-    address: Option<std::net::IpAddr>,
-    http_port: Option<u16>,
-    catalog: dill::Catalog,
-) -> Result<(), hyper::Error> {
-    use std::net::{IpAddr, Ipv4Addr, SocketAddr};
-
-    let gql_schema = kamu_adapter_graphql::schema(catalog.clone());
-
-    let app = axum::Router::new()
-        .route("/", axum::routing::get(root_handler))
-        .route(
-            "/graphql",
-            axum::routing::get(graphql_playground_handler).post(graphql_handler),
-        )
-        .nest(
-            "/:dataset_name",
-            kamu_adapter_http::smart_transfer_protocol_routes()
-                .layer(kamu_adapter_http::DatasetResolverLayer::new(
-                    |axum::extract::Path(p): axum::extract::Path<DatasetByName>| {
-                        p.dataset_name.as_local_ref()
-                    },
-                ))
-                .layer(axum::extract::Extension(catalog)),
-        )
-        .layer(
-            tower::ServiceBuilder::new()
-                .layer(tower_http::trace::TraceLayer::new_for_http())
-                .layer(
-                    tower_http::cors::CorsLayer::new()
-                        .allow_origin(tower_http::cors::Any)
-                        .allow_methods(vec![http::Method::GET, http::Method::POST])
-                        .allow_headers(tower_http::cors::Any),
-                )
-                .layer(axum::extract::Extension(gql_schema)),
-        );
-
-    let addr = SocketAddr::from((
-        address.unwrap_or(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1))),
-        http_port.unwrap_or(0),
-    ));
-
-    let server = axum::Server::bind(&addr).serve(app.into_make_service());
-
-    tracing::info!(
-        http_endpoint = format!("http://{}", server.local_addr()),
-        "Serving traffic"
-    );
-
-    server.await
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-// Routes
-/////////////////////////////////////////////////////////////////////////////////////////
-
-async fn root_handler() -> impl axum::response::IntoResponse {
-    axum::response::Html(
-        r#"
-        <h1>Kamu API Server</h1>
-        <ul>
-            <li><a href="/graphql">GraphQL Endpoint</a></li>
-            <li><a href="/graphql">GraphQL Playground</a></li>
-        </ul>
-        "#,
-    )
-}
-
-async fn graphql_handler(
-    schema: axum::extract::Extension<kamu_adapter_graphql::Schema>,
-    req: async_graphql_axum::GraphQLRequest,
-) -> async_graphql_axum::GraphQLResponse {
-    schema.execute(req.into_inner()).await.into()
-}
-
-async fn graphql_playground_handler() -> impl axum::response::IntoResponse {
-    axum::response::Html(async_graphql::http::playground_source(
-        async_graphql::http::GraphQLPlaygroundConfig::new("/graphql"),
-    ))
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

@@ -9,11 +9,17 @@ resolver = "2"
 
 
 [workspace.dependencies]
-# kamu-cli repo
-opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.129.0", version = "0.129.0", default-features = false }
-kamu = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.129.0", version = "0.129.0", default-features = false }
-kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.129.0", version = "0.129.0", default-features = false }
-kamu-adapter-http = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.129.0", version = "0.129.0", default-features = false }
+# Utils
+container-runtime = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.130.1", version = "0.130.1", default-features = false }
+internal-error = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.130.1", version = "0.130.1", default-features = false }
+# Domain
+opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.130.1", version = "0.130.1", default-features = false }
+kamu-task-system = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.130.1", version = "0.130.1", default-features = false }
+# Infra
+kamu = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.130.1", version = "0.130.1", default-features = false }
+kamu-task-system-inmem = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.130.1", version = "0.130.1", default-features = false }
+kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.130.1", version = "0.130.1", default-features = false }
+kamu-adapter-http = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.130.1", version = "0.130.1", default-features = false }
 
 
 [workspace.package]
