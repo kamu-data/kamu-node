@@ -64,4 +64,5 @@ url = "2"
 tempfile = "3"
 rand = "0.8"
 env_logger = "0.10"
+test-group = { version = "1" }
 test-log = { version = "0.2", features = ["trace"] }

@@ -28,7 +28,7 @@ const DEFAULT_LOGGING_CONFIG: &str = "info,tower_http=trace";
 #[derive(Debug, Clone)]
 pub enum RunMode {
     LocalWorkspace(WorkspaceLayout),
-    RemoteS3Url,
+    RemoteS3Url(Url),
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -52,25 +52,7 @@ pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
                 BINARY_NAME
             );
 
-            let mut b = init_dependencies(RunMode::RemoteS3Url);
-
-            // TODO: Move below into `init_dependencies` by resolving the credentials
-            // lazily, so that catalog initialization in CI tests does not fail.
-            // Optionally validate credentials on app startup
-            let s3_context = kamu::utils::s3_context::S3Context::from_url(&repo_url).await;
-            b.add_value(kamu::DatasetRepositoryS3::new(s3_context.clone()))
-                .bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>();
-
-            let s3_credentials = s3_context.credentials().await;
-
-            b.add_value(kamu::ObjectStoreBuilderS3::new(
-                s3_context,
-                s3_credentials,
-                false,
-            ))
-            .bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderS3>();
-
-            b
+            init_dependencies(RunMode::RemoteS3Url(repo_url)).await
         }
         (None, local_repo_path) => {
             let local_repo = local_repo_path
@@ -94,7 +76,7 @@ pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
                 );
             }
 
-            init_dependencies(RunMode::LocalWorkspace(workspace_layout))
+            init_dependencies(RunMode::LocalWorkspace(workspace_layout)).await
         }
     }
     .build();
@@ -176,7 +158,7 @@ fn init_logging() {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-pub fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
+pub async fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
     let mut b = dill::CatalogBuilder::new();
 
     b.add::<container_runtime::ContainerRuntime>();
@@ -252,16 +234,22 @@ pub fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
             b.add::<kamu::ObjectStoreBuilderLocalFs>();
             b.bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderLocalFs>();
         }
-        RunMode::RemoteS3Url => {
-            // Don't register, it is hard to inject arguments, so a manual add
-            // is necessary b.add::<infra::ObjectStoreBuilderS3>();
-            // b.bind::<dyn domain::ObjectStoreBuilder,
-            // infra::ObjectStoreBuilderS3>();
+        RunMode::RemoteS3Url(repo_url) => {
+            // TODO: Credentials should be resolved lazily, so that catalog initialization
+            // in CI tests does not fail. Optionally validate credentials on app
+            // startup
+            let s3_context = kamu::utils::s3_context::S3Context::from_url(&repo_url).await;
+            b.add_value(kamu::DatasetRepositoryS3::new(s3_context.clone()))
+                .bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>();
 
-            // Don't register, it is hard to inject arguments, so a manual add
-            // is necessary b.add::<infra::DatasetRepositoryS3>();
-            // b.bind::<dyn domain::DatasetRepository,
-            // infra::DatasetRepositoryS3>();
+            let s3_credentials = s3_context.credentials().await;
+
+            b.add_value(kamu::ObjectStoreBuilderS3::new(
+                s3_context,
+                s3_credentials,
+                false,
+            ))
+            .bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderS3>();
         }
     }
 
