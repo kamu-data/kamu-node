@@ -23,7 +23,7 @@ kamu-adapter-http = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.1
 
 
 [workspace.package]
-version = "0.5.6"
+version = "0.6.0"
 edition = "2021"
 homepage = "https://github.com/kamu-data/kamu-platform"
 repository = "https://github.com/kamu-data/kamu-platform"
