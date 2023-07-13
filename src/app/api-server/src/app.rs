@@ -9,8 +9,9 @@
 
 use std::path::{Path, PathBuf};
 
-use dill::CatalogBuilder;
+use dill::{builder_for, CatalogBuilder};
 use internal_error::*;
+use kamu::domain::CurrentAccountSubject;
 use kamu::utils::smart_transfer_protocol::SmartTransferProtocolClient;
 use kamu::WorkspaceLayout;
 use tracing::info;
@@ -161,6 +162,10 @@ fn init_logging() {
 pub async fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
     let mut b = dill::CatalogBuilder::new();
 
+    // TODO: replace with other means of emitting current account from HTTP sessions
+    let current_account_subject = CurrentAccountSubject::new("kamu");
+    b.add_value(current_account_subject);
+
     b.add::<container_runtime::ContainerRuntime>();
     b.add_value(container_runtime::ContainerRuntimeConfig {
         runtime: container_runtime::ContainerRuntimeType::Podman,
@@ -181,9 +186,6 @@ pub async fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
     b.add::<kamu::ObjectStoreRegistryImpl>();
     b.bind::<dyn kamu::domain::ObjectStoreRegistry, kamu::ObjectStoreRegistryImpl>();
 
-    b.add::<kamu::RemoteRepositoryRegistryImpl>();
-    b.bind::<dyn kamu::domain::RemoteRepositoryRegistry, kamu::RemoteRepositoryRegistryImpl>();
-
     b.add::<kamu::RemoteAliasesRegistryImpl>();
     b.bind::<dyn kamu::domain::RemoteAliasesRegistry, kamu::RemoteAliasesRegistryImpl>();
 
@@ -192,12 +194,6 @@ pub async fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
 
     b.add::<kamu::SyncServiceImpl>();
     b.bind::<dyn kamu::domain::SyncService, kamu::SyncServiceImpl>();
-
-    b.add::<kamu::IngestServiceImpl>();
-    b.bind::<dyn kamu::domain::IngestService, kamu::IngestServiceImpl>();
-
-    b.add::<kamu::TransformServiceImpl>();
-    b.bind::<dyn kamu::domain::TransformService, kamu::TransformServiceImpl>();
 
     b.add::<kamu::VerificationServiceImpl>();
     b.bind::<dyn kamu::domain::VerificationService, kamu::VerificationServiceImpl>();
@@ -226,30 +222,69 @@ pub async fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
 
     match run_mode {
         RunMode::LocalWorkspace(workspace_layout) => {
-            b.add_value(workspace_layout);
+            b.add_value(workspace_layout.clone());
 
-            b.add::<kamu::DatasetRepositoryLocalFs>();
+            b.add_builder(
+                builder_for::<kamu::DatasetRepositoryLocalFs>()
+                    .with_root(workspace_layout.datasets_dir.clone())
+                    .with_multi_tenant(false),
+            );
             b.bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryLocalFs>();
 
             b.add::<kamu::ObjectStoreBuilderLocalFs>();
             b.bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderLocalFs>();
+
+            b.add_builder(
+                builder_for::<kamu::RemoteRepositoryRegistryImpl>()
+                    .with_repos_dir(workspace_layout.repos_dir.clone()),
+            );
+            b.bind::<dyn kamu::domain::RemoteRepositoryRegistry, kamu::RemoteRepositoryRegistryImpl>();
+
+            b.add_builder(
+                builder_for::<kamu::IngestServiceImpl>()
+                    .with_run_info_dir(workspace_layout.run_info_dir.clone())
+                    .with_cache_dir(workspace_layout.cache_dir.clone()),
+            );
+            b.bind::<dyn kamu::domain::IngestService, kamu::IngestServiceImpl>();
+
+            b.add_builder(
+                builder_for::<kamu::TransformServiceImpl>()
+                    .with_run_info_dir(workspace_layout.run_info_dir.clone()),
+            );
+            b.bind::<dyn kamu::domain::TransformService, kamu::TransformServiceImpl>();
         }
         RunMode::RemoteS3Url(repo_url) => {
-            // TODO: Credentials should be resolved lazily, so that catalog initialization
-            // in CI tests does not fail. Optionally validate credentials on app
-            // startup
             let s3_context = kamu::utils::s3_context::S3Context::from_url(&repo_url).await;
-            b.add_value(kamu::DatasetRepositoryS3::new(s3_context.clone()))
-                .bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>();
 
-            let s3_credentials = s3_context.credentials().await;
+            b.add_builder(
+                builder_for::<kamu::DatasetRepositoryS3>().with_s3_context(s3_context.clone()),
+            );
+            b.bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>();
 
-            b.add_value(kamu::ObjectStoreBuilderS3::new(
-                s3_context,
-                s3_credentials,
-                false,
-            ))
-            .bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderS3>();
+            b.add_value(kamu::ObjectStoreBuilderS3::new(s3_context, false))
+                .bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderS3>();
+
+            b.add_builder(
+                builder_for::<kamu::RemoteRepositoryRegistryImpl>()
+                    // TODO: dummy paths to let the injection pass
+                    .with_repos_dir(PathBuf::from(".kamu/repos")),
+            );
+            b.bind::<dyn kamu::domain::RemoteRepositoryRegistry, kamu::RemoteRepositoryRegistryImpl>();
+
+            b.add_builder(
+                builder_for::<kamu::IngestServiceImpl>()
+                    // TODO: dummy paths to let the injection pass
+                    .with_run_info_dir(PathBuf::from(".kamu/run"))
+                    .with_cache_dir(PathBuf::from(".kamu/cache")),
+            );
+            b.bind::<dyn kamu::domain::IngestService, kamu::IngestServiceImpl>();
+
+            b.add_builder(
+                builder_for::<kamu::TransformServiceImpl>()
+                    // TODO: dummy paths to let the injection pass
+                    .with_run_info_dir(PathBuf::from(".kamu/run")),
+            );
+            b.bind::<dyn kamu::domain::TransformService, kamu::TransformServiceImpl>();
         }
     }
 

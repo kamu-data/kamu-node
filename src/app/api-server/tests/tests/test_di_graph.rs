@@ -12,7 +12,8 @@ use dill::*;
 #[test_log::test(tokio::test)]
 async fn test_di_graph_validates_local() {
     let tempdir = tempfile::tempdir().unwrap();
-    let workspace_layout = kamu::WorkspaceLayout::create(tempdir.path().to_path_buf()).unwrap();
+    let workspace_layout =
+        kamu::WorkspaceLayout::create(tempdir.path().to_path_buf(), false).unwrap();
 
     let mut catalog_builder = kamu_api_server::init_dependencies(
         kamu_api_server::RunMode::LocalWorkspace(workspace_layout),
