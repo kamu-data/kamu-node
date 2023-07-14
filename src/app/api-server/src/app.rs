@@ -172,8 +172,6 @@ pub async fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
         network_ns: container_runtime::NetworkNamespaceType::Private,
     });
 
-    b.add::<kamu::EngineProvisionerLocal>();
-    b.bind::<dyn kamu::domain::EngineProvisioner, kamu::EngineProvisionerLocal>();
     // TODO: Externalize config
     b.add_value(kamu::EngineProvisionerLocalConfig {
         max_concurrency: Some(2),
@@ -252,6 +250,13 @@ pub async fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
                     .with_run_info_dir(workspace_layout.run_info_dir.clone()),
             );
             b.bind::<dyn kamu::domain::TransformService, kamu::TransformServiceImpl>();
+
+            b.add_builder(
+                builder_for::<kamu::EngineProvisionerLocal>()
+                    .with_root_dir(workspace_layout.root_dir.clone())
+                    .with_run_info_dir(workspace_layout.run_info_dir.clone()),
+            );
+            b.bind::<dyn kamu::domain::EngineProvisioner, kamu::EngineProvisionerLocal>();
         }
         RunMode::RemoteS3Url(repo_url) => {
             let s3_context = kamu::utils::s3_context::S3Context::from_url(&repo_url).await;
@@ -285,6 +290,14 @@ pub async fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
                     .with_run_info_dir(PathBuf::from(".kamu/run")),
             );
             b.bind::<dyn kamu::domain::TransformService, kamu::TransformServiceImpl>();
+
+            b.add_builder(
+                builder_for::<kamu::EngineProvisionerLocal>()
+                    // TODO: dummy paths to let the injection pass
+                    .with_root_dir(PathBuf::from(".kamu"))
+                    .with_run_info_dir(PathBuf::from(".kamu/run")),
+            );
+            b.bind::<dyn kamu::domain::EngineProvisioner, kamu::EngineProvisionerLocal>();
         }
     }
 
