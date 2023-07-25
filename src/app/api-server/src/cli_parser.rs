@@ -24,16 +24,10 @@ pub fn cli() -> Command {
               kamu-api-server <command> <sub-command> -h
             "
         ))
-        .args([
-            Arg::new("repo-url")
-                .long("repo-url")
-                .value_parser(value_parse_metadata_repo)
-                .help("URL of the remote dataset repository"),
-            Arg::new("local-repo")
-                .long("local-repo")
-                .value_parser(value_parser!(PathBuf))
-                .help("Path to the local dataset repository"),
-        ])
+        .args([Arg::new("repo-url")
+            .long("repo-url")
+            .value_parser(value_parse_repo_url)
+            .help("URL of the remote dataset repository")])
         .subcommands([
             Command::new("run").about("Run the server").args([
                 Arg::new("address")
@@ -70,11 +64,16 @@ pub fn cli() -> Command {
         ])
 }
 
-fn value_parse_metadata_repo(s: &str) -> Result<url::Url, String> {
-    let url = url::Url::parse(s).map_err(|e| e.to_string())?;
-    if url.scheme() == "file" {
-        url.to_file_path()
-            .map_err(|_| "Invalid URL, should be in form: file:///home/me/workspace")?;
+/// Allows URLs or local paths
+fn value_parse_repo_url(s: &str) -> Result<url::Url, String> {
+    match url::Url::parse(s) {
+        Ok(url) => Ok(url),
+        Err(_) => match PathBuf::from(s).canonicalize() {
+            Ok(path) => Ok(url::Url::from_file_path(path).unwrap()),
+            Err(_) => Err(
+                "Invalid repo-url, should be a path or a URL in form: file:///home/me/workspace"
+                    .to_string(),
+            ),
+        },
     }
-    Ok(url)
 }

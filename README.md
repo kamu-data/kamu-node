@@ -20,7 +20,7 @@ Prerequisites:
 To run API server using local `kamu` workspace:
 
 ```bash
-cargo run -- --local-repo /home/me/workspace/.kamu run | bunyan
+cargo run -- --repo-url workspace/.kamu/datasets run | bunyan
 ```
 
 To control log verbosity use the standard `RUST_LOG` env var:

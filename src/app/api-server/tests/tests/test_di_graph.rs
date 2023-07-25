@@ -12,11 +12,9 @@ use dill::*;
 #[test_log::test(tokio::test)]
 async fn test_di_graph_validates_local() {
     let tempdir = tempfile::tempdir().unwrap();
-    let workspace_layout =
-        kamu::WorkspaceLayout::create(tempdir.path().to_path_buf(), false).unwrap();
-
     let mut catalog_builder = kamu_api_server::init_dependencies(
-        kamu_api_server::RunMode::LocalWorkspace(workspace_layout),
+        &url::Url::from_directory_path(tempdir.path()).unwrap(),
+        tempdir.path(),
     )
     .await;
 
@@ -25,7 +23,6 @@ async fn test_di_graph_validates_local() {
     // manually
     let validate_result = catalog_builder
         .validate()
-        .ignore::<kamu::WorkspaceLayout>()
         .ignore::<dyn kamu::domain::DatasetRepository>();
 
     assert!(
@@ -57,14 +54,13 @@ async fn test_di_graph_validates_remote() {
     .unwrap();
 
     let mut catalog_builder =
-        kamu_api_server::init_dependencies(kamu_api_server::RunMode::RemoteS3Url(repo_url)).await;
+        kamu_api_server::init_dependencies(&repo_url, tmp_repo_dir.path()).await;
 
     // TODO: We should ensure this test covers parameters requested by commands and
     // types needed for GQL/HTTP adapter that are currently being constructed
     // manually
     let validate_result = catalog_builder
         .validate()
-        .ignore::<kamu::WorkspaceLayout>()
         .ignore::<dyn kamu::domain::DatasetRepository>();
 
     assert!(

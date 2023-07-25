@@ -13,7 +13,6 @@ use dill::{builder_for, CatalogBuilder};
 use internal_error::*;
 use kamu::domain::CurrentAccountSubject;
 use kamu::utils::smart_transfer_protocol::SmartTransferProtocolClient;
-use kamu::WorkspaceLayout;
 use tracing::info;
 use url::Url;
 
@@ -26,61 +25,34 @@ const DEFAULT_LOGGING_CONFIG: &str = "info,tower_http=trace";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, Clone)]
-pub enum RunMode {
-    LocalWorkspace(WorkspaceLayout),
-    RemoteS3Url(Url),
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
 pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
     init_logging();
 
-    let repo_url = matches.get_one::<Url>("repo-url").cloned();
-    let local_repo_path = matches.get_one::<PathBuf>("local-repo").cloned();
-
-    let catalog = match (repo_url, local_repo_path) {
-        (Some(_), Some(_)) => {
-            panic!("Cannot use '--repo-url' and '--local-repo' at the same time.")
-        }
-        (Some(repo_url), None) => {
-            info!(
-                version = VERSION,
-                args = ?std::env::args().collect::<Vec<_>>(),
-                repo_url = %repo_url,
-                "Initializing (remote storage) {}",
-                BINARY_NAME
+    let repo_url = if let Some(repo_url) = matches.get_one::<Url>("repo-url").cloned() {
+        repo_url
+    } else {
+        let workspace_dir = find_workspace();
+        if !workspace_dir.exists() {
+            panic!(
+                "Directory is not a kamu workspace: {}",
+                workspace_dir.display()
             );
-
-            init_dependencies(RunMode::RemoteS3Url(repo_url)).await
         }
-        (None, local_repo_path) => {
-            let local_repo = local_repo_path
-                .unwrap_or_else(|| find_workspace())
-                .canonicalize()
-                .unwrap();
+        Url::from_directory_path(workspace_dir.join("datasets")).unwrap()
+    };
 
-            info!(
-                version = VERSION,
-                args = ?std::env::args().collect::<Vec<_>>(),
-                local_repo = %local_repo.display(),
-                "Initializing (local storage) {}",
-                BINARY_NAME
-            );
+    let local_dir = tempfile::tempdir().unwrap();
 
-            let workspace_layout = kamu::WorkspaceLayout::new(&local_repo);
-            if !workspace_layout.root_dir.exists() {
-                panic!(
-                    "Directory is not a kamu workspace: {}",
-                    workspace_layout.root_dir.display()
-                );
-            }
+    info!(
+        version = VERSION,
+        args = ?std::env::args().collect::<Vec<_>>(),
+        repo_url = %repo_url,
+        local_dir = %local_dir.path().display(),
+        "Initializing {}",
+        BINARY_NAME
+    );
 
-            init_dependencies(RunMode::LocalWorkspace(workspace_layout)).await
-        }
-    }
-    .build();
+    let catalog = init_dependencies(&repo_url, local_dir.path()).await.build();
 
     match matches.subcommand() {
         Some(("gql", sub)) => match sub.subcommand() {
@@ -159,8 +131,16 @@ fn init_logging() {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-pub async fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
+pub async fn init_dependencies(repo_url: &Url, local_dir: &Path) -> CatalogBuilder {
     let mut b = dill::CatalogBuilder::new();
+
+    // TODO: Improve output multiplexing and cache interface
+    let run_info_dir = local_dir.join("run");
+    let cache_dir = local_dir.join("cache");
+    let remote_repos_dir = local_dir.join("repos");
+    std::fs::create_dir_all(&run_info_dir).unwrap();
+    std::fs::create_dir_all(&cache_dir).unwrap();
+    std::fs::create_dir_all(&remote_repos_dir).unwrap();
 
     // TODO: replace with other means of emitting current account from HTTP sessions
     let current_account_subject = CurrentAccountSubject::new("kamu");
@@ -187,8 +167,29 @@ pub async fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
     b.add::<kamu::RemoteAliasesRegistryImpl>();
     b.bind::<dyn kamu::domain::RemoteAliasesRegistry, kamu::RemoteAliasesRegistryImpl>();
 
+    b.add_builder(
+        builder_for::<kamu::RemoteRepositoryRegistryImpl>()
+            .with_repos_dir(remote_repos_dir.clone()),
+    );
+    b.bind::<dyn kamu::domain::RemoteRepositoryRegistry, kamu::RemoteRepositoryRegistryImpl>();
+
     b.add::<kamu_adapter_http::SmartTransferProtocolClientWs>();
     b.bind::<dyn SmartTransferProtocolClient, kamu_adapter_http::SmartTransferProtocolClientWs>();
+
+    b.add_builder(
+        builder_for::<kamu::EngineProvisionerLocal>().with_run_info_dir(run_info_dir.clone()),
+    );
+    b.bind::<dyn kamu::domain::EngineProvisioner, kamu::EngineProvisionerLocal>();
+
+    b.add_builder(
+        builder_for::<kamu::IngestServiceImpl>()
+            .with_run_info_dir(run_info_dir.clone())
+            .with_cache_dir(cache_dir.clone()),
+    );
+    b.bind::<dyn kamu::domain::IngestService, kamu::IngestServiceImpl>();
+
+    b.add::<kamu::TransformServiceImpl>();
+    b.bind::<dyn kamu::domain::TransformService, kamu::TransformServiceImpl>();
 
     b.add::<kamu::SyncServiceImpl>();
     b.bind::<dyn kamu::domain::SyncService, kamu::SyncServiceImpl>();
@@ -218,47 +219,21 @@ pub async fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
     b.add::<kamu_task_system_inmem::TaskExecutorInMemory>();
     b.bind::<dyn kamu_task_system_inmem::domain::TaskExecutor, kamu_task_system_inmem::TaskExecutorInMemory>();
 
-    match run_mode {
-        RunMode::LocalWorkspace(workspace_layout) => {
-            b.add_value(workspace_layout.clone());
+    match repo_url.scheme() {
+        "file" => {
+            let datasets_dir = repo_url.to_file_path().unwrap();
 
             b.add_builder(
                 builder_for::<kamu::DatasetRepositoryLocalFs>()
-                    .with_root(workspace_layout.datasets_dir.clone())
+                    .with_root(datasets_dir.clone())
                     .with_multi_tenant(false),
             );
             b.bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryLocalFs>();
 
             b.add::<kamu::ObjectStoreBuilderLocalFs>();
             b.bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderLocalFs>();
-
-            b.add_builder(
-                builder_for::<kamu::RemoteRepositoryRegistryImpl>()
-                    .with_repos_dir(workspace_layout.repos_dir.clone()),
-            );
-            b.bind::<dyn kamu::domain::RemoteRepositoryRegistry, kamu::RemoteRepositoryRegistryImpl>();
-
-            b.add_builder(
-                builder_for::<kamu::IngestServiceImpl>()
-                    .with_run_info_dir(workspace_layout.run_info_dir.clone())
-                    .with_cache_dir(workspace_layout.cache_dir.clone()),
-            );
-            b.bind::<dyn kamu::domain::IngestService, kamu::IngestServiceImpl>();
-
-            b.add_builder(
-                builder_for::<kamu::TransformServiceImpl>()
-                    .with_run_info_dir(workspace_layout.run_info_dir.clone()),
-            );
-            b.bind::<dyn kamu::domain::TransformService, kamu::TransformServiceImpl>();
-
-            b.add_builder(
-                builder_for::<kamu::EngineProvisionerLocal>()
-                    .with_root_dir(workspace_layout.root_dir.clone())
-                    .with_run_info_dir(workspace_layout.run_info_dir.clone()),
-            );
-            b.bind::<dyn kamu::domain::EngineProvisioner, kamu::EngineProvisionerLocal>();
         }
-        RunMode::RemoteS3Url(repo_url) => {
+        "s3" | "s3+http" | "s3+https" => {
             let s3_context = kamu::utils::s3_context::S3Context::from_url(&repo_url).await;
 
             b.add_builder(
@@ -268,37 +243,8 @@ pub async fn init_dependencies(run_mode: RunMode) -> CatalogBuilder {
 
             b.add_value(kamu::ObjectStoreBuilderS3::new(s3_context, false))
                 .bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderS3>();
-
-            b.add_builder(
-                builder_for::<kamu::RemoteRepositoryRegistryImpl>()
-                    // TODO: dummy paths to let the injection pass
-                    .with_repos_dir(PathBuf::from(".kamu/repos")),
-            );
-            b.bind::<dyn kamu::domain::RemoteRepositoryRegistry, kamu::RemoteRepositoryRegistryImpl>();
-
-            b.add_builder(
-                builder_for::<kamu::IngestServiceImpl>()
-                    // TODO: dummy paths to let the injection pass
-                    .with_run_info_dir(PathBuf::from(".kamu/run"))
-                    .with_cache_dir(PathBuf::from(".kamu/cache")),
-            );
-            b.bind::<dyn kamu::domain::IngestService, kamu::IngestServiceImpl>();
-
-            b.add_builder(
-                builder_for::<kamu::TransformServiceImpl>()
-                    // TODO: dummy paths to let the injection pass
-                    .with_run_info_dir(PathBuf::from(".kamu/run")),
-            );
-            b.bind::<dyn kamu::domain::TransformService, kamu::TransformServiceImpl>();
-
-            b.add_builder(
-                builder_for::<kamu::EngineProvisionerLocal>()
-                    // TODO: dummy paths to let the injection pass
-                    .with_root_dir(PathBuf::from(".kamu"))
-                    .with_run_info_dir(PathBuf::from(".kamu/run")),
-            );
-            b.bind::<dyn kamu::domain::EngineProvisioner, kamu::EngineProvisionerLocal>();
         }
+        _ => panic!("Unsupported repository scheme: {}", repo_url.scheme()),
     }
 
     b
