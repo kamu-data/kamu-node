@@ -25,12 +25,12 @@ test:
 
 .PHONY: release-patch
 release-patch:
-	cargo set-version --workspace --bump patch
+	cargo run -p kamu-repo-tools --bin release -- --patch
 
 .PHONY: release-minor
 release-minor:
-	cargo set-version --workspace --bump minor
+	cargo run -p kamu-repo-tools --bin release -- --minor
 
 .PHONY: release-major
 release-major:
-	cargo set-version --workspace --bump major
+	cargo run -p kamu-repo-tools --bin release -- --major
