@@ -83,10 +83,12 @@ async fn root_handler() -> impl axum::response::IntoResponse {
 /////////////////////////////////////////////////////////////////////////////////////////
 
 async fn graphql_handler(
-    schema: axum::extract::Extension<kamu_adapter_graphql::Schema>,
+    axum::extract::Extension(schema): axum::extract::Extension<kamu_adapter_graphql::Schema>,
+    axum::extract::Extension(catalog): axum::extract::Extension<dill::Catalog>,
     req: async_graphql_axum::GraphQLRequest,
 ) -> async_graphql_axum::GraphQLResponse {
-    schema.execute(req.into_inner()).await.into()
+    let graphql_request = req.into_inner().data(catalog);
+    schema.execute(graphql_request).await.into()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
