@@ -9,18 +9,11 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-pub(crate) fn gql_schema(catalog: dill::Catalog) -> kamu_adapter_graphql::Schema {
-    kamu_adapter_graphql::schema_builder(catalog)
-        .extension(kamu_adapter_graphql::extensions::Tracing)
-        .extension(async_graphql::extensions::ApolloTracing)
-        .finish()
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
 pub(crate) async fn gql_query(query: &str, full: bool, catalog: dill::Catalog) -> String {
-    let gql_schema = gql_schema(catalog.clone());
-    let response = gql_schema.execute(query).await;
+    let gql_schema = kamu_adapter_graphql::schema();
+    let response = gql_schema
+        .execute(async_graphql::Request::new(query).data(catalog.clone()))
+        .await;
 
     if full {
         serde_json::to_string_pretty(&response).unwrap()

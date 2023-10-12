@@ -11,7 +11,6 @@ use std::path::{Path, PathBuf};
 
 use dill::{builder_for, CatalogBuilder};
 use internal_error::*;
-use kamu::domain::CurrentAccountSubject;
 use kamu::utils::smart_transfer_protocol::SmartTransferProtocolClient;
 use tracing::info;
 use url::Url;
@@ -57,7 +56,7 @@ pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
     match matches.subcommand() {
         Some(("gql", sub)) => match sub.subcommand() {
             Some(("schema", _)) => {
-                println!("{}", kamu_adapter_graphql::schema(catalog).sdl());
+                println!("{}", kamu_adapter_graphql::schema().sdl());
                 Ok(())
             }
             Some(("query", qsub)) => {
@@ -77,6 +76,7 @@ pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
                 sub.get_one("address").map(|a| *a),
                 sub.get_one("http-port").map(|p| *p),
                 catalog.clone(),
+                should_use_multi_tenancy(&repo_url),
             );
 
             tracing::info!(
@@ -142,10 +142,6 @@ pub async fn init_dependencies(repo_url: &Url, local_dir: &Path) -> CatalogBuild
     std::fs::create_dir_all(&cache_dir).unwrap();
     std::fs::create_dir_all(&remote_repos_dir).unwrap();
 
-    // TODO: replace with other means of emitting current account from HTTP sessions
-    let current_account_subject = CurrentAccountSubject::new("kamu");
-    b.add_value(current_account_subject);
-
     b.add::<container_runtime::ContainerRuntime>();
     b.add_value(container_runtime::ContainerRuntimeConfig {
         runtime: container_runtime::ContainerRuntimeType::Podman,
@@ -157,6 +153,9 @@ pub async fn init_dependencies(repo_url: &Url, local_dir: &Path) -> CatalogBuild
         max_concurrency: Some(2),
         ..Default::default()
     });
+
+    b.add::<kamu::domain::SystemTimeSourceDefault>();
+    b.bind::<dyn kamu::domain::SystemTimeSource, kamu::domain::SystemTimeSourceDefault>();
 
     b.add::<kamu::DatasetFactoryImpl>();
     b.bind::<dyn kamu::domain::DatasetFactory, kamu::DatasetFactoryImpl>();
@@ -219,6 +218,16 @@ pub async fn init_dependencies(repo_url: &Url, local_dir: &Path) -> CatalogBuild
     b.add::<kamu_task_system_inmem::TaskExecutorInMemory>();
     b.bind::<dyn kamu_task_system_inmem::domain::TaskExecutor, kamu_task_system_inmem::TaskExecutorInMemory>();
 
+    b.add::<kamu::AuthenticationServiceImpl>();
+    b.bind::<dyn kamu::domain::auth::AuthenticationService, kamu::AuthenticationServiceImpl>();
+
+    b.add::<kamu_adapter_auth_oso::KamuAuthOso>();
+    b.add::<kamu_adapter_auth_oso::OsoDatasetAuthorizer>();
+    b.bind::<dyn kamu::domain::auth::DatasetActionAuthorizer, kamu_adapter_auth_oso::OsoDatasetAuthorizer>();
+
+    b.add::<kamu::domain::auth::DummyOdfServerAccessTokenResolver>();
+    b.bind::<dyn kamu::domain::auth::OdfServerAccessTokenResolver, kamu::domain::auth::DummyOdfServerAccessTokenResolver>();
+
     match repo_url.scheme() {
         "file" => {
             let datasets_dir = repo_url.to_file_path().unwrap();
@@ -232,22 +241,40 @@ pub async fn init_dependencies(repo_url: &Url, local_dir: &Path) -> CatalogBuild
 
             b.add::<kamu::ObjectStoreBuilderLocalFs>();
             b.bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderLocalFs>();
+
+            b.add::<crate::builtin_authentication_provider::BuiltinAuthenticationProvider>();
+            b.bind::<dyn kamu::domain::auth::AuthenticationProvider, crate::builtin_authentication_provider::BuiltinAuthenticationProvider>();
         }
         "s3" | "s3+http" | "s3+https" => {
             let s3_context = kamu::utils::s3_context::S3Context::from_url(&repo_url).await;
 
             b.add_builder(
-                builder_for::<kamu::DatasetRepositoryS3>().with_s3_context(s3_context.clone()),
+                builder_for::<kamu::DatasetRepositoryS3>()
+                    .with_s3_context(s3_context.clone())
+                    .with_multi_tenant(true),
             );
             b.bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>();
 
             b.add_value(kamu::ObjectStoreBuilderS3::new(s3_context, false))
                 .bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderS3>();
+
+            b.add::<kamu_adapter_oauth::OAuthGithub>();
+            b.bind::<dyn kamu::domain::auth::AuthenticationProvider, kamu_adapter_oauth::OAuthGithub>();
         }
         _ => panic!("Unsupported repository scheme: {}", repo_url.scheme()),
     }
 
     b
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+fn should_use_multi_tenancy(repo_url: &Url) -> bool {
+    match repo_url.scheme() {
+        "file" => false,
+        "s3" | "s3+http" | "s3+https" => true,
+        _ => panic!("Unsupported repository scheme: {}", repo_url.scheme()),
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

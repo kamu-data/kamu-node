@@ -18,6 +18,10 @@ async fn test_di_graph_validates_local() {
     )
     .await;
 
+    // CurrentAccountSubject is inserted by middlewares, but won't be present in
+    // default dependency graph, so we have to add it manually
+    catalog_builder.add_value(kamu::domain::CurrentAccountSubject::new_test());
+
     // TODO: We should ensure this test covers parameters requested by commands and
     // types needed for GQL/HTTP adapter that are currently being constructed
     // manually
@@ -55,6 +59,10 @@ async fn test_di_graph_validates_remote() {
 
     let mut catalog_builder =
         kamu_api_server::init_dependencies(&repo_url, tmp_repo_dir.path()).await;
+
+    // CurrentAccountSubject is inserted by middlewares, but won't be present in
+    // default dependency graph, so we have to add it manually
+    catalog_builder.add_value(kamu::domain::CurrentAccountSubject::new_test());
 
     // TODO: We should ensure this test covers parameters requested by commands and
     // types needed for GQL/HTTP adapter that are currently being constructed

@@ -9,14 +9,17 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+use kamu::domain::{AnonymousAccountReason, CurrentAccountSubject};
+
 pub(crate) fn build_server(
     address: Option<std::net::IpAddr>,
     http_port: Option<u16>,
     catalog: dill::Catalog,
+    multi_tenant_workspace: bool,
 ) -> axum::Server<hyper::server::conn::AddrIncoming, axum::routing::IntoMakeService<axum::Router>> {
     use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
-    let gql_schema = crate::gql_server::gql_schema(catalog.clone());
+    let gql_schema = kamu_adapter_graphql::schema();
 
     let app = axum::Router::new()
         .route("/", axum::routing::get(root_handler))
@@ -24,15 +27,20 @@ pub(crate) fn build_server(
             "/graphql",
             axum::routing::get(graphql_playground_handler).post(graphql_handler),
         )
+        .route(
+            "/platform/token/validate",
+            axum::routing::get(platform_token_validate_handler),
+        )
         .nest(
-            "/:dataset_name",
-            kamu_adapter_http::smart_transfer_protocol_routes()
-                .layer(kamu_adapter_http::DatasetResolverLayer::new(
-                    |axum::extract::Path(p): axum::extract::Path<DatasetByName>| {
-                        p.dataset_name.as_local_ref()
-                    },
-                ))
-                .layer(axum::extract::Extension(catalog)),
+            if multi_tenant_workspace {
+                "/:account_name/:dataset_name"
+            } else {
+                "/:dataset_name"
+            },
+            kamu_adapter_http::add_dataset_resolver_layer(
+                kamu_adapter_http::smart_transfer_protocol_router(),
+                multi_tenant_workspace,
+            ),
         )
         .layer(
             tower::ServiceBuilder::new()
@@ -43,7 +51,9 @@ pub(crate) fn build_server(
                         .allow_methods(vec![http::Method::GET, http::Method::POST])
                         .allow_headers(tower_http::cors::Any),
                 )
-                .layer(axum::extract::Extension(gql_schema)),
+                .layer(axum::extract::Extension(catalog))
+                .layer(axum::extract::Extension(gql_schema))
+                .layer(kamu_adapter_http::AuthenticationLayer::new()),
         );
 
     let addr = SocketAddr::from((
@@ -52,14 +62,6 @@ pub(crate) fn build_server(
     ));
 
     axum::Server::bind(&addr).serve(app.into_make_service())
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-// Extractor of dataset identity for smart transfer protocol
-#[derive(serde::Deserialize)]
-struct DatasetByName {
-    dataset_name: opendatafabric::DatasetName,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -78,15 +80,53 @@ async fn root_handler() -> impl axum::response::IntoResponse {
     )
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////
+
 async fn graphql_handler(
-    schema: axum::extract::Extension<kamu_adapter_graphql::Schema>,
+    axum::extract::Extension(schema): axum::extract::Extension<kamu_adapter_graphql::Schema>,
+    axum::extract::Extension(catalog): axum::extract::Extension<dill::Catalog>,
     req: async_graphql_axum::GraphQLRequest,
 ) -> async_graphql_axum::GraphQLResponse {
-    schema.execute(req.into_inner()).await.into()
+    let graphql_request = req.into_inner().data(catalog);
+    schema.execute(graphql_request).await.into()
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
 
 async fn graphql_playground_handler() -> impl axum::response::IntoResponse {
     axum::response::Html(async_graphql::http::playground_source(
         async_graphql::http::GraphQLPlaygroundConfig::new("/graphql"),
     ))
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+// TODO: move this logic to `kamu_adapter_http` crate
+async fn platform_token_validate_handler(
+    catalog: axum::extract::Extension<dill::Catalog>,
+) -> axum::response::Response {
+    let current_account_subject = catalog.get_one::<CurrentAccountSubject>().unwrap();
+
+    match current_account_subject.as_ref() {
+        CurrentAccountSubject::Logged(_) => {
+            return axum::response::Response::builder()
+                .status(http::StatusCode::OK)
+                .body(Default::default())
+                .unwrap()
+        }
+        CurrentAccountSubject::Anonymous(reason) => {
+            return axum::response::Response::builder()
+                .status(match reason {
+                    AnonymousAccountReason::AuthenticationExpired => http::StatusCode::UNAUTHORIZED,
+                    AnonymousAccountReason::AuthenticationInvalid => http::StatusCode::BAD_REQUEST,
+                    AnonymousAccountReason::NoAuthenticationProvided => {
+                        http::StatusCode::BAD_REQUEST
+                    }
+                })
+                .body(Default::default())
+                .unwrap();
+        }
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
