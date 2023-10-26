@@ -38,6 +38,10 @@ pub fn cli() -> Command {
                     .long("http-port")
                     .value_parser(value_parser!(u16))
                     .help("Expose HTTP server on specific port"),
+                Arg::new("flightsql-port")
+                    .long("flightsql-port")
+                    .value_parser(value_parser!(u16))
+                    .help("Expose Flight SQL server on specific port"),
             ]),
             Command::new("gql")
                 .about("GraphQL related command group")

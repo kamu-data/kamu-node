@@ -9,14 +9,14 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+use std::net::SocketAddr;
+
 pub(crate) fn build_server(
-    address: Option<std::net::IpAddr>,
+    address: std::net::IpAddr,
     http_port: Option<u16>,
     catalog: dill::Catalog,
     multi_tenant_workspace: bool,
 ) -> axum::Server<hyper::server::conn::AddrIncoming, axum::routing::IntoMakeService<axum::Router>> {
-    use std::net::{IpAddr, Ipv4Addr, SocketAddr};
-
     let gql_schema = kamu_adapter_graphql::schema();
 
     let app = axum::Router::new()
@@ -54,10 +54,7 @@ pub(crate) fn build_server(
                 .layer(kamu_adapter_http::AuthenticationLayer::new()),
         );
 
-    let addr = SocketAddr::from((
-        address.unwrap_or(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1))),
-        http_port.unwrap_or(0),
-    ));
+    let addr = SocketAddr::from((address, http_port.unwrap_or(0)));
 
     axum::Server::bind(&addr).serve(app.into_make_service())
 }

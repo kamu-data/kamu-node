@@ -20,7 +20,7 @@ Prerequisites:
 To run API server using local `kamu` workspace:
 
 ```bash
-cargo run -- --repo-url workspace/.kamu/datasets run | bunyan
+cargo run --bin kamu-api-server -- --repo-url workspace/.kamu/datasets run | bunyan
 ```
 
 To control log verbosity use the standard `RUST_LOG` env var:
@@ -34,7 +34,7 @@ To explore GQL schema run server and open http://127.0.0.1:8080/playground.
 To test GQL queries from the CLI:
 
 ```bash
-cargo run -- gql query '{ apiVersion }' | jq
+cargo run --bin kamu-api-server -- gql query '{ apiVersion }' | jq
 ```
 
 
@@ -43,7 +43,7 @@ cargo run -- gql query '{ apiVersion }' | jq
 To use it:
 
 ```bash
-cargo run -- --repo-url s3://example.com/kamu_repo run | bunyan
+cargo run --bin kamu-api-server -- --repo-url s3://example.com/kamu_repo run | bunyan
 ```
 
 

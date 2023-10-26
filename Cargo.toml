@@ -10,21 +10,23 @@ resolver = "2"
 
 [workspace.dependencies]
 # Utils
-container-runtime = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.3", version = "0.145.3", default-features = false }
-internal-error = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.3", version = "0.145.3", default-features = false }
+container-runtime = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.5", version = "0.145.5", default-features = false }
+internal-error = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.5", version = "0.145.5", default-features = false }
 # Domain
-opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.3", version = "0.145.3", default-features = false }
-kamu-task-system = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.3", version = "0.145.3", default-features = false }
+opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.5", version = "0.145.5", default-features = false }
+kamu-task-system = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.5", version = "0.145.5", default-features = false }
 # Infra
-kamu = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.3", version = "0.145.3", default-features = false }
-kamu-task-system-inmem = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.3", version = "0.145.3", default-features = false }
-kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.3", version = "0.145.3", default-features = false }
-kamu-adapter-http = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.3", version = "0.145.3", default-features = false }
-kamu-adapter-oauth = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.3", version = "0.145.3", default-features = false }
-kamu-adapter-auth-oso = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.3", version = "0.145.3", default-features = false }
+kamu = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.5", version = "0.145.5", default-features = false }
+kamu-task-system-inmem = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.5", version = "0.145.5", default-features = false }
+kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.5", version = "0.145.5", default-features = false }
+kamu-adapter-http = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.5", version = "0.145.5", default-features = false }
+kamu-adapter-oauth = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.5", version = "0.145.5", default-features = false }
+kamu-adapter-auth-oso = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.5", version = "0.145.5", default-features = false }
+kamu-adapter-flight-sql = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.145.5", version = "0.145.5", default-features = false }
+
 
 [workspace.package]
-version = "0.8.3"
+version = "0.9.0"
 edition = "2021"
 homepage = "https://github.com/kamu-data/kamu-platform"
 repository = "https://github.com/kamu-data/kamu-platform"
@@ -53,13 +55,17 @@ debug = 2
 # We don't emit info for dependencies as this significantly increases binary size.
 # See: https://doc.rust-lang.org/cargo/reference/profiles.html#debug
 [profile.release.package]
+container-runtime = { debug = 1 }
+internal-error = { debug = 1 }
 opendatafabric = { debug = 1 }
+kamu-task-system = { debug = 1 }
 kamu = { debug = 1 }
+kamu-task-system-inmem = { debug = 1 }
 kamu-adapter-graphql = { debug = 1 }
 kamu-adapter-http = { debug = 1 }
 kamu-adapter-oauth = { debug = 1 }
 kamu-adapter-auth-oso = { debug = 1 }
-kamu-api-server = { debug = 1 }
+kamu-adapter-flight-sql = { debug = 1 }
 
 
 [profile.ci]

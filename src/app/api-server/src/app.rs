@@ -72,15 +72,28 @@ pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
             _ => unimplemented!(),
         },
         Some(("run", sub)) => {
-            let server = crate::http_server::build_server(
-                sub.get_one("address").map(|a| *a),
+            let address = sub
+                .get_one::<std::net::IpAddr>("address")
+                .map(|a| *a)
+                .unwrap_or(std::net::Ipv4Addr::new(127, 0, 0, 1).into());
+
+            let http_server = crate::http_server::build_server(
+                address,
                 sub.get_one("http-port").map(|p| *p),
                 catalog.clone(),
                 should_use_multi_tenancy(&repo_url),
             );
 
+            let flightsql_server = crate::flightsql_server::FlightSqlServer::new(
+                address,
+                sub.get_one("flightsql-port").map(|p| *p),
+                catalog.clone(),
+            )
+            .await;
+
             tracing::info!(
-                http_endpoint = format!("http://{}", server.local_addr()),
+                http_endpoint = format!("http://{}", http_server.local_addr()),
+                flightsql_endpoint = format!("flightsql://{}", flightsql_server.local_addr()),
                 "Serving traffic"
             );
 
@@ -89,7 +102,8 @@ pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
                 .unwrap();
 
             tokio::select! {
-                res = server => { res.int_err() },
+                res = http_server => { res.int_err() },
+                res = flightsql_server.run() => { res.int_err() },
                 res = task_executor.run() => { res.int_err() },
             }
         }
