@@ -15,6 +15,9 @@ use kamu::utils::smart_transfer_protocol::SmartTransferProtocolClient;
 use tracing::info;
 use url::Url;
 
+use crate::config::{ApiServerConfig, AuthProviderConfig};
+use crate::dummy_auth_provider::DummyAuthProvider;
+
 /////////////////////////////////////////////////////////////////////////////////////////
 
 pub const BINARY_NAME: &str = env!("CARGO_PKG_NAME");
@@ -26,6 +29,8 @@ const DEFAULT_LOGGING_CONFIG: &str = "info,tower_http=trace";
 
 pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
     init_logging();
+
+    let config = load_config(matches.get_one("config"))?;
 
     let repo_url = if let Some(repo_url) = matches.get_one::<Url>("repo-url").cloned() {
         repo_url
@@ -51,7 +56,9 @@ pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
         BINARY_NAME
     );
 
-    let catalog = init_dependencies(&repo_url, local_dir.path()).await.build();
+    let catalog = init_dependencies(config, &repo_url, local_dir.path())
+        .await
+        .build();
 
     match matches.subcommand() {
         Some(("gql", sub)) => match sub.subcommand() {
@@ -145,7 +152,29 @@ fn init_logging() {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-pub async fn init_dependencies(repo_url: &Url, local_dir: &Path) -> CatalogBuilder {
+pub fn load_config(path: Option<&PathBuf>) -> Result<ApiServerConfig, InternalError> {
+    use figment::providers::Format;
+
+    let Some(path) = path else {
+        return Ok(ApiServerConfig::default());
+    };
+
+    figment::Figment::from(figment::providers::Serialized::defaults(
+        ApiServerConfig::default(),
+    ))
+    .merge(figment::providers::Yaml::file(path))
+    .merge(figment::providers::Env::prefixed("KAMU_API_SERVER_").lowercase(false))
+    .extract()
+    .int_err()
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+pub async fn init_dependencies(
+    config: ApiServerConfig,
+    repo_url: &Url,
+    local_dir: &Path,
+) -> CatalogBuilder {
     let mut b = dill::CatalogBuilder::new();
 
     // TODO: Improve output multiplexing and cache interface
@@ -256,8 +285,8 @@ pub async fn init_dependencies(repo_url: &Url, local_dir: &Path) -> CatalogBuild
             b.add::<kamu::ObjectStoreBuilderLocalFs>();
             b.bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderLocalFs>();
 
-            b.add::<crate::builtin_authentication_provider::BuiltinAuthenticationProvider>();
-            b.bind::<dyn kamu::domain::auth::AuthenticationProvider, crate::builtin_authentication_provider::BuiltinAuthenticationProvider>();
+            b.add_value(DummyAuthProvider::new_with_default_account());
+            b.bind::<dyn kamu::domain::auth::AuthenticationProvider, DummyAuthProvider>();
         }
         "s3" | "s3+http" | "s3+https" => {
             let s3_context = kamu::utils::s3_context::S3Context::from_url(&repo_url).await;
@@ -272,8 +301,24 @@ pub async fn init_dependencies(repo_url: &Url, local_dir: &Path) -> CatalogBuild
             b.add_value(kamu::ObjectStoreBuilderS3::new(s3_context, false))
                 .bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderS3>();
 
-            b.add::<kamu_adapter_oauth::OAuthGithub>();
-            b.bind::<dyn kamu::domain::auth::AuthenticationProvider, kamu_adapter_oauth::OAuthGithub>();
+            // Default to GitHub auth
+            if config.auth.providers.is_empty() {
+                b.add::<kamu_adapter_oauth::OAuthGithub>();
+                b.bind::<dyn kamu::domain::auth::AuthenticationProvider, kamu_adapter_oauth::OAuthGithub>();
+            }
+
+            for provider in config.auth.providers {
+                match provider {
+                    AuthProviderConfig::Github(_) => {
+                        b.add::<kamu_adapter_oauth::OAuthGithub>();
+                        b.bind::<dyn kamu::domain::auth::AuthenticationProvider, kamu_adapter_oauth::OAuthGithub>();
+                    }
+                    AuthProviderConfig::Dummy(prov) => {
+                        b.add_value(DummyAuthProvider::new(prov.accounts));
+                        b.bind::<dyn kamu::domain::auth::AuthenticationProvider, DummyAuthProvider>();
+                    }
+                }
+            }
         }
         _ => panic!("Unsupported repository scheme: {}", repo_url.scheme()),
     }

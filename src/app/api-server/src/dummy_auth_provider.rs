@@ -9,44 +9,37 @@
 
 use std::collections::HashMap;
 
-use dill::component;
 use internal_error::{InternalError, ResultIntoInternal};
+use kamu::domain::auth;
 use serde::{Deserialize, Serialize};
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-pub(crate) struct BuiltinAuthenticationProvider {
-    predefined_accounts: HashMap<String, kamu::domain::auth::AccountInfo>,
+pub(crate) struct DummyAuthProvider {
+    predefined_accounts: HashMap<String, auth::AccountInfo>,
 }
 
-#[component(pub)]
-impl BuiltinAuthenticationProvider {
-    pub(crate) fn new() -> Self {
-        let kamu_account = kamu::domain::auth::AccountInfo {
+impl DummyAuthProvider {
+    pub(crate) fn new_with_default_account() -> Self {
+        Self::new(vec![auth::AccountInfo {
             account_id: opendatafabric::FAKE_ACCOUNT_ID.to_string(),
-            account_name: opendatafabric::AccountName::new_unchecked(
-                kamu::domain::auth::DEFAULT_ACCOUNT_NAME,
-            ),
-            account_type: kamu::domain::auth::AccountType::User,
-            display_name: String::from(kamu::domain::auth::DEFAULT_ACCOUNT_NAME),
-            avatar_url: Some(String::from(kamu::domain::auth::DEFAULT_AVATAR_URL)),
-        };
+            account_name: opendatafabric::AccountName::new_unchecked(auth::DEFAULT_ACCOUNT_NAME),
+            account_type: auth::AccountType::User,
+            display_name: String::from(auth::DEFAULT_ACCOUNT_NAME),
+            avatar_url: Some(String::from(auth::DEFAULT_AVATAR_URL)),
+        }])
+    }
 
-        let mut predefined_accounts = HashMap::new();
-        predefined_accounts.insert(
-            String::from(kamu::domain::auth::DEFAULT_ACCOUNT_NAME),
-            kamu_account,
-        );
-
+    pub(crate) fn new(predefined_accounts: Vec<auth::AccountInfo>) -> Self {
         Self {
-            predefined_accounts,
+            predefined_accounts: predefined_accounts
+                .into_iter()
+                .map(|acc| (acc.account_name.to_string(), acc))
+                .collect(),
         }
     }
 
-    fn find_account_info_impl(
-        &self,
-        account_name: &String,
-    ) -> Option<kamu::domain::auth::AccountInfo> {
+    fn find_account_info_impl(&self, account_name: &String) -> Option<auth::AccountInfo> {
         // The account might be predefined in the configuration
         self.predefined_accounts
             .get(account_name)
@@ -56,7 +49,7 @@ impl BuiltinAuthenticationProvider {
     fn get_account_info_impl(
         &self,
         account_name: &String,
-    ) -> Result<kamu::domain::auth::AccountInfo, kamu::domain::auth::RejectedCredentialsError> {
+    ) -> Result<auth::AccountInfo, auth::RejectedCredentialsError> {
         // The account might be predefined in the configuration
         match self.predefined_accounts.get(account_name) {
             // Use the predefined record
@@ -64,7 +57,7 @@ impl BuiltinAuthenticationProvider {
 
             None => {
                 // Otherwise we don't recognized this user between predefined
-                Err(kamu::domain::auth::RejectedCredentialsError::new(
+                Err(auth::RejectedCredentialsError::new(
                     "Login of unknown accounts is disabled".to_string(),
                 ))
             }
@@ -73,7 +66,7 @@ impl BuiltinAuthenticationProvider {
 }
 
 #[async_trait::async_trait]
-impl kamu::domain::auth::AuthenticationProvider for BuiltinAuthenticationProvider {
+impl auth::AuthenticationProvider for DummyAuthProvider {
     fn login_method(&self) -> &'static str {
         "password"
     }
@@ -81,40 +74,34 @@ impl kamu::domain::auth::AuthenticationProvider for BuiltinAuthenticationProvide
     async fn login(
         &self,
         login_credentials_json: String,
-    ) -> Result<kamu::domain::auth::ProviderLoginResponse, kamu::domain::auth::ProviderLoginError>
-    {
+    ) -> Result<auth::ProviderLoginResponse, auth::ProviderLoginError> {
         // Decode credentials
         let password_login_credentials =
             serde_json::from_str::<PasswordLoginCredentials>(login_credentials_json.as_str())
                 .map_err(|e| {
-                    kamu::domain::auth::ProviderLoginError::InvalidCredentials(
-                        kamu::domain::auth::InvalidCredentialsError::new(Box::new(e)),
+                    auth::ProviderLoginError::InvalidCredentials(
+                        auth::InvalidCredentialsError::new(Box::new(e)),
                     )
                 })?;
 
         // For now password should match the login, this is enough for CLI demo needs
-        if password_login_credentials
-            .password
-            .ne(&password_login_credentials.login)
-        {
-            return Err(kamu::domain::auth::ProviderLoginError::RejectedCredentials(
-                kamu::domain::auth::RejectedCredentialsError::new(
-                    "Invalid login or password".into(),
-                ),
+        if password_login_credentials.password != password_login_credentials.login {
+            return Err(auth::ProviderLoginError::RejectedCredentials(
+                auth::RejectedCredentialsError::new("Invalid login or password".into()),
             ));
         }
 
         // The account might be predefined in the configuration
         let account_info = self
             .get_account_info_impl(&password_login_credentials.login)
-            .map_err(|e| kamu::domain::auth::ProviderLoginError::RejectedCredentials(e))?;
+            .map_err(|e| auth::ProviderLoginError::RejectedCredentials(e))?;
 
         // Store login as provider credentials
         let provider_credentials = PasswordProviderCredentials {
             account_name: account_info.account_name.clone(),
         };
 
-        Ok(kamu::domain::auth::ProviderLoginResponse {
+        Ok(auth::ProviderLoginResponse {
             provider_credentials_json: serde_json::to_string::<PasswordProviderCredentials>(
                 &provider_credentials,
             )
@@ -126,7 +113,7 @@ impl kamu::domain::auth::AuthenticationProvider for BuiltinAuthenticationProvide
     async fn account_info_by_token(
         &self,
         provider_credentials_json: String,
-    ) -> Result<kamu::domain::auth::AccountInfo, InternalError> {
+    ) -> Result<auth::AccountInfo, InternalError> {
         let provider_credentials = serde_json::from_str::<PasswordProviderCredentials>(
             &provider_credentials_json.as_str(),
         )
@@ -142,7 +129,7 @@ impl kamu::domain::auth::AuthenticationProvider for BuiltinAuthenticationProvide
     async fn find_account_info_by_name<'a>(
         &'a self,
         account_name: &'a opendatafabric::AccountName,
-    ) -> Result<Option<kamu::domain::auth::AccountInfo>, InternalError> {
+    ) -> Result<Option<auth::AccountInfo>, InternalError> {
         Ok(self.find_account_info_impl(&account_name.into()))
     }
 }

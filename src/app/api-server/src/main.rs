@@ -13,6 +13,9 @@ async fn main() {
 
     match kamu_api_server::run(matches).await {
         Ok(_) => {}
-        Err(_) => std::process::exit(1),
+        Err(err) => {
+            eprintln!("Error: {:#?}", err);
+            std::process::exit(1)
+        }
     }
 }

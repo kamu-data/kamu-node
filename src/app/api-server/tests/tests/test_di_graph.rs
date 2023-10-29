@@ -13,6 +13,7 @@ use dill::*;
 async fn test_di_graph_validates_local() {
     let tempdir = tempfile::tempdir().unwrap();
     let mut catalog_builder = kamu_api_server::init_dependencies(
+        kamu_api_server::config::ApiServerConfig::default(),
         &url::Url::from_directory_path(tempdir.path()).unwrap(),
         tempdir.path(),
     )
@@ -57,8 +58,12 @@ async fn test_di_graph_validates_remote() {
     ))
     .unwrap();
 
-    let mut catalog_builder =
-        kamu_api_server::init_dependencies(&repo_url, tmp_repo_dir.path()).await;
+    let mut catalog_builder = kamu_api_server::init_dependencies(
+        kamu_api_server::config::ApiServerConfig::default(),
+        &repo_url,
+        tmp_repo_dir.path(),
+    )
+    .await;
 
     // CurrentAccountSubject is inserted by middlewares, but won't be present in
     // default dependency graph, so we have to add it manually

@@ -24,10 +24,16 @@ pub fn cli() -> Command {
               kamu-api-server <command> <sub-command> -h
             "
         ))
-        .args([Arg::new("repo-url")
-            .long("repo-url")
-            .value_parser(value_parse_repo_url)
-            .help("URL of the remote dataset repository")])
+        .args([
+            Arg::new("config")
+                .long("config")
+                .value_parser(value_parser!(std::path::PathBuf))
+                .help("Path to the config file"),
+            Arg::new("repo-url")
+                .long("repo-url")
+                .value_parser(value_parse_repo_url)
+                .help("URL of the remote dataset repository"),
+        ])
         .subcommands([
             Command::new("run").about("Run the server").args([
                 Arg::new("address")
