@@ -16,7 +16,7 @@ jobs:
     name: Lint / Formatting
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
         with:
           components: rustfmt
@@ -25,12 +25,15 @@ jobs:
         with:
           command: fmt
           args: --check
+      - name: license headers
+        run: |
+          cargo test -p kamu-repo-tools -- license_header
 
   lint_deps:
     name: Lint / Dependencies
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
       - run: cargo install --locked cargo-deny
       - run: cargo deny check
@@ -41,7 +44,7 @@ jobs:
     env:
       CARGO_FLAGS: --profile ci --features kamu/ftp
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
       - uses: swatinem/rust-cache@v2
         with:

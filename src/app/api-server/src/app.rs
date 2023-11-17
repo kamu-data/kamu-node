@@ -298,7 +298,8 @@ pub async fn init_dependencies(
             );
             b.bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>();
 
-            b.add_value(kamu::ObjectStoreBuilderS3::new(s3_context, false))
+            let allow_http = repo_url.scheme() == "s3+http";
+            b.add_value(kamu::ObjectStoreBuilderS3::new(s3_context, allow_http))
                 .bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderS3>();
 
             // Default to GitHub auth

@@ -2850,7 +2850,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-api-server"
-version = "0.10.0"
+version = "0.10.1"
 dependencies = [
  "arrow-flight",
  "async-graphql",
@@ -2976,7 +2976,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-repo-tools"
-version = "0.10.0"
+version = "0.10.1"
 dependencies = [
  "chrono",
  "clap",
