@@ -2,6 +2,8 @@ IMAGE_REPO = ghcr.io/kamu-data
 KAMU_VERSION = $(shell cargo metadata --format-version 1 | jq -r '.packages[] | select( .name == "kamu-core") | .version')
 API_SERVER_VERSION = $(shell cargo metadata --format-version 1 | jq -r '.packages[] | select( .name == "kamu-api-server") | .version')
 
+API_SERVER_MAJOR_VERSION = $(shell echo $(API_SERVER_VERSION) | cut -d. -f 1)
+API_SERVER_MINOR_VERSION = $(shell echo $(API_SERVER_VERSION) | cut -d. -f 2)
 
 .PHONY: api-server
 api-server:
@@ -9,6 +11,7 @@ api-server:
 		--build-arg KAMU_VERSION=$(KAMU_VERSION) \
 		--build-arg API_SERVER_VERSION=$(API_SERVER_VERSION) \
 		-t $(IMAGE_REPO)/kamu-api-server:$(API_SERVER_VERSION) \
+		-t $(IMAGE_REPO)/kamu-api-server:$(API_SERVER_MAJOR_VERSION).$(API_SERVER_MINOR_VERSION) \
 		api-server/
 
 
