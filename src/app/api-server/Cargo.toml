@@ -29,7 +29,7 @@ kamu-adapter-flight-sql = { workspace = true }
 # APIs
 http = "0.2"
 hyper = "0.14"
-arrow-flight = { version = "46", features = ["flight-sql-experimental"] }
+arrow-flight = { version = "48", features = ["flight-sql-experimental"] }
 axum = { version = "0.6", features = ["ws"] }
 axum-extra = { version = "0.8", features = ["async-read-body"] }
 async-graphql = { version = "6", features = [
@@ -38,7 +38,7 @@ async-graphql = { version = "6", features = [
     "apollo_tracing",
 ] }
 async-graphql-axum = "6"
-tonic = { version = "0.9", default-features = false }
+tonic = { version = "0.10", default-features = false }
 tower = { version = "0.4" }
 tower-http = { version = "0.4", features = ["trace", "cors"] }
 
@@ -58,7 +58,7 @@ tracing-bunyan-formatter = "0.3"
 async-trait = { version = "0.1", default-features = false }
 chrono = "0.4"
 clap = "4"
-datafusion = "31"
+datafusion = "33"
 figment = { version = "0.10", features = ["env", "yaml", "json"] }
 futures = "0.3"
 indoc = "2"
@@ -68,7 +68,7 @@ tempfile = "3"
 tokio = { version = "1", default-features = false, features = ["macros"] }
 tokio-stream = { version = "0.1", default-features = false, features = ["net"] }
 tokio-util = { version = "0.7", default-features = false, features = ["rt"] }
-thiserror = { version = "=1.0.44", default-features = false }                 # TODO: Pinned until rustc upgrade
+thiserror = { version = "1", default-features = false }
 url = "2"
 
 

@@ -223,12 +223,20 @@ pub async fn init_dependencies(
     );
     b.bind::<dyn kamu::domain::EngineProvisioner, kamu::EngineProvisionerLocal>();
 
+    b.add::<kamu::DataFormatRegistryImpl>();
+    b.bind::<dyn kamu::domain::DataFormatRegistry, kamu::DataFormatRegistryImpl>();
+
     b.add_builder(
-        builder_for::<kamu::IngestServiceImpl>()
+        builder_for::<kamu::PollingIngestServiceImpl>()
             .with_run_info_dir(run_info_dir.clone())
             .with_cache_dir(cache_dir.clone()),
     );
-    b.bind::<dyn kamu::domain::IngestService, kamu::IngestServiceImpl>();
+    b.bind::<dyn kamu::domain::PollingIngestService, kamu::PollingIngestServiceImpl>();
+
+    b.add_builder(
+        builder_for::<kamu::PushIngestServiceImpl>().with_run_info_dir(run_info_dir.clone()),
+    );
+    b.bind::<dyn kamu::domain::PushIngestService, kamu::PushIngestServiceImpl>();
 
     b.add::<kamu::TransformServiceImpl>();
     b.bind::<dyn kamu::domain::TransformService, kamu::TransformServiceImpl>();
