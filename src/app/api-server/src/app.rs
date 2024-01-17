@@ -9,9 +9,8 @@
 
 use std::path::{Path, PathBuf};
 
-use dill::{builder_for, CatalogBuilder};
+use dill::{CatalogBuilder, Component};
 use internal_error::*;
-use kamu::utils::smart_transfer_protocol::SmartTransferProtocolClient;
 use tracing::info;
 use url::Url;
 
@@ -108,10 +107,20 @@ pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
                 .get_one::<dyn kamu_task_system_inmem::domain::TaskExecutor>()
                 .unwrap();
 
+            let flow_service = catalog
+                .get_one::<dyn kamu_flow_system_inmem::domain::FlowService>()
+                .unwrap();
+
+            let now = catalog
+                .get_one::<dyn kamu::domain::SystemTimeSource>()
+                .unwrap()
+                .now();
+
             tokio::select! {
                 res = http_server => { res.int_err() },
                 res = flightsql_server.run() => { res.int_err() },
                 res = task_executor.run() => { res.int_err() },
+                res = flow_service.run(now) => { res.int_err() },
             }
         }
         _ => unimplemented!(),
@@ -185,6 +194,9 @@ pub async fn init_dependencies(
     std::fs::create_dir_all(&cache_dir).unwrap();
     std::fs::create_dir_all(&remote_repos_dir).unwrap();
 
+    b.add::<kamu::domain::SystemTimeSourceDefault>();
+    b.add::<event_bus::EventBus>();
+
     b.add::<container_runtime::ContainerRuntime>();
     b.add_value(container_runtime::ContainerRuntimeConfig {
         runtime: container_runtime::ContainerRuntimeType::Podman,
@@ -196,62 +208,40 @@ pub async fn init_dependencies(
         max_concurrency: Some(2),
         ..Default::default()
     });
-
-    b.add::<kamu::domain::SystemTimeSourceDefault>();
-    b.bind::<dyn kamu::domain::SystemTimeSource, kamu::domain::SystemTimeSourceDefault>();
+    b.add_builder(kamu::EngineProvisionerLocal::builder().with_run_info_dir(run_info_dir.clone()))
+        .bind::<dyn kamu::domain::EngineProvisioner, kamu::EngineProvisionerLocal>();
 
     b.add::<kamu::DatasetFactoryImpl>();
-    b.bind::<dyn kamu::domain::DatasetFactory, kamu::DatasetFactoryImpl>();
-
     b.add::<kamu::ObjectStoreRegistryImpl>();
-    b.bind::<dyn kamu::domain::ObjectStoreRegistry, kamu::ObjectStoreRegistryImpl>();
-
     b.add::<kamu::RemoteAliasesRegistryImpl>();
-    b.bind::<dyn kamu::domain::RemoteAliasesRegistry, kamu::RemoteAliasesRegistryImpl>();
+
+    // TODO: initialize graph dependencies when starting API server
+    b.add::<kamu::DependencyGraphServiceInMemory>();
 
     b.add_builder(
-        builder_for::<kamu::RemoteRepositoryRegistryImpl>()
-            .with_repos_dir(remote_repos_dir.clone()),
-    );
-    b.bind::<dyn kamu::domain::RemoteRepositoryRegistry, kamu::RemoteRepositoryRegistryImpl>();
+        kamu::RemoteRepositoryRegistryImpl::builder().with_repos_dir(remote_repos_dir.clone()),
+    )
+    .bind::<dyn kamu::domain::RemoteRepositoryRegistry, kamu::RemoteRepositoryRegistryImpl>();
 
     b.add::<kamu_adapter_http::SmartTransferProtocolClientWs>();
-    b.bind::<dyn SmartTransferProtocolClient, kamu_adapter_http::SmartTransferProtocolClientWs>();
-
-    b.add_builder(
-        builder_for::<kamu::EngineProvisionerLocal>().with_run_info_dir(run_info_dir.clone()),
-    );
-    b.bind::<dyn kamu::domain::EngineProvisioner, kamu::EngineProvisionerLocal>();
 
     b.add::<kamu::DataFormatRegistryImpl>();
-    b.bind::<dyn kamu::domain::DataFormatRegistry, kamu::DataFormatRegistryImpl>();
 
     b.add_builder(
-        builder_for::<kamu::PollingIngestServiceImpl>()
+        kamu::PollingIngestServiceImpl::builder()
             .with_run_info_dir(run_info_dir.clone())
             .with_cache_dir(cache_dir.clone()),
-    );
-    b.bind::<dyn kamu::domain::PollingIngestService, kamu::PollingIngestServiceImpl>();
+    )
+    .bind::<dyn kamu::domain::PollingIngestService, kamu::PollingIngestServiceImpl>();
 
-    b.add_builder(
-        builder_for::<kamu::PushIngestServiceImpl>().with_run_info_dir(run_info_dir.clone()),
-    );
-    b.bind::<dyn kamu::domain::PushIngestService, kamu::PushIngestServiceImpl>();
+    b.add_builder(kamu::PushIngestServiceImpl::builder().with_run_info_dir(run_info_dir.clone()))
+        .bind::<dyn kamu::domain::PushIngestService, kamu::PushIngestServiceImpl>();
 
     b.add::<kamu::TransformServiceImpl>();
-    b.bind::<dyn kamu::domain::TransformService, kamu::TransformServiceImpl>();
-
     b.add::<kamu::SyncServiceImpl>();
-    b.bind::<dyn kamu::domain::SyncService, kamu::SyncServiceImpl>();
-
     b.add::<kamu::VerificationServiceImpl>();
-    b.bind::<dyn kamu::domain::VerificationService, kamu::VerificationServiceImpl>();
-
     b.add::<kamu::PullServiceImpl>();
-    b.bind::<dyn kamu::domain::PullService, kamu::PullServiceImpl>();
-
     b.add::<kamu::QueryServiceImpl>();
-    b.bind::<dyn kamu::domain::QueryService, kamu::QueryServiceImpl>();
 
     // TODO: Externalize configuration
     b.add_value(kamu::IpfsGateway {
@@ -261,38 +251,34 @@ pub async fn init_dependencies(
     b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
 
     b.add::<kamu_task_system_inmem::TaskSchedulerInMemory>();
-    b.bind::<dyn kamu_task_system_inmem::domain::TaskScheduler, kamu_task_system_inmem::TaskSchedulerInMemory>();
-
     b.add::<kamu_task_system_inmem::TaskSystemEventStoreInMemory>();
-    b.bind::<dyn kamu_task_system_inmem::domain::TaskSystemEventStore, kamu_task_system_inmem::TaskSystemEventStoreInMemory>();
-
     b.add::<kamu_task_system_inmem::TaskExecutorInMemory>();
-    b.bind::<dyn kamu_task_system_inmem::domain::TaskExecutor, kamu_task_system_inmem::TaskExecutorInMemory>();
+
+    b.add::<kamu_flow_system_inmem::FlowConfigurationServiceInMemory>();
+    b.add::<kamu_flow_system_inmem::FlowServiceInMemory>();
+    b.add_value(kamu_flow_system_inmem::domain::FlowServiceRunConfig::new(
+        chrono::Duration::seconds(1),
+    ));
+    b.add::<kamu_flow_system_inmem::FlowEventStoreInMem>();
+    b.add::<kamu_flow_system_inmem::FlowConfigurationEventStoreInMem>();
 
     b.add::<kamu::AuthenticationServiceImpl>();
-    b.bind::<dyn kamu::domain::auth::AuthenticationService, kamu::AuthenticationServiceImpl>();
-
     b.add::<kamu_adapter_auth_oso::KamuAuthOso>();
     b.add::<kamu_adapter_auth_oso::OsoDatasetAuthorizer>();
-    b.bind::<dyn kamu::domain::auth::DatasetActionAuthorizer, kamu_adapter_auth_oso::OsoDatasetAuthorizer>();
-
     b.add::<kamu::domain::auth::DummyOdfServerAccessTokenResolver>();
-    b.bind::<dyn kamu::domain::auth::OdfServerAccessTokenResolver, kamu::domain::auth::DummyOdfServerAccessTokenResolver>();
 
     match repo_url.scheme() {
         "file" => {
             let datasets_dir = repo_url.to_file_path().unwrap();
 
             b.add_builder(
-                builder_for::<kamu::DatasetRepositoryLocalFs>()
+                kamu::DatasetRepositoryLocalFs::builder()
                     .with_root(datasets_dir.clone())
                     .with_multi_tenant(false),
             );
             b.bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryLocalFs>();
 
             b.add::<kamu::ObjectStoreBuilderLocalFs>();
-            b.bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderLocalFs>();
-
             b.add_value(DummyAuthProvider::new_with_default_account());
             b.bind::<dyn kamu::domain::auth::AuthenticationProvider, DummyAuthProvider>();
         }
@@ -300,11 +286,11 @@ pub async fn init_dependencies(
             let s3_context = kamu::utils::s3_context::S3Context::from_url(&repo_url).await;
 
             b.add_builder(
-                builder_for::<kamu::DatasetRepositoryS3>()
+                kamu::DatasetRepositoryS3::builder()
                     .with_s3_context(s3_context.clone())
                     .with_multi_tenant(true),
-            );
-            b.bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>();
+            )
+            .bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>();
 
             let allow_http = repo_url.scheme() == "s3+http";
             b.add_value(kamu::ObjectStoreBuilderS3::new(s3_context, allow_http))
@@ -313,14 +299,12 @@ pub async fn init_dependencies(
             // Default to GitHub auth
             if config.auth.providers.is_empty() {
                 b.add::<kamu_adapter_oauth::OAuthGithub>();
-                b.bind::<dyn kamu::domain::auth::AuthenticationProvider, kamu_adapter_oauth::OAuthGithub>();
             }
 
             for provider in config.auth.providers {
                 match provider {
                     AuthProviderConfig::Github(_) => {
                         b.add::<kamu_adapter_oauth::OAuthGithub>();
-                        b.bind::<dyn kamu::domain::auth::AuthenticationProvider, kamu_adapter_oauth::OAuthGithub>();
                     }
                     AuthProviderConfig::Dummy(prov) => {
                         b.add_value(DummyAuthProvider::new(prov.accounts));

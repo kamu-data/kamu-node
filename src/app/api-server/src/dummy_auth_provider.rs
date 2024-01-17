@@ -27,6 +27,7 @@ impl DummyAuthProvider {
             account_type: auth::AccountType::User,
             display_name: String::from(auth::DEFAULT_ACCOUNT_NAME),
             avatar_url: Some(String::from(auth::DEFAULT_AVATAR_URL)),
+            is_admin: true,
         }])
     }
 
