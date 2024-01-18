@@ -55,8 +55,19 @@ pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
         BINARY_NAME
     );
 
+    let dependencies_graph_repository = prepare_dependencies_graph_repository(
+        kamu::domain::CurrentAccountSubject::logged(
+            opendatafabric::AccountName::new_unchecked(kamu::domain::auth::DEFAULT_ACCOUNT_NAME),
+            true,
+        ),
+        &repo_url,
+    )
+    .await;
+
     let catalog = init_dependencies(config, &repo_url, local_dir.path())
         .await
+        .add_value(dependencies_graph_repository)
+        .bind::<dyn kamu::domain::DependencyGraphRepository, kamu::DependencyGraphRepositoryInMemory>()
         .build();
 
     match matches.subcommand() {
@@ -178,6 +189,53 @@ pub fn load_config(path: Option<&PathBuf>) -> Result<ApiServerConfig, InternalEr
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
+
+pub async fn prepare_dependencies_graph_repository(
+    current_account_subject: kamu::domain::CurrentAccountSubject,
+    repo_url: &Url,
+) -> kamu::DependencyGraphRepositoryInMemory {
+    // Construct a special catalog just to create 1 object, but with a repository
+    // bound to API server command line user. It also should be authorized to access
+    // any dataset.
+
+    let mut b = CatalogBuilder::new();
+
+    match repo_url.scheme() {
+        "file" => {
+            let datasets_dir = repo_url.to_file_path().unwrap();
+
+            b.add_builder(
+                kamu::DatasetRepositoryLocalFs::builder()
+                    .with_root(datasets_dir.clone())
+                    .with_multi_tenant(false),
+            );
+            b.bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryLocalFs>();
+        }
+        "s3" | "s3+http" | "s3+https" => {
+            let s3_context = kamu::utils::s3_context::S3Context::from_url(&repo_url).await;
+
+            b.add_builder(
+                kamu::DatasetRepositoryS3::builder()
+                    .with_s3_context(s3_context.clone())
+                    .with_multi_tenant(true),
+            )
+            .bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>();
+        }
+        _ => panic!("Unsupported repository scheme: {}", repo_url.scheme()),
+    }
+
+    let special_catlaog = b
+        .add::<event_bus::EventBus>()
+        .add_value(current_account_subject)
+        .add::<kamu::domain::auth::AlwaysHappyDatasetActionAuthorizer>()
+        .add::<kamu::DependencyGraphServiceInMemory>()
+        // Don't add it's own initializer, leave optional dependency uninitialized
+        .build();
+
+    let dataset_repo = special_catlaog.get_one().unwrap();
+
+    kamu::DependencyGraphRepositoryInMemory::new(dataset_repo)
+}
 
 pub async fn init_dependencies(
     config: ApiServerConfig,
