@@ -316,6 +316,7 @@ pub async fn init_dependencies(
     b.add::<kamu_flow_system_inmem::FlowServiceInMemory>();
     b.add_value(kamu_flow_system_inmem::domain::FlowServiceRunConfig::new(
         chrono::Duration::seconds(1),
+        chrono::Duration::minutes(1),
     ));
     b.add::<kamu_flow_system_inmem::FlowEventStoreInMem>();
     b.add::<kamu_flow_system_inmem::FlowConfigurationEventStoreInMem>();
