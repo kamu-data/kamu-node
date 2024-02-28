@@ -11,6 +11,8 @@ use std::path::{Path, PathBuf};
 
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
+use kamu::domain::CurrentAccountSubject;
+use opendatafabric::AccountName;
 use tracing::info;
 use url::Url;
 
@@ -94,6 +96,10 @@ pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
                 .map(|a| *a)
                 .unwrap_or(std::net::Ipv4Addr::new(127, 0, 0, 1).into());
 
+            // API servers are built from the regular catalog
+            // that does not contain any auth subject, thus they will rely on
+            // their own middlewares to authenticate per request / session and execute
+            // all processing in the user context.
             let http_server = crate::http_server::build_server(
                 address,
                 sub.get_one("http-port").map(|p| *p),
@@ -108,24 +114,38 @@ pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
             )
             .await;
 
+            // System services are built from the special catalog that contains the admin
+            // subject. Thus all services that require authorization are granted full access
+            // to all resources.
+            //
+            // TODO: Granting admin access to all system services is a security threat. We
+            // should consider to instead propagate the auth info of the user who triggered
+            // some system flow alongside all actions to enforce proper authorization.
+            let system_catalog = CatalogBuilder::new_chained(&catalog)
+                .add_value(CurrentAccountSubject::logged(
+                    AccountName::new_unchecked(kamu::domain::auth::DEFAULT_ACCOUNT_NAME),
+                    true,
+                ))
+                .build();
+
+            let task_executor = system_catalog
+                .get_one::<dyn kamu_task_system_inmem::domain::TaskExecutor>()
+                .unwrap();
+
+            let flow_service = system_catalog
+                .get_one::<dyn kamu_flow_system_inmem::domain::FlowService>()
+                .unwrap();
+
+            let now = system_catalog
+                .get_one::<dyn kamu::domain::SystemTimeSource>()
+                .unwrap()
+                .now();
+
             tracing::info!(
                 http_endpoint = format!("http://{}", http_server.local_addr()),
                 flightsql_endpoint = format!("flightsql://{}", flightsql_server.local_addr()),
                 "Serving traffic"
             );
-
-            let task_executor = catalog
-                .get_one::<dyn kamu_task_system_inmem::domain::TaskExecutor>()
-                .unwrap();
-
-            let flow_service = catalog
-                .get_one::<dyn kamu_flow_system_inmem::domain::FlowService>()
-                .unwrap();
-
-            let now = catalog
-                .get_one::<dyn kamu::domain::SystemTimeSource>()
-                .unwrap()
-                .now();
 
             tokio::select! {
                 res = http_server => { res.int_err() },
