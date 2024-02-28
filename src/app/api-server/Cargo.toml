@@ -31,7 +31,7 @@ kamu-adapter-flight-sql = { workspace = true }
 # APIs
 http = "0.2"
 hyper = "0.14"
-arrow-flight = { version = "48", features = ["flight-sql-experimental"] }
+arrow-flight = { version = "50", features = ["flight-sql-experimental"] }
 axum = { version = "0.6", features = ["ws"] }
 axum-extra = { version = "0.8", features = ["async-read-body"] }
 async-graphql = { version = "6", features = [
@@ -60,7 +60,7 @@ tracing-bunyan-formatter = "0.3"
 async-trait = { version = "0.1", default-features = false }
 chrono = "0.4"
 clap = "4"
-datafusion = "33"
+datafusion = { version = "36", default-features = false, features = ["crypto_expressions", "encoding_expressions", "parquet", "regex_expressions", "unicode_expressions", "compression"] }
 figment = { version = "0.10", features = ["env", "yaml", "json"] }
 futures = "0.3"
 indoc = "2"
@@ -76,7 +76,7 @@ url = "2"
 
 [dev-dependencies]
 rand = "0.8"
-env_logger = "0.10"
+env_logger = "0.11"
 test-group = { version = "1" }
 test-log = { version = "0.2", features = ["trace"] }
 # Kamu

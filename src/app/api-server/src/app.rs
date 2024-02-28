@@ -276,6 +276,8 @@ pub async fn init_dependencies(
     // TODO: initialize graph dependencies when starting API server
     b.add::<kamu::DependencyGraphServiceInMemory>();
 
+    b.add::<kamu::DatasetChangesServiceImpl>();
+
     b.add_builder(
         kamu::RemoteRepositoryRegistryImpl::builder().with_repos_dir(remote_repos_dir.clone()),
     )
