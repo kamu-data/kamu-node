@@ -46,6 +46,8 @@ pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
         Url::from_directory_path(workspace_dir.join("datasets")).unwrap()
     };
 
+    let multi_tenant = matches.get_flag("multi-tenant") || repo_url.scheme() != "file";
+
     let local_dir = tempfile::tempdir().unwrap();
 
     info!(
@@ -53,6 +55,7 @@ pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
         args = ?std::env::args().collect::<Vec<_>>(),
         repo_url = %repo_url,
         local_dir = %local_dir.path().display(),
+        config = ?config,
         "Initializing {}",
         BINARY_NAME
     );
@@ -63,10 +66,11 @@ pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
             true,
         ),
         &repo_url,
+        multi_tenant,
     )
     .await;
 
-    let catalog = init_dependencies(config, &repo_url, local_dir.path())
+    let catalog = init_dependencies(config, &repo_url, multi_tenant, local_dir.path())
         .await
         .add_value(dependencies_graph_repository)
         .bind::<dyn kamu::domain::DependencyGraphRepository, kamu::DependencyGraphRepositoryInMemory>()
@@ -104,7 +108,7 @@ pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
                 address,
                 sub.get_one("http-port").map(|p| *p),
                 catalog.clone(),
-                should_use_multi_tenancy(&repo_url),
+                multi_tenant,
             );
 
             let flightsql_server = crate::flightsql_server::FlightSqlServer::new(
@@ -210,9 +214,11 @@ pub fn load_config(path: Option<&PathBuf>) -> Result<ApiServerConfig, InternalEr
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+// TODO: Get rid of this
 pub async fn prepare_dependencies_graph_repository(
     current_account_subject: kamu::domain::CurrentAccountSubject,
     repo_url: &Url,
+    multi_tenant: bool,
 ) -> kamu::DependencyGraphRepositoryInMemory {
     // Construct a special catalog just to create 1 object, but with a repository
     // bound to API server command line user. It also should be authorized to access
@@ -220,29 +226,7 @@ pub async fn prepare_dependencies_graph_repository(
 
     let mut b = CatalogBuilder::new();
 
-    match repo_url.scheme() {
-        "file" => {
-            let datasets_dir = repo_url.to_file_path().unwrap();
-
-            b.add_builder(
-                kamu::DatasetRepositoryLocalFs::builder()
-                    .with_root(datasets_dir.clone())
-                    .with_multi_tenant(false),
-            );
-            b.bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryLocalFs>();
-        }
-        "s3" | "s3+http" | "s3+https" => {
-            let s3_context = kamu::utils::s3_context::S3Context::from_url(&repo_url).await;
-
-            b.add_builder(
-                kamu::DatasetRepositoryS3::builder()
-                    .with_s3_context(s3_context.clone())
-                    .with_multi_tenant(true),
-            )
-            .bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>();
-        }
-        _ => panic!("Unsupported repository scheme: {}", repo_url.scheme()),
-    }
+    configure_repository(&mut b, repo_url, multi_tenant).await;
 
     let special_catlaog = b
         .add::<event_bus::EventBus>()
@@ -260,6 +244,7 @@ pub async fn prepare_dependencies_graph_repository(
 pub async fn init_dependencies(
     config: ApiServerConfig,
     repo_url: &Url,
+    multi_tenant: bool,
     local_dir: &Path,
 ) -> CatalogBuilder {
     let mut b = dill::CatalogBuilder::new();
@@ -348,6 +333,34 @@ pub async fn init_dependencies(
     b.add::<kamu_adapter_auth_oso::OsoDatasetAuthorizer>();
     b.add::<kamu::domain::auth::DummyOdfServerAccessTokenResolver>();
 
+    configure_repository(&mut b, repo_url, multi_tenant).await;
+
+    if !multi_tenant {
+        b.add_value(DummyAuthProvider::new_with_default_account());
+        b.bind::<dyn kamu::domain::auth::AuthenticationProvider, DummyAuthProvider>();
+    } else {
+        // Default to GitHub auth
+        if config.auth.providers.is_empty() {
+            b.add::<kamu_adapter_oauth::OAuthGithub>();
+        }
+
+        for provider in config.auth.providers {
+            match provider {
+                AuthProviderConfig::Github(_) => {
+                    b.add::<kamu_adapter_oauth::OAuthGithub>();
+                }
+                AuthProviderConfig::Dummy(prov) => {
+                    b.add_value(DummyAuthProvider::new(prov.accounts));
+                    b.bind::<dyn kamu::domain::auth::AuthenticationProvider, DummyAuthProvider>();
+                }
+            }
+        }
+    }
+
+    b
+}
+
+async fn configure_repository(b: &mut CatalogBuilder, repo_url: &Url, multi_tenant: bool) {
     match repo_url.scheme() {
         "file" => {
             let datasets_dir = repo_url.to_file_path().unwrap();
@@ -355,13 +368,11 @@ pub async fn init_dependencies(
             b.add_builder(
                 kamu::DatasetRepositoryLocalFs::builder()
                     .with_root(datasets_dir.clone())
-                    .with_multi_tenant(false),
+                    .with_multi_tenant(multi_tenant),
             );
             b.bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryLocalFs>();
 
             b.add::<kamu::ObjectStoreBuilderLocalFs>();
-            b.add_value(DummyAuthProvider::new_with_default_account());
-            b.bind::<dyn kamu::domain::auth::AuthenticationProvider, DummyAuthProvider>();
         }
         "s3" | "s3+http" | "s3+https" => {
             let s3_context = kamu::utils::s3_context::S3Context::from_url(&repo_url).await;
@@ -376,36 +387,7 @@ pub async fn init_dependencies(
             let allow_http = repo_url.scheme() == "s3+http";
             b.add_value(kamu::ObjectStoreBuilderS3::new(s3_context, allow_http))
                 .bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderS3>();
-
-            // Default to GitHub auth
-            if config.auth.providers.is_empty() {
-                b.add::<kamu_adapter_oauth::OAuthGithub>();
-            }
-
-            for provider in config.auth.providers {
-                match provider {
-                    AuthProviderConfig::Github(_) => {
-                        b.add::<kamu_adapter_oauth::OAuthGithub>();
-                    }
-                    AuthProviderConfig::Dummy(prov) => {
-                        b.add_value(DummyAuthProvider::new(prov.accounts));
-                        b.bind::<dyn kamu::domain::auth::AuthenticationProvider, DummyAuthProvider>();
-                    }
-                }
-            }
         }
-        _ => panic!("Unsupported repository scheme: {}", repo_url.scheme()),
-    }
-
-    b
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-fn should_use_multi_tenancy(repo_url: &Url) -> bool {
-    match repo_url.scheme() {
-        "file" => false,
-        "s3" | "s3+http" | "s3+https" => true,
         _ => panic!("Unsupported repository scheme: {}", repo_url.scheme()),
     }
 }

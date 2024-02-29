@@ -15,6 +15,7 @@ async fn test_di_graph_validates_local() {
     let mut catalog_builder = kamu_api_server::init_dependencies(
         kamu_api_server::config::ApiServerConfig::default(),
         &url::Url::from_directory_path(tempdir.path()).unwrap(),
+        false,
         tempdir.path(),
     )
     .await;
@@ -61,6 +62,7 @@ async fn test_di_graph_validates_remote() {
     let mut catalog_builder = kamu_api_server::init_dependencies(
         kamu_api_server::config::ApiServerConfig::default(),
         &repo_url,
+        true,
         tmp_repo_dir.path(),
     )
     .await;

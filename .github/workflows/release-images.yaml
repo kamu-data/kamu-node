@@ -35,9 +35,11 @@ jobs:
         run: |
           cd images/
           make api-server-with-data
+          make api-server-with-data-mt
 
       - name: Publish images
         run: |
           cd images
           make api-server-push
           make api-server-with-data-push
+          make api-server-with-data-mt-push

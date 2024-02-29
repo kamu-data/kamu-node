@@ -3,6 +3,8 @@ KAMU_VERSION = $(shell cargo metadata --format-version 1 | jq -r '.packages[] | 
 API_SERVER_VERSION = $(shell cargo metadata --format-version 1 | jq -r '.packages[] | select( .name == "kamu-api-server") | .version')
 
 
+#########################################################################################
+
 .PHONY: api-server
 api-server:
 	docker build \
@@ -19,6 +21,8 @@ api-server-push:
 	docker push $(IMAGE_REPO)/kamu-api-server:latest
 
 
+#########################################################################################
+
 .PHONY: api-server-with-data
 api-server-with-data:
 	docker build \
@@ -31,3 +35,19 @@ api-server-with-data:
 .PHONY: api-server-with-data-push
 api-server-with-data-push:
 	docker push $(IMAGE_REPO)/kamu-api-server:latest-with-data
+
+
+#########################################################################################
+
+.PHONY: api-server-with-data-mt
+api-server-with-data-mt:
+	docker build \
+		--build-arg KAMU_VERSION=latest-with-data-mt \
+		--build-arg API_SERVER_VERSION=$(API_SERVER_VERSION) \
+		-t $(IMAGE_REPO)/kamu-api-server:latest-with-data-mt \
+		api-server-with-data-mt/
+
+
+.PHONY: api-server-with-data-mt-push
+api-server-with-data-mt-push:
+	docker push $(IMAGE_REPO)/kamu-api-server:latest-with-data-mt

@@ -33,6 +33,12 @@ pub fn cli() -> Command {
                 .long("repo-url")
                 .value_parser(value_parse_repo_url)
                 .help("URL of the remote dataset repository"),
+            // TODO: This is temporary and will be removed soon
+            // See: https://github.com/kamu-data/kamu-cli/issues/342
+            Arg::new("multi-tenant")
+                .long("multi-tenant")
+                .action(ArgAction::SetTrue)
+                .help("Indicates that target repo is multi-tenant (for file:// only)"),
         ])
         .subcommands([
             Command::new("run").about("Run the server").args([
