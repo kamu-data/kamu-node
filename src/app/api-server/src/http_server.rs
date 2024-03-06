@@ -29,6 +29,7 @@ pub(crate) fn build_server(
             "/platform/token/validate",
             axum::routing::get(kamu_adapter_http::platform_token_validate_handler),
         )
+        .nest("/", kamu_adapter_http::data::root_router())
         .nest(
             if multi_tenant_workspace {
                 "/:account_name/:dataset_name"
@@ -38,7 +39,7 @@ pub(crate) fn build_server(
             kamu_adapter_http::add_dataset_resolver_layer(
                 axum::Router::new()
                     .nest("/", kamu_adapter_http::smart_transfer_protocol_router())
-                    .nest("/", kamu_adapter_http::data::router()),
+                    .nest("/", kamu_adapter_http::data::dataset_router()),
                 multi_tenant_workspace,
             ),
         )
