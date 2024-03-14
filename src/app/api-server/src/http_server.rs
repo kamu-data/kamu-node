@@ -29,6 +29,14 @@ pub(crate) fn build_server(
             "/platform/token/validate",
             axum::routing::get(kamu_adapter_http::platform_token_validate_handler),
         )
+        .nest(
+            "/odata",
+            if multi_tenant_workspace {
+                kamu_adapter_odata::router_multi_tenant()
+            } else {
+                kamu_adapter_odata::router_single_tenant()
+            },
+        )
         .nest("/", kamu_adapter_http::data::root_router())
         .nest(
             if multi_tenant_workspace {
