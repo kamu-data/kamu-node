@@ -1,0 +1,4 @@
+repo:
+  caching:
+    registryCacheEnabled: true
+    metadataLocalFsCachePath: /tmp/kamu-metadata-cache

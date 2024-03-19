@@ -8,6 +8,7 @@
 // by the Apache License, Version 2.0.
 
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
@@ -16,7 +17,7 @@ use opendatafabric::AccountName;
 use tracing::info;
 use url::Url;
 
-use crate::config::{ApiServerConfig, AuthProviderConfig};
+use crate::config::{ApiServerConfig, AuthProviderConfig, RepoConfig};
 use crate::dummy_auth_provider::DummyAuthProvider;
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -67,6 +68,7 @@ pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
         ),
         &repo_url,
         multi_tenant,
+        &config,
     )
     .await;
 
@@ -219,6 +221,7 @@ pub async fn prepare_dependencies_graph_repository(
     current_account_subject: kamu::domain::CurrentAccountSubject,
     repo_url: &Url,
     multi_tenant: bool,
+    config: &ApiServerConfig,
 ) -> kamu::DependencyGraphRepositoryInMemory {
     // Construct a special catalog just to create 1 object, but with a repository
     // bound to API server command line user. It also should be authorized to access
@@ -226,7 +229,7 @@ pub async fn prepare_dependencies_graph_repository(
 
     let mut b = CatalogBuilder::new();
 
-    configure_repository(&mut b, repo_url, multi_tenant).await;
+    configure_repository(&mut b, repo_url, multi_tenant, &config.repo).await;
 
     let special_catlaog = b
         .add::<event_bus::EventBus>()
@@ -333,7 +336,7 @@ pub async fn init_dependencies(
     b.add::<kamu_adapter_auth_oso::OsoDatasetAuthorizer>();
     b.add::<kamu::domain::auth::DummyOdfServerAccessTokenResolver>();
 
-    configure_repository(&mut b, repo_url, multi_tenant).await;
+    configure_repository(&mut b, repo_url, multi_tenant, &config.repo).await;
 
     if !multi_tenant {
         b.add_value(DummyAuthProvider::new_with_default_account());
@@ -360,7 +363,12 @@ pub async fn init_dependencies(
     b
 }
 
-async fn configure_repository(b: &mut CatalogBuilder, repo_url: &Url, multi_tenant: bool) {
+async fn configure_repository(
+    b: &mut CatalogBuilder,
+    repo_url: &Url,
+    multi_tenant: bool,
+    config: &RepoConfig,
+) {
     match repo_url.scheme() {
         "file" => {
             let datasets_dir = repo_url.to_file_path().unwrap();
@@ -377,10 +385,21 @@ async fn configure_repository(b: &mut CatalogBuilder, repo_url: &Url, multi_tena
         "s3" | "s3+http" | "s3+https" => {
             let s3_context = kamu::utils::s3_context::S3Context::from_url(&repo_url).await;
 
+            if config.caching.registry_cache_enabled {
+                b.add::<kamu::S3RegistryCache>();
+            }
+
+            let metadata_cache_local_fs_path = config
+                .caching
+                .metadata_local_fs_cache_path
+                .clone()
+                .map(Arc::new);
+
             b.add_builder(
                 kamu::DatasetRepositoryS3::builder()
                     .with_s3_context(s3_context.clone())
-                    .with_multi_tenant(true),
+                    .with_multi_tenant(true)
+                    .with_metadata_cache_local_fs_path(metadata_cache_local_fs_path),
             )
             .bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>();
 
