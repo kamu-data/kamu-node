@@ -209,7 +209,7 @@ pub fn load_config(path: Option<&PathBuf>) -> Result<ApiServerConfig, InternalEr
         ApiServerConfig::default(),
     ))
     .merge(figment::providers::Yaml::file(path))
-    .merge(figment::providers::Env::prefixed("KAMU_API_SERVER_").lowercase(false))
+    .merge(figment::providers::Env::prefixed("KAMU_API_SERVER_CONFIG_").lowercase(false))
     .extract()
     .int_err()
 }

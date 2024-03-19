@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.1] - 2024-03-18
+### Fixed
+- Changed config env var prefix to `KAMU_API_SERVER_CONFIG_` to avoid collisions with Kubernetes automatic variables
+
 ## [0.16.0] - 2024-03-18
 ### Added
 - Support for metadata object caching on local file system (e.g. to avoid too many calls to S3 repo)
