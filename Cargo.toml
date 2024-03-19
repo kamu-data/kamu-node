@@ -29,7 +29,7 @@ kamu-adapter-flight-sql = { git = "https://github.com/kamu-data/kamu-cli", branc
 
 
 [workspace.package]
-version = "0.15.1"
+version = "0.16.0"
 edition = "2021"
 homepage = "https://github.com/kamu-data/kamu-platform"
 repository = "https://github.com/kamu-data/kamu-platform"
