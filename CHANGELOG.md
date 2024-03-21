@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.2] - 2024-03-20
+### Fixed
+- Incorporate dataset creation handle bugfix in `kamu-core v0.167.1`
+
 ## [0.16.1] - 2024-03-18
 ### Fixed
 - Changed config env var prefix to `KAMU_API_SERVER_CONFIG_` to avoid collisions with Kubernetes automatic variables
