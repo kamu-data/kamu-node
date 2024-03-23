@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.3] - 2024-03-23
+### Fixed
+- Incorporate FlightSQL location bugfix in `kamu-adapter-flight-sql v0.167.2`
+
 ## [0.16.2] - 2024-03-20
 ### Fixed
 - Incorporate dataset creation handle bugfix in `kamu-core v0.167.1`
