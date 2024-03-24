@@ -17,8 +17,22 @@ use serde::{Deserialize, Serialize};
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct ApiServerConfig {
+    pub runtime: RuntimeConfig,
     pub auth: AuthConfig,
     pub repo: RepoConfig,
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Runtime
+/////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct RuntimeConfig {
+    pub worker_threads: Option<usize>,
+    pub max_blocking_threads: Option<usize>,
+    pub thread_stack_size: Option<usize>,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

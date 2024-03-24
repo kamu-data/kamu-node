@@ -29,10 +29,8 @@ const DEFAULT_LOGGING_CONFIG: &str = "info,tower_http=trace";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-pub async fn run(matches: clap::ArgMatches) -> Result<(), InternalError> {
+pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(), InternalError> {
     init_logging();
-
-    let config = load_config(matches.get_one("config"))?;
 
     let repo_url = if let Some(repo_url) = matches.get_one::<Url>("repo-url").cloned() {
         repo_url
