@@ -404,6 +404,10 @@ async fn configure_repository(
             let allow_http = repo_url.scheme() == "s3+http";
             b.add_value(kamu::ObjectStoreBuilderS3::new(s3_context, allow_http))
                 .bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderS3>();
+
+            // LFS object store is still needed for Datafusion operations that create
+            // temporary file, such as push ingest
+            b.add::<kamu::ObjectStoreBuilderLocalFs>();
         }
         _ => panic!("Unsupported repository scheme: {}", repo_url.scheme()),
     }
