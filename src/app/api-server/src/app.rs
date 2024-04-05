@@ -12,7 +12,7 @@ use std::sync::Arc;
 
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
-use kamu::domain::CurrentAccountSubject;
+use kamu::domain::{CurrentAccountSubject, ServerUrlConfig};
 use opendatafabric::AccountName;
 use tracing::info;
 use url::Url;
@@ -74,6 +74,7 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
         .await
         .add_value(dependencies_graph_repository)
         .bind::<dyn kamu::domain::DependencyGraphRepository, kamu::DependencyGraphRepositoryInMemory>()
+        .add_value(ServerUrlConfig::load()?)
         .build();
 
     match matches.subcommand() {
