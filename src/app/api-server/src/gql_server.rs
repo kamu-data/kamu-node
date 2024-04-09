@@ -17,15 +17,13 @@ pub(crate) async fn gql_query(query: &str, full: bool, catalog: dill::Catalog) -
 
     if full {
         serde_json::to_string_pretty(&response).unwrap()
+    } else if response.is_ok() {
+        serde_json::to_string_pretty(&response.data).unwrap()
     } else {
-        if response.is_ok() {
-            serde_json::to_string_pretty(&response.data).unwrap()
-        } else {
-            for err in &response.errors {
-                eprintln!("{}", err)
-            }
-            // TODO: Error should be propagated as bad exit code
-            "".to_owned()
+        for err in &response.errors {
+            eprintln!("{}", err)
         }
+        // TODO: Error should be propagated as bad exit code
+        "".to_owned()
     }
 }

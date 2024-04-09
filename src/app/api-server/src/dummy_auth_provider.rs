@@ -42,9 +42,7 @@ impl DummyAuthProvider {
 
     fn find_account_info_impl(&self, account_name: &String) -> Option<auth::AccountInfo> {
         // The account might be predefined in the configuration
-        self.predefined_accounts
-            .get(account_name)
-            .map(|an| an.clone())
+        self.predefined_accounts.get(account_name).cloned()
     }
 
     fn get_account_info_impl(
@@ -95,7 +93,7 @@ impl auth::AuthenticationProvider for DummyAuthProvider {
         // The account might be predefined in the configuration
         let account_info = self
             .get_account_info_impl(&password_login_credentials.login)
-            .map_err(|e| auth::ProviderLoginError::RejectedCredentials(e))?;
+            .map_err(auth::ProviderLoginError::RejectedCredentials)?;
 
         // Store login as provider credentials
         let provider_credentials = PasswordProviderCredentials {
@@ -107,7 +105,7 @@ impl auth::AuthenticationProvider for DummyAuthProvider {
                 &provider_credentials,
             )
             .int_err()?,
-            account_info: account_info.into(),
+            account_info,
         })
     }
 
@@ -115,10 +113,9 @@ impl auth::AuthenticationProvider for DummyAuthProvider {
         &self,
         provider_credentials_json: String,
     ) -> Result<auth::AccountInfo, InternalError> {
-        let provider_credentials = serde_json::from_str::<PasswordProviderCredentials>(
-            &provider_credentials_json.as_str(),
-        )
-        .int_err()?;
+        let provider_credentials =
+            serde_json::from_str::<PasswordProviderCredentials>(provider_credentials_json.as_str())
+                .int_err()?;
 
         let account_info = self
             .get_account_info_impl(&provider_credentials.account_name.to_string())
