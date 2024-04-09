@@ -317,9 +317,9 @@ pub async fn init_dependencies(
     });
     b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
 
-    b.add::<kamu_task_system_inmem::TaskSchedulerInMemory>();
+    b.add::<kamu_task_system_services::TaskSchedulerImpl>();
+    b.add::<kamu_task_system_services::TaskExecutorImpl>();
     b.add::<kamu_task_system_inmem::TaskSystemEventStoreInMemory>();
-    b.add::<kamu_task_system_inmem::TaskExecutorInMemory>();
 
     b.add::<kamu_flow_system_inmem::FlowConfigurationServiceInMemory>();
     b.add::<kamu_flow_system_inmem::FlowServiceInMemory>();

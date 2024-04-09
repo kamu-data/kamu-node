@@ -20,6 +20,7 @@ event-bus = { workspace = true }
 internal-error = { workspace = true }
 opendatafabric = { workspace = true }
 kamu = { workspace = true }
+kamu-task-system-services = { workspace = true }
 kamu-task-system-inmem = { workspace = true }
 kamu-flow-system-inmem = { workspace = true }
 kamu-adapter-graphql = { workspace = true }
@@ -61,7 +62,14 @@ tracing-bunyan-formatter = "0.3"
 async-trait = { version = "0.1", default-features = false }
 chrono = "0.4"
 clap = "4"
-datafusion = { version = "36", default-features = false, features = ["crypto_expressions", "encoding_expressions", "parquet", "regex_expressions", "unicode_expressions", "compression"] }
+datafusion = { version = "36", default-features = false, features = [
+    "crypto_expressions",
+    "encoding_expressions",
+    "parquet",
+    "regex_expressions",
+    "unicode_expressions",
+    "compression",
+] }
 figment = { version = "0.10", features = ["env", "yaml", "json"] }
 futures = "0.3"
 indoc = "2"
