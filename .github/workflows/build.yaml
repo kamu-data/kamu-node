@@ -6,20 +6,20 @@ on:
       - "images/**"
       - "**.md"
   # manual trigger
-  workflow_dispatch: {}
+  workflow_dispatch: { }
 env:
   RUST_LOG: "debug"
   RUST_LOG_SPAN_EVENTS: "new,close"
   RUST_BACKTRACE: "1"
 jobs:
   lint_fmt:
-    name: Lint / Formatting
+    name: Lint / Code
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
         with:
-          components: rustfmt
+          components: rustfmt, clippy
       - name: cargo fmt --check
         uses: actions-rs/cargo@v1
         with:
@@ -28,6 +28,11 @@ jobs:
       - name: license headers
         run: |
           cargo test -p kamu-repo-tools -- license_header
+      - name: clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --workspace --all-targets -- -D warnings
 
   lint_deps:
     name: Lint / Dependencies
@@ -55,5 +60,5 @@ jobs:
       #   run: cargo test ${{ env.CARGO_FLAGS }} test_setup_pull_images -- --nocapture
       - name: run tests
         run: cargo test ${{ env.CARGO_FLAGS }}
-      - name: check git diff 
+      - name: check git diff
         run: git diff && git diff-index --quiet HEAD
