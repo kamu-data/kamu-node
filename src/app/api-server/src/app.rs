@@ -98,7 +98,7 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
         Some(("run", sub)) => {
             let address = sub
                 .get_one::<std::net::IpAddr>("address")
-                .map(|a| *a)
+                .copied()
                 .unwrap_or(std::net::Ipv4Addr::new(127, 0, 0, 1).into());
 
             // API servers are built from the regular catalog
@@ -107,14 +107,14 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
             // all processing in the user context.
             let http_server = crate::http_server::build_server(
                 address,
-                sub.get_one("http-port").map(|p| *p),
+                sub.get_one("http-port").copied(),
                 catalog.clone(),
                 multi_tenant,
             );
 
             let flightsql_server = crate::flightsql_server::FlightSqlServer::new(
                 address,
-                sub.get_one("flightsql-port").map(|p| *p),
+                sub.get_one("flightsql-port").copied(),
                 catalog.clone(),
             )
             .await;
@@ -177,8 +177,8 @@ fn init_logging() {
     }
 
     // Use configuration from RUST_LOG env var if provided
-    let env_filter = EnvFilter::try_from_default_env()
-        .unwrap_or(EnvFilter::new(DEFAULT_LOGGING_CONFIG.to_owned()));
+    let env_filter =
+        EnvFilter::try_from_default_env().unwrap_or(EnvFilter::new(DEFAULT_LOGGING_CONFIG));
 
     // TODO: Use non-blocking writer?
     // Configure Bunyan JSON formatter
@@ -382,7 +382,7 @@ async fn configure_repository(
             b.add::<kamu::ObjectStoreBuilderLocalFs>();
         }
         "s3" | "s3+http" | "s3+https" => {
-            let s3_context = kamu::utils::s3_context::S3Context::from_url(&repo_url).await;
+            let s3_context = kamu::utils::s3_context::S3Context::from_url(repo_url).await;
 
             if config.caching.registry_cache_enabled {
                 b.add::<kamu::S3RegistryCache>();

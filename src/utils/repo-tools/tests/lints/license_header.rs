@@ -29,7 +29,7 @@ fn get_all_crates() -> Vec<PathBuf> {
     root_cargo["workspace"]["members"]
         .as_array()
         .unwrap()
-        .into_iter()
+        .iter()
         .map(|v| v.as_str().unwrap())
         .map(|s| repo_root.join(s))
         .collect()
@@ -65,6 +65,6 @@ fn check_all_files_have_license_header() {
         for f in bad_files {
             eprintln!("- {}", f.display());
         }
-        assert!(false, "License file is missing in some files");
+        panic!("License file is missing in some files");
     }
 }
