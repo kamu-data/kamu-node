@@ -16,6 +16,7 @@ internal-error = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.172.
 # Domain
 opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.172.1", version = "0.172.1", default-features = false }
 kamu-task-system = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.172.1", version = "0.172.1", default-features = false }
+kamu-task-system-services = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.172.1", version = "0.172.1", default-features = false }
 # Infra
 kamu = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.172.1", version = "0.172.1", default-features = false }
 kamu-task-system-inmem = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.172.1", version = "0.172.1", default-features = false }
