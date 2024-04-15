@@ -79,7 +79,6 @@ async fn root_handler() -> impl axum::response::IntoResponse {
         r#"
         <h1>Kamu API Server</h1>
         <ul>
-            <li><a href="/graphql">GraphQL Endpoint</a></li>
             <li><a href="/graphql">GraphQL Playground</a></li>
         </ul>
         "#,
