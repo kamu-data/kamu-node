@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20.0] - 2024-04-15
+### Changed
+- The `/ingest` REST API endpoint also supports event time hints via odf-event-time header
+### Fixed
+- Removed paused from setConfigCompacting mutation
+- Extended GraphQL FlowDescriptionDatasetHardCompacting empty result with a resulting message
+- GraphQL Dataset Endpoints object: fixed the query endpoint
+
 ## [0.19.0] - 2024-04-09
 ### Added
 - OData API now supports querying by collection ID/key (e.g. `account/covid.cases(123)`)
