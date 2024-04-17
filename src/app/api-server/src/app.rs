@@ -12,7 +12,7 @@ use std::sync::Arc;
 
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
-use kamu::domain::{CurrentAccountSubject, ServerUrlConfig};
+use kamu::domain::{CurrentAccountSubject, ServerUrlConfig, SystemTimeSourceDefault};
 use opendatafabric::AccountName;
 use tracing::info;
 use url::Url;
@@ -230,15 +230,16 @@ pub async fn prepare_dependencies_graph_repository(
 
     configure_repository(&mut b, repo_url, multi_tenant, &config.repo).await;
 
-    let special_catlaog = b
+    let special_catalog = b
+        .add::<SystemTimeSourceDefault>()
         .add::<event_bus::EventBus>()
         .add_value(current_account_subject)
         .add::<kamu::domain::auth::AlwaysHappyDatasetActionAuthorizer>()
         .add::<kamu::DependencyGraphServiceInMemory>()
-        // Don't add it's own initializer, leave optional dependency uninitialized
+        // Don't add its own initializer, leave optional dependency uninitialized
         .build();
 
-    let dataset_repo = special_catlaog.get_one().unwrap();
+    let dataset_repo = special_catalog.get_one().unwrap();
 
     kamu::DependencyGraphRepositoryInMemory::new(dataset_repo)
 }

@@ -7,29 +7,35 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-use dill::*;
-
 #[test_log::test(tokio::test)]
 async fn test_di_graph_validates_local() {
     let tempdir = tempfile::tempdir().unwrap();
-    let mut catalog_builder = kamu_api_server::init_dependencies(
-        kamu_api_server::config::ApiServerConfig::default(),
-        &url::Url::from_directory_path(tempdir.path()).unwrap(),
-        false,
-        tempdir.path(),
+
+    let multi_tenant = false;
+    let config = kamu_api_server::config::ApiServerConfig::default();
+    let repo_url = url::Url::from_directory_path(tempdir.path()).unwrap();
+
+    let dependencies_graph_repository = kamu_api_server::prepare_dependencies_graph_repository(
+        kamu::domain::CurrentAccountSubject::new_test(),
+        &repo_url,
+        multi_tenant,
+        &config,
     )
     .await;
 
+    let mut catalog_builder =
+        kamu_api_server::init_dependencies(config, &repo_url, multi_tenant, tempdir.path()).await;
+
+    catalog_builder.add_value(dependencies_graph_repository);
+
     // CurrentAccountSubject is inserted by middlewares, but won't be present in
-    // default dependency graph, so we have to add it manually
+    // the default dependency graph, so we have to add it manually
     catalog_builder.add_value(kamu::domain::CurrentAccountSubject::new_test());
 
     // TODO: We should ensure this test covers parameters requested by commands and
     // types needed for GQL/HTTP adapter that are currently being constructed
     // manually
-    let validate_result = catalog_builder
-        .validate()
-        .ignore::<dyn kamu::domain::DatasetRepository>();
+    let validate_result = catalog_builder.validate();
 
     assert!(
         validate_result.is_ok(),
@@ -59,24 +65,35 @@ async fn test_di_graph_validates_remote() {
     ))
     .unwrap();
 
+    let multi_tenant = true;
+    let config = kamu_api_server::config::ApiServerConfig::default();
+
+    let dependencies_graph_repository = kamu_api_server::prepare_dependencies_graph_repository(
+        kamu::domain::CurrentAccountSubject::new_test(),
+        &repo_url,
+        multi_tenant,
+        &config,
+    )
+    .await;
+
     let mut catalog_builder = kamu_api_server::init_dependencies(
         kamu_api_server::config::ApiServerConfig::default(),
         &repo_url,
-        true,
+        multi_tenant,
         tmp_repo_dir.path(),
     )
     .await;
 
+    catalog_builder.add_value(dependencies_graph_repository);
+
     // CurrentAccountSubject is inserted by middlewares, but won't be present in
-    // default dependency graph, so we have to add it manually
+    // the default dependency graph, so we have to add it manually
     catalog_builder.add_value(kamu::domain::CurrentAccountSubject::new_test());
 
     // TODO: We should ensure this test covers parameters requested by commands and
     // types needed for GQL/HTTP adapter that are currently being constructed
     // manually
-    let validate_result = catalog_builder
-        .validate()
-        .ignore::<dyn kamu::domain::DatasetRepository>();
+    let validate_result = catalog_builder.validate();
 
     assert!(
         validate_result.is_ok(),
