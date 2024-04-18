@@ -527,7 +527,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "strum 0.25.0",
- "syn 2.0.59",
+ "syn 2.0.60",
  "thiserror",
 ]
 
@@ -563,7 +563,7 @@ checksum = "30c5ef0ede93efbf733c1a727f3b6b5a1060bbedd5600183e66f6e4be4af0ec5"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -585,7 +585,7 @@ checksum = "16e62a023e7c117e27523144c5d2459f4397fcc3cab0085af8e2224f643a0193"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -596,7 +596,7 @@ checksum = "c6fa2087f2753a7da8cc1c0dbfcf89579dd57458e36769de5ac750b4671737ca"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -1431,8 +1431,8 @@ checksum = "f7144d30dcf0fafbce74250a3963025d8d52177934239851c917d29f1df280c2"
 
 [[package]]
 name = "container-runtime"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "async-trait",
  "cfg-if",
@@ -1590,7 +1590,7 @@ checksum = "f46882e17999c6cc590af592290432be3bce0428cb0d5f8b6715e4dc7b383eb3"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -1614,7 +1614,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "strsim 0.10.0",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -1625,7 +1625,7 @@ checksum = "a668eda54683121533a393014d8692171709ff57a7d61f187b6e782719f8933f"
 dependencies = [
  "darling_core",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -1967,7 +1967,7 @@ checksum = "4d0f263fd9b684a66c34bea8aa1e814f82f451d9101078ed465193708da174c4"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -2093,13 +2093,13 @@ dependencies = [
  "heck",
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
 name = "enum-variants"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 
 [[package]]
 name = "env_filter"
@@ -2142,8 +2142,8 @@ dependencies = [
 
 [[package]]
 name = "event-bus"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "async-trait",
  "dill",
@@ -2153,8 +2153,8 @@ dependencies = [
 
 [[package]]
 name = "event-sourcing"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -2167,11 +2167,11 @@ dependencies = [
 
 [[package]]
 name = "event-sourcing-macros"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -2207,9 +2207,9 @@ checksum = "c007b1ae3abe1cb6f85a16305acd418b7ca6343b953633fee2b76d8f108b830f"
 
 [[package]]
 name = "figment"
-version = "0.10.16"
+version = "0.10.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fdefe49ed1057d124dc81a0681c30dd07de56ad96e32adc7b64e8f28eaab31c4"
+checksum = "d032832d74006f99547004d49410a4b4218e4c33382d56ca3ff89df74f86b953"
 dependencies = [
  "atomic",
  "pear",
@@ -2344,7 +2344,7 @@ checksum = "87750cf4b7a4c0625b1529e4c543c2182106e4dedc60a2a6455e00d212c489ac"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -2794,8 +2794,8 @@ checksum = "8bb03732005da905c88227371639bf1ad885cc712789c011c31c5fb3ab3ccf02"
 
 [[package]]
 name = "internal-error"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "thiserror",
 ]
@@ -2897,8 +2897,8 @@ dependencies = [
 
 [[package]]
 name = "kamu"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "async-recursion",
  "async-stream",
@@ -2964,8 +2964,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-auth-oso"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "async-trait",
  "dill",
@@ -2977,8 +2977,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-flight-sql"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "arrow-flight",
  "async-trait",
@@ -2995,8 +2995,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-graphql"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "async-graphql",
  "async-trait",
@@ -3023,8 +3023,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-http"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "async-trait",
  "axum",
@@ -3057,8 +3057,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-oauth"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "async-trait",
  "dill",
@@ -3073,8 +3073,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-odata"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "axum",
  "chrono",
@@ -3092,7 +3092,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-api-server"
-version = "0.20.1"
+version = "0.20.2"
 dependencies = [
  "arrow-flight",
  "async-graphql",
@@ -3147,8 +3147,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-core"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -3175,8 +3175,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-data-utils"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "arrow",
  "arrow-digest",
@@ -3196,8 +3196,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "async-trait",
  "chrono",
@@ -3219,8 +3219,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system-inmem"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -3244,8 +3244,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-ingest-datafusion"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "async-trait",
  "chrono",
@@ -3274,7 +3274,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-repo-tools"
-version = "0.20.1"
+version = "0.20.2"
 dependencies = [
  "chrono",
  "clap",
@@ -3288,8 +3288,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "async-trait",
  "chrono",
@@ -3304,8 +3304,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system-inmem"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "async-trait",
  "chrono",
@@ -3317,8 +3317,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system-services"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -3656,8 +3656,8 @@ dependencies = [
 
 [[package]]
 name = "multiformats"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "bs58",
  "digest",
@@ -3850,8 +3850,8 @@ checksum = "3fdb12b2476b595f9358c5161aa467c2438859caa136dec86c26fdd2efe17b92"
 
 [[package]]
 name = "opendatafabric"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "arrow",
  "base64 0.21.7",
@@ -4062,7 +4062,7 @@ dependencies = [
  "proc-macro2",
  "proc-macro2-diagnostics",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -4112,7 +4112,7 @@ dependencies = [
  "pest_meta",
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -4200,7 +4200,7 @@ checksum = "2f38a4412a78282e09a2cf38d195ea5420d15ba0602cb375210efbc877243965"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -4333,9 +4333,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.80"
+version = "1.0.81"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a56dea16b0a29e94408b9aa5e2940a4eedbd128a1ba20e8f7ae60fd3d465af0e"
+checksum = "3d1597b0c024618f09a9c3b8655b7e430397a36d23fdafec26d6965e9eec3eba"
 dependencies = [
  "unicode-ident",
 ]
@@ -4348,7 +4348,7 @@ checksum = "af066a9c399a26e020ada66a034357a868728e72cd426f3adcd35f80d88d88c8"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
  "version_check",
  "yansi 1.0.1",
 ]
@@ -4373,7 +4373,7 @@ dependencies = [
  "itertools 0.12.1",
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -4433,8 +4433,8 @@ dependencies = [
 
 [[package]]
 name = "random-names"
-version = "0.175.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.175.0#88d19df1a02be15e18e33cc63d48dc65af89130e"
+version = "0.176.3"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.176.3#660cc8b3fef4b338e78f7a68047be4fbd5102148"
 dependencies = [
  "rand",
 ]
@@ -4761,29 +4761,29 @@ checksum = "a3f0bf26fd526d2a95683cd0f87bf103b8539e2ca1ef48ce002d67aad59aa0b4"
 
 [[package]]
 name = "serde"
-version = "1.0.197"
+version = "1.0.198"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3fb1c873e1b9b056a4dc4c0c198b24c3ffa059243875552b2bd0933b1aee4ce2"
+checksum = "9846a40c979031340571da2545a4e5b7c4163bdae79b301d5f86d03979451fcc"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.197"
+version = "1.0.198"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7eb0b34b42edc17f6b7cac84a52a1c5f0e1bb2227e997ca9011ea3dd34e8610b"
+checksum = "e88edab869b01783ba905e7d0153f9fc1a6505a96e4ad3018011eedb838566d9"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
 name = "serde_json"
-version = "1.0.115"
+version = "1.0.116"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "12dc5c46daa8e9fdf4f5e71b6cf9a53f2487da0e86e55808e2d35539666497dd"
+checksum = "3e17db7126d17feb94eb3fad46bf1a96b034e8aacbc2e775fe81505f8b0b2813"
 dependencies = [
  "itoa",
  "ryu",
@@ -4848,7 +4848,7 @@ dependencies = [
  "darling",
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -5059,7 +5059,7 @@ checksum = "01b2e185515564f15375f593fb966b5718bc624ba77fe49fa4616ad619690554"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -5134,7 +5134,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "rustversion",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -5147,7 +5147,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "rustversion",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -5169,9 +5169,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "2.0.59"
+version = "2.0.60"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4a6531ffc7b071655e4ce2e04bd464c4830bb585a61cabb96cf808f05172615a"
+checksum = "909518bc7b1c9b779f1bbf07f2929d35af9f0f37e47c6e9ef7f9dddc1e1821f3"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5255,7 +5255,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "sha2",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -5277,7 +5277,7 @@ checksum = "c8f546451eaa38373f549093fe9fd05e7d2bade739e2ddf834b9968621d60107"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -5297,7 +5297,7 @@ checksum = "c61f3ba182994efc43764a46c018c347bc492c79f024e705f46567b418f6d4f7"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -5413,7 +5413,7 @@ checksum = "5b8a1e28f2deaa14e508979454cb3a223b10b938b45af148bc0986de36f1923b"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -5630,7 +5630,7 @@ checksum = "34704c8d6ebcbc939824180af020566b01a7c01f80641264eba0999f6c2b6be7"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -5971,7 +5971,7 @@ dependencies = [
  "once_cell",
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
  "wasm-bindgen-shared",
 ]
 
@@ -6005,7 +6005,7 @@ checksum = "e94f17b526d0a461a191c78ea52bbce64071ed5c04c9ffe424dcb38f74171bb7"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
  "wasm-bindgen-backend",
  "wasm-bindgen-shared",
 ]
@@ -6313,7 +6313,7 @@ checksum = "9ce1b18ccd8e73a9321186f97e46f9f04b778851177567b1975109d26a08d2a6"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
