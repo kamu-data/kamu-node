@@ -307,6 +307,8 @@ pub async fn init_dependencies(
 
     b.add::<kamu::TransformServiceImpl>();
     b.add::<kamu::SyncServiceImpl>();
+    b.add_builder(kamu::CompactingServiceImpl::builder().with_run_info_dir(run_info_dir.clone()))
+        .bind::<dyn kamu::domain::CompactingService, kamu::CompactingServiceImpl>();
     b.add::<kamu::VerificationServiceImpl>();
     b.add::<kamu::PullServiceImpl>();
     b.add::<kamu::QueryServiceImpl>();
