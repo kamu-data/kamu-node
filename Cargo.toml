@@ -4,6 +4,7 @@ members = [
     "src/utils/repo-tools",
     # Apps
     "src/app/api-server",
+    "src/app/oracle-executor",
 ]
 resolver = "2"
 

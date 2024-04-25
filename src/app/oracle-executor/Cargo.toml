@@ -1,0 +1,59 @@
+[package]
+name = "kamu-oracle-executor"
+description = "Kamu Compute Node Oracle component provides data to the blockchain smart contracts"
+version = { workspace = true }
+homepage = { workspace = true }
+repository = { workspace = true }
+authors = { workspace = true }
+readme = { workspace = true }
+license-file = { workspace = true }
+keywords = { workspace = true }
+include = { workspace = true }
+edition = { workspace = true }
+publish = { workspace = true }
+
+
+[dependencies]
+clap = { version = "4", default-features = false, features = [
+    "std",
+    "color",
+    "help",
+    "usage",
+    "error-context",
+    "suggestions",
+    "derive",
+    "cargo",
+    #"env",
+    "wrap_help",
+] }
+chrono = { version = "0.4", default-features = false, features = ["serde"] }
+dill = { version = "0.8", default-features = false }
+ciborium = { version = "0.2", default-features = false }
+confique = { version = "0.2", default-features = false, features = ["yaml"] }
+ethers = { version = "2", default-features = false, features = [
+    "ws",
+    "rustls",
+] }
+internal-error = { workspace = true }
+tokio = { version = "1", default-features = false, features = [
+    "rt",
+    "rt-multi-thread",
+] }
+tracing = { version = "0.1", default-features = false, features = [] }
+tracing-appender = "0.2"
+tracing-bunyan-formatter = "0.3"
+tracing-log = "0.2"
+tracing-subscriber = { version = "0.3", default-features = false, features = [
+    "ansi",
+    "env-filter",
+    "fmt",
+    "std",
+] }
+serde = { version = "1", default-features = false, features = ["derive"] }
+thiserror = { version = "1", default-features = false }
+url = { version = "2", default-features = false, features = ["serde"] }
+
+
+[dev-dependencies]
+test-group = { version = "1" }
+test-log = { version = "0.2", features = ["trace"] }
