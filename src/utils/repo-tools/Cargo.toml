@@ -22,7 +22,6 @@ glob = { version = "0.3", default-features = false }
 regex = { version = "1", default-features = false, features = ["std", "unicode"] }
 semver = { version = "1", default-features = false }
 toml = { version = "0.8", default-features = false, features = ["parse"] }
-url = { version = "2", default-features = false }
 
 
 [dev-dependencies]
