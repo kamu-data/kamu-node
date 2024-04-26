@@ -22,6 +22,7 @@ opendatafabric = { workspace = true }
 kamu = { workspace = true }
 kamu-task-system-services = { workspace = true }
 kamu-task-system-inmem = { workspace = true }
+kamu-flow-system-services = { workspace = true }
 kamu-flow-system-inmem = { workspace = true }
 kamu-adapter-graphql = { workspace = true }
 kamu-adapter-http = { workspace = true }
@@ -33,7 +34,7 @@ kamu-adapter-flight-sql = { workspace = true }
 # APIs
 http = "0.2"
 hyper = "0.14"
-arrow-flight = { version = "50", features = ["flight-sql-experimental"] }
+arrow-flight = { version = "51", features = ["flight-sql-experimental"] }
 axum = { version = "0.6", features = ["ws"] }
 axum-extra = { version = "0.8", features = ["async-read-body"] }
 async-graphql = { version = "6", features = [
@@ -42,7 +43,7 @@ async-graphql = { version = "6", features = [
     "apollo_tracing",
 ] }
 async-graphql-axum = "6"
-tonic = { version = "0.10", default-features = false }
+tonic = { version = "0.11", default-features = false }
 tower = { version = "0.4" }
 tower-http = { version = "0.4", features = ["trace", "cors"] }
 
@@ -61,7 +62,7 @@ tracing-bunyan-formatter = "0.3"
 async-trait = { version = "0.1", default-features = false }
 chrono = "0.4"
 clap = "4"
-datafusion = { version = "36", default-features = false, features = [
+datafusion = { version = "37", default-features = false, features = [
     "crypto_expressions",
     "encoding_expressions",
     "parquet",

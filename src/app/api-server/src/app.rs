@@ -324,8 +324,8 @@ pub async fn init_dependencies(
     b.add::<kamu_task_system_services::TaskExecutorImpl>();
     b.add::<kamu_task_system_inmem::TaskSystemEventStoreInMemory>();
 
-    b.add::<kamu_flow_system_inmem::FlowConfigurationServiceInMemory>();
-    b.add::<kamu_flow_system_inmem::FlowServiceInMemory>();
+    b.add::<kamu_flow_system_services::FlowConfigurationServiceImpl>();
+    b.add::<kamu_flow_system_services::FlowServiceImpl>();
     b.add_value(kamu_flow_system_inmem::domain::FlowServiceRunConfig::new(
         chrono::Duration::try_seconds(1).unwrap(),
         chrono::Duration::try_minutes(1).unwrap(),

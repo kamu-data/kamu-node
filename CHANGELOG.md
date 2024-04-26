@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - GHA: use `cargo-udeps` to prevent the possibility of using unused dependencies
 ### Changed
+- Upgraded `kamu` from `0.176.3` to `0.177.0` ([changelog](https://github.com/kamu-data/kamu-cli/blob/master/CHANGELOG.md))
 - GHA: use `cargo-binstall` to speed up CI jobs
 
 ## [0.20.3] - 2024-04-21
