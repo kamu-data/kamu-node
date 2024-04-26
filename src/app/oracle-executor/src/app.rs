@@ -11,6 +11,7 @@ use std::sync::Arc;
 
 use ethers::prelude::*;
 use internal_error::*;
+use url::Url;
 
 use crate::{Cli, Config};
 
@@ -38,7 +39,14 @@ struct OdfRequestData {
 
 #[derive(Debug, serde::Serialize)]
 struct OdfResult {
-    pub records: Vec<Vec<ciborium::Value>>,
+    pub data: Vec<Vec<ciborium::Value>>,
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, serde::Deserialize)]
+struct ApiQueryResponse {
+    data: Vec<serde_json::Value>,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -51,18 +59,28 @@ pub struct ExecutorUnauthorized;
 
 struct OdfOracleExecutor<P: JsonRpcClient> {
     config: Config,
-    client: Arc<Provider<P>>,
+    rpc_client: Arc<Provider<P>>,
     oracle_contract: IOdfProvider<Provider<P>>,
+    api_client: reqwest::Client,
+    api_query_url: Url,
 }
 
 impl<P: JsonRpcClient + 'static> OdfOracleExecutor<P> {
-    fn new(config: Config, client: Arc<Provider<P>>) -> Self {
-        let oracle_contract = IOdfProvider::new(config.oracle_contract_address, client.clone());
+    fn new(config: Config, rpc_client: Arc<Provider<P>>, api_client: reqwest::Client) -> Self {
+        let oracle_contract = IOdfProvider::new(config.oracle_contract_address, rpc_client.clone());
+
+        let api_query_url = Url::parse(&format!(
+            "{}/query",
+            config.api_url.as_str().trim_end_matches('/')
+        ))
+        .unwrap();
 
         Self {
             config,
-            client,
+            rpc_client,
+            api_client,
             oracle_contract,
+            api_query_url,
         }
     }
 
@@ -89,7 +107,7 @@ impl<P: JsonRpcClient + 'static> OdfOracleExecutor<P> {
         loop {
             // TODO: Operate on blocks that have >N confirmations to avoid running into too
             // many reorgs?
-            let last_block = self.client.get_block_number().await.int_err()?;
+            let last_block = self.rpc_client.get_block_number().await.int_err()?;
 
             // TODO: Reorg resistance
             if from_block > last_block {
@@ -118,12 +136,7 @@ impl<P: JsonRpcClient + 'static> OdfOracleExecutor<P> {
             for request in requests {
                 tracing::info!(?request, "Processing request");
 
-                let result = OdfResult {
-                    records: vec![vec![
-                        ciborium::Value::Text("ON".to_string()),
-                        ciborium::Value::Integer(100500.into()),
-                    ]],
-                };
+                let result = self.execute_query(&request).await?;
 
                 tracing::info!(request_id = ?request.id, ?result, "Sending result");
                 self.send_result(request.id, result).await?;
@@ -158,7 +171,7 @@ impl<P: JsonRpcClient + 'static> OdfOracleExecutor<P> {
             .to_block(to_block);
 
         let mut log_stream = self
-            .client
+            .rpc_client
             .get_logs_paginated(&filter, self.config.logs_page_size);
 
         while let Some(log) = log_stream.next().await.transpose().int_err()? {
@@ -200,6 +213,60 @@ impl<P: JsonRpcClient + 'static> OdfOracleExecutor<P> {
         let id = event.request_id;
         let data: OdfRequestData = ciborium::from_reader(event.request.as_ref()).int_err()?;
         Ok(OdfRequest { id, data, meta })
+    }
+
+    #[tracing::instrument(level = "info", skip(self))]
+    async fn execute_query(&self, request: &OdfRequest) -> Result<OdfResult, InternalError> {
+        // TODO: Handle invalid requests
+        let http_response = self
+            .api_client
+            .get(self.api_query_url.clone())
+            .query(&[("query", request.data.sql.as_str())])
+            .send()
+            .await
+            .int_err()?
+            .error_for_status()
+            .int_err()?;
+
+        let api_response: ApiQueryResponse = http_response.json().await.int_err()?;
+        tracing::trace!(?api_response, "Received API response");
+
+        let data = Self::to_cbor_data(api_response.data);
+
+        Ok(OdfResult { data })
+    }
+
+    fn to_cbor_data(json_records: Vec<serde_json::Value>) -> Vec<Vec<ciborium::Value>> {
+        let mut res = Vec::new();
+
+        for record in json_records {
+            res.push(vec![
+                Self::to_cbor(&record["province"]),
+                Self::to_cbor(&record["count"]),
+            ]);
+        }
+
+        res
+    }
+
+    fn to_cbor(value: &serde_json::Value) -> ciborium::Value {
+        match value {
+            serde_json::Value::Null => ciborium::Value::Null,
+            serde_json::Value::Bool(v) => ciborium::Value::Bool(*v),
+            serde_json::Value::Number(v) if v.is_u64() => {
+                ciborium::Value::Integer(v.as_u64().unwrap().into())
+            }
+            serde_json::Value::Number(v) if v.is_i64() => {
+                ciborium::Value::Integer(v.as_i64().unwrap().into())
+            }
+            serde_json::Value::Number(v) if v.is_f64() => {
+                ciborium::Value::Float(v.as_f64().unwrap())
+            }
+            serde_json::Value::Number(_) => unreachable!(),
+            serde_json::Value::String(v) => ciborium::Value::Text(v.clone()),
+            serde_json::Value::Array(_) => unimplemented!("Nested arrays are not yet supported"),
+            serde_json::Value::Object(_) => unimplemented!("Nested structs are not yet supported"),
+        }
     }
 
     #[tracing::instrument(level = "info", skip(self))]
@@ -253,14 +320,26 @@ impl<P: JsonRpcClient + 'static> OdfOracleExecutor<P> {
 pub async fn run(args: Cli, config: Config) -> Result<(), InternalError> {
     tracing::info!(?args, ?config, "Starting ODF Oracle Executor");
 
-    tracing::info!(url = %config.rpc_url, "Connecting to the node's JSON-RPC API");
-    let client = Arc::new(Provider::<Http>::connect(config.rpc_url.as_str()).await);
-
-    let chain_id = client.get_chainid().await.int_err()?;
-    let last_block = client.get_block_number().await.int_err()?;
+    // Init RPC client
+    let rpc_client = Arc::new(Provider::<Http>::connect(config.rpc_url.as_str()).await);
+    let chain_id = rpc_client.get_chainid().await.int_err()?;
+    let last_block = rpc_client.get_block_number().await.int_err()?;
     tracing::info!(chain_id = %chain_id, last_block = %last_block, "Chain info");
 
-    let executor = OdfOracleExecutor::new(config, client);
+    // Init API client
+    let mut headers = reqwest::header::HeaderMap::new();
+    if let Some(token) = &config.api_access_token {
+        let mut auth =
+            reqwest::header::HeaderValue::from_str(&format!("Bearer {token}")).int_err()?;
+        auth.set_sensitive(true);
+        headers.insert(reqwest::header::AUTHORIZATION, auth);
+    }
+    let api_client = reqwest::Client::builder()
+        .default_headers(headers)
+        .build()
+        .int_err()?;
+
+    let executor = OdfOracleExecutor::new(config, rpc_client, api_client);
     executor.check_authorized().await?;
 
     tracing::info!("Entering executor loop");

@@ -39,4 +39,11 @@ pub struct Config {
     /// Number of retries when submitting transaction
     #[config(default = 3)]
     pub transaction_retries: usize,
+
+    /// URL of the ODF-compatible API server that will execute requests
+    #[config(default = "http://localhost:8080")]
+    pub api_url: Url,
+
+    /// API token to use for authentication with the server
+    pub api_access_token: Option<String>,
 }

@@ -34,7 +34,17 @@ ethers = { version = "2", default-features = false, features = [
     "ws",
     "rustls",
 ] }
+http = { version = "0.2", default-features = false }
 internal-error = { workspace = true }
+reqwest = { version = "0.11", default-features = false, features = [
+    "rustls-tls",
+    "json",
+    "gzip",
+    "brotli",
+    "deflate",
+] }
+serde = { version = "1", default-features = false, features = ["derive"] }
+serde_json = { version = "1", default-features = false }
 tokio = { version = "1", default-features = false, features = [
     "rt",
     "rt-multi-thread",
@@ -49,7 +59,6 @@ tracing-subscriber = { version = "0.3", default-features = false, features = [
     "fmt",
     "std",
 ] }
-serde = { version = "1", default-features = false, features = ["derive"] }
 thiserror = { version = "1", default-features = false }
 url = { version = "2", default-features = false, features = ["serde"] }
 
