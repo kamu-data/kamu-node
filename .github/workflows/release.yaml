@@ -26,7 +26,7 @@ jobs:
         run: cargo binstall cross -y
       - name: Build
         run: cross build --release --target=${{ matrix.target }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }}-${{ matrix.target }}
           path: target/${{ matrix.target }}/release/${{ env.BINARY_NAME }}
