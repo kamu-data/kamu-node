@@ -16,6 +16,10 @@ pub struct Config {
     #[config(default = "http://localhost:8545")]
     pub rpc_url: Url,
 
+    /// ID of the chain used during signing to prevent replay attacks
+    #[config(default = 0)]
+    pub chain_id: u64,
+
     /// Address of the oracle contract to read logs from
     pub oracle_contract_address: Address,
 
@@ -24,6 +28,9 @@ pub struct Config {
 
     /// Address of this executor's account to use when submitting transactions
     pub executor_address: Address,
+
+    /// Private key of the executor to use when signing transactions.
+    pub executor_private_key: String,
 
     /// Number of logs to request per one RPC call
     #[config(default = 1000)]

@@ -9,6 +9,7 @@
 
 use clap::Parser;
 use kamu_oracle_executor::{Cli, Config};
+use tracing_subscriber::fmt::format::FmtSpan;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 
@@ -22,7 +23,11 @@ fn main() {
         .unwrap();
 
     tracing_subscriber::registry()
-        .with(tracing_subscriber::fmt::layer().with_ansi(true))
+        .with(
+            tracing_subscriber::fmt::layer()
+                .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
+                .with_ansi(true),
+        )
         .with(tracing_subscriber::filter::EnvFilter::from_default_env())
         .init();
 
@@ -31,10 +36,10 @@ fn main() {
         .build()
         .unwrap();
 
-    match rt.block_on(kamu_oracle_executor::run(args, config)) {
+    match rt.block_on(kamu_oracle_executor::app::run(args, config)) {
         Ok(_) => {}
         Err(err) => {
-            eprintln!("Error: {err}\nDetails: {err:#?}");
+            tracing::error!(error = %err, error_dbg = ?err, "Executor exited with error");
             std::process::exit(1)
         }
     }

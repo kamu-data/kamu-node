@@ -4208,6 +4208,7 @@ dependencies = [
 name = "kamu-oracle-executor"
 version = "0.21.0"
 dependencies = [
+ "async-trait",
  "chrono",
  "ciborium",
  "clap",

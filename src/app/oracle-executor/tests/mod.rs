@@ -7,13 +7,6 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-pub mod api_client;
-pub mod app;
-mod cbor;
-mod cli;
-mod config;
-pub mod executor;
+#![feature(exit_status_error)]
 
-pub use cli::Cli;
-pub use config::Config;
-pub use executor::OdfOracleExecutor;
+mod tests;
