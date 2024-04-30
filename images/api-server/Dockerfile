@@ -13,6 +13,6 @@ RUN wget -q https://github.com/kamu-data/kamu-node/releases/download/v${NODE_VER
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-CMD ["/opt/kamu/kamu-api-server", "--repo-url=file:///opt/kamu/workspace/.kamu/datasets", "run", "--address=0.0.0.0", "--http-port=8080"]
+CMD ["/opt/kamu/kamu-api-server", "run", "--address=0.0.0.0", "--http-port=8080"]
 
 EXPOSE 8080/tcp

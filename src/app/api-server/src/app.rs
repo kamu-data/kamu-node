@@ -32,7 +32,7 @@ const DEFAULT_LOGGING_CONFIG: &str = "info,tower_http=trace";
 pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(), InternalError> {
     init_logging();
 
-    let repo_url = if let Some(repo_url) = matches.get_one::<Url>("repo-url").cloned() {
+    let repo_url = if let Some(repo_url) = config.repo.repo_url.as_ref().cloned() {
         repo_url
     } else {
         let workspace_dir = find_workspace();
@@ -60,8 +60,8 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
     );
 
     let dependencies_graph_repository = prepare_dependencies_graph_repository(
-        kamu::domain::CurrentAccountSubject::logged(
-            opendatafabric::AccountName::new_unchecked(kamu::domain::auth::DEFAULT_ACCOUNT_NAME),
+        CurrentAccountSubject::logged(
+            AccountName::new_unchecked(kamu::domain::auth::DEFAULT_ACCOUNT_NAME),
             true,
         ),
         &repo_url,
@@ -146,7 +146,7 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
                 .unwrap()
                 .now();
 
-            tracing::info!(
+            info!(
                 http_endpoint = format!("http://{}", http_server.local_addr()),
                 flightsql_endpoint = format!("flightsql://{}", flightsql_server.local_addr()),
                 "Serving traffic"

@@ -21,7 +21,7 @@ Kamu Compute Node is a set of [Kubernetes](https://kubernetes.io/)-native applic
 
 Nodes are the building pieces of the [Open Data Fabric](https://docs.kamu.dev/odf/) and the primary way of contributing resources to the network. Unlike blockchain nodes that maintain a single ledger, Kamu nodes can form loosely connected clusters based on vested interests of their operators in certain data pipelines.
 
-If you are new to ODF - we recommend you to start with [Kamu CLI](https://github.com/kamu-data/kamu-cli/) instead for a gradual introduction. You should consider Kamu Node when you want to:
+If you are new to ODF - we recommend you to start with [Kamu CLI](https://github.com/kamu-data/kamu-cli/) instead of a gradual introduction. You should consider Kamu Node when you want to:
 - Build a horizontally-scalable data lake for your data
 - Need a decentralized infrastructure for sharing data with your partners or globally without intermediaries
 - Want to continuously operate ODF data pipelines or verify data
@@ -35,7 +35,17 @@ Prerequisites:
 To run API server using local `kamu` workspace:
 
 ```bash
-cargo run --bin kamu-api-server -- --repo-url workspace/.kamu/datasets run | bunyan
+# 1. Create a configuration file
+{
+  echo 'repo:'
+  echo '  repoUrl: workspace/.kamu/datasets'
+} > config.yaml
+# 2. Run
+cargo run --bin kamu-api-server -- --config config.yaml run | bunyan
+
+# Alternative: pass the repo url via env:
+KAMU_API_SERVER_CONFIG_repo__repoUrl=workspace/.kamu/datasets \
+  kamu-api-server run | bunyan
 ```
 
 To control log verbosity use the standard `RUST_LOG` env var:
@@ -58,12 +68,22 @@ cargo run --bin kamu-api-server -- gql query '{ apiVersion }' | jq
 To use it:
 
 ```bash
-cargo run --bin kamu-api-server -- --repo-url s3://example.com/kamu_repo run | bunyan
+# 1. Create a configuration file
+{
+  echo 'repo:'
+  echo '  repoUrl: s3://example.com/kamu_repo'
+} > config.yaml
+# 2. Run
+cargo run --bin kamu-api-server -- --config config.yaml run | bunyan
+
+# Alternative: pass the repo url via env:
+KAMU_API_SERVER_CONFIG_repo__repoUrls3://example.com/kamu_repo \
+  kamu-api-server run | bunyan
 ```
 
 
 ### GitHub Auth
-To use API server for GitHub's OAuth you will need to set following environment variables:
+To use API server for GitHub's OAuth, you will need to set the following environment variables:
 - `KAMU_AUTH_GITHUB_CLIENT_ID` - Client ID of your GitHub OAuth app
 - `KAMU_AUTH_GITHUB_CLIENT_SECRET` - Client secret of your GitHub OAuth app
 

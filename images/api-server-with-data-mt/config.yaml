@@ -1,3 +1,5 @@
+repo:
+  repoUrl: file:///opt/kamu/workspace/.kamu/datasets
 auth:
   providers:
     # Dummy accounts for owners of example datasets
