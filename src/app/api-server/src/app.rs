@@ -200,17 +200,22 @@ fn init_logging() {
 pub fn load_config(path: Option<&PathBuf>) -> Result<ApiServerConfig, InternalError> {
     use figment::providers::Format;
 
-    let Some(path) = path else {
-        return Ok(ApiServerConfig::default());
+    let mut figment = figment::Figment::from(figment::providers::Serialized::defaults(
+        ApiServerConfig::default(),
+    ));
+
+    if let Some(path) = path {
+        figment = figment.merge(figment::providers::Yaml::file(path));
     };
 
-    figment::Figment::from(figment::providers::Serialized::defaults(
-        ApiServerConfig::default(),
-    ))
-    .merge(figment::providers::Yaml::file(path))
-    .merge(figment::providers::Env::prefixed("KAMU_API_SERVER_CONFIG_").lowercase(false))
-    .extract()
-    .int_err()
+    figment
+        .merge(
+            figment::providers::Env::prefixed("KAMU_API_SERVER_CONFIG_")
+                .split("__")
+                .lowercase(false),
+        )
+        .extract()
+        .int_err()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
