@@ -1,3 +1,4 @@
+TEST_LOG_PARAMS=RUST_LOG_SPAN_EVENTS=new,close RUST_LOG=debug
 
 ###############################################################################
 # Lint
@@ -27,7 +28,12 @@ lint-fix:
 
 .PHONY: test
 test:
-	cargo test
+	$(TEST_LOG_PARAMS) cargo nextest run
+
+
+.PHONY: test-no-oracle
+test-no-oracle:
+	$(TEST_LOG_PARAMS) cargo nextest run -E 'not test(::oracle::)'
 
 
 ###############################################################################

@@ -28,7 +28,6 @@ clap = { version = "4", default-features = false, features = [
     "wrap_help",
 ] }
 chrono = { version = "0.4", default-features = false, features = ["serde"] }
-dill = { version = "0.8", default-features = false }
 ciborium = { version = "0.2", default-features = false }
 confique = { version = "0.2", default-features = false, features = ["yaml"] }
 ethers = { version = "2", default-features = false, features = [
@@ -52,8 +51,6 @@ tokio = { version = "1", default-features = false, features = [
     "macros",
 ] }
 tracing = { version = "0.1", default-features = false, features = [] }
-tracing-appender = "0.2"
-tracing-bunyan-formatter = "0.3"
 tracing-log = "0.2"
 tracing-subscriber = { version = "0.3", default-features = false, features = [
     "ansi",

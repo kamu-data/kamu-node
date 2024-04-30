@@ -7,6 +7,7 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use ethers::prelude::*;
@@ -32,14 +33,26 @@ abigen!(
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+fn get_contracts_dir() -> PathBuf {
+    let dir = if let Ok(dir) = std::env::var("KAMU_CONTRACTS_DIR") {
+        PathBuf::from(dir)
+    } else {
+        std::fs::canonicalize(".")
+            .unwrap()
+            .join("../../../../kamu-contracts")
+    };
+    if !dir.exists() {
+        panic!("Contracts dir not found at {}", dir.display());
+    }
+    dir
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+#[test_group::group(e2e, oracle)]
 #[test_log::test(tokio::test)]
 async fn test_e2e() {
-    let contracts_dir = std::fs::canonicalize(".")
-        .unwrap()
-        .join("../../../../kamu-contracts");
-    if !contracts_dir.exists() {
-        panic!("Contracts dir not found at {}", contracts_dir.display());
-    }
+    let contracts_dir = get_contracts_dir();
 
     let anvil = ethers::core::utils::Anvil::new().spawn();
     let rpc_endpoint = anvil.endpoint();
@@ -56,7 +69,7 @@ async fn test_e2e() {
 
     std::process::Command::new("forge")
         .current_dir(&contracts_dir)
-        .args(&[
+        .args([
             "script",
             "script/Deploy.s.sol",
             "--fork-url",
@@ -66,7 +79,7 @@ async fn test_e2e() {
             "--broadcast",
         ])
         .status()
-        .unwrap()
+        .expect("Failed to deploy contracts. Is foundry installed?")
         .exit_ok()
         .unwrap();
 

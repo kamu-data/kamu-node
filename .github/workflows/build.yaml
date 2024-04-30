@@ -51,15 +51,31 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CARGO_FLAGS: --profile ci --features kamu/ftp
+      KAMU_CONTRACTS_DIR: ../../../kamu-contracts
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: kamu-data/kamu-contracts
+          path: kamu-contracts
       - uses: actions-rs/toolchain@v1
       - uses: swatinem/rust-cache@v2
         with:
           cache-on-failure: true
-      - name: build
+      - uses: cargo-bins/cargo-binstall@main
+      - name: Install cargo tools
+        run: |
+          cargo binstall cargo-nextest -y --force
+      - name: Install foundry
+        uses: foundry-rs/foundry-toolchain@v1
+      - name: Build node
         run: cargo test ${{ env.CARGO_FLAGS }} --no-run
-      - name: run tests
-        run: cargo test ${{ env.CARGO_FLAGS }}
-      - name: check git diff
+      - name: Build contracts
+        working-directory: kamu-contracts
+        run: |
+          npm ci
+          forge build
+      - name: Run tests
+        run: cargo nextest run
+      - name: Check git diff
         run: git diff && git diff-index --quiet HEAD
