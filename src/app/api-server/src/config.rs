@@ -104,7 +104,7 @@ fn value_parse_repo_url(s: &str) -> Result<Url, &'static str> {
     match Url::parse(s) {
         Ok(url) => Ok(url),
         Err(_) => match PathBuf::from(s).canonicalize() {
-            Ok(path) => Ok(Url::from_file_path(path).unwrap()),
+            Ok(path) => Ok(Url::from_directory_path(path).unwrap()),
             Err(_) => Err(
                 "Invalid repo-url, should be a path or a URL in form: file:///home/me/workspace",
             ),
