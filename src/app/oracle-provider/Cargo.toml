@@ -1,6 +1,6 @@
 [package]
-name = "kamu-oracle-executor"
-description = "Kamu Compute Node Oracle component provides data to the blockchain smart contracts"
+name = "kamu-oracle-provider"
+description = "Oracle provider that uses Kamu Node to supply data to blockchain smart contracts"
 version = { workspace = true }
 homepage = { workspace = true }
 repository = { workspace = true }

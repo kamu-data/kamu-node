@@ -4196,7 +4196,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "kamu-oracle-executor"
+name = "kamu-oracle-provider"
 version = "0.21.0"
 dependencies = [
  "async-trait",

@@ -12,8 +12,8 @@ pub mod app;
 mod cbor;
 mod cli;
 mod config;
-pub mod executor;
+pub mod provider;
 
 pub use cli::Cli;
 pub use config::Config;
-pub use executor::OdfOracleExecutor;
+pub use provider::OdfOracleProvider;

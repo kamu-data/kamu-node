@@ -12,9 +12,9 @@ use std::sync::Arc;
 
 use ethers::prelude::*;
 use ethers::utils::hex::ToHexExt;
-use exec::api_client::{OdfApiClient, QueryResponse};
 use internal_error::InternalError;
-use kamu_oracle_executor as exec;
+use kamu_oracle_provider as provider;
+use provider::api_client::{OdfApiClient, QueryResponse};
 use serde_json::json;
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -58,8 +58,8 @@ async fn test_e2e() {
     let rpc_endpoint = anvil.endpoint();
     let admin_address = anvil.addresses()[0];
     let admin_key = anvil.keys()[0].to_bytes().encode_hex_with_prefix();
-    let executor_address = anvil.addresses()[1];
-    let executor_private_key = anvil.keys()[1].to_bytes().encode_hex();
+    let provider_address = anvil.addresses()[1];
+    let provider_private_key = anvil.keys()[1].to_bytes().encode_hex();
     let oracle_contract_address: Address = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
         .parse()
         .unwrap();
@@ -83,13 +83,13 @@ async fn test_e2e() {
         .exit_ok()
         .unwrap();
 
-    let config = exec::Config {
+    let config = provider::Config {
         rpc_url: url::Url::parse(&anvil.endpoint()).unwrap(),
         chain_id: anvil.chain_id(),
         oracle_contract_address,
         oracle_contract_first_block: 0,
-        executor_address,
-        executor_private_key,
+        provider_address,
+        provider_private_key,
         logs_page_size: 1000,
         loop_idle_time_ms: 1000,
         transaction_confirmations: 1,
@@ -98,14 +98,14 @@ async fn test_e2e() {
         api_access_token: None,
     };
 
-    let rpc_client = exec::app::init_rpc_client(&config).await.unwrap();
+    let rpc_client = provider::app::init_rpc_client(&config).await.unwrap();
     let api_client = Arc::new(MockOdfApiClient);
-    let executor = exec::OdfOracleExecutor::new(config, rpc_client.clone(), api_client);
+    let provider = provider::OdfOracleProvider::new(config, rpc_client.clone(), api_client);
     let consumer = Consumer::new(consumer_contract_address, rpc_client.clone());
     let oracle_admin = IOdfAdmin::new(oracle_contract_address, rpc_client.clone());
 
     oracle_admin
-        .add_executor(executor_address)
+        .add_provider(provider_address)
         .from(admin_address)
         .send()
         .await
@@ -113,7 +113,7 @@ async fn test_e2e() {
 
     consumer.start_distribute_rewards().send().await.unwrap();
 
-    executor.run_once(Some(0), None).await.unwrap();
+    provider.run_once(Some(0), None).await.unwrap();
 
     assert_eq!(consumer.province().call().await.unwrap(), "ON");
     assert_eq!(consumer.total_cases().call().await.unwrap(), 100500);

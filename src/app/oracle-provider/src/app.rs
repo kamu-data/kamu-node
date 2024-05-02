@@ -13,20 +13,20 @@ use ethers::prelude::*;
 use internal_error::*;
 
 use crate::api_client::{OdfApiClient, OdfApiClientRest};
-use crate::executor::*;
+use crate::provider::*;
 use crate::{Cli, Config};
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 pub async fn run(args: Cli, config: Config) -> Result<(), InternalError> {
-    tracing::info!(?args, ?config, "Starting ODF Oracle Executor");
+    tracing::info!(?args, ?config, "Starting ODF Oracle provider");
 
     let rpc_client = init_rpc_client(&config).await?;
     let api_client = init_api_client(&config).await?;
-    let executor = OdfOracleExecutor::new(config, rpc_client, api_client);
+    let provider = OdfOracleProvider::new(config, rpc_client, api_client);
 
-    tracing::info!("Entering executor loop");
-    executor.run().await?;
+    tracing::info!("Entering provider loop");
+    provider.run().await?;
 
     Ok(())
 }
@@ -44,7 +44,7 @@ pub struct InvalidChainId {
 
 pub async fn init_rpc_client(config: &Config) -> Result<Arc<impl Middleware>, InternalError> {
     // Prepare wallet
-    let wallet = LocalWallet::try_from(config.executor_private_key.as_str())
+    let wallet = LocalWallet::try_from(config.provider_private_key.as_str())
         .unwrap()
         .with_chain_id(config.chain_id);
 

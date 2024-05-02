@@ -26,11 +26,11 @@ pub struct Config {
     #[config(default = 0)]
     pub oracle_contract_first_block: u64,
 
-    /// Address of this executor's account to use when submitting transactions
-    pub executor_address: Address,
+    /// Address of this provider's account to use when submitting transactions
+    pub provider_address: Address,
 
-    /// Private key of the executor to use when signing transactions.
-    pub executor_private_key: String,
+    /// Private key of the provider to use when signing transactions.
+    pub provider_private_key: String,
 
     /// Number of logs to request per one RPC call
     #[config(default = 1000)]

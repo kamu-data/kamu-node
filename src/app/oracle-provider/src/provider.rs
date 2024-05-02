@@ -55,19 +55,19 @@ struct OdfResultData {
 /////////////////////////////////////////////////////////////////////////////////////////
 
 #[derive(Debug, thiserror::Error)]
-#[error("Executor is not authorized to provide results to the oracle contract")]
-pub struct ExecutorUnauthorized;
+#[error("Provider is not authorized to provide results to the oracle contract")]
+pub struct ProviderUnauthorized;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-pub struct OdfOracleExecutor<M: Middleware> {
+pub struct OdfOracleProvider<M: Middleware> {
     config: Config,
     rpc_client: Arc<M>,
     oracle_contract: IOdfProvider<M>,
     api_client: Arc<dyn OdfApiClient>,
 }
 
-impl<M: Middleware + 'static> OdfOracleExecutor<M> {
+impl<M: Middleware + 'static> OdfOracleProvider<M> {
     pub fn new(config: Config, rpc_client: Arc<M>, api_client: Arc<dyn OdfApiClient>) -> Self {
         let oracle_contract = IOdfProvider::new(config.oracle_contract_address, rpc_client.clone());
 
@@ -79,12 +79,12 @@ impl<M: Middleware + 'static> OdfOracleExecutor<M> {
         }
     }
 
-    /// Check whether the executor is authorized to submit results
+    /// Check whether the provider is authorized to submit results
     pub async fn is_authorized(&self) -> Result<bool, InternalError> {
         match self
             .oracle_contract
-            .can_provide_results(self.config.executor_address)
-            .from(self.config.executor_address)
+            .can_provide_results(self.config.provider_address)
+            .from(self.config.provider_address)
             .call()
             .await
         {
@@ -93,10 +93,10 @@ impl<M: Middleware + 'static> OdfOracleExecutor<M> {
         }
     }
 
-    /// Check balance of the executor to be able to pay for transactions
+    /// Check balance of the provider to be able to pay for transactions
     pub async fn get_balance(&self) -> Result<U256, InternalError> {
         self.rpc_client
-            .get_balance(self.config.executor_address, None)
+            .get_balance(self.config.provider_address, None)
             .await
             .int_err()
     }
@@ -176,7 +176,7 @@ impl<M: Middleware + 'static> OdfOracleExecutor<M> {
             }
             if first {
                 tracing::warn!(
-                    "Executor is unauthorized to provide results - waiting for permissions"
+                    "Provider is unauthorized to provide results - waiting for permissions"
                 );
                 first = false;
             }
@@ -186,12 +186,12 @@ impl<M: Middleware + 'static> OdfOracleExecutor<M> {
         loop {
             let balance = self.get_balance().await?;
             if !balance.is_zero() {
-                tracing::info!(balance = %balance, "Executor balance on start");
+                tracing::info!(balance = %balance, "Provider balance on start");
                 break;
             }
             if first {
                 tracing::warn!(
-                    "Executor has zero balance - waiting for some tokens to be able to submit \
+                    "Provider has zero balance - waiting for some tokens to be able to submit \
                      transactions"
                 );
                 first = false;
@@ -323,7 +323,7 @@ impl<M: Middleware + 'static> OdfOracleExecutor<M> {
         let transaction: ethers::contract::ContractCall<_, _> = self
             .oracle_contract
             .provide_result(result.request_id, result_encoded.into())
-            .from(self.config.executor_address);
+            .from(self.config.provider_address);
 
         let pending_tx = match transaction.send().await {
             Ok(tr) => Ok(tr),
@@ -335,8 +335,8 @@ impl<M: Middleware + 'static> OdfOracleExecutor<M> {
                         );
                         return Ok(());
                     }
-                    Some(IOdfProviderErrors::UnauthorizedExecutor(_)) => {
-                        Err(ExecutorUnauthorized.int_err())
+                    Some(IOdfProviderErrors::UnauthorizedProvider(_)) => {
+                        Err(ProviderUnauthorized.int_err())
                     }
                     _ => Err(err.int_err()),
                 }

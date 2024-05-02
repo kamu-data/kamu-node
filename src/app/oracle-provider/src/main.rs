@@ -8,7 +8,7 @@
 // by the Apache License, Version 2.0.
 
 use clap::Parser;
-use kamu_oracle_executor::{Cli, Config};
+use kamu_oracle_provider::{Cli, Config};
 
 const DEFAULT_RUST_LOG: &str = "RUST_LOG=debug,kamu=trace,hyper=info,h2=info";
 
@@ -28,10 +28,10 @@ fn main() {
         .build()
         .unwrap();
 
-    match rt.block_on(kamu_oracle_executor::app::run(args, config)) {
+    match rt.block_on(kamu_oracle_provider::app::run(args, config)) {
         Ok(_) => {}
         Err(err) => {
-            tracing::error!(error = %err, error_dbg = ?err, "Executor exited with error");
+            tracing::error!(error = %err, error_dbg = ?err, "Provider exited with error");
             std::process::exit(1)
         }
     }
