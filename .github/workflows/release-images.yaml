@@ -30,16 +30,26 @@ jobs:
         run: |
           cd images/
           make api-server
+      
+      - name: Build oracle-provider image
+        run: |
+          cd images/
+          make oracle-provider
+      
+      - name: Publish base images
+        run: |
+          cd images/
+          make api-server-push
+          make oracle-provider-push
 
-      - name: Build api-server image with sample data
+      - name: Build images with sample data
         run: |
           cd images/
           make api-server-with-data
           make api-server-with-data-mt
 
-      - name: Publish images
+      - name: Publish auxiliary images
         run: |
-          cd images
-          make api-server-push
+          cd images/
           make api-server-with-data-push
           make api-server-with-data-mt-push

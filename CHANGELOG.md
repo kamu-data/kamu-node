@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Added
+- Introduced new `kamu-oracle-provider` component which can fulfil data requests from any EVM compatible blockchain, working in conjunction with `OdfOracle` contracts defined in [`kamu-contracts`](https://github.com/kamu-data/kamu-contracts/) repository
+
 ## [0.21.0] - 2024-04-26
 ### Changed
 - Upgraded `kamu` from `0.176.3` to `0.177.0` ([changelog](https://github.com/kamu-data/kamu-cli/blob/master/CHANGELOG.md))

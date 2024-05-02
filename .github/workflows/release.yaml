@@ -3,15 +3,15 @@ on:
   push:
     tags:
       - v[0-9]+.[0-9]+.[0-9]+*
-env:
-  PACKAGE_NAME: kamu-api-server
-  BINARY_NAME: kamu-api-server
 jobs:
   build_linux:
     name: Build / Linux
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        crate:
+          - kamu-api-server
+          - kamu-oracle-provider
         target:
           - x86_64-unknown-linux-gnu
     steps:
@@ -25,11 +25,11 @@ jobs:
       - name: Install cross
         run: cargo binstall cross -y
       - name: Build
-        run: cross build --release --target=${{ matrix.target }}
+        run: cross build -p ${{ matrix.crate }} --release --target=${{ matrix.target }}
       - uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.PACKAGE_NAME }}-${{ matrix.target }}
-          path: target/${{ matrix.target }}/release/${{ env.BINARY_NAME }}
+          name: ${{ matrix.crate }}-${{ matrix.target }}
+          path: target/${{ matrix.target }}/release/${{ matrix.crate }}
           if-no-files-found: error
   create_release:
     name: Create Release
@@ -54,22 +54,25 @@ jobs:
     needs: [ create_release ]
     strategy:
       matrix:
+        crate:
+          - kamu-api-server
+          - kamu-oracle-provider
         target:
           - x86_64-unknown-linux-gnu
     steps:
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
-          name: ${{ env.PACKAGE_NAME }}-${{ matrix.target }}
-          path: ${{ env.PACKAGE_NAME }}-${{ matrix.target }}
+          name: ${{ matrix.crate }}-${{ matrix.target }}
+          path: ${{ matrix.crate }}-${{ matrix.target }}
       - name: Compress Artifacts
-        run: tar -czvf ${{ env.PACKAGE_NAME }}-${{ matrix.target }}.tar.gz ${{ env.PACKAGE_NAME }}-${{ matrix.target }}
+        run: tar -czvf ${{ matrix.crate }}-${{ matrix.target }}.tar.gz ${{ matrix.crate }}-${{ matrix.target }}
       - name: Upload Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ${{ env.PACKAGE_NAME }}-${{ matrix.target }}.tar.gz
-          asset_name: ${{ env.PACKAGE_NAME }}-${{ matrix.target }}.tar.gz
+          asset_path: ${{ matrix.crate }}-${{ matrix.target }}.tar.gz
+          asset_name: ${{ matrix.crate }}-${{ matrix.target }}.tar.gz
           asset_content_type: application/gzip

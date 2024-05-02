@@ -1,10 +1,10 @@
 ARG KAMU_VERSION
 FROM ghcr.io/kamu-data/kamu-base:${KAMU_VERSION}
-ARG API_SERVER_VERSION
+ARG NODE_VERSION
 
 WORKDIR /opt/kamu
 
-RUN wget -q https://github.com/kamu-data/kamu-platform/releases/download/v${API_SERVER_VERSION}/kamu-api-server-x86_64-unknown-linux-gnu.tar.gz && \
+RUN wget -q https://github.com/kamu-data/kamu-node/releases/download/v${NODE_VERSION}/kamu-api-server-x86_64-unknown-linux-gnu.tar.gz && \
     tar -xf kamu-api-server-x86_64-unknown-linux-gnu.tar.gz && \
     chmod +x kamu-api-server-x86_64-unknown-linux-gnu/kamu-api-server && \
     mv kamu-api-server-x86_64-unknown-linux-gnu/kamu-api-server /opt/kamu/ && \
