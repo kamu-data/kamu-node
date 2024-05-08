@@ -14,6 +14,7 @@ resolver = "2"
 container-runtime = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.179.1", version = "0.179.1", default-features = false }
 event-bus = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.179.1", version = "0.179.1", default-features = false }
 internal-error = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.179.1", version = "0.179.1", default-features = false }
+random-names = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.179.1", version = "0.179.1", default-features = false }
 # Domain
 opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.179.1", version = "0.179.1", default-features = false }
 kamu-task-system = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.179.1", version = "0.179.1", default-features = false }

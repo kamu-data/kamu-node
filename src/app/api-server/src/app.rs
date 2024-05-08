@@ -20,6 +20,7 @@ use kamu_accounts::{
     DEFAULT_ACCOUNT_NAME,
 };
 use opendatafabric::AccountID;
+use random_names::get_random_name;
 use tracing::info;
 use url::Url;
 
@@ -380,9 +381,15 @@ pub async fn init_dependencies(
         base_url_flightsql: config.url.base_url_flightsql,
     }));
 
-    b.add_value(JwtAuthenticationConfig {
-        jwt_secret: config.auth.jwt_token,
-    });
+    // TODO: Use JwtAuthenticationConfig::new()
+    //       update after https://github.com/kamu-data/kamu-cli/pull/623
+    let jwt_secret = if !config.auth.jwt_token.is_empty() {
+        config.auth.jwt_token
+    } else {
+        get_random_name(None, 64)
+    };
+
+    b.add_value(JwtAuthenticationConfig { jwt_secret });
 
     b
 }
