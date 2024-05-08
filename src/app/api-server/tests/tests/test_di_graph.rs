@@ -16,7 +16,7 @@ async fn test_di_graph_validates_local() {
     let repo_url = url::Url::from_directory_path(tempdir.path()).unwrap();
 
     let dependencies_graph_repository = kamu_api_server::prepare_dependencies_graph_repository(
-        kamu::domain::CurrentAccountSubject::new_test(),
+        kamu_accounts::CurrentAccountSubject::new_test(),
         &repo_url,
         multi_tenant,
         &config,
@@ -30,7 +30,7 @@ async fn test_di_graph_validates_local() {
 
     // CurrentAccountSubject is inserted by middlewares, but won't be present in
     // the default dependency graph, so we have to add it manually
-    catalog_builder.add_value(kamu::domain::CurrentAccountSubject::new_test());
+    catalog_builder.add_value(kamu_accounts::CurrentAccountSubject::new_test());
 
     // TODO: We should ensure this test covers parameters requested by commands and
     // types needed for GQL/HTTP adapter that are currently being constructed
@@ -69,7 +69,7 @@ async fn test_di_graph_validates_remote() {
     let config = kamu_api_server::config::ApiServerConfig::default();
 
     let dependencies_graph_repository = kamu_api_server::prepare_dependencies_graph_repository(
-        kamu::domain::CurrentAccountSubject::new_test(),
+        kamu_accounts::CurrentAccountSubject::new_test(),
         &repo_url,
         multi_tenant,
         &config,
@@ -88,7 +88,7 @@ async fn test_di_graph_validates_remote() {
 
     // CurrentAccountSubject is inserted by middlewares, but won't be present in
     // the default dependency graph, so we have to add it manually
-    catalog_builder.add_value(kamu::domain::CurrentAccountSubject::new_test());
+    catalog_builder.add_value(kamu_accounts::CurrentAccountSubject::new_test());
 
     // TODO: We should ensure this test covers parameters requested by commands and
     // types needed for GQL/HTTP adapter that are currently being constructed

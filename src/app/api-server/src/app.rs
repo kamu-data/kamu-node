@@ -12,8 +12,9 @@ use std::sync::Arc;
 
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
-use kamu::domain::{CurrentAccountSubject, ServerUrlConfig, SystemTimeSourceDefault};
-use opendatafabric::AccountName;
+use kamu::domain::{Protocols, ServerUrlConfig, SystemTimeSourceDefault};
+use kamu_accounts::{CurrentAccountSubject, PredefinedAccountsConfig, DEFAULT_ACCOUNT_NAME};
+use opendatafabric::AccountID;
 use tracing::info;
 use url::Url;
 
@@ -55,15 +56,16 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
         repo_url = %repo_url,
         local_dir = %local_dir.path().display(),
         config = ?config,
-        "Initializing {}",
-        BINARY_NAME
+        "Initializing {BINARY_NAME}",
     );
 
+    let logged_account_subject = CurrentAccountSubject::logged(
+        AccountID::new_seeded_ed25519(DEFAULT_ACCOUNT_NAME.as_bytes()),
+        DEFAULT_ACCOUNT_NAME.clone(),
+        true,
+    );
     let dependencies_graph_repository = prepare_dependencies_graph_repository(
-        CurrentAccountSubject::logged(
-            AccountName::new_unchecked(kamu::domain::auth::DEFAULT_ACCOUNT_NAME),
-            true,
-        ),
+        logged_account_subject.clone(),
         &repo_url,
         multi_tenant,
         &config,
@@ -127,10 +129,7 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
             // should consider to instead propagate the auth info of the user who triggered
             // some system flow alongside all actions to enforce proper authorization.
             let system_catalog = CatalogBuilder::new_chained(&catalog)
-                .add_value(CurrentAccountSubject::logged(
-                    AccountName::new_unchecked(kamu::domain::auth::DEFAULT_ACCOUNT_NAME),
-                    true,
-                ))
+                .add_value(logged_account_subject)
                 .build();
 
             let task_executor = system_catalog
@@ -222,7 +221,7 @@ pub fn load_config(path: Option<&PathBuf>) -> Result<ApiServerConfig, InternalEr
 
 // TODO: Get rid of this
 pub async fn prepare_dependencies_graph_repository(
-    current_account_subject: kamu::domain::CurrentAccountSubject,
+    current_account_subject: CurrentAccountSubject,
     repo_url: &Url,
     multi_tenant: bool,
     config: &ApiServerConfig,
@@ -338,7 +337,7 @@ pub async fn init_dependencies(
     b.add::<kamu_flow_system_inmem::FlowEventStoreInMem>();
     b.add::<kamu_flow_system_inmem::FlowConfigurationEventStoreInMem>();
 
-    b.add::<kamu::AuthenticationServiceImpl>();
+    b.add::<kamu_accounts_services::AuthenticationServiceImpl>();
     b.add::<kamu_adapter_auth_oso::KamuAuthOso>();
     b.add::<kamu_adapter_auth_oso::OsoDatasetAuthorizer>();
     b.add::<kamu::domain::auth::DummyOdfServerAccessTokenResolver>();

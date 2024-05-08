@@ -30,6 +30,8 @@ kamu-adapter-oauth = { workspace = true }
 kamu-adapter-odata = { workspace = true }
 kamu-adapter-auth-oso = { workspace = true }
 kamu-adapter-flight-sql = { workspace = true }
+kamu-accounts = { workspace = true }
+kamu-accounts-services = { workspace = true }
 
 # APIs
 http = "0.2"

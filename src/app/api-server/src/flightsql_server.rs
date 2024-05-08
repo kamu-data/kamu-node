@@ -15,7 +15,7 @@ use std::sync::Arc;
 use arrow_flight::flight_service_server::FlightServiceServer;
 use datafusion::prelude::SessionContext;
 use futures::Future;
-use kamu::domain::CurrentAccountSubject;
+use kamu_accounts::{AnonymousAccountReason, CurrentAccountSubject};
 use kamu_adapter_flight_sql::{KamuFlightSqlService, SessionFactory, Token};
 use tokio::net::TcpListener;
 use tonic::transport::Server;
@@ -81,9 +81,8 @@ impl SessionFactory for SessionFactoryImpl {
 
     #[tracing::instrument(level = "debug", skip_all)]
     async fn get_context(&self, _token: &Token) -> Result<Arc<SessionContext>, Status> {
-        let subject = CurrentAccountSubject::Anonymous(
-            kamu::domain::AnonymousAccountReason::NoAuthenticationProvided,
-        );
+        let subject =
+            CurrentAccountSubject::Anonymous(AnonymousAccountReason::NoAuthenticationProvided);
 
         let session_catalog = dill::CatalogBuilder::new_chained(&self.base_catalog)
             .add_value(subject)
