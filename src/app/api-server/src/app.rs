@@ -349,6 +349,8 @@ pub async fn init_dependencies(
     configure_repository(&mut b, repo_url, multi_tenant, &config.repo).await;
 
     b.add::<DummyAuthProvider>();
+    // TODO: Temporarily using in-mem
+    b.add::<kamu_accounts_inmem::AccountRepositoryInMemory>();
 
     if !multi_tenant {
         b.add_value(PredefinedAccountsConfig::single_tenant());

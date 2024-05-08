@@ -3958,6 +3958,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "kamu-accounts-inmem"
+version = "0.179.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.179.1#8e393f90fa331eb617b667090e409b4afb21d1ae"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "dill",
+ "internal-error",
+ "kamu-accounts",
+ "opendatafabric",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
 name = "kamu-accounts-services"
 version = "0.179.1"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.179.1#8e393f90fa331eb617b667090e409b4afb21d1ae"
@@ -4140,6 +4155,7 @@ dependencies = [
  "internal-error",
  "kamu",
  "kamu-accounts",
+ "kamu-accounts-inmem",
  "kamu-accounts-services",
  "kamu-adapter-auth-oso",
  "kamu-adapter-flight-sql",

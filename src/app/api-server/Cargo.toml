@@ -32,6 +32,7 @@ kamu-adapter-auth-oso = { workspace = true }
 kamu-adapter-flight-sql = { workspace = true }
 kamu-accounts = { workspace = true }
 kamu-accounts-services = { workspace = true }
+kamu-accounts-inmem = { workspace = true }
 
 # APIs
 http = "0.2"
