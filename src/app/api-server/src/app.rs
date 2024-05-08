@@ -354,8 +354,11 @@ pub async fn init_dependencies(
     // TODO: Temporarily using in-mem
     b.add::<kamu_accounts_inmem::AccountRepositoryInMemory>();
 
+    let mut need_to_add_default_predefined_accounts_config = true;
+
     if !multi_tenant {
         b.add_value(PredefinedAccountsConfig::single_tenant());
+        need_to_add_default_predefined_accounts_config = false
     } else {
         for provider in config.auth.providers {
             match provider {
@@ -371,9 +374,14 @@ pub async fn init_dependencies(
                     b.add_value(PredefinedAccountsConfig {
                         predefined: prov.accounts,
                     });
+                    need_to_add_default_predefined_accounts_config = false
                 }
             }
         }
+    }
+
+    if need_to_add_default_predefined_accounts_config {
+        b.add_value(PredefinedAccountsConfig::default());
     }
 
     b.add_value(ServerUrlConfig::new(Protocols {

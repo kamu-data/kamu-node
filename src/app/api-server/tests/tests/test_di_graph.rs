@@ -76,13 +76,9 @@ async fn test_di_graph_validates_remote() {
     )
     .await;
 
-    let mut catalog_builder = kamu_api_server::init_dependencies(
-        kamu_api_server::config::ApiServerConfig::default(),
-        &repo_url,
-        multi_tenant,
-        tmp_repo_dir.path(),
-    )
-    .await;
+    let mut catalog_builder =
+        kamu_api_server::init_dependencies(config, &repo_url, multi_tenant, tmp_repo_dir.path())
+            .await;
 
     catalog_builder.add_value(dependencies_graph_repository);
 
