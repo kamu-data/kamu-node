@@ -76,7 +76,6 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
         .await
         .add_value(dependencies_graph_repository)
         .bind::<dyn kamu::domain::DependencyGraphRepository, kamu::DependencyGraphRepositoryInMemory>()
-        .add_value(ServerUrlConfig::load()?)
         .build();
 
     match matches.subcommand() {
@@ -367,6 +366,12 @@ pub async fn init_dependencies(
             }
         }
     }
+
+    b.add_value(ServerUrlConfig::new(Protocols {
+        base_url_platform: config.url.base_url_platform,
+        base_url_rest: config.url.base_url_rest,
+        base_url_flightsql: config.url.base_url_flightsql,
+    }));
 
     b
 }

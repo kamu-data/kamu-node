@@ -9,6 +9,7 @@
 
 use std::path::PathBuf;
 
+use kamu_accounts::AccountConfig;
 use serde::{Deserialize, Deserializer, Serialize};
 use url::Url;
 
@@ -21,6 +22,7 @@ pub struct ApiServerConfig {
     pub runtime: RuntimeConfig,
     pub auth: AuthConfig,
     pub repo: RepoConfig,
+    pub url: UrlConfig,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -71,7 +73,7 @@ pub struct AuthProviderConfigGitHub {}
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct AuthProviderConfigDummy {
-    pub accounts: Vec<kamu::domain::auth::AccountInfo>,
+    pub accounts: Vec<AccountConfig>,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -99,6 +101,32 @@ pub struct RepoCachingConfig {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
+// UrlConfig
+/////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct UrlConfig {
+    #[serde(deserialize_with = "parse_repo_url")]
+    pub base_url_platform: Url,
+    #[serde(deserialize_with = "parse_repo_url")]
+    pub base_url_rest: Url,
+    #[serde(deserialize_with = "parse_repo_url")]
+    pub base_url_flightsql: Url,
+}
+
+impl Default for UrlConfig {
+    fn default() -> Self {
+        Self {
+            base_url_platform: Url::parse("http://localhost:4200").unwrap(),
+            base_url_rest: Url::parse("http://localhost:8080").unwrap(),
+            base_url_flightsql: Url::parse("grpc://localhost:50050").unwrap(),
+        }
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
 
 fn value_parse_repo_url(s: &str) -> Result<Url, &'static str> {
     match Url::parse(s) {
@@ -110,6 +138,18 @@ fn value_parse_repo_url(s: &str) -> Result<Url, &'static str> {
             ),
         },
     }
+}
+
+fn parse_repo_url<'de, D>(deserializer: D) -> Result<Url, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    use serde::de::Error;
+
+    let value = String::deserialize(deserializer)?;
+    let url = value_parse_repo_url(value.as_str()).map_err(Error::custom)?;
+
+    Ok(url)
 }
 
 fn parse_repo_url_opt<'de, D>(deserializer: D) -> Result<Option<Url>, D::Error>
