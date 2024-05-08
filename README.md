@@ -83,9 +83,15 @@ KAMU_API_SERVER_CONFIG_repo__repoUrls3://example.com/kamu_repo \
 
 
 ### GitHub Auth
-To use API server for GitHub's OAuth, you will need to set the following environment variables:
-- `KAMU_AUTH_GITHUB_CLIENT_ID` - Client ID of your GitHub OAuth app
-- `KAMU_AUTH_GITHUB_CLIENT_SECRET` - Client secret of your GitHub OAuth app
+To use API server for GitHub's OAuth, you need to set the following configuration settings:
+
+```yaml
+auth:
+  providers:
+    - kind: github
+      clientId: CLIENT_ID_OF_YOUR_GITHUB_OAUTH_APP
+      clientSecret: CLIENT_SECRET_OF_YOUR_GITHUB_OAUTH_APP
+```
 
 Then you can use the following mutation:
 
