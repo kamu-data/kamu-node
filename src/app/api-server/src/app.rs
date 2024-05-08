@@ -19,6 +19,7 @@ use kamu_accounts::{
     PredefinedAccountsConfig,
     DEFAULT_ACCOUNT_NAME,
 };
+use kamu_adapter_oauth::GithubAuthenticationConfig;
 use opendatafabric::AccountID;
 use random_names::get_random_name;
 use tracing::info;
@@ -356,15 +357,15 @@ pub async fn init_dependencies(
     if !multi_tenant {
         b.add_value(PredefinedAccountsConfig::single_tenant());
     } else {
-        // Default to GitHub auth
-        if config.auth.providers.is_empty() {
-            b.add::<kamu_adapter_oauth::OAuthGithub>();
-        }
-
         for provider in config.auth.providers {
             match provider {
-                AuthProviderConfig::Github(_) => {
+                AuthProviderConfig::Github(github_config) => {
                     b.add::<kamu_adapter_oauth::OAuthGithub>();
+
+                    b.add_value(GithubAuthenticationConfig::new(
+                        github_config.client_id,
+                        github_config.client_secret,
+                    ));
                 }
                 AuthProviderConfig::Dummy(prov) => {
                     b.add_value(PredefinedAccountsConfig {

@@ -66,7 +66,10 @@ pub enum AuthProviderConfig {
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
-pub struct AuthProviderConfigGitHub {}
+pub struct AuthProviderConfigGitHub {
+    pub client_id: String,
+    pub client_secret: String,
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
