@@ -13,7 +13,12 @@ use std::sync::Arc;
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
 use kamu::domain::{Protocols, ServerUrlConfig, SystemTimeSourceDefault};
-use kamu_accounts::{CurrentAccountSubject, PredefinedAccountsConfig, DEFAULT_ACCOUNT_NAME};
+use kamu_accounts::{
+    CurrentAccountSubject,
+    JwtAuthenticationConfig,
+    PredefinedAccountsConfig,
+    DEFAULT_ACCOUNT_NAME,
+};
 use opendatafabric::AccountID;
 use tracing::info;
 use url::Url;
@@ -372,6 +377,10 @@ pub async fn init_dependencies(
         base_url_rest: config.url.base_url_rest,
         base_url_flightsql: config.url.base_url_flightsql,
     }));
+
+    b.add_value(JwtAuthenticationConfig {
+        jwt_secret: config.auth.jwt_token,
+    });
 
     b
 }
