@@ -8,127 +8,81 @@
 // by the Apache License, Version 2.0.
 
 use std::collections::HashMap;
+use std::sync::Arc;
 
-use internal_error::{InternalError, ResultIntoInternal};
-use kamu::domain::auth;
+use dill::{component, interface};
+use kamu_accounts::*;
+use opendatafabric::{AccountID, AccountName};
 use serde::{Deserialize, Serialize};
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+pub(crate) const DUMMY_AUTH_PROVIDER_IDENTITY_KEY: &str = "kamu-node";
+
+/////////////////////////////////////////////////////////s////////////////////////////////
+
 pub(crate) struct DummyAuthProvider {
-    predefined_accounts: HashMap<String, auth::AccountInfo>,
+    predefined_accounts: HashMap<String, AccountConfig>,
 }
 
+#[component(pub)]
+#[interface(dyn AuthenticationProvider)]
 impl DummyAuthProvider {
-    pub(crate) fn new_with_default_account() -> Self {
-        Self::new(vec![auth::AccountInfo {
-            account_id: opendatafabric::FAKE_ACCOUNT_ID.to_string(),
-            account_name: opendatafabric::AccountName::new_unchecked(auth::DEFAULT_ACCOUNT_NAME),
-            account_type: auth::AccountType::User,
-            display_name: String::from(auth::DEFAULT_ACCOUNT_NAME),
-            avatar_url: Some(String::from(auth::DEFAULT_AVATAR_URL)),
-            is_admin: true,
-        }])
-    }
-
-    pub(crate) fn new(predefined_accounts: Vec<auth::AccountInfo>) -> Self {
+    pub(crate) fn new(config: Arc<PredefinedAccountsConfig>) -> Self {
         Self {
-            predefined_accounts: predefined_accounts
-                .into_iter()
-                .map(|acc| (acc.account_name.to_string(), acc))
+            predefined_accounts: config
+                .predefined
+                .iter()
+                .map(|account| (account.account_name.to_string(), account.clone()))
                 .collect(),
         }
     }
 
-    fn find_account_info_impl(&self, account_name: &String) -> Option<auth::AccountInfo> {
-        // The account might be predefined in the configuration
-        self.predefined_accounts.get(account_name).cloned()
-    }
-
-    fn get_account_info_impl(
+    fn get_account(
         &self,
         account_name: &String,
-    ) -> Result<auth::AccountInfo, auth::RejectedCredentialsError> {
-        // The account might be predefined in the configuration
+    ) -> Result<AccountConfig, RejectedCredentialsError> {
         match self.predefined_accounts.get(account_name) {
-            // Use the predefined record
             Some(account_info) => Ok(account_info.clone()),
-
-            None => {
-                // Otherwise we don't recognized this user between predefined
-                Err(auth::RejectedCredentialsError::new(
-                    "Login of unknown accounts is disabled".to_string(),
-                ))
-            }
+            None => Err(RejectedCredentialsError {}),
         }
     }
 }
 
 #[async_trait::async_trait]
-impl auth::AuthenticationProvider for DummyAuthProvider {
-    fn login_method(&self) -> &'static str {
-        "password"
+impl AuthenticationProvider for DummyAuthProvider {
+    fn provider_name(&self) -> &'static str {
+        PROVIDER_PASSWORD
+    }
+
+    fn generate_id(&self, account_name: &AccountName) -> AccountID {
+        AccountID::new_seeded_ed25519(account_name.as_bytes())
     }
 
     async fn login(
         &self,
         login_credentials_json: String,
-    ) -> Result<auth::ProviderLoginResponse, auth::ProviderLoginError> {
-        // Decode credentials
+    ) -> Result<ProviderLoginResponse, ProviderLoginError> {
         let password_login_credentials =
             serde_json::from_str::<PasswordLoginCredentials>(login_credentials_json.as_str())
-                .map_err(|e| {
-                    auth::ProviderLoginError::InvalidCredentials(
-                        auth::InvalidCredentialsError::new(Box::new(e)),
-                    )
-                })?;
+                .map_err(|e| InvalidCredentialsError::new(Box::new(e)))?;
 
-        // For now password should match the login, this is enough for CLI demo needs
-        if password_login_credentials.password != password_login_credentials.login {
-            return Err(auth::ProviderLoginError::RejectedCredentials(
-                auth::RejectedCredentialsError::new("Invalid login or password".into()),
-            ));
+        let account = self.get_account(&password_login_credentials.login)?;
+
+        if password_login_credentials.password != account.get_password() {
+            return Err(RejectedCredentialsError {}.into());
         }
 
-        // The account might be predefined in the configuration
-        let account_info = self
-            .get_account_info_impl(&password_login_credentials.login)
-            .map_err(auth::ProviderLoginError::RejectedCredentials)?;
+        let display_name = account.get_display_name();
 
-        // Store login as provider credentials
-        let provider_credentials = PasswordProviderCredentials {
-            account_name: account_info.account_name.clone(),
-        };
-
-        Ok(auth::ProviderLoginResponse {
-            provider_credentials_json: serde_json::to_string::<PasswordProviderCredentials>(
-                &provider_credentials,
-            )
-            .int_err()?,
-            account_info,
+        Ok(ProviderLoginResponse {
+            account_name: account.account_name,
+            email: account.email,
+            display_name,
+            account_type: account.account_type,
+            avatar_url: account.avatar_url,
+            provider_identity_key: String::from(DUMMY_AUTH_PROVIDER_IDENTITY_KEY),
         })
-    }
-
-    async fn account_info_by_token(
-        &self,
-        provider_credentials_json: String,
-    ) -> Result<auth::AccountInfo, InternalError> {
-        let provider_credentials =
-            serde_json::from_str::<PasswordProviderCredentials>(provider_credentials_json.as_str())
-                .int_err()?;
-
-        let account_info = self
-            .get_account_info_impl(&provider_credentials.account_name.to_string())
-            .int_err()?;
-
-        Ok(account_info)
-    }
-
-    async fn find_account_info_by_name<'a>(
-        &'a self,
-        account_name: &'a opendatafabric::AccountName,
-    ) -> Result<Option<auth::AccountInfo>, InternalError> {
-        Ok(self.find_account_info_impl(&account_name.into()))
     }
 }
 
@@ -138,13 +92,6 @@ impl auth::AuthenticationProvider for DummyAuthProvider {
 struct PasswordLoginCredentials {
     pub login: String,
     pub password: String,
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-struct PasswordProviderCredentials {
-    pub account_name: opendatafabric::AccountName,
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -344,9 +344,10 @@ pub async fn init_dependencies(
 
     configure_repository(&mut b, repo_url, multi_tenant, &config.repo).await;
 
+    b.add::<DummyAuthProvider>();
+
     if !multi_tenant {
-        b.add_value(DummyAuthProvider::new_with_default_account());
-        b.bind::<dyn kamu::domain::auth::AuthenticationProvider, DummyAuthProvider>();
+        b.add_value(PredefinedAccountsConfig::single_tenant());
     } else {
         // Default to GitHub auth
         if config.auth.providers.is_empty() {
@@ -359,8 +360,9 @@ pub async fn init_dependencies(
                     b.add::<kamu_adapter_oauth::OAuthGithub>();
                 }
                 AuthProviderConfig::Dummy(prov) => {
-                    b.add_value(DummyAuthProvider::new(prov.accounts));
-                    b.bind::<dyn kamu::domain::auth::AuthenticationProvider, DummyAuthProvider>();
+                    b.add_value(PredefinedAccountsConfig {
+                        predefined: prov.accounts,
+                    });
                 }
             }
         }
