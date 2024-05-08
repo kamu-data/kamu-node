@@ -35,7 +35,7 @@ kamu-accounts-inmem = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0
 
 
 [workspace.package]
-version = "0.22.0"
+version = "0.23.0"
 edition = "2021"
 homepage = "https://github.com/kamu-data/kamu-platform"
 repository = "https://github.com/kamu-data/kamu-platform"
