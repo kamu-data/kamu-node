@@ -195,7 +195,7 @@ impl Default for UploadRepoConfig {
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct UploadRepoConfigS3 {
-    pub bucket_url: String,
+    pub bucket_http_url: String,
     pub max_file_size_mb: i32,
 }
 
