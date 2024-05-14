@@ -7,47 +7,32 @@ auth:
       accounts:
         - accountName: kamu
           avatarUrl: https://avatars.githubusercontent.com/u/50896974?s=200&v=4
-          displayName: kamu
         - accountName: sh101-bowen
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
-          displayName: sh101-bowen
         - accountName: sh102-gambier
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
-          displayName: sh102-gambier
         - accountName: sh103-howe
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
-          displayName: sh103-howe
         - accountName: sh104-granville
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
-          displayName: sh104-granville
         - accountName: sh105-keats
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
-          displayName: sh105-keats
         - accountName: sh106-seymour
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
-          displayName: sh106-seymour
         - accountName: mim.dk
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
-          displayName: mim.dk
         - accountName: mmo.gov.uk
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
-          displayName: mmo.gov.uk
         - accountName: moa.gov.nl
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
-          displayName: moa.gov.nl
         - accountName: ofb.gouv.fr
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
-          displayName: ofb.gouv.fr
         - accountName: protectedseas.net
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
-          displayName: protectedseas.net
         - accountName: acme.fishing.co
           avatarUrl: https://cdn-icons-png.flaticon.com/512/1090/1090630.png
-          displayName: ACME Fishing Company
         - accountName: globalfishingwatch.org
           avatarUrl: https://cdn-icons-png.flaticon.com/512/744/744480.png
-          displayName: globalfishingwatch.org
         - accountName: bmis-bycatch.org
           avatarUrl: https://cdn-icons-png.flaticon.com/128/10197/10197245.png
-          displayName: Bycatch Management Information System
     - kind: github
