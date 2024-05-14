@@ -13,20 +13,15 @@ use std::sync::Arc;
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
 use kamu::domain::{Protocols, ServerUrlConfig, SystemTimeSourceDefault};
-use kamu_accounts::{
-    CurrentAccountSubject,
-    JwtAuthenticationConfig,
-    PredefinedAccountsConfig,
-    DEFAULT_ACCOUNT_NAME,
-};
+use kamu_accounts::{CurrentAccountSubject, JwtAuthenticationConfig, PredefinedAccountsConfig};
 use kamu_accounts_services::LoginPasswordAuthProvider;
 use kamu_adapter_oauth::GithubAuthenticationConfig;
-use opendatafabric::AccountID;
+use opendatafabric::{AccountID, AccountName};
 use random_names::get_random_name;
 use tracing::info;
 use url::Url;
 
-use crate::config::{ApiServerConfig, AuthProviderConfig, RepoConfig};
+use crate::config::{ApiServerConfig, AuthProviderConfig, RepoConfig, ACCOUNT_KAMU};
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -66,9 +61,10 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
         "Initializing {BINARY_NAME}",
     );
 
+    let kamu_account_name = AccountName::new_unchecked(ACCOUNT_KAMU);
     let logged_account_subject = CurrentAccountSubject::logged(
-        AccountID::new_seeded_ed25519(DEFAULT_ACCOUNT_NAME.as_bytes()),
-        DEFAULT_ACCOUNT_NAME.clone(),
+        AccountID::new_seeded_ed25519(kamu_account_name.as_bytes()),
+        kamu_account_name,
         true,
     );
     let dependencies_graph_repository = prepare_dependencies_graph_repository(

@@ -21,6 +21,8 @@ use tokio::net::TcpListener;
 use tonic::transport::Server;
 use tonic::Status;
 
+use crate::config::ACCOUNT_KAMU;
+
 /////////////////////////////////////////////////////////////////////////////////////////
 
 pub(crate) struct FlightSqlServer {
@@ -72,7 +74,7 @@ impl SessionFactory for SessionFactoryImpl {
     #[tracing::instrument(level = "debug", skip_all, fields(username))]
     async fn authenticate(&self, username: &str, password: &str) -> Result<Token, Status> {
         // TODO: SEC: Real auth via app token
-        if username == "kamu" && password == "kamu" {
+        if username == ACCOUNT_KAMU && password == username {
             Ok(String::new())
         } else {
             Err(Status::unauthenticated("Invalid credentials!"))
