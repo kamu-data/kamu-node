@@ -5,9 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.23.0] - 2024-05-08
+## [0.23.0] - 2024-05-14
 ### Changed
-- Upgraded `kamu` from `0.177.0` to `0.179.1` ([changelog](https://github.com/kamu-data/kamu-cli/blob/master/CHANGELOG.md))
+- Upgraded `kamu` from `0.177.0` to `0.180.0` ([changelog](https://github.com/kamu-data/kamu-cli/blob/master/CHANGELOG.md))
 - Read settings from config file, absorb:
   - `--repo-url` CLI argument
   - environment variables used for configuration
