@@ -19,6 +19,7 @@ use kamu_accounts::{
     PredefinedAccountsConfig,
     DEFAULT_ACCOUNT_NAME,
 };
+use kamu_accounts_services::LoginPasswordAuthProvider;
 use kamu_adapter_oauth::GithubAuthenticationConfig;
 use opendatafabric::AccountID;
 use random_names::get_random_name;
@@ -26,7 +27,6 @@ use tracing::info;
 use url::Url;
 
 use crate::config::{ApiServerConfig, AuthProviderConfig, RepoConfig};
-use crate::dummy_auth_provider::DummyAuthProvider;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -350,7 +350,7 @@ pub async fn init_dependencies(
 
     configure_repository(&mut b, repo_url, multi_tenant, &config.repo).await;
 
-    b.add::<DummyAuthProvider>();
+    b.add::<LoginPasswordAuthProvider>();
     // TODO: Temporarily using in-mem
     b.add::<kamu_accounts_inmem::AccountRepositoryInMemory>();
 
@@ -370,7 +370,7 @@ pub async fn init_dependencies(
                         github_config.client_secret,
                     ));
                 }
-                AuthProviderConfig::Dummy(prov) => {
+                AuthProviderConfig::Password(prov) => {
                     b.add_value(PredefinedAccountsConfig {
                         predefined: prov.accounts,
                     });

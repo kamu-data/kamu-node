@@ -10,7 +10,6 @@
 pub(crate) mod app;
 pub(crate) mod cli_parser;
 pub mod config;
-pub(crate) mod dummy_auth_provider;
 pub(crate) mod flightsql_server;
 pub(crate) mod gql_server;
 pub(crate) mod http_server;

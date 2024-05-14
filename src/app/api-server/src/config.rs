@@ -58,7 +58,7 @@ pub struct AuthConfig {
 #[serde(tag = "kind")]
 pub enum AuthProviderConfig {
     Github(AuthProviderConfigGitHub),
-    Dummy(AuthProviderConfigDummy),
+    Password(AuthProviderConfigPassword),
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ pub struct AuthProviderConfigGitHub {
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
-pub struct AuthProviderConfigDummy {
+pub struct AuthProviderConfigPassword {
     pub accounts: Vec<AccountConfig>,
 }
 
