@@ -21,4 +21,4 @@ nvm use
 npm ci
 ```
 
-You should can now run `make test`.
+You can now run `make test`.
