@@ -27,12 +27,8 @@ pub fn cli() -> Command {
         .args([
             Arg::new("config")
                 .long("config")
-                .value_parser(value_parser!(std::path::PathBuf))
+                .value_parser(value_parser!(PathBuf))
                 .help("Path to the config file"),
-            Arg::new("repo-url")
-                .long("repo-url")
-                .value_parser(value_parse_repo_url)
-                .help("URL of the remote dataset repository"),
             // TODO: This is temporary and will be removed soon
             // See: https://github.com/kamu-data/kamu-cli/issues/342
             Arg::new("multi-tenant")
@@ -78,18 +74,4 @@ pub fn cli() -> Command {
                         )),
                 ]),
         ])
-}
-
-/// Allows URLs or local paths
-fn value_parse_repo_url(s: &str) -> Result<url::Url, String> {
-    match url::Url::parse(s) {
-        Ok(url) => Ok(url),
-        Err(_) => match PathBuf::from(s).canonicalize() {
-            Ok(path) => Ok(url::Url::from_file_path(path).unwrap()),
-            Err(_) => Err(
-                "Invalid repo-url, should be a path or a URL in form: file:///home/me/workspace"
-                    .to_string(),
-            ),
-        },
-    }
 }

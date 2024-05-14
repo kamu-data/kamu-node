@@ -12,13 +12,16 @@ use std::sync::Arc;
 
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
-use kamu::domain::{CurrentAccountSubject, ServerUrlConfig, SystemTimeSourceDefault};
-use opendatafabric::AccountName;
+use kamu::domain::{Protocols, ServerUrlConfig, SystemTimeSourceDefault};
+use kamu_accounts::{CurrentAccountSubject, JwtAuthenticationConfig, PredefinedAccountsConfig};
+use kamu_accounts_services::LoginPasswordAuthProvider;
+use kamu_adapter_oauth::GithubAuthenticationConfig;
+use opendatafabric::{AccountID, AccountName};
+use random_names::get_random_name;
 use tracing::info;
 use url::Url;
 
-use crate::config::{ApiServerConfig, AuthProviderConfig, RepoConfig};
-use crate::dummy_auth_provider::DummyAuthProvider;
+use crate::config::{ApiServerConfig, AuthProviderConfig, RepoConfig, ACCOUNT_KAMU};
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -32,7 +35,7 @@ const DEFAULT_LOGGING_CONFIG: &str = "info,tower_http=trace";
 pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(), InternalError> {
     init_logging();
 
-    let repo_url = if let Some(repo_url) = matches.get_one::<Url>("repo-url").cloned() {
+    let repo_url = if let Some(repo_url) = config.repo.repo_url.as_ref().cloned() {
         repo_url
     } else {
         let workspace_dir = find_workspace();
@@ -55,15 +58,17 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
         repo_url = %repo_url,
         local_dir = %local_dir.path().display(),
         config = ?config,
-        "Initializing {}",
-        BINARY_NAME
+        "Initializing {BINARY_NAME}",
     );
 
+    let kamu_account_name = AccountName::new_unchecked(ACCOUNT_KAMU);
+    let logged_account_subject = CurrentAccountSubject::logged(
+        AccountID::new_seeded_ed25519(kamu_account_name.as_bytes()),
+        kamu_account_name,
+        true,
+    );
     let dependencies_graph_repository = prepare_dependencies_graph_repository(
-        kamu::domain::CurrentAccountSubject::logged(
-            opendatafabric::AccountName::new_unchecked(kamu::domain::auth::DEFAULT_ACCOUNT_NAME),
-            true,
-        ),
+        logged_account_subject.clone(),
         &repo_url,
         multi_tenant,
         &config,
@@ -74,7 +79,6 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
         .await
         .add_value(dependencies_graph_repository)
         .bind::<dyn kamu::domain::DependencyGraphRepository, kamu::DependencyGraphRepositoryInMemory>()
-        .add_value(ServerUrlConfig::load()?)
         .build();
 
     match matches.subcommand() {
@@ -127,10 +131,7 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
             // should consider to instead propagate the auth info of the user who triggered
             // some system flow alongside all actions to enforce proper authorization.
             let system_catalog = CatalogBuilder::new_chained(&catalog)
-                .add_value(CurrentAccountSubject::logged(
-                    AccountName::new_unchecked(kamu::domain::auth::DEFAULT_ACCOUNT_NAME),
-                    true,
-                ))
+                .add_value(logged_account_subject)
                 .build();
 
             let task_executor = system_catalog
@@ -146,7 +147,7 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
                 .unwrap()
                 .now();
 
-            tracing::info!(
+            info!(
                 http_endpoint = format!("http://{}", http_server.local_addr()),
                 flightsql_endpoint = format!("flightsql://{}", flightsql_server.local_addr()),
                 "Serving traffic"
@@ -200,24 +201,29 @@ fn init_logging() {
 pub fn load_config(path: Option<&PathBuf>) -> Result<ApiServerConfig, InternalError> {
     use figment::providers::Format;
 
-    let Some(path) = path else {
-        return Ok(ApiServerConfig::default());
+    let mut figment = figment::Figment::from(figment::providers::Serialized::defaults(
+        ApiServerConfig::default(),
+    ));
+
+    if let Some(path) = path {
+        figment = figment.merge(figment::providers::Yaml::file(path));
     };
 
-    figment::Figment::from(figment::providers::Serialized::defaults(
-        ApiServerConfig::default(),
-    ))
-    .merge(figment::providers::Yaml::file(path))
-    .merge(figment::providers::Env::prefixed("KAMU_API_SERVER_CONFIG_").lowercase(false))
-    .extract()
-    .int_err()
+    figment
+        .merge(
+            figment::providers::Env::prefixed("KAMU_API_SERVER_CONFIG_")
+                .split("__")
+                .lowercase(false),
+        )
+        .extract()
+        .int_err()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 // TODO: Get rid of this
 pub async fn prepare_dependencies_graph_repository(
-    current_account_subject: kamu::domain::CurrentAccountSubject,
+    current_account_subject: CurrentAccountSubject,
     repo_url: &Url,
     multi_tenant: bool,
     config: &ApiServerConfig,
@@ -333,34 +339,62 @@ pub async fn init_dependencies(
     b.add::<kamu_flow_system_inmem::FlowEventStoreInMem>();
     b.add::<kamu_flow_system_inmem::FlowConfigurationEventStoreInMem>();
 
-    b.add::<kamu::AuthenticationServiceImpl>();
+    b.add::<kamu_accounts_services::AuthenticationServiceImpl>();
     b.add::<kamu_adapter_auth_oso::KamuAuthOso>();
     b.add::<kamu_adapter_auth_oso::OsoDatasetAuthorizer>();
     b.add::<kamu::domain::auth::DummyOdfServerAccessTokenResolver>();
 
     configure_repository(&mut b, repo_url, multi_tenant, &config.repo).await;
 
-    if !multi_tenant {
-        b.add_value(DummyAuthProvider::new_with_default_account());
-        b.bind::<dyn kamu::domain::auth::AuthenticationProvider, DummyAuthProvider>();
-    } else {
-        // Default to GitHub auth
-        if config.auth.providers.is_empty() {
-            b.add::<kamu_adapter_oauth::OAuthGithub>();
-        }
+    b.add::<LoginPasswordAuthProvider>();
+    // TODO: Temporarily using in-mem
+    b.add::<kamu_accounts_inmem::AccountRepositoryInMemory>();
 
+    let mut need_to_add_default_predefined_accounts_config = true;
+
+    if !multi_tenant {
+        b.add_value(PredefinedAccountsConfig::single_tenant());
+        need_to_add_default_predefined_accounts_config = false
+    } else {
         for provider in config.auth.providers {
             match provider {
-                AuthProviderConfig::Github(_) => {
+                AuthProviderConfig::Github(github_config) => {
                     b.add::<kamu_adapter_oauth::OAuthGithub>();
+
+                    b.add_value(GithubAuthenticationConfig::new(
+                        github_config.client_id,
+                        github_config.client_secret,
+                    ));
                 }
-                AuthProviderConfig::Dummy(prov) => {
-                    b.add_value(DummyAuthProvider::new(prov.accounts));
-                    b.bind::<dyn kamu::domain::auth::AuthenticationProvider, DummyAuthProvider>();
+                AuthProviderConfig::Password(prov) => {
+                    b.add_value(PredefinedAccountsConfig {
+                        predefined: prov.accounts,
+                    });
+                    need_to_add_default_predefined_accounts_config = false
                 }
             }
         }
     }
+
+    if need_to_add_default_predefined_accounts_config {
+        b.add_value(PredefinedAccountsConfig::default());
+    }
+
+    b.add_value(ServerUrlConfig::new(Protocols {
+        base_url_platform: config.url.base_url_platform,
+        base_url_rest: config.url.base_url_rest,
+        base_url_flightsql: config.url.base_url_flightsql,
+    }));
+
+    // TODO: Use JwtAuthenticationConfig::new()
+    //       update after https://github.com/kamu-data/kamu-cli/pull/623
+    let jwt_secret = if !config.auth.jwt_token.is_empty() {
+        config.auth.jwt_token
+    } else {
+        get_random_name(None, 64)
+    };
+
+    b.add_value(JwtAuthenticationConfig { jwt_secret });
 
     b
 }

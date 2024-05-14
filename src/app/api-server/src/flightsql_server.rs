@@ -15,11 +15,13 @@ use std::sync::Arc;
 use arrow_flight::flight_service_server::FlightServiceServer;
 use datafusion::prelude::SessionContext;
 use futures::Future;
-use kamu::domain::CurrentAccountSubject;
+use kamu_accounts::{AnonymousAccountReason, CurrentAccountSubject};
 use kamu_adapter_flight_sql::{KamuFlightSqlService, SessionFactory, Token};
 use tokio::net::TcpListener;
 use tonic::transport::Server;
 use tonic::Status;
+
+use crate::config::ACCOUNT_KAMU;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -72,7 +74,7 @@ impl SessionFactory for SessionFactoryImpl {
     #[tracing::instrument(level = "debug", skip_all, fields(username))]
     async fn authenticate(&self, username: &str, password: &str) -> Result<Token, Status> {
         // TODO: SEC: Real auth via app token
-        if username == "kamu" && password == "kamu" {
+        if username == ACCOUNT_KAMU && password == username {
             Ok(String::new())
         } else {
             Err(Status::unauthenticated("Invalid credentials!"))
@@ -81,9 +83,8 @@ impl SessionFactory for SessionFactoryImpl {
 
     #[tracing::instrument(level = "debug", skip_all)]
     async fn get_context(&self, _token: &Token) -> Result<Arc<SessionContext>, Status> {
-        let subject = CurrentAccountSubject::Anonymous(
-            kamu::domain::AnonymousAccountReason::NoAuthenticationProvided,
-        );
+        let subject =
+            CurrentAccountSubject::Anonymous(AnonymousAccountReason::NoAuthenticationProvided);
 
         let session_catalog = dill::CatalogBuilder::new_chained(&self.base_catalog)
             .add_value(subject)

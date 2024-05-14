@@ -18,6 +18,7 @@ dill = "0.8"
 container-runtime = { workspace = true }
 event-bus = { workspace = true }
 internal-error = { workspace = true }
+random-names = { workspace = true }
 opendatafabric = { workspace = true }
 kamu = { workspace = true }
 kamu-task-system-services = { workspace = true }
@@ -30,6 +31,9 @@ kamu-adapter-oauth = { workspace = true }
 kamu-adapter-odata = { workspace = true }
 kamu-adapter-auth-oso = { workspace = true }
 kamu-adapter-flight-sql = { workspace = true }
+kamu-accounts = { workspace = true }
+kamu-accounts-services = { workspace = true }
+kamu-accounts-inmem = { workspace = true }
 
 # APIs
 http = "0.2"

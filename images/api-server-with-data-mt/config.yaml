@@ -1,81 +1,38 @@
+repo:
+  repoUrl: file:///opt/kamu/workspace/.kamu/datasets
 auth:
   providers:
     # Dummy accounts for owners of example datasets
-    - kind: dummy
+    - kind: password
       accounts:
-        - accountId: kamu
-          accountName: kamu
-          accountType: User
+        - accountName: kamu
           avatarUrl: https://avatars.githubusercontent.com/u/50896974?s=200&v=4
-          displayName: kamu
-        - accountId: sh101-bowen
-          accountName: sh101-bowen
-          accountType: User
+        - accountName: sh101-bowen
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
-          displayName: sh101-bowen
-        - accountId: sh102-gambier
-          accountName: sh102-gambier
-          accountType: User
+        - accountName: sh102-gambier
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
-          displayName: sh102-gambier
-        - accountId: sh103-howe
-          accountName: sh103-howe
-          accountType: User
+        - accountName: sh103-howe
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
-          displayName: sh103-howe
-        - accountId: sh104-granville
-          accountName: sh104-granville
-          accountType: User
+        - accountName: sh104-granville
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
-          displayName: sh104-granville
-        - accountId: sh105-keats
-          accountName: sh105-keats
-          accountType: User
+        - accountName: sh105-keats
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
-          displayName: sh105-keats
-        - accountId: sh106-seymour
-          accountName: sh106-seymour
-          accountType: User
+        - accountName: sh106-seymour
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
-          displayName: sh106-seymour
-        - accountId: mim.dk
-          accountName: mim.dk
-          accountType: User
+        - accountName: mim.dk
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
-          displayName: mim.dk
-        - accountId: mmo.gov.uk
-          accountName: mmo.gov.uk
-          accountType: User
+        - accountName: mmo.gov.uk
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
-          displayName: mmo.gov.uk
-        - accountId: moa.gov.nl
-          accountName: moa.gov.nl
-          accountType: User
+        - accountName: moa.gov.nl
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
-          displayName: moa.gov.nl
-        - accountId: ofb.gouv.fr
-          accountName: ofb.gouv.fr
-          accountType: User
+        - accountName: ofb.gouv.fr
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
-          displayName: ofb.gouv.fr
-        - accountId: protectedseas.net
-          accountName: protectedseas.net
-          accountType: User
+        - accountName: protectedseas.net
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
-          displayName: protectedseas.net
-        - accountId: acme.fishing.co
-          accountName: acme.fishing.co
-          accountType: User
+        - accountName: acme.fishing.co
           avatarUrl: https://cdn-icons-png.flaticon.com/512/1090/1090630.png
-          displayName: ACME Fishing Company
-        - accountId: globalfishingwatch.org
-          accountName: globalfishingwatch.org
-          accountType: User
+        - accountName: globalfishingwatch.org
           avatarUrl: https://cdn-icons-png.flaticon.com/512/744/744480.png
-          displayName: globalfishingwatch.org
-        - accountId: bmis-bycatch.org
-          accountName: bmis-bycatch.org
-          accountType: User
+        - accountName: bmis-bycatch.org
           avatarUrl: https://cdn-icons-png.flaticon.com/128/10197/10197245.png
-          displayName: Bycatch Management Information System
     - kind: github
