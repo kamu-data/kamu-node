@@ -18,7 +18,6 @@ dill = "0.8"
 container-runtime = { workspace = true }
 event-bus = { workspace = true }
 internal-error = { workspace = true }
-random-names = { workspace = true }
 opendatafabric = { workspace = true }
 kamu = { workspace = true }
 kamu-task-system-services = { workspace = true }
