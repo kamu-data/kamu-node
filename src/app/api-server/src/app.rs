@@ -17,7 +17,6 @@ use kamu_accounts::{CurrentAccountSubject, JwtAuthenticationConfig, PredefinedAc
 use kamu_accounts_services::LoginPasswordAuthProvider;
 use kamu_adapter_oauth::GithubAuthenticationConfig;
 use opendatafabric::{AccountID, AccountName};
-use random_names::get_random_name;
 use tracing::info;
 use url::Url;
 
@@ -386,15 +385,13 @@ pub async fn init_dependencies(
         base_url_flightsql: config.url.base_url_flightsql,
     }));
 
-    // TODO: Use JwtAuthenticationConfig::new()
-    //       update after https://github.com/kamu-data/kamu-cli/pull/623
-    let jwt_secret = if !config.auth.jwt_token.is_empty() {
-        config.auth.jwt_token
+    let maybe_jwt_secret = if !config.auth.jwt_secret.is_empty() {
+        Some(config.auth.jwt_secret)
     } else {
-        get_random_name(None, 64)
+        None
     };
 
-    b.add_value(JwtAuthenticationConfig { jwt_secret });
+    b.add_value(JwtAuthenticationConfig::new(maybe_jwt_secret));
 
     b
 }

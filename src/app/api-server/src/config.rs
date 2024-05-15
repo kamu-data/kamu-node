@@ -50,7 +50,7 @@ pub struct RuntimeConfig {
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct AuthConfig {
-    pub jwt_token: String,
+    pub jwt_secret: String,
     pub providers: Vec<AuthProviderConfig>,
 }
 
