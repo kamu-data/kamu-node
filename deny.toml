@@ -15,6 +15,7 @@ features = []
 
 deny = [
     # Crates we shouldn't use
+    # "Configure `rustls` instead"
     { name = "openssl-sys", reason = "Configure `rustls` instead" },
 
     # Creates we deny multiple versions of (until we flip to skip-tree)
