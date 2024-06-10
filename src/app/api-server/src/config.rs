@@ -27,6 +27,7 @@ pub struct ApiServerConfig {
     pub auth: AuthConfig,
     pub repo: RepoConfig,
     pub url: UrlConfig,
+    pub upload_repo: UploadRepoConfig,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -110,11 +111,7 @@ pub struct RepoCachingConfig {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // UrlConfig
-/////////////////////////////////////////////////////////////////////////////////////////
-
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-#[serde(rename_all = "camelCase")]
 pub struct UrlConfig {
     #[serde(deserialize_with = "parse_repo_url")]
     pub base_url_platform: Url,
@@ -176,6 +173,41 @@ where
         }
         None => Ok(None),
     }
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+// Upload repo
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct UploadRepoConfig {
+    pub max_file_size_mb: usize,
+    pub storage: UploadRepoStorageConfig,
+}
+
+impl Default for UploadRepoConfig {
+    fn default() -> Self {
+        Self {
+            max_file_size_mb: 50,
+            storage: UploadRepoStorageConfig::Local,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+#[serde(tag = "kind")]
+pub enum UploadRepoStorageConfig {
+    S3(UploadRepoStorageConfigS3),
+    Local,
+}
+
+#[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct UploadRepoStorageConfigS3 {
+    pub bucket_s3_url: String,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

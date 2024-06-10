@@ -32,6 +32,8 @@ async fn test_di_graph_validates_local() {
     // the default dependency graph, so we have to add it manually
     catalog_builder.add_value(kamu_accounts::CurrentAccountSubject::new_test());
 
+    catalog_builder.add_value(kamu_adapter_http::AccessToken::new("some-token"));
+
     // TODO: We should ensure this test covers parameters requested by commands and
     // types needed for GQL/HTTP adapter that are currently being constructed
     // manually
@@ -85,6 +87,8 @@ async fn test_di_graph_validates_remote() {
     // CurrentAccountSubject is inserted by middlewares, but won't be present in
     // the default dependency graph, so we have to add it manually
     catalog_builder.add_value(kamu_accounts::CurrentAccountSubject::new_test());
+
+    catalog_builder.add_value(kamu_adapter_http::AccessToken::new("some-token"));
 
     // TODO: We should ensure this test covers parameters requested by commands and
     // types needed for GQL/HTTP adapter that are currently being constructed

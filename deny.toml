@@ -14,14 +14,24 @@ workspace-default-features = "deny"
 features = []
 
 deny = [
-    # Crates we shouldn't use
+    ### Crates we shouldn't use ####
     # "Configure `rustls` instead"
-    { name = "openssl-sys", reason = "Configure `rustls` instead" },
+    { name = "openssl-sys" },
 
-    # Creates we deny multiple versions of (until we flip to skip-tree)
+    # Use `md-5` instead, which is part of the RustCrypto ecosystem
+    { name = "md5" },
+    # TODO: We should decide whether to stick with rustls or openssl and deny one of them
+
+    ### Creates we deny multiple versions of ###
+    # This is a temporary approach until we deny by default with some exceptions
     { name = "arrow", deny-multiple-versions = true },
     { name = "axum", deny-multiple-versions = true },
+    { name = "aws-config", deny-multiple-versions = true },
+    { name = "clap", deny-multiple-versions = true },
     { name = "datafusion", deny-multiple-versions = true },
+    { name = "object_store", deny-multiple-versions = true },
+    { name = "parquet", deny-multiple-versions = true },
+    { name = "prost", deny-multiple-versions = true },
     # { name = "rustls", deny-multiple-versions = true },
     { name = "tokio", deny-multiple-versions = true },
     { name = "tonic", deny-multiple-versions = true },
@@ -29,13 +39,13 @@ deny = [
 
 
 [licenses]
-version = 2
 allow = [
     "Apache-2.0",
     "CC0-1.0",
     "0BSD",
     "BSD-2-Clause",
     "BSD-3-Clause",
+    "BSL-1.0",
     "ISC",
     "MIT",
     "MPL-2.0",
@@ -43,6 +53,7 @@ allow = [
     "Unlicense",
     "Zlib",
 ]
+copyleft = "deny"
 private = { ignore = true }
 
 [[licenses.exceptions]]
@@ -63,5 +74,11 @@ allow-org = { github = ["kamu-data"] }
 
 
 [advisories]
-version = 2
-ignore = []
+vulnerability = "warn"
+unmaintained = "warn"
+unsound = "warn"
+yanked = "deny"
+notice = "warn"
+ignore = [
+]
+

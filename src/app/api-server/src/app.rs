@@ -13,14 +13,27 @@ use std::sync::Arc;
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
 use kamu::domain::{Protocols, ServerUrlConfig, SystemTimeSourceDefault};
+use kamu::utils::s3_context::S3Context;
 use kamu_accounts::{CurrentAccountSubject, JwtAuthenticationConfig, PredefinedAccountsConfig};
 use kamu_accounts_services::LoginPasswordAuthProvider;
+use kamu_adapter_http::{
+    FileUploadLimitConfig,
+    UploadService,
+    UploadServiceLocal,
+    UploadServiceS3,
+};
 use kamu_adapter_oauth::GithubAuthenticationConfig;
 use opendatafabric::{AccountID, AccountName};
 use tracing::info;
 use url::Url;
 
-use crate::config::{ApiServerConfig, AuthProviderConfig, RepoConfig, ACCOUNT_KAMU};
+use crate::config::{
+    ApiServerConfig,
+    AuthProviderConfig,
+    RepoConfig,
+    UploadRepoStorageConfig,
+    ACCOUNT_KAMU,
+};
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -289,6 +302,8 @@ pub async fn init_dependencies(
     // TODO: initialize graph dependencies when starting API server
     b.add::<kamu::DependencyGraphServiceInMemory>();
 
+    b.add::<kamu::DatasetOwnershipServiceInMemory>();
+
     b.add::<kamu::DatasetChangesServiceImpl>();
 
     b.add_builder(
@@ -392,6 +407,25 @@ pub async fn init_dependencies(
     };
 
     b.add_value(JwtAuthenticationConfig::new(maybe_jwt_secret));
+
+    b.add_value(FileUploadLimitConfig {
+        max_file_size_in_bytes: config.upload_repo.max_file_size_mb * 1024 * 1024,
+    });
+
+    match config.upload_repo.storage {
+        UploadRepoStorageConfig::Local => {
+            b.add_builder(UploadServiceLocal::builder().with_cache_dir(cache_dir.clone()));
+            b.bind::<dyn UploadService, UploadServiceLocal>();
+        }
+        UploadRepoStorageConfig::S3(s3_config) => {
+            let s3_upload_direct_url = url::Url::parse(&s3_config.bucket_s3_url).unwrap();
+            b.add_builder(
+                UploadServiceS3::builder()
+                    .with_s3_upload_context(S3Context::from_url(&s3_upload_direct_url).await),
+            );
+            b.bind::<dyn UploadService, UploadServiceS3>();
+        }
+    }
 
     b
 }

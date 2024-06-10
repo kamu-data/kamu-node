@@ -33,6 +33,14 @@ pub(crate) fn build_server(
             "/platform/token/validate",
             axum::routing::get(kamu_adapter_http::platform_token_validate_handler),
         )
+        .route(
+            "/platform/file/upload/prepare",
+            axum::routing::post(kamu_adapter_http::platform_file_upload_prepare_post_handler),
+        )
+        .route(
+            "/platform/file/upload/:upload_token",
+            axum::routing::post(kamu_adapter_http::platform_file_upload_post_handler),
+        )
         .nest(
             "/odata",
             if multi_tenant_workspace {
