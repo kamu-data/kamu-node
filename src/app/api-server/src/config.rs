@@ -111,6 +111,7 @@ pub struct RepoCachingConfig {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // UrlConfig
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct UrlConfig {
     #[serde(deserialize_with = "parse_repo_url")]
     pub base_url_platform: Url,
@@ -179,24 +180,34 @@ where
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
-#[serde(tag = "kind")]
-pub enum UploadRepoConfig {
-    S3(UploadRepoConfigS3),
-    Local,
+pub struct UploadRepoConfig {
+    pub max_file_size_mb: usize,
+    pub storage: UploadRepoStorageConfig,
 }
 
 impl Default for UploadRepoConfig {
     fn default() -> Self {
-        Self::Local
+        Self {
+            max_file_size_mb: 50,
+            storage: UploadRepoStorageConfig::Local,
+        }
     }
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+#[serde(tag = "kind")]
+pub enum UploadRepoStorageConfig {
+    S3(UploadRepoStorageConfigS3),
+    Local,
 }
 
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
-pub struct UploadRepoConfigS3 {
-    pub bucket_http_url: String,
-    pub max_file_size_mb: i32,
+pub struct UploadRepoStorageConfigS3 {
+    pub bucket_s3_url: String,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
