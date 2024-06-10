@@ -10,7 +10,11 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use ethers::prelude::*;
+use alloy::primitives::U256;
+use alloy::providers::Provider;
+use alloy::rpc::types::eth::{Filter, Log};
+use alloy::sol_types::{SolEvent, SolEventInterface};
+use alloy::transports::BoxTransport;
 use internal_error::*;
 
 use crate::api_client::OdfApiClient;
@@ -18,11 +22,41 @@ use crate::Config;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-abigen!(
-    IOdfProvider,
-    "./abi/IOdfProvider.json",
-    event_derives(serde::Deserialize, serde::Serialize),
-);
+// Must be in sync with https://github.com/kamu-data/kamu-contracts/blob/master/src/Odf.sol
+alloy::sol! {
+    #[sol(rpc)]
+    interface IOdfProvider {
+        // Emitted when client request was made and awaits a response
+        #[derive(Debug)]
+        event SendRequest(uint64 indexed requestId, address indexed consumerAddr, bytes request);
+
+        // Emitted when a provider fulfills a pending request
+        #[derive(Debug)]
+        event ProvideResult(
+            uint64 indexed requestId,
+            address indexed consumerAddr,
+            address indexed providerAddr,
+            bytes result,
+            bool consumerError,
+            bytes consumerErrorData
+        );
+
+        // Returned when provider was not registered to provide results to the oracle
+        #[derive(Debug)]
+        error UnauthorizedProvider(address providerAddr);
+
+        // Returned when pending request by this ID is not found
+        #[derive(Debug)]
+        error RequestNotFound(uint64 requestId);
+
+        // Returns true/false whether `addr` is authorized to provide results to this oracle
+        function canProvideResults(address addr) external view returns (bool);
+
+        // Called to fulfill a pending request
+        // See `OdfResponse` for explanation of the `result`
+        function provideResult(uint64 requestId, bytes memory result) external;
+    }
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -31,7 +65,7 @@ abigen!(
 struct OdfRequest {
     pub id: u64,
     pub data: OdfRequestData,
-    pub meta: ethers::contract::LogMeta,
+    pub log: Log<IOdfProvider::SendRequest>,
 }
 
 #[derive(Debug, serde::Deserialize)]
@@ -60,15 +94,15 @@ pub struct ProviderUnauthorized;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-pub struct OdfOracleProvider<M: Middleware> {
+pub struct OdfOracleProvider<P: Provider> {
     config: Config,
-    rpc_client: Arc<M>,
-    oracle_contract: IOdfProvider<M>,
+    rpc_client: P,
+    oracle_contract: IOdfProvider::IOdfProviderInstance<BoxTransport, P>,
     api_client: Arc<dyn OdfApiClient>,
 }
 
-impl<M: Middleware + 'static> OdfOracleProvider<M> {
-    pub fn new(config: Config, rpc_client: Arc<M>, api_client: Arc<dyn OdfApiClient>) -> Self {
+impl<P: Provider + Clone> OdfOracleProvider<P> {
+    pub fn new(config: Config, rpc_client: P, api_client: Arc<dyn OdfApiClient>) -> Self {
         let oracle_contract = IOdfProvider::new(config.oracle_contract_address, rpc_client.clone());
 
         Self {
@@ -83,12 +117,12 @@ impl<M: Middleware + 'static> OdfOracleProvider<M> {
     pub async fn is_authorized(&self) -> Result<bool, InternalError> {
         match self
             .oracle_contract
-            .can_provide_results(self.config.provider_address)
+            .canProvideResults(self.config.provider_address)
             .from(self.config.provider_address)
             .call()
             .await
         {
-            Ok(v) => Ok(v),
+            Ok(v) => Ok(v._0),
             Err(err) => Err(err.int_err()),
         }
     }
@@ -96,13 +130,13 @@ impl<M: Middleware + 'static> OdfOracleProvider<M> {
     /// Check balance of the provider to be able to pay for transactions
     pub async fn get_balance(&self) -> Result<U256, InternalError> {
         self.rpc_client
-            .get_balance(self.config.provider_address, None)
+            .get_balance(self.config.provider_address)
             .await
             .int_err()
     }
 
     pub async fn run(self) -> Result<(), InternalError> {
-        let mut from_block = ethers::types::U64::from(self.config.oracle_contract_first_block);
+        let mut from_block = self.config.oracle_contract_first_block;
         let mut idle_start = None;
 
         // Pre-flight loop: Wait until we have basic pre-requisites to function
@@ -147,11 +181,10 @@ impl<M: Middleware + 'static> OdfOracleProvider<M> {
         from_block: Option<u64>,
         to_block: Option<u64>,
     ) -> Result<(), InternalError> {
-        let from_block =
-            ethers::types::U64::from(from_block.unwrap_or(self.config.oracle_contract_first_block));
+        let from_block = from_block.unwrap_or(self.config.oracle_contract_first_block);
 
         let to_block = if let Some(to_block) = to_block {
-            ethers::types::U64::from(to_block)
+            to_block
         } else {
             self.rpc_client.get_block_number().await.int_err()?
         };
@@ -210,44 +243,51 @@ impl<M: Middleware + 'static> OdfOracleProvider<M> {
     #[tracing::instrument(level = "info", skip(self))]
     async fn scan_block_range(
         &self,
-        from_block: ethers::types::U64,
-        to_block: ethers::types::U64,
-    ) -> Result<Vec<(i_odf_provider::SendRequestFilter, LogMeta)>, InternalError> {
+        from_block: u64,
+        to_block: u64,
+    ) -> Result<Vec<Log<IOdfProvider::SendRequest>>, InternalError> {
         let mut pending_requests = std::collections::HashMap::new();
 
         let filter = Filter::new()
             .address(self.config.oracle_contract_address)
-            .topic0(vec![
-                i_odf_provider::SendRequestFilter::signature(),
-                i_odf_provider::ProvideResultFilter::signature(),
+            .event_signature(vec![
+                IOdfProvider::SendRequest::SIGNATURE_HASH,
+                IOdfProvider::ProvideResult::SIGNATURE_HASH,
             ])
             .from_block(from_block)
             .to_block(to_block);
 
-        let mut log_stream = self
-            .rpc_client
-            .get_logs_paginated(&filter, self.config.logs_page_size);
+        for log in self.rpc_client.get_logs(&filter).await.int_err()? {
+            assert!(!log.removed, "Encountered removed log: {log:#?}");
 
-        while let Some(log) = log_stream.next().await.transpose().int_err()? {
-            assert!(!log.removed.unwrap_or_default());
+            let log_decoded =
+                IOdfProvider::IOdfProviderEvents::decode_log(&log.inner, true).int_err()?;
 
-            let meta = LogMeta::from(&log);
-            let event = IOdfProviderEvents::decode_log(&abi::RawLog {
-                topics: log.topics,
-                data: log.data.to_vec(),
-            })
-            .int_err()?;
+            tracing::trace!(?log, "Observed log");
 
-            tracing::trace!(?event, "Observed event");
-
-            match event {
-                IOdfProviderEvents::SendRequestFilter(event) => {
-                    tracing::debug!(request_id = ?event.request_id, "Adding pending request");
-                    pending_requests.insert(event.request_id, (event, meta));
+            match log_decoded.data {
+                IOdfProvider::IOdfProviderEvents::SendRequest(event) => {
+                    tracing::debug!(request_id = ?event.requestId, "Adding pending request");
+                    pending_requests.insert(
+                        event.requestId,
+                        Log {
+                            inner: alloy::primitives::Log {
+                                address: log_decoded.address,
+                                data: event,
+                            },
+                            block_hash: log.block_hash,
+                            block_number: log.block_number,
+                            block_timestamp: log.block_timestamp,
+                            transaction_hash: log.transaction_hash,
+                            transaction_index: log.transaction_index,
+                            log_index: log.log_index,
+                            removed: log.removed,
+                        },
+                    );
                 }
-                IOdfProviderEvents::ProvideResultFilter(event) => {
-                    tracing::debug!(request_id = ?event.request_id, "Removing request as fulfilled");
-                    pending_requests.remove(&event.request_id);
+                IOdfProvider::IOdfProviderEvents::ProvideResult(event) => {
+                    tracing::debug!(request_id = ?event.requestId, "Removing request as fulfilled");
+                    pending_requests.remove(&event.requestId);
                 }
             }
         }
@@ -265,13 +305,13 @@ impl<M: Middleware + 'static> OdfOracleProvider<M> {
     #[tracing::instrument(level = "info", skip_all)]
     async fn process_request_batch(
         &self,
-        requests_batch: Vec<(i_odf_provider::SendRequestFilter, ethers::contract::LogMeta)>,
+        requests_batch: Vec<Log<IOdfProvider::SendRequest>>,
     ) -> Result<Vec<OdfResult>, InternalError> {
         let mut results = Vec::new();
 
-        for (event, meta) in requests_batch {
+        for log in requests_batch {
             // TODO: Handle malformed requests
-            let request = Self::decode_request(event, meta)?;
+            let request = Self::decode_request(log)?;
             // TODO: Handle invalid requests
             // TODO: Concurrency
             let result = self.execute_query(request).await?;
@@ -281,13 +321,10 @@ impl<M: Middleware + 'static> OdfOracleProvider<M> {
         Ok(results)
     }
 
-    fn decode_request(
-        event: i_odf_provider::SendRequestFilter,
-        meta: LogMeta,
-    ) -> Result<OdfRequest, InternalError> {
-        let id = event.request_id;
-        let data: OdfRequestData = ciborium::from_reader(event.request.as_ref()).int_err()?;
-        Ok(OdfRequest { id, data, meta })
+    fn decode_request(log: Log<IOdfProvider::SendRequest>) -> Result<OdfRequest, InternalError> {
+        let id = log.inner.requestId;
+        let data: OdfRequestData = ciborium::from_reader(log.inner.request.as_ref()).int_err()?;
+        Ok(OdfRequest { id, data, log })
     }
 
     #[tracing::instrument(level = "debug", skip_all, fields(request_id = request.id))]
@@ -320,43 +357,33 @@ impl<M: Middleware + 'static> OdfOracleProvider<M> {
         let mut result_encoded = Vec::new();
         ciborium::into_writer(&result.data, &mut result_encoded).int_err()?;
 
-        let transaction: ethers::contract::ContractCall<_, _> = self
+        let transaction = self
             .oracle_contract
-            .provide_result(result.request_id, result_encoded.into())
+            .provideResult(result.request_id, result_encoded.into())
             .from(self.config.provider_address);
 
+        // TODO: We should ingore RequestNotFound errors as indicating that request was
+        // already satisfied by another provider. But getting error data is currently
+        // hard with alloy
+        // See: https://github.com/alloy-rs/alloy/issues/787
         let pending_tx = match transaction.send().await {
             Ok(tr) => Ok(tr),
-            Err(err @ ContractError::Revert(_)) => {
-                match err.decode_contract_revert::<IOdfProviderErrors>() {
-                    Some(IOdfProviderErrors::RequestNotFound(_)) => {
-                        tracing::warn!(
-                            "Tried to fulfill already processed request. Transaction reverted."
-                        );
-                        return Ok(());
-                    }
-                    Some(IOdfProviderErrors::UnauthorizedProvider(_)) => {
-                        Err(ProviderUnauthorized.int_err())
-                    }
-                    _ => Err(err.int_err()),
-                }
-            }
             Err(err) => Err(err.int_err()),
         }?;
 
         tracing::debug!(
-            confirmations = self.config.transaction_confirmations,
-            retries = self.config.transaction_retries,
+            transaction_confirmations = self.config.transaction_confirmations,
+            transaction_timeout_s = self.config.transaction_timeout_s,
             "Waiting transaction to be accepted"
         );
 
-        let mined_tx = pending_tx
-            .confirmations(self.config.transaction_confirmations)
-            .retries(self.config.transaction_retries)
+        let receipt = pending_tx
+            .with_required_confirmations(self.config.transaction_confirmations)
+            .with_timeout(Some(Duration::from_secs(self.config.transaction_timeout_s)))
+            .get_receipt()
             .await
             .int_err()?;
 
-        let receipt = mined_tx.unwrap();
         tracing::info!(receipt = ?receipt, "Transaction confirmed");
 
         Ok(())

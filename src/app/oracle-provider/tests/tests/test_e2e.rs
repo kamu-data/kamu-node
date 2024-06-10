@@ -10,8 +10,8 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use ethers::prelude::*;
-use ethers::utils::hex::ToHexExt;
+use alloy::primitives::Address;
+use alloy::sol;
 use internal_error::InternalError;
 use kamu_oracle_provider as provider;
 use provider::api_client::{OdfApiClient, QueryResponse};
@@ -19,17 +19,33 @@ use serde_json::json;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-abigen!(
-    Consumer,
-    "./abi/Consumer.json",
-    event_derives(serde::Deserialize, serde::Serialize),
-);
+sol! {
+    #[sol(rpc)]
+    contract Consumer {
+        string public province;
+        uint64 public totalCases;
 
-abigen!(
-    IOdfAdmin,
-    "./abi/IOdfAdmin.json",
-    event_derives(serde::Deserialize, serde::Serialize),
-);
+        constructor(address oracleAddr);
+        function startDistributeRewards() public;
+    }
+}
+
+sol! {
+    #[sol(rpc)]
+    interface IOdfAdmin {
+        // Emitted when a provider is authorized
+        event AddProvider(address indexed providerAddr);
+
+        // Emitted when a provider authorization is revoked
+        event RemoveProvider(address indexed providerAddr);
+
+        // Authorizes a provider to supply results
+        function addProvider(address providerAddr) external;
+
+        // Revoke the authorization from a provider to supply results
+        function removeProvider(address providerAddr) external;
+    }
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -54,12 +70,12 @@ fn get_contracts_dir() -> PathBuf {
 async fn test_e2e() {
     let contracts_dir = get_contracts_dir();
 
-    let anvil = ethers::core::utils::Anvil::new().spawn();
+    let anvil = alloy::node_bindings::Anvil::new().spawn();
     let rpc_endpoint = anvil.endpoint();
     let admin_address = anvil.addresses()[0];
-    let admin_key = anvil.keys()[0].to_bytes().encode_hex_with_prefix();
+    let admin_key = hex::encode(anvil.keys()[0].to_bytes());
     let provider_address = anvil.addresses()[1];
-    let provider_private_key = anvil.keys()[1].to_bytes().encode_hex();
+    let provider_private_key = hex::encode(anvil.keys()[1].to_bytes());
     let oracle_contract_address: Address = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
         .parse()
         .unwrap();
@@ -90,33 +106,56 @@ async fn test_e2e() {
         oracle_contract_first_block: 0,
         provider_address,
         provider_private_key,
-        logs_page_size: 1000,
+        blocks_stride: 100_000,
         loop_idle_time_ms: 1000,
         transaction_confirmations: 1,
-        transaction_retries: 0,
+        transaction_timeout_s: 5,
         api_url: url::Url::parse("http://dontcare.com").unwrap(),
         api_access_token: None,
     };
 
-    let rpc_client = provider::app::init_rpc_client(&config).await.unwrap();
-    let api_client = Arc::new(MockOdfApiClient);
-    let provider = provider::OdfOracleProvider::new(config, rpc_client.clone(), api_client);
-    let consumer = Consumer::new(consumer_contract_address, rpc_client.clone());
-    let oracle_admin = IOdfAdmin::new(oracle_contract_address, rpc_client.clone());
-
-    oracle_admin
-        .add_provider(provider_address)
-        .from(admin_address)
-        .send()
+    // Authorize provider and generate a request
+    let admin_rpc_client = alloy::providers::ProviderBuilder::new()
+        .with_recommended_fillers()
+        .on_builtin(&rpc_endpoint)
         .await
         .unwrap();
 
-    consumer.start_distribute_rewards().send().await.unwrap();
+    let oracle_admin = IOdfAdmin::new(oracle_contract_address, admin_rpc_client.clone());
+    let consumer = Consumer::new(consumer_contract_address, admin_rpc_client.clone());
+
+    oracle_admin
+        .addProvider(provider_address)
+        .from(admin_address)
+        .send()
+        .await
+        .unwrap()
+        .get_receipt()
+        .await
+        .unwrap();
+
+    consumer
+        .startDistributeRewards()
+        .from(admin_address)
+        .send()
+        .await
+        .unwrap()
+        .get_receipt()
+        .await
+        .unwrap();
+
+    // Setup and run provider
+    let rpc_client = provider::app::init_rpc_client(&config).await.unwrap();
+    let api_client = Arc::new(MockOdfApiClient);
+    let provider = provider::OdfOracleProvider::new(config, rpc_client.clone(), api_client);
 
     provider.run_once(Some(0), None).await.unwrap();
 
-    assert_eq!(consumer.province().call().await.unwrap(), "ON");
-    assert_eq!(consumer.total_cases().call().await.unwrap(), 100500);
+    assert_eq!(consumer.province().call().await.unwrap().province, "ON");
+    assert_eq!(
+        consumer.totalCases().call().await.unwrap().totalCases,
+        100500
+    );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

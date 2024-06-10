@@ -7,7 +7,7 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-use ethers::prelude::*;
+use alloy::primitives::Address;
 use url::Url;
 
 #[derive(confique::Config, Debug)]
@@ -32,20 +32,20 @@ pub struct Config {
     /// Private key of the provider to use when signing transactions.
     pub provider_private_key: String,
 
-    /// Number of logs to request per one RPC call
-    #[config(default = 1000)]
-    pub logs_page_size: u64,
+    /// Number of blocks to examine per one getLogs RPC request when catching up
+    #[config(default = 100_000)]
+    pub blocks_stride: u64,
 
     /// Time to sleep while waiting for new blocks
     #[config(default = 1000)]
     pub loop_idle_time_ms: u64,
 
     /// Number of confirmations to await before considering transaction included
-    pub transaction_confirmations: usize,
+    pub transaction_confirmations: u64,
 
-    /// Number of retries when submitting transaction
-    #[config(default = 3)]
-    pub transaction_retries: usize,
+    /// Timeout when submitting a transaction
+    #[config(default = 60)]
+    pub transaction_timeout_s: u64,
 
     /// URL of the ODF-compatible API server that will execute requests
     #[config(default = "http://localhost:8080")]

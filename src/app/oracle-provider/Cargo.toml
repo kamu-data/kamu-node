@@ -14,6 +14,18 @@ publish = { workspace = true }
 
 
 [dependencies]
+# TODO: alloy is not yet being released on crates.io
+# See: https://github.com/alloy-rs/alloy/issues/791
+alloy = { version = "0.1", git = "https://github.com/alloy-rs/alloy", rev = "a81f9e1e80e677a8f78b592657ffba607a0098b9", default-features = false, features = [
+    "std",
+    "contract",
+    "node-bindings",
+    "provider-http",
+    "provider-ws",
+    "rpc-types-eth",
+    "signer-wallet",
+    "sol-types",
+] }
 async-trait = { version = "0.1", default-features = false }
 clap = { version = "4", default-features = false, features = [
     "std",
@@ -24,19 +36,14 @@ clap = { version = "4", default-features = false, features = [
     "suggestions",
     "derive",
     "cargo",
-    #"env",
+    # "env",
     "wrap_help",
 ] }
-chrono = { version = "0.4", default-features = false, features = ["serde"] }
 ciborium = { version = "0.2", default-features = false }
 confique = { version = "0.2", default-features = false, features = ["yaml"] }
-ethers = { version = "2", default-features = false, features = [
-    "ws",
-    "rustls",
-] }
 http = { version = "0.2", default-features = false }
 internal-error = { workspace = true }
-reqwest = { version = "0.11", default-features = false, features = [
+reqwest = { version = "0.12", default-features = false, features = [
     "rustls-tls",
     "json",
     "gzip",
@@ -63,5 +70,6 @@ url = { version = "2", default-features = false, features = ["serde"] }
 
 
 [dev-dependencies]
+hex = { version = "0.4" }
 test-group = { version = "1" }
 test-log = { version = "0.2", features = ["trace"] }

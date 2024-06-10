@@ -7,9 +7,13 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
+use std::str::FromStr;
 use std::sync::Arc;
 
-use ethers::prelude::*;
+use alloy::providers::network::EthereumSigner;
+use alloy::providers::{Provider, ProviderBuilder};
+use alloy::signers::wallet::LocalWallet;
+use alloy::signers::Signer as _;
 use internal_error::*;
 
 use crate::api_client::{OdfApiClient, OdfApiClientRest};
@@ -42,19 +46,24 @@ pub struct InvalidChainId {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-pub async fn init_rpc_client(config: &Config) -> Result<Arc<impl Middleware>, InternalError> {
+pub async fn init_rpc_client(config: &Config) -> Result<impl Provider + Clone, InternalError> {
     // Prepare wallet
-    let wallet = LocalWallet::try_from(config.provider_private_key.as_str())
+    let wallet = LocalWallet::from_str(config.provider_private_key.as_str())
         .unwrap()
-        .with_chain_id(config.chain_id);
+        .with_chain_id(Some(config.chain_id));
 
     // Init RPC client
-    let provider = Provider::<Http>::connect(config.rpc_url.as_str()).await;
-    let rpc_client = ethers::middleware::SignerMiddleware::new(provider, wallet);
+    let rpc_client = ProviderBuilder::new()
+        .with_recommended_fillers()
+        .signer(EthereumSigner::from(wallet))
+        .on_builtin(config.rpc_url.as_str())
+        .await
+        .int_err()?;
 
-    let chain_id = rpc_client.get_chainid().await.int_err()?.as_u64();
+    let chain_id = rpc_client.get_chain_id().await.int_err()?;
     let last_block = rpc_client.get_block_number().await.int_err()?;
-    tracing::info!(chain_id = %chain_id, last_block = %last_block, "Chain info");
+    tracing::info!(chain_id = %chain_id, last_block = %last_block, "Chain
+    info");
 
     if chain_id != config.chain_id {
         return Err(InvalidChainId {
@@ -64,7 +73,7 @@ pub async fn init_rpc_client(config: &Config) -> Result<Arc<impl Middleware>, In
         .int_err());
     }
 
-    Ok(Arc::new(rpc_client))
+    Ok(rpc_client)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

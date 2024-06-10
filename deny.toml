@@ -2,6 +2,7 @@
 # Forbid multiple versions of same dependency (with some exceptions)
 # TODO: Change to "deny" once we crack down on duplication
 multiple-versions = "warn"
+
 # Avoid adding dependencies to this list as this slows down compilation.
 # Find another ways to avoid duplication.
 skip-tree = []
@@ -24,14 +25,17 @@ deny = [
 
     ### Creates we deny multiple versions of ###
     # This is a temporary approach until we deny by default with some exceptions
+    { name = "alloy", deny-multiple-versions = true },
     { name = "arrow", deny-multiple-versions = true },
     { name = "axum", deny-multiple-versions = true },
     { name = "aws-config", deny-multiple-versions = true },
     { name = "clap", deny-multiple-versions = true },
     { name = "datafusion", deny-multiple-versions = true },
+    # { name = "hyper", deny-multiple-versions = true },
     { name = "object_store", deny-multiple-versions = true },
     { name = "parquet", deny-multiple-versions = true },
     { name = "prost", deny-multiple-versions = true },
+    # { name = "reqwest", deny-multiple-versions = true },
     # { name = "rustls", deny-multiple-versions = true },
     { name = "tokio", deny-multiple-versions = true },
     { name = "tonic", deny-multiple-versions = true },
@@ -50,10 +54,10 @@ allow = [
     "MIT",
     "MPL-2.0",
     "OpenSSL",
+    "Unicode-3.0",
     "Unlicense",
     "Zlib",
 ]
-copyleft = "deny"
 private = { ignore = true }
 
 [[licenses.exceptions]]
@@ -70,15 +74,9 @@ license-files = [{ path = "LICENSE", hash = 0xbd0eed23 }]
 [sources]
 unknown-git = "deny"
 unknown-registry = "deny"
-allow-org = { github = ["kamu-data"] }
+allow-org = { github = ["kamu-data", "apache", "alloy-rs"] }
 
 
 [advisories]
-vulnerability = "warn"
-unmaintained = "warn"
-unsound = "warn"
 yanked = "deny"
-notice = "warn"
-ignore = [
-]
-
+ignore = []
