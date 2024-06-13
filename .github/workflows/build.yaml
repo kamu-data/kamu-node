@@ -76,6 +76,6 @@ jobs:
           npm ci
           forge build
       - name: Run tests
-        run: cargo nextest run
+        run: cargo nextest run ${{ env.CARGO_FLAGS }}
       - name: Check git diff
         run: git diff && git diff-index --quiet HEAD
