@@ -51,6 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CARGO_FLAGS: --profile ci --features kamu/ftp
+      NEXTEST_FLAGS: --cargo-profile ci --features kamu/ftp
       KAMU_CONTRACTS_DIR: ../../../kamu-contracts
     steps:
       - uses: actions/checkout@v4
@@ -76,6 +77,6 @@ jobs:
           npm ci
           forge build
       - name: Run tests
-        run: cargo nextest run ${{ env.CARGO_FLAGS }}
+        run: cargo nextest run ${{ env.NEXTEST_FLAGS }}
       - name: Check git diff
         run: git diff && git diff-index --quiet HEAD
