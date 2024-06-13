@@ -28,6 +28,7 @@ pub struct ApiServerConfig {
     pub repo: RepoConfig,
     pub url: UrlConfig,
     pub upload_repo: UploadRepoConfig,
+    pub database: DatabaseConfig,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -111,7 +112,11 @@ pub struct RepoCachingConfig {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // UrlConfig
+/////////////////////////////////////////////////////////////////////////////////////////
+
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct UrlConfig {
     #[serde(deserialize_with = "parse_repo_url")]
     pub base_url_platform: Url,
@@ -131,6 +136,53 @@ impl Default for UrlConfig {
     }
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////
+// Database
+/////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+#[serde(tag = "provider")]
+pub enum DatabaseConfig {
+    InMemory,
+    Sqlite(SqliteDatabaseConfig),
+    Postgres(RemoteDatabaseConfig),
+    // Note: Activate when Task System MySQL version is implemented
+    // MySql(RemoteDatabaseConfig),
+    // MariaDB(RemoteDatabaseConfig),
+}
+
+impl Default for DatabaseConfig {
+    fn default() -> Self {
+        Self::InMemory
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct SqliteDatabaseConfig {
+    pub database_path: String,
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct RemoteDatabaseConfig {
+    pub user: String,
+    pub password: String,
+    pub database_name: String,
+    pub host: String,
+    pub port: Option<u32>,
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Helpers
 /////////////////////////////////////////////////////////////////////////////////////////
 
 fn value_parse_repo_url(s: &str) -> Result<Url, &'static str> {
