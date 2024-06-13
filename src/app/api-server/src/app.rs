@@ -315,6 +315,8 @@ pub async fn init_dependencies(
 
     b.add::<kamu::DataFormatRegistryImpl>();
 
+    b.add_builder(kamu::FetchService::builder().with_run_info_dir(run_info_dir.clone()));
+
     b.add_builder(
         kamu::PollingIngestServiceImpl::builder()
             .with_run_info_dir(run_info_dir.clone())
