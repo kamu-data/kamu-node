@@ -4640,6 +4640,7 @@ dependencies = [
  "chrono",
  "clap",
  "container-runtime",
+ "database-common",
  "datafusion",
  "dill",
  "env_logger",

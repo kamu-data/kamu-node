@@ -10,6 +10,7 @@
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+use database_common::{DatabaseConfiguration, DatabaseProvider};
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
 use kamu::domain::{Protocols, ServerUrlConfig, SystemTimeSourceDefault};
@@ -30,6 +31,8 @@ use url::Url;
 use crate::config::{
     ApiServerConfig,
     AuthProviderConfig,
+    DatabaseConfig,
+    RemoteDatabaseConfig,
     RepoConfig,
     UploadRepoStorageConfig,
     ACCOUNT_KAMU,
@@ -481,6 +484,33 @@ async fn configure_repository(
             b.add::<kamu::ObjectStoreBuilderLocalFs>();
         }
         _ => panic!("Unsupported repository scheme: {}", repo_url.scheme()),
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Database
+/////////////////////////////////////////////////////////////////////////////////////////
+
+fn try_convert_into_db_configuration(config: DatabaseConfig) -> Option<DatabaseConfiguration> {
+    fn convert(c: RemoteDatabaseConfig, provider: DatabaseProvider) -> DatabaseConfiguration {
+        DatabaseConfiguration::new(
+            provider,
+            c.user,
+            c.password,
+            c.database_name,
+            c.host,
+            c.port,
+        )
+    }
+
+    match config {
+        DatabaseConfig::Sqlite(c) => {
+            let path = Path::new(&c.database_path);
+
+            Some(DatabaseConfiguration::sqlite_from(path))
+        }
+        DatabaseConfig::Postgres(config) => Some(convert(config, DatabaseProvider::Postgres)),
+        DatabaseConfig::InMemory => None,
     }
 }
 

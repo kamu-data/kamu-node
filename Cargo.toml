@@ -12,6 +12,7 @@ resolver = "2"
 [workspace.dependencies]
 # Utils
 container-runtime = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.186.0", version = "0.186.0", default-features = false }
+database-common = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.186.0", version = "0.186.0", default-features = false }
 event-bus = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.186.0", version = "0.186.0", default-features = false }
 internal-error = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.186.0", version = "0.186.0", default-features = false }
 random-names = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.186.0", version = "0.186.0", default-features = false }
