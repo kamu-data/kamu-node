@@ -34,6 +34,8 @@ kamu-adapter-flight-sql = { workspace = true }
 kamu-accounts = { workspace = true }
 kamu-accounts-services = { workspace = true }
 kamu-accounts-inmem = { workspace = true }
+kamu-accounts-postgres = { workspace = true }
+kamu-accounts-sqlite = { workspace = true }
 
 # APIs
 http = "0.2"

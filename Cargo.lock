@@ -4464,6 +4464,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "kamu-accounts-postgres"
+version = "0.186.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.186.0#4b19ba07dae47a302d893573a30356ce0aef0c73"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "database-common",
+ "dill",
+ "internal-error",
+ "kamu-accounts",
+ "opendatafabric",
+ "sqlx",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
 name = "kamu-accounts-services"
 version = "0.186.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.186.0#4b19ba07dae47a302d893573a30356ce0aef0c73"
@@ -4484,6 +4501,23 @@ dependencies = [
  "serde_json",
  "thiserror",
  "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "kamu-accounts-sqlite"
+version = "0.186.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.186.0#4b19ba07dae47a302d893573a30356ce0aef0c73"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "database-common",
+ "dill",
+ "internal-error",
+ "kamu-accounts",
+ "opendatafabric",
+ "sqlx",
+ "thiserror",
  "tracing",
 ]
 
@@ -4654,7 +4688,9 @@ dependencies = [
  "kamu",
  "kamu-accounts",
  "kamu-accounts-inmem",
+ "kamu-accounts-postgres",
  "kamu-accounts-services",
+ "kamu-accounts-sqlite",
  "kamu-adapter-auth-oso",
  "kamu-adapter-flight-sql",
  "kamu-adapter-graphql",

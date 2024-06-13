@@ -148,7 +148,6 @@ pub enum DatabaseConfig {
     InMemory,
     Sqlite(SqliteDatabaseConfig),
     Postgres(RemoteDatabaseConfig),
-    // Note: Activate when Task System MySQL version is implemented
     // MySql(RemoteDatabaseConfig),
     // MariaDB(RemoteDatabaseConfig),
 }

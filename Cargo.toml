@@ -34,6 +34,8 @@ kamu-adapter-auth-oso = { git = "https://github.com/kamu-data/kamu-cli", tag = "
 kamu-adapter-flight-sql = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.186.0", version = "0.186.0", default-features = false }
 kamu-accounts-services = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.186.0", version = "0.186.0", default-features = false }
 kamu-accounts-inmem = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.186.0", version = "0.186.0", default-features = false }
+kamu-accounts-postgres = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.186.0", version = "0.186.0", default-features = false }
+kamu-accounts-sqlite = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.186.0", version = "0.186.0", default-features = false }
 
 
 [workspace.package]
