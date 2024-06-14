@@ -10,6 +10,7 @@
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+use database_common::{DatabaseConfiguration, DatabaseProvider};
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
 use kamu::domain::{Protocols, ServerUrlConfig, SystemTimeSourceDefault};
@@ -30,6 +31,8 @@ use url::Url;
 use crate::config::{
     ApiServerConfig,
     AuthProviderConfig,
+    DatabaseConfig,
+    RemoteDatabaseConfig,
     RepoConfig,
     UploadRepoStorageConfig,
     ACCOUNT_KAMU,
@@ -74,13 +77,13 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
     );
 
     let kamu_account_name = AccountName::new_unchecked(ACCOUNT_KAMU);
-    let logged_account_subject = CurrentAccountSubject::logged(
+    let server_account_subject = CurrentAccountSubject::logged(
         AccountID::new_seeded_ed25519(kamu_account_name.as_bytes()),
         kamu_account_name,
         true,
     );
     let dependencies_graph_repository = prepare_dependencies_graph_repository(
-        logged_account_subject.clone(),
+        server_account_subject.clone(),
         &repo_url,
         multi_tenant,
         &config,
@@ -92,6 +95,8 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
         .add_value(dependencies_graph_repository)
         .bind::<dyn kamu::domain::DependencyGraphRepository, kamu::DependencyGraphRepositoryInMemory>()
         .build();
+
+    initialize_components(&catalog, server_account_subject.clone()).await;
 
     match matches.subcommand() {
         Some(("gql", sub)) => match sub.subcommand() {
@@ -143,7 +148,7 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
             // should consider to instead propagate the auth info of the user who triggered
             // some system flow alongside all actions to enforce proper authorization.
             let system_catalog = CatalogBuilder::new_chained(&catalog)
-                .add_value(logged_account_subject)
+                .add_value(server_account_subject)
                 .build();
 
             let task_executor = system_catalog
@@ -303,6 +308,7 @@ pub async fn init_dependencies(
     b.add::<kamu::DependencyGraphServiceInMemory>();
 
     b.add::<kamu::DatasetOwnershipServiceInMemory>();
+    b.add::<kamu::DatasetOwnershipServiceInMemoryStateInitializer>();
 
     b.add::<kamu::DatasetChangesServiceImpl>();
 
@@ -314,6 +320,8 @@ pub async fn init_dependencies(
     b.add::<kamu_adapter_http::SmartTransferProtocolClientWs>();
 
     b.add::<kamu::DataFormatRegistryImpl>();
+
+    b.add_builder(kamu::FetchService::builder().with_run_info_dir(run_info_dir.clone()));
 
     b.add_builder(
         kamu::PollingIngestServiceImpl::builder()
@@ -342,7 +350,6 @@ pub async fn init_dependencies(
 
     b.add::<kamu_task_system_services::TaskSchedulerImpl>();
     b.add::<kamu_task_system_services::TaskExecutorImpl>();
-    b.add::<kamu_task_system_inmem::TaskSystemEventStoreInMemory>();
 
     b.add::<kamu_flow_system_services::FlowConfigurationServiceImpl>();
     b.add::<kamu_flow_system_services::FlowServiceImpl>();
@@ -350,10 +357,10 @@ pub async fn init_dependencies(
         chrono::Duration::try_seconds(1).unwrap(),
         chrono::Duration::try_minutes(1).unwrap(),
     ));
-    b.add::<kamu_flow_system_inmem::FlowEventStoreInMem>();
-    b.add::<kamu_flow_system_inmem::FlowConfigurationEventStoreInMem>();
 
     b.add::<kamu_accounts_services::AuthenticationServiceImpl>();
+    b.add::<kamu_accounts_services::PredefinedAccountsRegistrator>();
+
     b.add::<kamu_adapter_auth_oso::KamuAuthOso>();
     b.add::<kamu_adapter_auth_oso::OsoDatasetAuthorizer>();
     b.add::<kamu::domain::auth::DummyOdfServerAccessTokenResolver>();
@@ -361,8 +368,6 @@ pub async fn init_dependencies(
     configure_repository(&mut b, repo_url, multi_tenant, &config.repo).await;
 
     b.add::<LoginPasswordAuthProvider>();
-    // TODO: Temporarily using in-mem
-    b.add::<kamu_accounts_inmem::AccountRepositoryInMemory>();
 
     let mut need_to_add_default_predefined_accounts_config = true;
 
@@ -427,6 +432,15 @@ pub async fn init_dependencies(
         }
     }
 
+    b.add::<database_common::DatabaseTransactionRunner>();
+
+    let maybe_db_configuration = try_convert_into_db_configuration(config.database);
+    if let Some(db_configuration) = maybe_db_configuration.as_ref() {
+        configure_database_components(&mut b, db_configuration);
+    } else {
+        configure_in_memory_components(&mut b);
+    };
+
     b
 }
 
@@ -483,6 +497,71 @@ async fn configure_repository(
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
+// Database
+/////////////////////////////////////////////////////////////////////////////////////////
+
+fn try_convert_into_db_configuration(config: DatabaseConfig) -> Option<DatabaseConfiguration> {
+    fn convert(c: RemoteDatabaseConfig, provider: DatabaseProvider) -> DatabaseConfiguration {
+        DatabaseConfiguration::new(
+            provider,
+            c.user,
+            c.password,
+            c.database_name,
+            c.host,
+            c.port,
+        )
+    }
+
+    match config {
+        DatabaseConfig::Sqlite(c) => {
+            let path = Path::new(&c.database_path);
+
+            Some(DatabaseConfiguration::sqlite_from(path))
+        }
+        DatabaseConfig::Postgres(config) => Some(convert(config, DatabaseProvider::Postgres)),
+        DatabaseConfig::InMemory => None,
+    }
+}
+
+fn configure_database_components(b: &mut CatalogBuilder, db_configuration: &DatabaseConfiguration) {
+    // TODO: Remove after adding implementation of FlowEventStore for databases
+    b.add::<kamu_flow_system_inmem::FlowEventStoreInMem>();
+
+    // TODO: Delete after preparing services for transactional work and replace with
+    //       permanent storage options
+    b.add::<kamu_flow_system_inmem::FlowConfigurationEventStoreInMem>();
+    b.add::<kamu_task_system_inmem::TaskSystemEventStoreInMemory>();
+
+    match db_configuration.provider {
+        DatabaseProvider::Postgres => {
+            database_common::PostgresPlugin::init_database_components(b, db_configuration).unwrap();
+
+            b.add::<kamu_accounts_postgres::PostgresAccountRepository>();
+        }
+        DatabaseProvider::Sqlite => {
+            database_common::SqlitePlugin::init_database_components(b, db_configuration).unwrap();
+
+            b.add::<kamu_accounts_sqlite::SqliteAccountRepository>();
+        }
+        DatabaseProvider::MySql | DatabaseProvider::MariaDB => {
+            panic!(
+                "{} database configuration not supported",
+                db_configuration.provider
+            )
+        }
+    }
+}
+
+fn configure_in_memory_components(b: &mut CatalogBuilder) {
+    b.add::<kamu_accounts_inmem::AccountRepositoryInMemory>();
+    b.add::<kamu_flow_system_inmem::FlowConfigurationEventStoreInMem>();
+    b.add::<kamu_flow_system_inmem::FlowEventStoreInMem>();
+    b.add::<kamu_task_system_inmem::TaskSystemEventStoreInMemory>();
+
+    database_common::NoOpDatabasePlugin::init_database_components(b);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
 // Workspace
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -504,6 +583,42 @@ fn find_workspace_rec(p: &Path) -> Option<PathBuf> {
     } else {
         None
     }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+async fn initialize_components(
+    catalog: &dill::Catalog,
+    server_account_subject: CurrentAccountSubject,
+) {
+    let logged_catalog = dill::CatalogBuilder::new_chained(catalog)
+        .add_value(server_account_subject)
+        .build();
+
+    // TODO: For some reason, we if we do in a single transaction, there is a hangup
+    database_common::DatabaseTransactionRunner::new(logged_catalog.clone())
+        .transactional(|transactional_catalog| async move {
+            let registrator = transactional_catalog
+                .get_one::<kamu_accounts_services::PredefinedAccountsRegistrator>()
+                .unwrap();
+
+            registrator
+                .ensure_predefined_accounts_are_registered()
+                .await
+        })
+        .await
+        .unwrap();
+
+    database_common::DatabaseTransactionRunner::new(logged_catalog)
+        .transactional(|transactional_catalog| async move {
+            let initializer = transactional_catalog
+                .get_one::<kamu::DatasetOwnershipServiceInMemoryStateInitializer>()
+                .unwrap();
+
+            initializer.eager_initialization().await
+        })
+        .await
+        .unwrap();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

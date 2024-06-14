@@ -74,6 +74,7 @@ pub(crate) fn build_server(
                 )
                 .layer(axum::extract::Extension(catalog))
                 .layer(axum::extract::Extension(gql_schema))
+                .layer(kamu_adapter_http::RunInDatabaseTransactionLayer::new())
                 .layer(kamu_adapter_http::AuthenticationLayer::new()),
         );
 

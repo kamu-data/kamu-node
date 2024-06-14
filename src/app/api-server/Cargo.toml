@@ -19,6 +19,7 @@ container-runtime = { workspace = true }
 event-bus = { workspace = true }
 internal-error = { workspace = true }
 opendatafabric = { workspace = true }
+database-common = { workspace = true }
 kamu = { workspace = true }
 kamu-task-system-services = { workspace = true }
 kamu-task-system-inmem = { workspace = true }
@@ -33,11 +34,13 @@ kamu-adapter-flight-sql = { workspace = true }
 kamu-accounts = { workspace = true }
 kamu-accounts-services = { workspace = true }
 kamu-accounts-inmem = { workspace = true }
+kamu-accounts-postgres = { workspace = true }
+kamu-accounts-sqlite = { workspace = true }
 
 # APIs
 http = "0.2"
 hyper = "0.14"
-arrow-flight = { version = "51", features = ["flight-sql-experimental"] }
+arrow-flight = { version = "52", features = ["flight-sql-experimental"] }
 axum = { version = "0.6", features = ["ws"] }
 axum-extra = { version = "0.8", features = ["async-read-body"] }
 async-graphql = { version = "6", features = [
@@ -65,7 +68,7 @@ tracing-bunyan-formatter = "0.3"
 async-trait = { version = "0.1", default-features = false }
 chrono = "0.4"
 clap = "4"
-datafusion = { version = "38", default-features = false, features = [
+datafusion = { version = "39", default-features = false, features = [
     "crypto_expressions",
     "encoding_expressions",
     "parquet",
