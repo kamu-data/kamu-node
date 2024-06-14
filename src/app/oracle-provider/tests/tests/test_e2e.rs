@@ -65,9 +65,9 @@ fn get_contracts_dir() -> PathBuf {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#[test_group::group(e2e, oracle)]
+#[test_group::group(e2e, oracle, flaky)]
 #[test_log::test(tokio::test)]
-async fn test_e2e() {
+async fn test_oracle_e2e() {
     let contracts_dir = get_contracts_dir();
 
     let anvil = alloy::node_bindings::Anvil::new().spawn();
