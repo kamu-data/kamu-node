@@ -359,6 +359,7 @@ pub async fn init_dependencies(
     ));
 
     b.add::<kamu_accounts_services::AuthenticationServiceImpl>();
+    b.add::<kamu_accounts_services::AccessTokenServiceImpl>();
     b.add::<kamu_accounts_services::PredefinedAccountsRegistrator>();
 
     b.add::<kamu_adapter_auth_oso::KamuAuthOso>();
@@ -537,11 +538,13 @@ fn configure_database_components(b: &mut CatalogBuilder, db_configuration: &Data
             database_common::PostgresPlugin::init_database_components(b, db_configuration).unwrap();
 
             b.add::<kamu_accounts_postgres::PostgresAccountRepository>();
+            b.add::<kamu_accounts_postgres::PostgresAccessTokenRepository>();
         }
         DatabaseProvider::Sqlite => {
             database_common::SqlitePlugin::init_database_components(b, db_configuration).unwrap();
 
             b.add::<kamu_accounts_sqlite::SqliteAccountRepository>();
+            b.add::<kamu_accounts_sqlite::SqliteAccessTokenRepository>();
         }
         DatabaseProvider::MySql | DatabaseProvider::MariaDB => {
             panic!(
@@ -554,6 +557,7 @@ fn configure_database_components(b: &mut CatalogBuilder, db_configuration: &Data
 
 fn configure_in_memory_components(b: &mut CatalogBuilder) {
     b.add::<kamu_accounts_inmem::AccountRepositoryInMemory>();
+    b.add::<kamu_accounts_inmem::AccessTokenRepositoryInMemory>();
     b.add::<kamu_flow_system_inmem::FlowConfigurationEventStoreInMem>();
     b.add::<kamu_flow_system_inmem::FlowEventStoreInMem>();
     b.add::<kamu_task_system_inmem::TaskSystemEventStoreInMemory>();
@@ -595,26 +599,19 @@ async fn initialize_components(
         .add_value(server_account_subject)
         .build();
 
-    // TODO: For some reason, we if we do in a single transaction, there is a hangup
     database_common::DatabaseTransactionRunner::new(logged_catalog.clone())
         .transactional(|transactional_catalog| async move {
             let registrator = transactional_catalog
                 .get_one::<kamu_accounts_services::PredefinedAccountsRegistrator>()
                 .unwrap();
-
             registrator
                 .ensure_predefined_accounts_are_registered()
                 .await
-        })
-        .await
-        .unwrap();
+                .unwrap();
 
-    database_common::DatabaseTransactionRunner::new(logged_catalog)
-        .transactional(|transactional_catalog| async move {
             let initializer = transactional_catalog
                 .get_one::<kamu::DatasetOwnershipServiceInMemoryStateInitializer>()
                 .unwrap();
-
             initializer.eager_initialization().await
         })
         .await
