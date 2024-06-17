@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Changed
+- Upgraded to kamu `0.188.1`
+
+## [0.25.1] - 2024-06-14
+### Changed
+- Upgraded to kamu `0.188.0`
+
+## [0.25.0] - 2024-06-14
+### Changed
 - Oracle provider was migrated from deprecated `ethers` to `alloy` crate
+- Upgraded to kamu `0.186.0`
 
 ## [0.24.0] - 2024-06-10
 ### Changed
