@@ -13,7 +13,8 @@ use std::sync::Arc;
 use alloy::primitives::Address;
 use alloy::sol;
 use internal_error::InternalError;
-use kamu_oracle_provider as provider;
+use kamu_oracle_provider::api_client::{QueryDatasetState, QueryRequest, QueryState};
+use kamu_oracle_provider::{self as provider};
 use provider::api_client::{OdfApiClient, QueryResponse};
 use serde_json::json;
 
@@ -164,9 +165,17 @@ struct MockOdfApiClient;
 
 #[async_trait::async_trait]
 impl OdfApiClient for MockOdfApiClient {
-    async fn query(&self, _sql: &str) -> Result<QueryResponse, InternalError> {
+    async fn query(&self, _request: QueryRequest) -> Result<QueryResponse, InternalError> {
         Ok(QueryResponse {
-            data: vec![vec![json!("ON"), json!(100500)]],
+            data: json!([["ON", 100500]]),
+            schema: None,
+            result_hash: Some("data-hash".into()),
+            state: Some(QueryState {
+                inputs: vec![QueryDatasetState {
+                    id: "odf:did:1".into(),
+                    block_hash: "block-hash".into(),
+                }],
+            }),
         })
     }
 }

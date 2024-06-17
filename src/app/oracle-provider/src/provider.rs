@@ -17,7 +17,7 @@ use alloy::sol_types::{SolEvent, SolEventInterface};
 use alloy::transports::BoxTransport;
 use internal_error::*;
 
-use crate::api_client::OdfApiClient;
+use crate::api_client::{OdfApiClient, QueryDatasetAlias, QueryRequest};
 use crate::Config;
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -30,13 +30,23 @@ alloy::sol! {
         #[derive(Debug)]
         event SendRequest(uint64 indexed requestId, address indexed consumerAddr, bytes request);
 
-        // Emitted when a provider fulfills a pending request
+        // Emitted when a provider fulfills a pending request.
+        //
+        // Fields:
+        // - requestId - unique identifier of the request
+        // - consumerAddr - address of the contract that sent request and awaits the response
+        // - providerAddr - address of the provider that fulfilled the request
+        // - response - response data, see `OdfResponse`
+        // - requestError - indicates that response contained an unrecoverable error instead of data
+        // - consumerError - indicates that consumer callback has failed when processing the result
+        // - consumerErrorData - will contain the details of consumer-side error
         #[derive(Debug)]
         event ProvideResult(
             uint64 indexed requestId,
             address indexed consumerAddr,
             address indexed providerAddr,
-            bytes result,
+            bytes response,
+            bool requestError,
             bool consumerError,
             bytes consumerErrorData
         );
@@ -64,13 +74,9 @@ alloy::sol! {
 #[derive(Debug)]
 struct OdfRequest {
     pub id: u64,
-    pub data: OdfRequestData,
-    pub log: Log<IOdfProvider::SendRequest>,
-}
-
-#[derive(Debug, serde::Deserialize)]
-struct OdfRequestData {
     pub sql: String,
+    pub aliases: Vec<(String, String)>,
+    pub log: Log<IOdfProvider::SendRequest>,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -78,12 +84,51 @@ struct OdfRequestData {
 #[derive(Debug)]
 struct OdfResult {
     pub request_id: u64,
-    pub data: OdfResultData,
+    pub inner: Result<OdfResultOk, OdfResultErr>,
 }
 
-#[derive(Debug, serde::Serialize)]
-struct OdfResultData {
-    pub data: Vec<Vec<ciborium::Value>>,
+#[derive(Debug)]
+struct OdfResultOk {
+    pub data: serde_json::Value,
+    pub data_hash: String,
+    pub state: Vec<(String, String)>,
+}
+
+#[derive(Debug)]
+struct OdfResultErr {
+    pub error_message: String,
+}
+
+impl OdfResult {
+    const VERSION: u16 = 1;
+
+    pub fn into_cbor(self) -> ciborium::Value {
+        use ciborium::Value as V;
+
+        match self.inner {
+            Ok(v) => {
+                // Flatten the state
+                let mut state = Vec::new();
+                for (id, block_hash) in v.state {
+                    state.push(V::Text(id));
+                    state.push(V::Text(block_hash));
+                }
+
+                V::Array(vec![
+                    V::Integer(Self::VERSION.into()),
+                    V::Bool(true),
+                    super::cbor::json_to_cbor(v.data),
+                    V::Text(v.data_hash),
+                    V::Array(state),
+                ])
+            }
+            Err(v) => V::Array(vec![
+                V::Integer(Self::VERSION.into()),
+                V::Bool(false),
+                V::Text(v.error_message),
+            ]),
+        }
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -321,24 +366,110 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
         Ok(results)
     }
 
+    /// Request layout in CBOR is:
+    /// [
+    ///   version,
+    ///   "ds", "alias1", "did:odf:...",
+    ///   "ds", "alias2", "did:odf:...",
+    ///   "sql", "select ...",
+    ///   ...
+    /// ]
     fn decode_request(log: Log<IOdfProvider::SendRequest>) -> Result<OdfRequest, InternalError> {
         let id = log.inner.requestId;
-        let data: OdfRequestData = ciborium::from_reader(log.inner.request.as_ref()).int_err()?;
-        Ok(OdfRequest { id, data, log })
+        let raw: Vec<ciborium::Value> =
+            ciborium::from_reader(log.inner.request.as_ref()).int_err()?;
+
+        tracing::debug!(?raw, "Parsing raw CBOR request");
+
+        let mut raw = raw.into_iter();
+
+        let Some(ciborium::Value::Integer(version)) = raw.next() else {
+            Err("Request does not start with version specifier".int_err())?
+        };
+        if u8::try_from(version) != Ok(1) {
+            Err(format!("Unsupported protocol version {version:?}").int_err())?
+        }
+
+        let mut sql = None;
+        let mut aliases = Vec::new();
+
+        while let Some(key) = raw.next() {
+            let ciborium::Value::Text(key) = key else {
+                Err("Expected a key".int_err())?
+            };
+            match key.as_str() {
+                "ds" => {
+                    let Some(ciborium::Value::Text(alias)) = raw.next() else {
+                        Err("Expected an alias".int_err())?
+                    };
+                    let Some(ciborium::Value::Text(did)) = raw.next() else {
+                        Err("Expected a dataset ID".int_err())?
+                    };
+                    aliases.push((alias, did));
+                }
+                "sql" => {
+                    let Some(ciborium::Value::Text(query)) = raw.next() else {
+                        Err("Expected a query".int_err())?
+                    };
+                    sql = Some(query);
+                }
+                _ => Err(format!("Unknown key {key}").int_err())?,
+            }
+        }
+
+        let Some(sql) = sql else {
+            Err("Request does not specify a query".int_err())?
+        };
+
+        Ok(OdfRequest {
+            id,
+            sql,
+            aliases,
+            log,
+        })
     }
 
     #[tracing::instrument(level = "debug", skip_all, fields(request_id = request.id))]
     async fn execute_query(&self, request: OdfRequest) -> Result<OdfResult, InternalError> {
         tracing::debug!(?request, "Executing API query");
 
-        let api_response = self.api_client.query(request.data.sql.as_str()).await?;
-        tracing::debug!(?api_response, "API response");
+        let rest_request = QueryRequest {
+            query: request.sql,
+            data_format: "JsonAoA".into(),
+            schema_format: None,
+            aliases: Some(
+                request
+                    .aliases
+                    .into_iter()
+                    .map(|(alias, id)| QueryDatasetAlias { alias, id })
+                    .collect(),
+            ),
+            as_of_state: None,
+            include_schema: false,
+            include_state: true,
+            include_result_hash: true,
+            // TODO: Pagination / detect limits
+            skip: None,
+            limit: None,
+        };
 
-        let data = super::cbor::records_json_to_cbor(api_response.data);
+        // TODO: Error handling
+        let rest_response = self.api_client.query(rest_request).await?;
+        tracing::debug!(?rest_response, "API response");
 
         Ok(OdfResult {
             request_id: request.id,
-            data: OdfResultData { data },
+            inner: Ok(OdfResultOk {
+                data: rest_response.data,
+                data_hash: rest_response.result_hash.unwrap(),
+                state: rest_response
+                    .state
+                    .unwrap()
+                    .inputs
+                    .into_iter()
+                    .map(|i| (i.id, i.block_hash))
+                    .collect(),
+            }),
         })
     }
 
@@ -354,12 +485,16 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
 
     #[tracing::instrument(level = "debug", skip_all)]
     async fn send_result(&self, result: OdfResult) -> Result<(), InternalError> {
+        let request_id = result.request_id;
+
         let mut result_encoded = Vec::new();
-        ciborium::into_writer(&result.data, &mut result_encoded).int_err()?;
+        ciborium::into_writer(&result.into_cbor(), &mut result_encoded).int_err()?;
+
+        tracing::debug!(result_hex = hex::encode(&result_encoded), "Encoded result");
 
         let transaction = self
             .oracle_contract
-            .provideResult(result.request_id, result_encoded.into())
+            .provideResult(request_id, result_encoded.into())
             .from(self.config.provider_address);
 
         // TODO: We should ingore RequestNotFound errors as indicating that request was

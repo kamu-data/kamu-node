@@ -7,18 +7,12 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-pub(crate) fn records_json_to_cbor(
-    json_records: Vec<Vec<serde_json::Value>>,
-) -> Vec<Vec<ciborium::Value>> {
-    json_records
-        .into_iter()
-        .map(|r| r.into_iter().map(json_to_cbor).collect())
-        .collect()
-}
-
 // TODO: Knowing the response schema we could make CBOR transcoding utilize
 // standard tags for date-times, bignum, and other data types. An even better
-// option would be to support CBOR directly in the API server.
+// option would be to support CBOR directly in the API server. But do we want
+// this complexity in Solidity? Perhaps we should use schema to simplify dates
+// to unix timestamps.
+//
 // See: https://www.rfc-editor.org/rfc/rfc8949.html#name-tagging-of-items
 pub(crate) fn json_to_cbor(value: serde_json::Value) -> ciborium::Value {
     match value {
