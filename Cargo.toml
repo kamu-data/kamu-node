@@ -39,7 +39,7 @@ kamu-accounts-sqlite = { git = "https://github.com/kamu-data/kamu-cli", tag = "v
 
 
 [workspace.package]
-version = "0.26.0"
+version = "0.26.1"
 edition = "2021"
 homepage = "https://github.com/kamu-data/kamu-platform"
 repository = "https://github.com/kamu-data/kamu-platform"
