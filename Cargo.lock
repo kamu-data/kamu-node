@@ -4905,6 +4905,7 @@ dependencies = [
  "hex",
  "http 0.2.12",
  "internal-error",
+ "opendatafabric",
  "reqwest 0.12.5",
  "serde",
  "serde_json",

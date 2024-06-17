@@ -12,10 +12,9 @@ use std::sync::Arc;
 
 use alloy::primitives::Address;
 use alloy::sol;
-use internal_error::InternalError;
-use kamu_oracle_provider::api_client::{QueryDatasetState, QueryRequest, QueryState};
+use kamu_oracle_provider::api_client::*;
 use kamu_oracle_provider::{self as provider};
-use provider::api_client::{OdfApiClient, QueryResponse};
+use opendatafabric::{DatasetID, Multihash};
 use serde_json::json;
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -165,15 +164,23 @@ struct MockOdfApiClient;
 
 #[async_trait::async_trait]
 impl OdfApiClient for MockOdfApiClient {
-    async fn query(&self, _request: QueryRequest) -> Result<QueryResponse, InternalError> {
+    async fn query(&self, request: QueryRequest) -> Result<QueryResponse, QueryError> {
+        assert_eq!(
+            request.aliases.unwrap()[0].id,
+            DatasetID::from_did_str(
+                "did:odf:fed014895afeb476d5d94c1af0668f30ab661c8561760bba6744e43225ba52e099595"
+            )
+            .unwrap()
+        );
+
         Ok(QueryResponse {
             data: json!([["ON", 100500]]),
             schema: None,
-            result_hash: Some("data-hash".into()),
+            data_hash: Some(Multihash::from_multibase("f9680c00120cf2b593b861a048762d0d8451a92ca391ae994594421e2c8b47b455d7673a6f8").unwrap()),
             state: Some(QueryState {
                 inputs: vec![QueryDatasetState {
-                    id: "odf:did:1".into(),
-                    block_hash: "block-hash".into(),
+                    id: DatasetID::from_did_str("did:odf:fed014895afeb476d5d94c1af0668f30ab661c8561760bba6744e43225ba52e099595").unwrap(),
+                    block_hash: Multihash::from_multibase("f162080b0979126041b122a0b0851f286503e8a501b03ba2008bf260b348801abc76f").unwrap(),
                 }],
             }),
         })

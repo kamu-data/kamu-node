@@ -16,8 +16,9 @@ use alloy::rpc::types::eth::{Filter, Log};
 use alloy::sol_types::{SolEvent, SolEventInterface};
 use alloy::transports::BoxTransport;
 use internal_error::*;
+use opendatafabric::{DatasetID, Multihash};
 
-use crate::api_client::{OdfApiClient, QueryDatasetAlias, QueryRequest};
+use crate::api_client::{OdfApiClient, QueryDatasetAlias, QueryError, QueryRequest};
 use crate::Config;
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -64,7 +65,7 @@ alloy::sol! {
 
         // Called to fulfill a pending request
         // See `OdfResponse` for explanation of the `result`
-        function provideResult(uint64 requestId, bytes memory result) external;
+        function provideResult(uint64 requestId, bytes calldata result) external;
     }
 }
 
@@ -75,7 +76,7 @@ alloy::sol! {
 struct OdfRequest {
     pub id: u64,
     pub sql: String,
-    pub aliases: Vec<(String, String)>,
+    pub aliases: Vec<(String, DatasetID)>,
     pub log: Log<IOdfProvider::SendRequest>,
 }
 
@@ -90,8 +91,8 @@ struct OdfResult {
 #[derive(Debug)]
 struct OdfResultOk {
     pub data: serde_json::Value,
-    pub data_hash: String,
-    pub state: Vec<(String, String)>,
+    pub data_hash: Multihash,
+    pub state: Vec<(DatasetID, Multihash)>,
 }
 
 #[derive(Debug)]
@@ -110,15 +111,15 @@ impl OdfResult {
                 // Flatten the state
                 let mut state = Vec::new();
                 for (id, block_hash) in v.state {
-                    state.push(V::Text(id));
-                    state.push(V::Text(block_hash));
+                    state.push(V::Bytes(id.as_bytes().to_vec()));
+                    state.push(V::Bytes(block_hash.as_bytes().to_vec()));
                 }
 
                 V::Array(vec![
                     V::Integer(Self::VERSION.into()),
                     V::Bool(true),
                     super::cbor::json_to_cbor(v.data),
-                    V::Text(v.data_hash),
+                    V::Bytes(v.data_hash.as_bytes().to_vec()),
                     V::Array(state),
                 ])
             }
@@ -213,8 +214,10 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
             // continues independently from execution and submitting
             // transactions
             let pending_requests = self.scan_block_range(from_block, last_block).await?;
-            let results = self.process_request_batch(pending_requests).await?;
-            self.send_results(results).await?;
+            if !pending_requests.is_empty() {
+                let results = self.process_request_batch(pending_requests).await?;
+                self.send_results(results).await?;
+            }
 
             // TODO: Chain reorg resistance
             from_block = last_block + 1;
@@ -359,8 +362,9 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
             let request = Self::decode_request(log)?;
             // TODO: Handle invalid requests
             // TODO: Concurrency
-            let result = self.execute_query(request).await?;
-            results.push(result);
+            if let Some(result) = self.execute_query(request).await? {
+                results.push(result);
+            }
         }
 
         Ok(results)
@@ -402,8 +406,11 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
                     let Some(ciborium::Value::Text(alias)) = raw.next() else {
                         Err("Expected an alias".int_err())?
                     };
-                    let Some(ciborium::Value::Text(did)) = raw.next() else {
+                    let Some(ciborium::Value::Bytes(did)) = raw.next() else {
                         Err("Expected a dataset ID".int_err())?
+                    };
+                    let Ok(did) = DatasetID::from_bytes(&did) else {
+                        Err("Expected DID bytes".int_err())?
                     };
                     aliases.push((alias, did));
                 }
@@ -430,7 +437,7 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
     }
 
     #[tracing::instrument(level = "debug", skip_all, fields(request_id = request.id))]
-    async fn execute_query(&self, request: OdfRequest) -> Result<OdfResult, InternalError> {
+    async fn execute_query(&self, request: OdfRequest) -> Result<Option<OdfResult>, InternalError> {
         tracing::debug!(?request, "Executing API query");
 
         let rest_request = QueryRequest {
@@ -447,30 +454,46 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
             as_of_state: None,
             include_schema: false,
             include_state: true,
-            include_result_hash: true,
+            include_data_hash: true,
             // TODO: Pagination / detect limits
             skip: None,
             limit: None,
         };
 
-        // TODO: Error handling
-        let rest_response = self.api_client.query(rest_request).await?;
-        tracing::debug!(?rest_response, "API response");
-
-        Ok(OdfResult {
-            request_id: request.id,
-            inner: Ok(OdfResultOk {
-                data: rest_response.data,
-                data_hash: rest_response.result_hash.unwrap(),
-                state: rest_response
-                    .state
-                    .unwrap()
-                    .inputs
-                    .into_iter()
-                    .map(|i| (i.id, i.block_hash))
-                    .collect(),
-            }),
-        })
+        match self.api_client.query(rest_request).await {
+            Ok(rest_response) => {
+                tracing::debug!(?rest_response, "Writing successful response");
+                Ok(Some(OdfResult {
+                    request_id: request.id,
+                    inner: Ok(OdfResultOk {
+                        data: rest_response.data,
+                        data_hash: rest_response.data_hash.unwrap(),
+                        state: rest_response
+                            .state
+                            .unwrap()
+                            .inputs
+                            .into_iter()
+                            .map(|i| (i.id, i.block_hash))
+                            .collect(),
+                    }),
+                }))
+            }
+            Err(QueryError::BadRequest(msg)) => {
+                tracing::warn!("Writing unsuccessful response");
+                Ok(Some(OdfResult {
+                    request_id: request.id,
+                    inner: Err(OdfResultErr { error_message: msg }),
+                }))
+            }
+            Err(QueryError::DatasetNotFound(info)) => {
+                tracing::info!(info, "Ignoring request for unknown dataset(s)");
+                Ok(None)
+            }
+            Err(QueryError::Internal(err)) => {
+                tracing::error!("API query failed");
+                Err(err)
+            }
+        }
     }
 
     #[tracing::instrument(level = "info", skip_all)]

@@ -14,6 +14,8 @@ publish = { workspace = true }
 
 
 [dependencies]
+opendatafabric = { workspace = true }
+
 # TODO: alloy is not yet being released on crates.io
 # See: https://github.com/alloy-rs/alloy/issues/791
 alloy = { version = "0.1", git = "https://github.com/alloy-rs/alloy", rev = "a81f9e1e80e677a8f78b592657ffba607a0098b9", default-features = false, features = [
