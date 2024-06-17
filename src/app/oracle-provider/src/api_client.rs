@@ -27,32 +27,41 @@ pub struct QueryRequest {
     pub query: String,
 
     /// How data should be layed out in the response
-    pub data_format: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub data_format: Option<String>,
 
     /// What representation to use for the schema
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub schema_format: Option<String>,
 
     /// Mapping between dataset names used in the query and their stable IDs, to
     /// make query resistant to datasets being renamed
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub aliases: Option<Vec<QueryDatasetAlias>>,
 
     /// State information used to reproduce query at a specific point in time
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub as_of_state: Option<QueryState>,
 
     /// Whether to include schema info about the response
-    pub include_schema: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_schema: Option<bool>,
 
     /// Whether to include dataset state info for query reproducibility
-    pub include_state: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_state: Option<bool>,
 
     /// Whether to include a logical hash of the resulting data batch.
     /// See: https://docs.kamu.dev/odf/spec/#physical-and-logical-hashes
-    pub include_data_hash: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_data_hash: Option<bool>,
 
     /// Pagination: skips first N records
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub skip: Option<u64>,
 
     /// Pagination: limits number of records in response to N
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<u64>,
 }
 

@@ -442,7 +442,7 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
 
         let rest_request = QueryRequest {
             query: request.sql,
-            data_format: "JsonAoA".into(),
+            data_format: Some("JsonAoA".into()),
             schema_format: None,
             aliases: Some(
                 request
@@ -452,9 +452,9 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
                     .collect(),
             ),
             as_of_state: None,
-            include_schema: false,
-            include_state: true,
-            include_data_hash: true,
+            include_schema: Some(false),
+            include_state: Some(true),
+            include_data_hash: Some(true),
             // TODO: Pagination / detect limits
             skip: None,
             limit: None,

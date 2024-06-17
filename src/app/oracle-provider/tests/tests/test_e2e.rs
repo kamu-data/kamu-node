@@ -160,17 +160,25 @@ async fn test_oracle_e2e() {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+// TODO: Replace with real API server
 struct MockOdfApiClient;
 
 #[async_trait::async_trait]
 impl OdfApiClient for MockOdfApiClient {
     async fn query(&self, request: QueryRequest) -> Result<QueryResponse, QueryError> {
         assert_eq!(
-            request.aliases.unwrap()[0].id,
-            DatasetID::from_did_str(
-                "did:odf:fed014895afeb476d5d94c1af0668f30ab661c8561760bba6744e43225ba52e099595"
-            )
-            .unwrap()
+            serde_json::to_value(&request).unwrap(),
+            serde_json::json!({
+                "aliases": [{
+                    "alias": "kamu/covid19.canada.case-details",
+                    "id": "did:odf:fed014895afeb476d5d94c1af0668f30ab661c8561760bba6744e43225ba52e099595",
+                }],
+                "dataFormat": "JsonAoA",
+                "includeDataHash": true,
+                "includeSchema": false,
+                "includeState": true,
+                "query": request.query,
+            }),
         );
 
         Ok(QueryResponse {
