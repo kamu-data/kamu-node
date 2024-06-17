@@ -27,7 +27,7 @@ sol! {
         uint64 public totalCases;
 
         constructor(address oracleAddr);
-        function startDistributeRewards() public;
+        function initiateQuery() public;
     }
 }
 
@@ -136,7 +136,7 @@ async fn test_oracle_e2e() {
         .unwrap();
 
     consumer
-        .startDistributeRewards()
+        .initiateQuery()
         .from(admin_address)
         .send()
         .await
