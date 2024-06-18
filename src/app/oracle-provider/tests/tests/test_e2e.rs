@@ -173,7 +173,7 @@ impl OdfApiClient for MockOdfApiClient {
                     "alias": "kamu/covid19.canada.case-details",
                     "id": "did:odf:fed014895afeb476d5d94c1af0668f30ab661c8561760bba6744e43225ba52e099595",
                 }],
-                "dataFormat": "JsonAoA",
+                "dataFormat": "JsonAoa",
                 "includeDataHash": true,
                 "includeSchema": false,
                 "includeState": true,
