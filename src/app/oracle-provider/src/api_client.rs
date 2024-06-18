@@ -28,7 +28,7 @@ pub struct QueryRequest {
 
     /// How data should be layed out in the response
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub data_format: Option<String>,
+    pub data_format: Option<DataFormat>,
 
     /// What representation to use for the schema
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -68,6 +68,7 @@ pub struct QueryRequest {
 /////////////////////////////////////////////////////////////////////////////////
 
 #[derive(Debug, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct QueryResponse {
     pub data: serde_json::Value,
 
@@ -79,6 +80,23 @@ pub struct QueryResponse {
 
     #[serde(default)]
     pub data_hash: Option<Multihash>,
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+
+#[allow(clippy::enum_variant_names)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum DataFormat {
+    #[default]
+    #[serde(alias = "jsonaos")]
+    #[serde(alias = "json-aos")]
+    JsonAos,
+    #[serde(alias = "jsonsoa")]
+    #[serde(alias = "json-soa")]
+    JsonSoa,
+    #[serde(alias = "jsonaoa")]
+    #[serde(alias = "json-aoa")]
+    JsonAoa,
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -114,7 +132,16 @@ pub enum QueryError {
     #[error("Bad request: {0}")]
     BadRequest(String),
     #[error(transparent)]
+    ApiRequestError(ApiRequestError),
+    #[error(transparent)]
     Internal(#[from] InternalError),
+}
+
+#[derive(Debug, thiserror::Error)]
+#[error("Api request error status code {status} body: {body:?}")]
+pub struct ApiRequestError {
+    pub status: reqwest::StatusCode,
+    pub body: Option<String>,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -145,9 +172,14 @@ impl OdfApiClient for OdfApiClientRest {
                 let body = http_resp.text().await.int_err()?;
                 Err(QueryError::DatasetNotFound(body))
             }
-            _ => Err(QueryError::Internal(
-                http_resp.error_for_status().err().unwrap().int_err(),
-            )),
+            _ => {
+                let status = http_resp.status();
+                let body = http_resp.text().await.ok();
+                Err(QueryError::ApiRequestError(ApiRequestError {
+                    status,
+                    body,
+                }))
+            }
         }
     }
 }

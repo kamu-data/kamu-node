@@ -18,7 +18,7 @@ use alloy::transports::BoxTransport;
 use internal_error::*;
 use opendatafabric::{DatasetID, Multihash};
 
-use crate::api_client::{OdfApiClient, QueryDatasetAlias, QueryError, QueryRequest};
+use crate::api_client::*;
 use crate::Config;
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -442,7 +442,7 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
 
         let rest_request = QueryRequest {
             query: request.sql,
-            data_format: Some("JsonAoA".into()),
+            data_format: Some(DataFormat::JsonAoa),
             schema_format: None,
             aliases: Some(
                 request
@@ -489,8 +489,20 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
                 tracing::info!(info, "Ignoring request for unknown dataset(s)");
                 Ok(None)
             }
+            Err(QueryError::ApiRequestError(err)) => {
+                tracing::error!(
+                    error = ?err,
+                    error_msg = %err,
+                    "API query failed",
+                );
+                Err(err.int_err())
+            }
             Err(QueryError::Internal(err)) => {
-                tracing::error!("API query failed");
+                tracing::error!(
+                    error = ?err,
+                    error_msg = %err,
+                    "API query failed",
+                );
                 Err(err)
             }
         }
