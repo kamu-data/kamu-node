@@ -283,6 +283,9 @@ pub async fn init_dependencies(
     std::fs::create_dir_all(&cache_dir).unwrap();
     std::fs::create_dir_all(&remote_repos_dir).unwrap();
 
+    b.add_value(kamu::domain::RunInfoDir::new(run_info_dir));
+    b.add_value(kamu::domain::CacheDir::new(cache_dir));
+    b.add_value(kamu::RemoteReposDir::new(remote_repos_dir));
     b.add::<kamu::domain::SystemTimeSourceDefault>();
     b.add::<event_bus::EventBus>();
 
@@ -297,8 +300,7 @@ pub async fn init_dependencies(
         max_concurrency: Some(2),
         ..Default::default()
     });
-    b.add_builder(kamu::EngineProvisionerLocal::builder().with_run_info_dir(run_info_dir.clone()))
-        .bind::<dyn kamu::domain::EngineProvisioner, kamu::EngineProvisionerLocal>();
+    b.add::<kamu::EngineProvisionerLocal>();
 
     b.add::<kamu::DatasetFactoryImpl>();
     b.add::<kamu::ObjectStoreRegistryImpl>();
@@ -312,31 +314,18 @@ pub async fn init_dependencies(
 
     b.add::<kamu::DatasetChangesServiceImpl>();
 
-    b.add_builder(
-        kamu::RemoteRepositoryRegistryImpl::builder().with_repos_dir(remote_repos_dir.clone()),
-    )
-    .bind::<dyn kamu::domain::RemoteRepositoryRegistry, kamu::RemoteRepositoryRegistryImpl>();
+    b.add::<kamu::RemoteRepositoryRegistryImpl>();
 
     b.add::<kamu_adapter_http::SmartTransferProtocolClientWs>();
 
     b.add::<kamu::DataFormatRegistryImpl>();
 
-    b.add_builder(kamu::FetchService::builder().with_run_info_dir(run_info_dir.clone()));
-
-    b.add_builder(
-        kamu::PollingIngestServiceImpl::builder()
-            .with_run_info_dir(run_info_dir.clone())
-            .with_cache_dir(cache_dir.clone()),
-    )
-    .bind::<dyn kamu::domain::PollingIngestService, kamu::PollingIngestServiceImpl>();
-
-    b.add_builder(kamu::PushIngestServiceImpl::builder().with_run_info_dir(run_info_dir.clone()))
-        .bind::<dyn kamu::domain::PushIngestService, kamu::PushIngestServiceImpl>();
-
+    b.add::<kamu::FetchService>();
+    b.add::<kamu::PollingIngestServiceImpl>();
+    b.add::<kamu::PushIngestServiceImpl>();
     b.add::<kamu::TransformServiceImpl>();
     b.add::<kamu::SyncServiceImpl>();
-    b.add_builder(kamu::CompactingServiceImpl::builder().with_run_info_dir(run_info_dir.clone()))
-        .bind::<dyn kamu::domain::CompactingService, kamu::CompactingServiceImpl>();
+    b.add::<kamu::CompactingServiceImpl>();
     b.add::<kamu::VerificationServiceImpl>();
     b.add::<kamu::PullServiceImpl>();
     b.add::<kamu::QueryServiceImpl>();
@@ -420,8 +409,7 @@ pub async fn init_dependencies(
 
     match config.upload_repo.storage {
         UploadRepoStorageConfig::Local => {
-            b.add_builder(UploadServiceLocal::builder().with_cache_dir(cache_dir.clone()));
-            b.bind::<dyn UploadService, UploadServiceLocal>();
+            b.add::<UploadServiceLocal>();
         }
         UploadRepoStorageConfig::S3(s3_config) => {
             let s3_upload_direct_url = url::Url::parse(&s3_config.bucket_s3_url).unwrap();
