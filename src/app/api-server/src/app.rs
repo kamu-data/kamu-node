@@ -403,9 +403,9 @@ pub async fn init_dependencies(
 
     b.add_value(JwtAuthenticationConfig::new(maybe_jwt_secret));
 
-    b.add_value(FileUploadLimitConfig {
-        max_file_size_in_bytes: config.upload_repo.max_file_size_mb * 1024 * 1024,
-    });
+    b.add_value(FileUploadLimitConfig::new_in_mb(
+        config.upload_repo.max_file_size_mb,
+    ));
 
     match config.upload_repo.storage {
         UploadRepoStorageConfig::Local => {
