@@ -79,6 +79,7 @@ datafusion = { version = "39", default-features = false, features = [
 figment = { version = "0.10", features = ["env", "yaml", "json"] }
 futures = "0.3"
 indoc = "2"
+secrecy = "0.8"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tempfile = "3"

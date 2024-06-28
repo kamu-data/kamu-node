@@ -10,7 +10,6 @@
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use database_common::{DatabaseConfiguration, DatabaseProvider};
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
 use kamu::domain::{Protocols, ServerUrlConfig, SystemTimeSourceDefault};
@@ -31,11 +30,16 @@ use url::Url;
 use crate::config::{
     ApiServerConfig,
     AuthProviderConfig,
-    DatabaseConfig,
-    RemoteDatabaseConfig,
     RepoConfig,
     UploadRepoStorageConfig,
     ACCOUNT_KAMU,
+};
+use crate::{
+    configure_database_components,
+    configure_in_memory_components,
+    connect_database_initially,
+    spawn_password_refreshing_job,
+    try_build_db_credentials,
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -90,13 +94,28 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
     )
     .await;
 
+    let db_config = config.database.clone();
+
     let catalog = init_dependencies(config, &repo_url, multi_tenant, local_dir.path())
         .await
         .add_value(dependencies_graph_repository)
         .bind::<dyn kamu::domain::DependencyGraphRepository, kamu::DependencyGraphRepositoryInMemory>()
         .build();
 
-    initialize_components(&catalog, server_account_subject.clone()).await;
+    // Database requires extra actions:
+    let final_catalog = if db_config.needs_database() {
+        // Connect database and obtain a connection pool
+        let catalog_with_pool = connect_database_initially(&catalog).await?;
+
+        // Periodically refresh password in the connection pool, if configured
+        spawn_password_refreshing_job(&db_config, &catalog_with_pool).await;
+
+        catalog_with_pool
+    } else {
+        catalog
+    };
+
+    initialize_components(&final_catalog, server_account_subject.clone()).await;
 
     match matches.subcommand() {
         Some(("gql", sub)) => match sub.subcommand() {
@@ -108,7 +127,7 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
                 let result = crate::gql_server::gql_query(
                     qsub.get_one("query").map(String::as_str).unwrap(),
                     qsub.get_flag("full"),
-                    catalog,
+                    final_catalog,
                 )
                 .await;
                 print!("{}", result);
@@ -129,14 +148,14 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
             let http_server = crate::http_server::build_server(
                 address,
                 sub.get_one("http-port").copied(),
-                catalog.clone(),
+                final_catalog.clone(),
                 multi_tenant,
             );
 
             let flightsql_server = crate::flightsql_server::FlightSqlServer::new(
                 address,
                 sub.get_one("flightsql-port").copied(),
-                catalog.clone(),
+                final_catalog.clone(),
             )
             .await;
 
@@ -147,7 +166,7 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
             // TODO: Granting admin access to all system services is a security threat. We
             // should consider to instead propagate the auth info of the user who triggered
             // some system flow alongside all actions to enforce proper authorization.
-            let system_catalog = CatalogBuilder::new_chained(&catalog)
+            let system_catalog = CatalogBuilder::new_chained(&final_catalog)
                 .add_value(server_account_subject)
                 .build();
 
@@ -325,7 +344,7 @@ pub async fn init_dependencies(
     b.add::<kamu::PushIngestServiceImpl>();
     b.add::<kamu::TransformServiceImpl>();
     b.add::<kamu::SyncServiceImpl>();
-    b.add::<kamu::CompactingServiceImpl>();
+    b.add::<kamu::CompactionServiceImpl>();
     b.add::<kamu::VerificationServiceImpl>();
     b.add::<kamu::PullServiceImpl>();
     b.add::<kamu::QueryServiceImpl>();
@@ -423,9 +442,9 @@ pub async fn init_dependencies(
 
     b.add::<database_common::DatabaseTransactionRunner>();
 
-    let maybe_db_configuration = try_convert_into_db_configuration(config.database);
-    if let Some(db_configuration) = maybe_db_configuration.as_ref() {
-        configure_database_components(&mut b, db_configuration);
+    let maybe_db_credentials = try_build_db_credentials(&config.database);
+    if let Some(db_credentials) = maybe_db_credentials {
+        configure_database_components(&mut b, &config.database, db_credentials);
     } else {
         configure_in_memory_components(&mut b);
     };
@@ -483,74 +502,6 @@ async fn configure_repository(
         }
         _ => panic!("Unsupported repository scheme: {}", repo_url.scheme()),
     }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-// Database
-/////////////////////////////////////////////////////////////////////////////////////////
-
-fn try_convert_into_db_configuration(config: DatabaseConfig) -> Option<DatabaseConfiguration> {
-    fn convert(c: RemoteDatabaseConfig, provider: DatabaseProvider) -> DatabaseConfiguration {
-        DatabaseConfiguration::new(
-            provider,
-            c.user,
-            c.password,
-            c.database_name,
-            c.host,
-            c.port,
-        )
-    }
-
-    match config {
-        DatabaseConfig::Sqlite(c) => {
-            let path = Path::new(&c.database_path);
-
-            Some(DatabaseConfiguration::sqlite_from(path))
-        }
-        DatabaseConfig::Postgres(config) => Some(convert(config, DatabaseProvider::Postgres)),
-        DatabaseConfig::InMemory => None,
-    }
-}
-
-fn configure_database_components(b: &mut CatalogBuilder, db_configuration: &DatabaseConfiguration) {
-    // TODO: Remove after adding implementation of FlowEventStore for databases
-    b.add::<kamu_flow_system_inmem::FlowEventStoreInMem>();
-
-    // TODO: Delete after preparing services for transactional work and replace with
-    //       permanent storage options
-    b.add::<kamu_flow_system_inmem::FlowConfigurationEventStoreInMem>();
-    b.add::<kamu_task_system_inmem::TaskSystemEventStoreInMemory>();
-
-    match db_configuration.provider {
-        DatabaseProvider::Postgres => {
-            database_common::PostgresPlugin::init_database_components(b, db_configuration).unwrap();
-
-            b.add::<kamu_accounts_postgres::PostgresAccountRepository>();
-            b.add::<kamu_accounts_postgres::PostgresAccessTokenRepository>();
-        }
-        DatabaseProvider::Sqlite => {
-            database_common::SqlitePlugin::init_database_components(b, db_configuration).unwrap();
-
-            b.add::<kamu_accounts_sqlite::SqliteAccountRepository>();
-            b.add::<kamu_accounts_sqlite::SqliteAccessTokenRepository>();
-        }
-        DatabaseProvider::MySql | DatabaseProvider::MariaDB => {
-            panic!(
-                "{} database configuration not supported",
-                db_configuration.provider
-            )
-        }
-    }
-}
-
-fn configure_in_memory_components(b: &mut CatalogBuilder) {
-    b.add::<kamu_accounts_inmem::AccountRepositoryInMemory>();
-    b.add::<kamu_accounts_inmem::AccessTokenRepositoryInMemory>();
-    b.add::<kamu_flow_system_inmem::FlowConfigurationEventStoreInMem>();
-    b.add::<kamu_flow_system_inmem::FlowEventStoreInMem>();
-    b.add::<kamu_task_system_inmem::TaskSystemEventStoreInMemory>();
-
-    database_common::NoOpDatabasePlugin::init_database_components(b);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

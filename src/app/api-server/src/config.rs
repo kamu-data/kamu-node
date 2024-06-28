@@ -19,7 +19,7 @@ pub const ACCOUNT_KAMU: &str = "kamu";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct ApiServerConfig {
@@ -35,7 +35,7 @@ pub struct ApiServerConfig {
 // Runtime
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct RuntimeConfig {
@@ -48,7 +48,7 @@ pub struct RuntimeConfig {
 // Auth
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct AuthConfig {
@@ -58,7 +58,7 @@ pub struct AuthConfig {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "kind")]
@@ -69,7 +69,7 @@ pub enum AuthProviderConfig {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct AuthProviderConfigGitHub {
@@ -79,7 +79,7 @@ pub struct AuthProviderConfigGitHub {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct AuthProviderConfigPassword {
@@ -90,7 +90,7 @@ pub struct AuthProviderConfigPassword {
 // Repo
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct RepoConfig {
@@ -99,7 +99,7 @@ pub struct RepoConfig {
     pub caching: RepoCachingConfig,
 }
 
-#[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct RepoCachingConfig {
@@ -114,7 +114,7 @@ pub struct RepoCachingConfig {
 // UrlConfig
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct UrlConfig {
@@ -140,7 +140,7 @@ impl Default for UrlConfig {
 // Database
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "provider")]
@@ -152,6 +152,12 @@ pub enum DatabaseConfig {
     // MariaDB(RemoteDatabaseConfig),
 }
 
+impl DatabaseConfig {
+    pub fn needs_database(&self) -> bool {
+        !matches!(self, DatabaseConfig::InMemory)
+    }
+}
+
 impl Default for DatabaseConfig {
     fn default() -> Self {
         Self::InMemory
@@ -160,7 +166,7 @@ impl Default for DatabaseConfig {
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct SqliteDatabaseConfig {
@@ -169,15 +175,47 @@ pub struct SqliteDatabaseConfig {
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoteDatabaseConfig {
     pub user: String,
-    pub password: String,
+    pub password_policy: DatabasePasswordPolicyConfig,
     pub database_name: String,
     pub host: String,
     pub port: Option<u32>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct DatabasePasswordPolicyConfig {
+    pub source: DatabasePasswordSourceConfig,
+    pub rotation_frequency_in_minutes: Option<u64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+#[serde(tag = "kind")]
+pub enum DatabasePasswordSourceConfig {
+    RawPassword(RawDatabasePasswordPolicyConfig),
+    AwsSecret(AwsSecretDatabasePasswordPolicyConfig),
+    AwsIamToken,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct RawDatabasePasswordPolicyConfig {
+    pub raw_password: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct AwsSecretDatabasePasswordPolicyConfig {
+    pub secret_name: String,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -228,7 +266,7 @@ where
 /////////////////////////////////////////////////////////////////////////////////////////
 // Upload repo
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct UploadRepoConfig {
@@ -245,7 +283,7 @@ impl Default for UploadRepoConfig {
     }
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "kind")]
@@ -254,7 +292,7 @@ pub enum UploadRepoStorageConfig {
     Local,
 }
 
-#[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct UploadRepoStorageConfigS3 {
