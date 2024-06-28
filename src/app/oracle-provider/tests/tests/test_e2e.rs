@@ -171,7 +171,7 @@ impl OdfApiClient for MockOdfApiClient {
             serde_json::json!({
                 "aliases": [{
                     "alias": "kamu/covid19.canada.case-details",
-                    "id": "did:odf:fed014895afeb476d5d94c1af0668f30ab661c8561760bba6744e43225ba52e099595",
+                    "id": "did:odf:fed01c8788dc7825dc95dfaa6c67f989b758d3ebcb1efcb9f47ea914470bd1f7f2bbb",
                 }],
                 "dataFormat": "JsonAoa",
                 "includeDataHash": true,
@@ -187,7 +187,7 @@ impl OdfApiClient for MockOdfApiClient {
             data_hash: Some(Multihash::from_multibase("f9680c00120cf2b593b861a048762d0d8451a92ca391ae994594421e2c8b47b455d7673a6f8").unwrap()),
             state: Some(QueryState {
                 inputs: vec![QueryDatasetState {
-                    id: DatasetID::from_did_str("did:odf:fed014895afeb476d5d94c1af0668f30ab661c8561760bba6744e43225ba52e099595").unwrap(),
+                    id: DatasetID::from_did_str("did:odf:fed01c8788dc7825dc95dfaa6c67f989b758d3ebcb1efcb9f47ea914470bd1f7f2bbb").unwrap(),
                     block_hash: Multihash::from_multibase("f162080b0979126041b122a0b0851f286503e8a501b03ba2008bf260b348801abc76f").unwrap(),
                 }],
             }),
