@@ -39,7 +39,7 @@ use crate::{
     configure_in_memory_components,
     connect_database_initially,
     spawn_password_refreshing_job,
-    try_build_db_credentials,
+    try_build_db_connection_settings,
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -442,9 +442,9 @@ pub async fn init_dependencies(
 
     b.add::<database_common::DatabaseTransactionRunner>();
 
-    let maybe_db_credentials = try_build_db_credentials(&config.database);
-    if let Some(db_credentials) = maybe_db_credentials {
-        configure_database_components(&mut b, &config.database, db_credentials);
+    let maybe_db_connection_settings = try_build_db_connection_settings(&config.database);
+    if let Some(db_connection_settings) = maybe_db_connection_settings {
+        configure_database_components(&mut b, &config.database, db_connection_settings);
     } else {
         configure_in_memory_components(&mut b);
     };

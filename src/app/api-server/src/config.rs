@@ -179,8 +179,7 @@ pub struct SqliteDatabaseConfig {
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoteDatabaseConfig {
-    pub user: String,
-    pub password_policy: DatabasePasswordPolicyConfig,
+    pub credentials_policy: DatabaseCredentialsPolicyConfig,
     pub database_name: String,
     pub host: String,
     pub port: Option<u32>,
@@ -189,8 +188,8 @@ pub struct RemoteDatabaseConfig {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
-pub struct DatabasePasswordPolicyConfig {
-    pub source: DatabasePasswordSourceConfig,
+pub struct DatabaseCredentialsPolicyConfig {
+    pub source: DatabaseCredentialSourceConfig,
     pub rotation_frequency_in_minutes: Option<u64>,
 }
 
@@ -198,16 +197,17 @@ pub struct DatabasePasswordPolicyConfig {
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "kind")]
-pub enum DatabasePasswordSourceConfig {
+pub enum DatabaseCredentialSourceConfig {
     RawPassword(RawDatabasePasswordPolicyConfig),
     AwsSecret(AwsSecretDatabasePasswordPolicyConfig),
-    AwsIamToken,
+    AwsIamToken(AwsIamTokenPasswordPolicyConfig),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct RawDatabasePasswordPolicyConfig {
+    pub user_name: String,
     pub raw_password: String,
 }
 
@@ -216,6 +216,13 @@ pub struct RawDatabasePasswordPolicyConfig {
 #[serde(rename_all = "camelCase")]
 pub struct AwsSecretDatabasePasswordPolicyConfig {
     pub secret_name: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct AwsIamTokenPasswordPolicyConfig {
+    pub user_name: String,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
