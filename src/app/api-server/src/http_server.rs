@@ -7,9 +7,13 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
 use std::net::SocketAddr;
+
+use database_common_macros::transactional_handler;
+use http_common::ApiError;
+use indoc::indoc;
+
+/////////////////////////////////////////////////////////////////////////////////////////
 
 pub(crate) fn build_server(
     address: std::net::IpAddr,
@@ -74,7 +78,6 @@ pub(crate) fn build_server(
                 )
                 .layer(axum::extract::Extension(catalog))
                 .layer(axum::extract::Extension(gql_schema))
-                .layer(kamu_adapter_http::RunInDatabaseTransactionLayer::new())
                 .layer(kamu_adapter_http::AuthenticationLayer::new()),
         );
 
@@ -88,25 +91,28 @@ pub(crate) fn build_server(
 /////////////////////////////////////////////////////////////////////////////////////////
 
 async fn root_handler() -> impl axum::response::IntoResponse {
-    axum::response::Html(
+    axum::response::Html(indoc!(
         r#"
         <h1>Kamu API Server</h1>
         <ul>
-            <li><a href="/graphql">GraphQL Playground</a></li>
+            <li><a href="/graphql">GraphQL Playground</li>
         </ul>
-        "#,
-    )
+        "#
+    ))
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+#[transactional_handler]
 async fn graphql_handler(
     axum::extract::Extension(schema): axum::extract::Extension<kamu_adapter_graphql::Schema>,
     axum::extract::Extension(catalog): axum::extract::Extension<dill::Catalog>,
     req: async_graphql_axum::GraphQLRequest,
-) -> async_graphql_axum::GraphQLResponse {
+) -> Result<async_graphql_axum::GraphQLResponse, ApiError> {
     let graphql_request = req.into_inner().data(catalog);
-    schema.execute(graphql_request).await.into()
+    let graphql_response = schema.execute(graphql_request).await.into();
+
+    Ok(graphql_response)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
