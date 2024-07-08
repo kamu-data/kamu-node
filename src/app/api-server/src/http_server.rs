@@ -7,9 +7,11 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
 use std::net::SocketAddr;
+
+use indoc::indoc;
+
+/////////////////////////////////////////////////////////////////////////////////////////
 
 pub(crate) fn build_server(
     address: std::net::IpAddr,
@@ -88,14 +90,14 @@ pub(crate) fn build_server(
 /////////////////////////////////////////////////////////////////////////////////////////
 
 async fn root_handler() -> impl axum::response::IntoResponse {
-    axum::response::Html(
+    axum::response::Html(indoc!(
         r#"
         <h1>Kamu API Server</h1>
         <ul>
-            <li><a href="/graphql">GraphQL Playground</a></li>
+            <li><a href="/graphql">GraphQL Playground</li>
         </ul>
-        "#,
-    )
+        "#
+    ))
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
