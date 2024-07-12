@@ -288,56 +288,72 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
     // contract - there might be other events present in result and decoding
     // will fail.
     // See: https://github.com/gakonst/ethers-rs/issues/2497
-    #[tracing::instrument(level = "info", skip(self))]
+    #[tracing::instrument(level = "info", skip_all)]
     async fn scan_block_range(
         &self,
         from_block: u64,
         to_block: u64,
     ) -> Result<Vec<Log<IOdfProvider::SendRequest>>, InternalError> {
+        assert!(from_block <= to_block);
+
         let mut pending_requests = std::collections::HashMap::new();
 
-        let filter = Filter::new()
+        let mut filter = Filter::new()
             .address(self.config.oracle_contract_address)
             .event_signature(vec![
                 IOdfProvider::SendRequest::SIGNATURE_HASH,
                 IOdfProvider::ProvideResult::SIGNATURE_HASH,
-            ])
-            .from_block(from_block)
-            .to_block(to_block);
+            ]);
 
-        for log in self.rpc_client.get_logs(&filter).await.int_err()? {
-            assert!(!log.removed, "Encountered removed log: {log:#?}");
+        let mut from_block_page = from_block;
 
-            let log_decoded =
-                IOdfProvider::IOdfProviderEvents::decode_log(&log.inner, true).int_err()?;
+        while from_block_page <= to_block {
+            let to_block_page = u64::min(to_block, from_block_page + self.config.blocks_stride);
 
-            tracing::trace!(?log, "Observed log");
+            tracing::info!(
+                from_block = from_block_page,
+                to_block = to_block_page,
+                "Getting logs page",
+            );
+            filter = filter.from_block(from_block_page).to_block(to_block_page);
+            let logs = self.rpc_client.get_logs(&filter).await.int_err()?;
 
-            match log_decoded.data {
-                IOdfProvider::IOdfProviderEvents::SendRequest(event) => {
-                    tracing::debug!(request_id = ?event.requestId, "Adding pending request");
-                    pending_requests.insert(
-                        event.requestId,
-                        Log {
-                            inner: alloy::primitives::Log {
-                                address: log_decoded.address,
-                                data: event,
+            for log in logs {
+                assert!(!log.removed, "Encountered removed log: {log:#?}");
+
+                let log_decoded =
+                    IOdfProvider::IOdfProviderEvents::decode_log(&log.inner, true).int_err()?;
+
+                tracing::trace!(?log, "Observed log");
+
+                match log_decoded.data {
+                    IOdfProvider::IOdfProviderEvents::SendRequest(event) => {
+                        tracing::debug!(request_id = ?event.requestId, "Adding pending request");
+                        pending_requests.insert(
+                            event.requestId,
+                            Log {
+                                inner: alloy::primitives::Log {
+                                    address: log_decoded.address,
+                                    data: event,
+                                },
+                                block_hash: log.block_hash,
+                                block_number: log.block_number,
+                                block_timestamp: log.block_timestamp,
+                                transaction_hash: log.transaction_hash,
+                                transaction_index: log.transaction_index,
+                                log_index: log.log_index,
+                                removed: log.removed,
                             },
-                            block_hash: log.block_hash,
-                            block_number: log.block_number,
-                            block_timestamp: log.block_timestamp,
-                            transaction_hash: log.transaction_hash,
-                            transaction_index: log.transaction_index,
-                            log_index: log.log_index,
-                            removed: log.removed,
-                        },
-                    );
-                }
-                IOdfProvider::IOdfProviderEvents::ProvideResult(event) => {
-                    tracing::debug!(request_id = ?event.requestId, "Removing request as fulfilled");
-                    pending_requests.remove(&event.requestId);
+                        );
+                    }
+                    IOdfProvider::IOdfProviderEvents::ProvideResult(event) => {
+                        tracing::debug!(request_id = ?event.requestId, "Removing request as fulfilled");
+                        pending_requests.remove(&event.requestId);
+                    }
                 }
             }
+
+            from_block_page = to_block_page + 1;
         }
 
         let pending_requests: Vec<_> = pending_requests.into_values().collect();
