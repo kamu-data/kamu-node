@@ -339,6 +339,7 @@ pub async fn init_dependencies(
 
     b.add::<kamu::DataFormatRegistryImpl>();
 
+    b.add::<kamu_datasets_services::DatasetEnvVarServiceImpl>();
     b.add::<kamu::FetchService>();
     b.add::<kamu::PollingIngestServiceImpl>();
     b.add::<kamu::PushIngestServiceImpl>();

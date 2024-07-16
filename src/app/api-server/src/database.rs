@@ -54,12 +54,14 @@ pub(crate) fn configure_database_components(
         DatabaseProvider::Postgres => {
             PostgresPlugin::init_database_components(b);
 
+            b.add::<kamu_datasets_postgres::PostgresDatasetEnvVarRepository>();
             b.add::<kamu_accounts_postgres::PostgresAccountRepository>();
             b.add::<kamu_accounts_postgres::PostgresAccessTokenRepository>();
         }
         DatabaseProvider::Sqlite => {
             SqlitePlugin::init_database_components(b);
 
+            b.add::<kamu_datasets_sqlite::SqliteDatasetEnvVarRepository>();
             b.add::<kamu_accounts_sqlite::SqliteAccountRepository>();
             b.add::<kamu_accounts_sqlite::SqliteAccessTokenRepository>();
         }
@@ -79,6 +81,7 @@ pub(crate) fn configure_database_components(
 /////////////////////////////////////////////////////////////////////////////////////////
 
 pub(crate) fn configure_in_memory_components(b: &mut CatalogBuilder) {
+    b.add::<kamu_datasets_inmem::DatasetEnvVarRepositoryInMemory>();
     b.add::<kamu_accounts_inmem::AccountRepositoryInMemory>();
     b.add::<kamu_accounts_inmem::AccessTokenRepositoryInMemory>();
     b.add::<kamu_flow_system_inmem::FlowConfigurationEventStoreInMem>();

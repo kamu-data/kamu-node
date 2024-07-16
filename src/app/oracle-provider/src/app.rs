@@ -10,9 +10,9 @@
 use std::str::FromStr;
 use std::sync::Arc;
 
-use alloy::providers::network::EthereumSigner;
+use alloy::network::EthereumWallet;
 use alloy::providers::{Provider, ProviderBuilder};
-use alloy::signers::wallet::LocalWallet;
+use alloy::signers::local::PrivateKeySigner;
 use alloy::signers::Signer as _;
 use internal_error::*;
 
@@ -48,22 +48,22 @@ pub struct InvalidChainId {
 
 pub async fn init_rpc_client(config: &Config) -> Result<impl Provider + Clone, InternalError> {
     // Prepare wallet
-    let wallet = LocalWallet::from_str(config.provider_private_key.as_str())
+    let signer = PrivateKeySigner::from_str(config.provider_private_key.as_str())
         .unwrap()
         .with_chain_id(Some(config.chain_id));
+    let wallet = EthereumWallet::from(signer);
 
     // Init RPC client
     let rpc_client = ProviderBuilder::new()
         .with_recommended_fillers()
-        .signer(EthereumSigner::from(wallet))
+        .wallet(wallet)
         .on_builtin(config.rpc_url.as_str())
         .await
         .int_err()?;
 
     let chain_id = rpc_client.get_chain_id().await.int_err()?;
     let last_block = rpc_client.get_block_number().await.int_err()?;
-    tracing::info!(chain_id = %chain_id, last_block = %last_block, "Chain
-    info");
+    tracing::info!(chain_id = %chain_id, last_block = %last_block, "Chain info");
 
     if chain_id != config.chain_id {
         return Err(InvalidChainId {
