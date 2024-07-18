@@ -10,6 +10,7 @@
 use std::path::PathBuf;
 
 use kamu_accounts::AccountConfig;
+use kamu_datasets_inmem::domain::DatasetEnvVarsConfig;
 use serde::{Deserialize, Deserializer, Serialize};
 use url::Url;
 
@@ -29,6 +30,7 @@ pub struct ApiServerConfig {
     pub url: UrlConfig,
     pub upload_repo: UploadRepoConfig,
     pub database: DatabaseConfig,
+    pub dataset_env_vars: DatasetEnvVarsConfig,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

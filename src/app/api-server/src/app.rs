@@ -23,6 +23,8 @@ use kamu_adapter_http::{
     UploadServiceS3,
 };
 use kamu_adapter_oauth::GithubAuthenticationConfig;
+use kamu_datasets::{DatasetEnvVarsConfig, DatasetEnvVarsType};
+use kamu_datasets_inmem::domain::DatasetEnvVar;
 use opendatafabric::{AccountID, AccountName};
 use tracing::info;
 use url::Url;
@@ -440,6 +442,22 @@ pub async fn init_dependencies(
             b.bind::<dyn UploadService, UploadServiceS3>();
         }
     }
+
+    assert!(
+        config.dataset_env_vars.encryption_key.is_some(),
+        "Dataset env var encryption key is required"
+    );
+    if DatasetEnvVar::try_asm_256_gcm_from_str(
+        config.dataset_env_vars.encryption_key.as_ref().unwrap(),
+    )
+    .is_err()
+    {
+        panic!("Invalid dataset env var encryption key");
+    }
+    b.add_value(DatasetEnvVarsConfig {
+        mode: Some(DatasetEnvVarsType::Storage),
+        ..config.dataset_env_vars
+    });
 
     b.add::<database_common::DatabaseTransactionRunner>();
 
