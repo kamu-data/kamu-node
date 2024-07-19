@@ -36,3 +36,5 @@ auth:
         - accountName: bmis-bycatch.org
           avatarUrl: https://cdn-icons-png.flaticon.com/128/10197/10197245.png
     - kind: github
+datasetEnvVars:
+  encryptionKey: QfnEDcnUtGSW2pwVXaFPvZOwxyFm2BOC

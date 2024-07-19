@@ -10,6 +10,7 @@
 use std::path::PathBuf;
 
 use kamu_accounts::AccountConfig;
+use kamu_datasets::{DatasetEnvVarsConfig as CliDatasetEnvVarsConfig, DatasetEnvVarsType};
 use serde::{Deserialize, Deserializer, Serialize};
 use url::Url;
 
@@ -29,6 +30,7 @@ pub struct ApiServerConfig {
     pub url: UrlConfig,
     pub upload_repo: UploadRepoConfig,
     pub database: DatabaseConfig,
+    pub dataset_env_vars: DatasetEnvVarsConfig,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -132,6 +134,26 @@ impl Default for UrlConfig {
             base_url_platform: Url::parse("http://localhost:4200").unwrap(),
             base_url_rest: Url::parse("http://localhost:8080").unwrap(),
             base_url_flightsql: Url::parse("grpc://localhost:50050").unwrap(),
+        }
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// DatasetEnvVarsConfig
+/////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct DatasetEnvVarsConfig {
+    pub encryption_key: String,
+}
+
+impl From<DatasetEnvVarsConfig> for CliDatasetEnvVarsConfig {
+    fn from(value: DatasetEnvVarsConfig) -> Self {
+        Self {
+            mode: Some(DatasetEnvVarsType::Storage),
+            encryption_key: Some(value.encryption_key),
         }
     }
 }

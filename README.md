@@ -39,6 +39,8 @@ To run API server using local `kamu` workspace:
 {
   echo 'repo:'
   echo '  repoUrl: workspace/.kamu/datasets'
+  echo 'datasetEnvVars:'
+  echo '  enctyptionKey: QfnEDcnUtGSW2pwVXaFPvZOwxyFm2BOC'
 } > config.yaml
 # 2. Run
 cargo run --bin kamu-api-server -- --config config.yaml run | bunyan

@@ -7,12 +7,20 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
+use kamu_api_server::config::DatasetEnvVarsConfig;
+use kamu_datasets::SAMPLE_DATASET_ENV_VAR_ENCRYPTION_KEY;
+
 #[test_log::test(tokio::test)]
 async fn test_di_graph_validates_local() {
     let tempdir = tempfile::tempdir().unwrap();
 
     let multi_tenant = false;
-    let config = kamu_api_server::config::ApiServerConfig::default();
+    let config = kamu_api_server::config::ApiServerConfig {
+        dataset_env_vars: DatasetEnvVarsConfig {
+            encryption_key: SAMPLE_DATASET_ENV_VAR_ENCRYPTION_KEY.to_string(),
+        },
+        ..kamu_api_server::config::ApiServerConfig::default()
+    };
     let repo_url = url::Url::from_directory_path(tempdir.path()).unwrap();
 
     let dependencies_graph_repository = kamu_api_server::prepare_dependencies_graph_repository(
@@ -68,8 +76,12 @@ async fn test_di_graph_validates_remote() {
     .unwrap();
 
     let multi_tenant = true;
-    let config = kamu_api_server::config::ApiServerConfig::default();
-
+    let config = kamu_api_server::config::ApiServerConfig {
+        dataset_env_vars: DatasetEnvVarsConfig {
+            encryption_key: SAMPLE_DATASET_ENV_VAR_ENCRYPTION_KEY.to_string(),
+        },
+        ..kamu_api_server::config::ApiServerConfig::default()
+    };
     let dependencies_graph_repository = kamu_api_server::prepare_dependencies_graph_repository(
         kamu_accounts::CurrentAccountSubject::new_test(),
         &repo_url,

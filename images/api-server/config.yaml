@@ -1,2 +1,4 @@
 repo:
   repoUrl: file:///opt/kamu/workspace/.kamu/datasets
+datasetEnvVars:
+  encryptionKey: QfnEDcnUtGSW2pwVXaFPvZOwxyFm2BOC
