@@ -139,18 +139,25 @@ pub(crate) async fn connect_database_initially(
         .unwrap();
 
     let db_credentials = db_password_provider.provide_credentials().await?;
-    let db_connection_string = db_connection_settings.connection_string(db_credentials);
 
     match db_connection_settings.provider {
-        DatabaseProvider::Postgres => {
-            PostgresPlugin::catalog_with_connected_pool(base_catalog, &db_connection_string)
-                .int_err()
-        }
+        DatabaseProvider::Postgres => PostgresPlugin::catalog_with_connected_pool(
+            base_catalog,
+            &db_connection_settings,
+            db_credentials.as_ref(),
+        )
+        .int_err(),
         DatabaseProvider::MySql | DatabaseProvider::MariaDB => {
-            MySqlPlugin::catalog_with_connected_pool(base_catalog, &db_connection_string).int_err()
+            MySqlPlugin::catalog_with_connected_pool(
+                base_catalog,
+                &db_connection_settings,
+                db_credentials.as_ref(),
+            )
+            .int_err()
         }
         DatabaseProvider::Sqlite => {
-            SqlitePlugin::catalog_with_connected_pool(base_catalog, &db_connection_string).int_err()
+            SqlitePlugin::catalog_with_connected_pool(base_catalog, &db_connection_settings)
+                .int_err()
         }
     }
 }
