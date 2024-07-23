@@ -291,21 +291,34 @@ pub async fn init_dependencies(
     b.add_value(kamu::domain::RunInfoDir::new(run_info_dir));
     b.add_value(kamu::domain::CacheDir::new(cache_dir));
     b.add_value(kamu::RemoteReposDir::new(remote_repos_dir));
+
     b.add::<kamu::domain::SystemTimeSourceDefault>();
     b.add::<event_bus::EventBus>();
 
     b.add::<container_runtime::ContainerRuntime>();
     b.add_value(container_runtime::ContainerRuntimeConfig {
-        runtime: container_runtime::ContainerRuntimeType::Podman,
-        network_ns: container_runtime::NetworkNamespaceType::Private,
+        runtime: config.engine.runtime,
+        network_ns: config.engine.network_ns,
     });
 
-    // TODO: Externalize config
-    b.add_value(kamu::EngineProvisionerLocalConfig {
-        max_concurrency: Some(2),
-        ..Default::default()
-    });
     b.add::<kamu::EngineProvisionerLocal>();
+    b.add_value(kamu::EngineProvisionerLocalConfig {
+        max_concurrency: config.engine.max_concurrency,
+        start_timeout: config.engine.start_timeout.into(),
+        shutdown_timeout: config.engine.shutdown_timeout.into(),
+        spark_image: config.engine.images.spark,
+        flink_image: config.engine.images.flink,
+        datafusion_image: config.engine.images.datafusion,
+        risingwave_image: config.engine.images.risingwave,
+    });
+
+    b.add_value(config.protocol.ipfs.into_gateway_config());
+    b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
+
+    b.add::<kamu::FetchService>();
+    b.add_value(config.source.to_infra_cfg());
+    b.add_value(config.source.mqtt.to_infra_cfg());
+    b.add_value(config.source.ethereum.to_infra_cfg());
 
     b.add::<kamu::DatasetFactoryImpl>();
     b.add::<kamu::ObjectStoreRegistryImpl>();
@@ -326,7 +339,6 @@ pub async fn init_dependencies(
     b.add::<kamu::DataFormatRegistryImpl>();
 
     b.add::<kamu_datasets_services::DatasetEnvVarServiceImpl>();
-    b.add::<kamu::FetchService>();
     b.add::<kamu::PollingIngestServiceImpl>();
     b.add::<kamu::PushIngestServiceImpl>();
     b.add::<kamu::TransformServiceImpl>();
@@ -335,13 +347,6 @@ pub async fn init_dependencies(
     b.add::<kamu::VerificationServiceImpl>();
     b.add::<kamu::PullServiceImpl>();
     b.add::<kamu::QueryServiceImpl>();
-
-    // TODO: Externalize configuration
-    b.add_value(kamu::IpfsGateway {
-        url: Url::parse("http://localhost:8080").unwrap(),
-        pre_resolve_dnslink: true,
-    });
-    b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
 
     b.add::<kamu_task_system_services::TaskSchedulerImpl>();
     b.add::<kamu_task_system_services::TaskExecutorImpl>();
