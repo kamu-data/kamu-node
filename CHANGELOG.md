@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.29.0] - 2024-07-23
+### Changed
+- Dropped "bunyan" log format in favor of standard `tracing` JSON logs (#106)
+### Added
+- The `oracle-provider` now exposes Prometheus metrics via `/system/metrics` endpoint (#106)
+- All apps now support exporting traces via Open Telemetry protocol (#106)
+- The `api-server` now support graceful shutdown (#106)
+- All apps now support `/system/health?type={liveness,readiness,startup}` heath check endpoint using Kubernetes probe semantics (#106)
+
 ## [0.28.3] - 2024-07-23
 ### Changed
 - Make dataset env vars encryption key optional
