@@ -46,7 +46,7 @@ kamu-datasets-sqlite = { git = "https://github.com/kamu-data/kamu-cli", tag = "v
 
 
 [workspace.package]
-version = "0.28.2"
+version = "0.28.3"
 edition = "2021"
 homepage = "https://github.com/kamu-data/kamu-platform"
 repository = "https://github.com/kamu-data/kamu-platform"
