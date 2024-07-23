@@ -26,7 +26,7 @@ use kamu_adapter_oauth::GithubAuthenticationConfig;
 use kamu_datasets::DatasetEnvVarsConfig as CliDatasetEnvVarsConfig;
 use kamu_datasets_inmem::domain::DatasetEnvVar;
 use opendatafabric::{AccountID, AccountName};
-use tracing::info;
+use tracing::{info, warn};
 use url::Url;
 
 use crate::config::{
@@ -443,8 +443,17 @@ pub async fn init_dependencies(
         }
     }
 
-    if DatasetEnvVar::try_asm_256_gcm_from_str(&config.dataset_env_vars.encryption_key).is_err() {
-        panic!("Invalid dataset env var encryption key");
+    if config.dataset_env_vars.encryption_key.as_ref().is_none() {
+        warn!("Dataset env vars encryption key was not provided. This feature will be disabled.")
+    } else if DatasetEnvVar::try_asm_256_gcm_from_str(
+        config.dataset_env_vars.encryption_key.as_ref().unwrap(),
+    )
+    .is_err()
+    {
+        panic!(
+            "Invalid dataset env var encryption key. Key must be a 32-character alphanumeric \
+             string"
+        );
     }
     b.add_value(CliDatasetEnvVarsConfig::from(config.dataset_env_vars));
 

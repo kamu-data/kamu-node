@@ -146,14 +146,20 @@ impl Default for UrlConfig {
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct DatasetEnvVarsConfig {
-    pub encryption_key: String,
+    pub encryption_key: Option<String>,
 }
 
 impl From<DatasetEnvVarsConfig> for CliDatasetEnvVarsConfig {
     fn from(value: DatasetEnvVarsConfig) -> Self {
-        Self {
-            mode: Some(DatasetEnvVarsType::Storage),
-            encryption_key: Some(value.encryption_key),
+        match value.encryption_key {
+            None => Self {
+                mode: Some(DatasetEnvVarsType::Static),
+                encryption_key: value.encryption_key,
+            },
+            Some(_) => Self {
+                mode: Some(DatasetEnvVarsType::Storage),
+                encryption_key: value.encryption_key,
+            },
         }
     }
 }
