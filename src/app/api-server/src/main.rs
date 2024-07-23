@@ -7,6 +7,10 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
+use internal_error::InternalError;
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 fn main() {
     let matches = kamu_api_server::cli().get_matches();
 
@@ -26,11 +30,22 @@ fn main() {
 
     let rt = builder.enable_all().build().unwrap();
 
-    match rt.block_on(kamu_api_server::run(matches, config)) {
+    match rt.block_on(main_async(matches, config)) {
         Ok(_) => {}
         Err(err) => {
             eprintln!("Error: {err}\nDetails: {err:#?}");
             std::process::exit(1)
         }
     }
+}
+
+async fn main_async(
+    args: clap::ArgMatches,
+    config: kamu_api_server::config::ApiServerConfig,
+) -> Result<(), InternalError> {
+    use kamu_api_server::app;
+
+    let _guard = app::init_observability();
+
+    kamu_api_server::app::run(args, config).await
 }

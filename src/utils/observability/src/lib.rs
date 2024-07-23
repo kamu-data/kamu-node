@@ -7,16 +7,8 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-#![feature(duration_constructors)]
-
-pub mod app;
-pub(crate) mod cli_parser;
+pub mod axum;
 pub mod config;
-pub(crate) mod database;
-pub(crate) mod flightsql_server;
-pub(crate) mod gql_server;
-pub(crate) mod http_server;
-
-pub use app::*;
-pub use cli_parser::*;
-pub(crate) use database::*;
+pub mod health;
+pub mod init;
+pub mod metrics;

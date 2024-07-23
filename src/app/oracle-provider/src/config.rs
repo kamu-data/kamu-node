@@ -12,6 +12,14 @@ use url::Url;
 
 #[derive(confique::Config, Debug)]
 pub struct Config {
+    /// Interface to listen for HTTP admin traffic on
+    #[config(default = "127.0.0.1")]
+    pub http_address: String,
+
+    /// Port to listen for HTTP admin traffic on
+    #[config(default = 0)]
+    pub http_port: u16,
+
     /// Ethereum-compatible JSON-RPC address
     #[config(default = "http://localhost:8545")]
     pub rpc_url: Url,

@@ -67,19 +67,22 @@ pub(crate) fn build_server(
                 multi_tenant_workspace,
             ),
         )
+        .layer(kamu_adapter_http::AuthenticationLayer::new())
         .layer(
-            tower::ServiceBuilder::new()
-                .layer(tower_http::trace::TraceLayer::new_for_http())
-                .layer(
-                    tower_http::cors::CorsLayer::new()
-                        .allow_origin(tower_http::cors::Any)
-                        .allow_methods(vec![http::Method::GET, http::Method::POST])
-                        .allow_headers(tower_http::cors::Any),
-                )
-                .layer(axum::extract::Extension(catalog))
-                .layer(axum::extract::Extension(gql_schema))
-                .layer(kamu_adapter_http::AuthenticationLayer::new()),
-        );
+            tower_http::cors::CorsLayer::new()
+                .allow_origin(tower_http::cors::Any)
+                .allow_methods(vec![http::Method::GET, http::Method::POST])
+                .allow_headers(tower_http::cors::Any),
+        )
+        .layer(observability::axum::http_layer())
+        // Note: Healthcheck route is placed before the tracing layer (as layers execute bottom-up)
+        // to avoid spam in logs
+        .route(
+            "/system/health",
+            axum::routing::get(observability::health::health_handler),
+        )
+        .layer(axum::extract::Extension(gql_schema))
+        .layer(axum::extract::Extension(catalog));
 
     let addr = SocketAddr::from((address, http_port.unwrap_or(0)));
 

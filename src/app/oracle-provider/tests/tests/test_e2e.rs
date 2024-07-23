@@ -100,6 +100,8 @@ async fn test_oracle_e2e() {
         .unwrap();
 
     let config = provider::Config {
+        http_address: "127.0.0.1".into(),
+        http_port: 0,
         rpc_url: url::Url::parse(&anvil.endpoint()).unwrap(),
         chain_id: anvil.chain_id(),
         oracle_contract_address,
@@ -147,7 +149,12 @@ async fn test_oracle_e2e() {
     // Setup and run provider
     let rpc_client = provider::app::init_rpc_client(&config).await.unwrap();
     let api_client = Arc::new(MockOdfApiClient);
-    let provider = provider::OdfOracleProvider::new(config, rpc_client.clone(), api_client);
+    let provider = provider::OdfOracleProvider::new(
+        config,
+        rpc_client.clone(),
+        api_client,
+        provider::OdfOracleProviderMetrics::new(),
+    );
 
     provider.run_once(Some(0), None).await.unwrap();
 

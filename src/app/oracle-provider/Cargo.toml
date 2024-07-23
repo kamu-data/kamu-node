@@ -14,7 +14,9 @@ publish = { workspace = true }
 
 
 [dependencies]
-opendatafabric = { workspace = true }
+graceful-shutdown = { workspace = true, default-features = false }
+observability = { workspace = true, default-features = false }
+opendatafabric = { workspace = true, default-features = false }
 
 alloy = { version = "0.2", default-features = false, features = [
     "std",
@@ -28,6 +30,10 @@ alloy = { version = "0.2", default-features = false, features = [
     "sol-types",
 ] }
 async-trait = { version = "0.1", default-features = false }
+axum = { version = "0.6", default-features = false, features = [
+    "http1",
+    "tokio",
+] }
 clap = { version = "4", default-features = false, features = [
     "std",
     "color",
@@ -42,9 +48,12 @@ clap = { version = "4", default-features = false, features = [
 ] }
 ciborium = { version = "0.2", default-features = false }
 confique = { version = "0.2", default-features = false, features = ["yaml"] }
+dill = { version = "0.8", default-features = false }
 hex = { version = "0.4" }
 http = { version = "0.2", default-features = false }
+hyper = { version = "0.14", default-features = false }
 internal-error = { workspace = true }
+prometheus = { version = "0.13", default-features = false }
 reqwest = { version = "0.12", default-features = false, features = [
     "rustls-tls",
     "json",

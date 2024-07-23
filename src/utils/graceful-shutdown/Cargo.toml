@@ -1,0 +1,26 @@
+[package]
+name = "graceful-shutdown"
+description = "Utilities for gracefully stoping the services"
+version = { workspace = true }
+homepage = { workspace = true }
+repository = { workspace = true }
+authors = { workspace = true }
+readme = { workspace = true }
+license-file = { workspace = true }
+keywords = { workspace = true }
+include = { workspace = true }
+edition = { workspace = true }
+publish = { workspace = true }
+
+
+[lints]
+workspace = true
+
+
+[lib]
+doctest = false
+
+
+[dependencies]
+tracing = { version = "0.1", default-features = false }
+tokio = { version = "1", default-features = false, features = ["signal"] }

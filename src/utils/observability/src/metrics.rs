@@ -7,16 +7,17 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-#![feature(duration_constructors)]
+use prometheus::Encoder as _;
 
-pub mod app;
-pub(crate) mod cli_parser;
-pub mod config;
-pub(crate) mod database;
-pub(crate) mod flightsql_server;
-pub(crate) mod gql_server;
-pub(crate) mod http_server;
+#[allow(clippy::unused_async)]
+pub async fn metrics_handler(
+    axum::extract::Extension(reg): axum::extract::Extension<prometheus::Registry>,
+) -> String {
+    let mut buf = Vec::new();
 
-pub use app::*;
-pub use cli_parser::*;
-pub(crate) use database::*;
+    prometheus::TextEncoder::new()
+        .encode(&reg.gather(), &mut buf)
+        .unwrap();
+
+    String::from_utf8(buf).unwrap()
+}

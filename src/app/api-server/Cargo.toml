@@ -17,8 +17,10 @@ publish = { workspace = true }
 dill = "0.8"
 container-runtime = { workspace = true }
 event-bus = { workspace = true }
+graceful-shutdown = { workspace = true }
 http-common = { workspace = true }
 internal-error = { workspace = true }
+observability = { workspace = true }
 opendatafabric = { workspace = true }
 database-common = { workspace = true }
 database-common-macros = { workspace = true }
@@ -69,7 +71,6 @@ tracing-subscriber = { version = "0.3", default-features = false, features = [
     "ansi",
 ] }
 tracing-log = "0.2"
-tracing-bunyan-formatter = "0.3"
 
 # Utils
 async-trait = { version = "0.1", default-features = false }
@@ -90,7 +91,10 @@ secrecy = "0.8"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tempfile = "3"
-tokio = { version = "1", default-features = false, features = ["macros"] }
+tokio = { version = "1", default-features = false, features = [
+    "macros",
+    "signal",
+] }
 tokio-stream = { version = "0.1", default-features = false, features = ["net"] }
 tokio-util = { version = "0.7", default-features = false, features = ["rt"] }
 thiserror = { version = "1", default-features = false }

@@ -16,4 +16,4 @@ pub mod provider;
 
 pub use cli::Cli;
 pub use config::Config;
-pub use provider::OdfOracleProvider;
+pub use provider::{OdfOracleProvider, OdfOracleProviderMetrics};

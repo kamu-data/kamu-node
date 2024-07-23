@@ -48,14 +48,11 @@ use crate::{
 
 pub const BINARY_NAME: &str = env!("CARGO_PKG_NAME");
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
-
-const DEFAULT_LOGGING_CONFIG: &str = "info,tower_http=trace";
+const DEFAULT_RUST_LOG: &str = "debug,";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(), InternalError> {
-    init_logging();
-
     let repo_url = if let Some(repo_url) = config.repo.repo_url.as_ref().cloned() {
         repo_url
     } else {
@@ -79,7 +76,7 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
         repo_url = %repo_url,
         local_dir = %local_dir.path().display(),
         config = ?config,
-        "Initializing {BINARY_NAME}",
+        "Initializing Kamu API Server",
     );
 
     let kamu_account_name = AccountName::new_unchecked(ACCOUNT_KAMU);
@@ -138,6 +135,8 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
             _ => unimplemented!(),
         },
         Some(("run", sub)) => {
+            let shutdown_requested = graceful_shutdown::trap_signals();
+
             let address = sub
                 .get_one::<std::net::IpAddr>("address")
                 .copied()
@@ -191,6 +190,12 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
                 "Serving traffic"
             );
 
+            // TODO: Support graceful shutdown for other protocols
+            let http_server = http_server.with_graceful_shutdown(async {
+                shutdown_requested.await;
+            });
+
+            // TODO: PERF: Do we need to spawn these into separate tasks?
             tokio::select! {
                 res = http_server => { res.int_err() },
                 res = flightsql_server.run() => { res.int_err() },
@@ -204,34 +209,13 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-fn init_logging() {
-    use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
-    use tracing_log::LogTracer;
-    use tracing_subscriber::layer::SubscriberExt;
-    use tracing_subscriber::EnvFilter;
-
-    // Logging may be already initialized when running under tests
-    if tracing::dispatcher::has_been_set() {
-        return;
-    }
-
-    // Use configuration from RUST_LOG env var if provided
-    let env_filter =
-        EnvFilter::try_from_default_env().unwrap_or(EnvFilter::new(DEFAULT_LOGGING_CONFIG));
-
-    // TODO: Use non-blocking writer?
-    // Configure Bunyan JSON formatter
-    let formatting_layer = BunyanFormattingLayer::new(BINARY_NAME.to_owned(), std::io::stdout);
-
-    let subscriber = tracing_subscriber::registry()
-        .with(env_filter)
-        .with(JsonStorageLayer)
-        .with(formatting_layer);
-
-    // Redirect all standard logging to tracing events
-    LogTracer::init().expect("Failed to set LogTracer");
-
-    tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber");
+pub fn init_observability() -> observability::init::Guard {
+    observability::init::auto(
+        observability::config::Config::from_env_with_prefix("KAMU_OTEL_")
+            .with_service_name(BINARY_NAME)
+            .with_service_version(VERSION)
+            .with_default_log_levels(DEFAULT_RUST_LOG),
+    )
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

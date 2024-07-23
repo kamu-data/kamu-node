@@ -140,15 +140,64 @@ pub struct ProviderUnauthorized;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+pub struct OdfOracleProviderMetrics {
+    pub wallet_balance: prometheus::Gauge,
+    pub api_queries_num: prometheus::IntCounter,
+    pub transactions_num: prometheus::IntCounter,
+}
+
+impl OdfOracleProviderMetrics {
+    pub fn new() -> Self {
+        Self {
+            wallet_balance: prometheus::Gauge::new(
+                "wallet_balance",
+                "Balance of the provider's wallet",
+            )
+            .unwrap(),
+            api_queries_num: prometheus::IntCounter::new(
+                "api_queries_num",
+                "ODF API queries executed",
+            )
+            .unwrap(),
+            transactions_num: prometheus::IntCounter::new(
+                "transactions_num",
+                "Chain transactions submitted",
+            )
+            .unwrap(),
+        }
+    }
+
+    pub fn register(&self, reg: &prometheus::Registry) -> Result<(), prometheus::Error> {
+        reg.register(Box::new(self.wallet_balance.clone()))?;
+        reg.register(Box::new(self.api_queries_num.clone()))?;
+        reg.register(Box::new(self.transactions_num.clone()))?;
+        Ok(())
+    }
+}
+
+impl Default for OdfOracleProviderMetrics {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 pub struct OdfOracleProvider<P: Provider> {
     config: Config,
     rpc_client: P,
     oracle_contract: IOdfProvider::IOdfProviderInstance<BoxTransport, P>,
     api_client: Arc<dyn OdfApiClient>,
+    metrics: OdfOracleProviderMetrics,
 }
 
 impl<P: Provider + Clone> OdfOracleProvider<P> {
-    pub fn new(config: Config, rpc_client: P, api_client: Arc<dyn OdfApiClient>) -> Self {
+    pub fn new(
+        config: Config,
+        rpc_client: P,
+        api_client: Arc<dyn OdfApiClient>,
+        metrics: OdfOracleProviderMetrics,
+    ) -> Self {
         let oracle_contract = IOdfProvider::new(config.oracle_contract_address, rpc_client.clone());
 
         Self {
@@ -156,6 +205,7 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
             rpc_client,
             api_client,
             oracle_contract,
+            metrics,
         }
     }
 
@@ -175,10 +225,16 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
 
     /// Check balance of the provider to be able to pay for transactions
     pub async fn get_balance(&self) -> Result<U256, InternalError> {
-        self.rpc_client
+        let balance = self
+            .rpc_client
             .get_balance(self.config.provider_address)
             .await
-            .int_err()
+            .int_err()?;
+
+        let balance_fp: f64 = balance.to_string().parse().unwrap();
+        self.metrics.wallet_balance.set(balance_fp);
+
+        Ok(balance)
     }
 
     pub async fn run(self) -> Result<(), InternalError> {
@@ -476,6 +532,8 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
             limit: None,
         };
 
+        self.metrics.api_queries_num.inc();
+
         match self.api_client.query(rest_request).await {
             Ok(rest_response) => {
                 tracing::debug!(?rest_response, "Writing successful response");
@@ -548,6 +606,8 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
             .provideResult(request_id, result_encoded.into())
             .from(self.config.provider_address);
 
+        self.metrics.transactions_num.inc();
+
         // TODO: We should ingore RequestNotFound errors as indicating that request was
         // already satisfied by another provider. But getting error data is currently
         // hard with alloy
@@ -571,6 +631,9 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
             .int_err()?;
 
         tracing::info!(receipt = ?receipt, "Transaction confirmed");
+
+        // Fetch balance to update metric
+        self.get_balance().await?;
 
         Ok(())
     }
