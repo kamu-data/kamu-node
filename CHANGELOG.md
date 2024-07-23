@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.29.1] - 2024-07-23
+### Changed
+- Exposed new `engine`, `source`, and `protocol` sections in the `api-server` config (#109)
+
 ## [0.29.0] - 2024-07-23
 ### Changed
 - Dropped "bunyan" log format in favor of standard `tracing` JSON logs (#106)
