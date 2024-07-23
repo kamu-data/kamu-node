@@ -26,7 +26,7 @@ use kamu_adapter_oauth::GithubAuthenticationConfig;
 use kamu_datasets::DatasetEnvVarsConfig as CliDatasetEnvVarsConfig;
 use kamu_datasets_inmem::domain::DatasetEnvVar;
 use opendatafabric::{AccountID, AccountName};
-use tracing::{info, warn};
+use tracing::{error, info};
 use url::Url;
 
 use crate::config::{
@@ -444,7 +444,7 @@ pub async fn init_dependencies(
     }
 
     if config.dataset_env_vars.encryption_key.as_ref().is_none() {
-        warn!("Dataset env vars encryption key was not provided. This feature will be disabled.")
+        error!("Dataset env vars encryption key was not provided. This feature will be disabled.")
     } else if DatasetEnvVar::try_asm_256_gcm_from_str(
         config.dataset_env_vars.encryption_key.as_ref().unwrap(),
     )
