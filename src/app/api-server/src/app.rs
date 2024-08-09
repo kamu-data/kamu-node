@@ -338,8 +338,6 @@ pub async fn init_dependencies(
 
     b.add::<kamu::DataFormatRegistryImpl>();
 
-    b.add::<kamu_datasets_services::DatasetEnvVarServiceImpl>();
-    b.add::<kamu_datasets_services::DatasetKeyValueServiceImpl>();
     b.add::<kamu::PollingIngestServiceImpl>();
     b.add::<kamu::PushIngestServiceImpl>();
     b.add::<kamu::TransformServiceImpl>();
@@ -434,7 +432,9 @@ pub async fn init_dependencies(
     }
 
     if config.dataset_env_vars.encryption_key.as_ref().is_none() {
-        error!("Dataset env vars encryption key was not provided. This feature will be disabled.")
+        error!("Dataset env vars encryption key was not provided. This feature will be disabled.");
+        b.add::<kamu_datasets_services::DatasetEnvVarServiceNull>();
+        b.add::<kamu_datasets_services::DatasetKeyValueServiceSysEnv>();
     } else if DatasetEnvVar::try_asm_256_gcm_from_str(
         config.dataset_env_vars.encryption_key.as_ref().unwrap(),
     )
@@ -444,6 +444,9 @@ pub async fn init_dependencies(
             "Invalid dataset env var encryption key. Key must be a 32-character alphanumeric \
              string"
         );
+    } else {
+        b.add::<kamu_datasets_services::DatasetEnvVarServiceImpl>();
+        b.add::<kamu_datasets_services::DatasetKeyValueServiceImpl>();
     }
     b.add_value(CliDatasetEnvVarsConfig::from(config.dataset_env_vars));
 
