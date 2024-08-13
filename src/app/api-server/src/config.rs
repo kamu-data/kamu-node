@@ -12,7 +12,7 @@ use std::path::PathBuf;
 use container_runtime::{ContainerRuntimeType, NetworkNamespaceType};
 use duration_string::DurationString;
 use kamu_accounts::AccountConfig;
-use kamu_datasets::{DatasetEnvVarsConfig as CliDatasetEnvVarsConfig, DatasetEnvVarsType};
+use kamu_datasets::DatasetEnvVarsConfig;
 use serde::{Deserialize, Deserializer, Serialize};
 use url::Url;
 
@@ -341,32 +341,6 @@ impl EthRpcEndpoint {
             chain_id: self.chain_id,
             chain_name: self.chain_name.clone(),
             node_url: self.node_url.clone(),
-        }
-    }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-// DatasetEnvVarsConfig
-/////////////////////////////////////////////////////////////////////////////////////////
-
-#[derive(Debug, Default, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-#[serde(rename_all = "camelCase")]
-pub struct DatasetEnvVarsConfig {
-    pub encryption_key: Option<String>,
-}
-
-impl From<DatasetEnvVarsConfig> for CliDatasetEnvVarsConfig {
-    fn from(value: DatasetEnvVarsConfig) -> Self {
-        match value.encryption_key {
-            None => Self {
-                mode: Some(DatasetEnvVarsType::Static),
-                encryption_key: value.encryption_key,
-            },
-            Some(_) => Self {
-                mode: Some(DatasetEnvVarsType::Storage),
-                encryption_key: value.encryption_key,
-            },
         }
     }
 }

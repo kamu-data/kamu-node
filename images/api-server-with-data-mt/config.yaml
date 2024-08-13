@@ -37,4 +37,5 @@ auth:
           avatarUrl: https://cdn-icons-png.flaticon.com/128/10197/10197245.png
     - kind: github
 datasetEnvVars:
+  enabled: true
   encryptionKey: QfnEDcnUtGSW2pwVXaFPvZOwxyFm2BOC

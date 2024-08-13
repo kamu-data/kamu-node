@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Changed
-- Upgrade kamu-cli version to 0.193.1 and add `DatasetKeyValueSysEnv` service if encryption key was not provided
+- Upgrade kamu-cli version to 0.194.0 and add `DatasetKeyValueSysEnv` service if encryption key was not provided
 
 ## [0.29.2] - 2024-07-30
 ### Changed
