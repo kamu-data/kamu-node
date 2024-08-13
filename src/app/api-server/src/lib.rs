@@ -8,6 +8,7 @@
 // by the Apache License, Version 2.0.
 
 #![feature(duration_constructors)]
+#![feature(let_chains)]
 
 pub mod app;
 pub(crate) mod cli_parser;

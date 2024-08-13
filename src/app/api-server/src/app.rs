@@ -23,10 +23,9 @@ use kamu_adapter_http::{
     UploadServiceS3,
 };
 use kamu_adapter_oauth::GithubAuthenticationConfig;
-use kamu_datasets::DatasetEnvVarsConfig as CliDatasetEnvVarsConfig;
 use kamu_datasets_inmem::domain::DatasetEnvVar;
 use opendatafabric::{AccountID, AccountName};
-use tracing::{error, info};
+use tracing::{error, info, warn};
 use url::Url;
 
 use crate::config::{
@@ -338,8 +337,6 @@ pub async fn init_dependencies(
 
     b.add::<kamu::DataFormatRegistryImpl>();
 
-    b.add::<kamu_datasets_services::DatasetEnvVarServiceImpl>();
-    b.add::<kamu_datasets_services::DatasetKeyValueServiceImpl>();
     b.add::<kamu::PollingIngestServiceImpl>();
     b.add::<kamu::PushIngestServiceImpl>();
     b.add::<kamu::TransformServiceImpl>();
@@ -433,19 +430,35 @@ pub async fn init_dependencies(
         }
     }
 
-    if config.dataset_env_vars.encryption_key.as_ref().is_none() {
-        error!("Dataset env vars encryption key was not provided. This feature will be disabled.")
-    } else if DatasetEnvVar::try_asm_256_gcm_from_str(
-        config.dataset_env_vars.encryption_key.as_ref().unwrap(),
-    )
-    .is_err()
-    {
-        panic!(
-            "Invalid dataset env var encryption key. Key must be a 32-character alphanumeric \
-             string"
-        );
+    let dataset_env_vars_config = &config.dataset_env_vars;
+    match dataset_env_vars_config.encryption_key.as_ref() {
+        None => {
+            match dataset_env_vars_config.enabled.as_ref() {
+                None => {
+                    error!("Dataset env vars configuration is missing. Feature will be disabled");
+                }
+                Some(true) => panic!("Dataset env vars encryption key is required"),
+                _ => {}
+            }
+            b.add::<kamu_datasets_services::DatasetKeyValueServiceSysEnv>();
+            b.add::<kamu_datasets_services::DatasetEnvVarServiceNull>();
+        }
+        Some(encryption_key) => {
+            if let Some(enabled) = &dataset_env_vars_config.enabled
+                && !enabled
+            {
+                warn!("Dataset env vars feature will be disabled");
+            }
+            assert!(
+                DatasetEnvVar::try_asm_256_gcm_from_str(encryption_key).is_ok(),
+                "Invalid dataset env var encryption key. Key must be a 32-character alphanumeric \
+                 string",
+            );
+            b.add::<kamu_datasets_services::DatasetKeyValueServiceImpl>();
+            b.add::<kamu_datasets_services::DatasetEnvVarServiceImpl>();
+        }
     }
-    b.add_value(CliDatasetEnvVarsConfig::from(config.dataset_env_vars));
+    b.add_value(config.dataset_env_vars);
 
     b.add::<database_common::DatabaseTransactionRunner>();
 
