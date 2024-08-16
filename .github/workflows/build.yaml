@@ -50,8 +50,8 @@ jobs:
     name: Test / Linux
     runs-on: ubuntu-latest
     env:
-      CARGO_FLAGS: --profile ci --features kamu/ftp
-      NEXTEST_FLAGS: --cargo-profile ci --features kamu/ftp
+      CARGO_FLAGS: --profile ci --features kamu/ingest-ftp
+      NEXTEST_FLAGS: --cargo-profile ci --features kamu/ingest-ftp
       KAMU_CONTRACTS_DIR: ../../../kamu-contracts
     steps:
       - uses: actions/checkout@v4
