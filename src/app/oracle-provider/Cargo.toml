@@ -48,7 +48,7 @@ clap = { version = "4", default-features = false, features = [
 ] }
 ciborium = { version = "0.2", default-features = false }
 confique = { version = "0.2", default-features = false, features = ["yaml"] }
-dill = { version = "0.8", default-features = false }
+dill = { version = "0.9", default-features = false }
 hex = { version = "0.4" }
 http = { version = "0.2", default-features = false }
 hyper = { version = "0.14", default-features = false }

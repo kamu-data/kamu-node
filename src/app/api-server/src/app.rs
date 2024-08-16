@@ -10,20 +10,10 @@
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+use chrono::Duration;
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
-use kamu::domain::{Protocols, ServerUrlConfig, SystemTimeSourceDefault};
 use kamu::utils::s3_context::S3Context;
-use kamu_accounts::{CurrentAccountSubject, JwtAuthenticationConfig, PredefinedAccountsConfig};
-use kamu_accounts_services::LoginPasswordAuthProvider;
-use kamu_adapter_http::{
-    FileUploadLimitConfig,
-    UploadService,
-    UploadServiceLocal,
-    UploadServiceS3,
-};
-use kamu_adapter_oauth::GithubAuthenticationConfig;
-use kamu_datasets_inmem::domain::DatasetEnvVar;
 use opendatafabric::{AccountID, AccountName};
 use tracing::{error, info, warn};
 use url::Url;
@@ -79,7 +69,7 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
     );
 
     let kamu_account_name = AccountName::new_unchecked(ACCOUNT_KAMU);
-    let server_account_subject = CurrentAccountSubject::logged(
+    let server_account_subject = kamu_accounts::CurrentAccountSubject::logged(
         AccountID::new_seeded_ed25519(kamu_account_name.as_bytes()),
         kamu_account_name,
         true,
@@ -179,7 +169,7 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
                 .unwrap();
 
             let now = system_catalog
-                .get_one::<dyn kamu::domain::SystemTimeSource>()
+                .get_one::<dyn time_source::SystemTimeSource>()
                 .unwrap()
                 .now();
 
@@ -244,7 +234,7 @@ pub fn load_config(path: Option<&PathBuf>) -> Result<ApiServerConfig, InternalEr
 
 // TODO: Get rid of this
 pub async fn prepare_dependencies_graph_repository(
-    current_account_subject: CurrentAccountSubject,
+    current_account_subject: kamu_accounts::CurrentAccountSubject,
     repo_url: &Url,
     multi_tenant: bool,
     config: &ApiServerConfig,
@@ -258,8 +248,7 @@ pub async fn prepare_dependencies_graph_repository(
     configure_repository(&mut b, repo_url, multi_tenant, &config.repo).await;
 
     let special_catalog = b
-        .add::<SystemTimeSourceDefault>()
-        .add::<event_bus::EventBus>()
+        .add::<time_source::SystemTimeSourceDefault>()
         .add_value(current_account_subject)
         .add::<kamu::domain::auth::AlwaysHappyDatasetActionAuthorizer>()
         .add::<kamu::DependencyGraphServiceInMemory>()
@@ -291,8 +280,7 @@ pub async fn init_dependencies(
     b.add_value(kamu::domain::CacheDir::new(cache_dir));
     b.add_value(kamu::RemoteReposDir::new(remote_repos_dir));
 
-    b.add::<kamu::domain::SystemTimeSourceDefault>();
-    b.add::<event_bus::EventBus>();
+    b.add::<time_source::SystemTimeSourceDefault>();
 
     b.add::<container_runtime::ContainerRuntime>();
     b.add_value(container_runtime::ContainerRuntimeConfig {
@@ -346,6 +334,44 @@ pub async fn init_dependencies(
     b.add::<kamu::PullServiceImpl>();
     b.add::<kamu::QueryServiceImpl>();
 
+    b.add::<kamu::AppendDatasetMetadataBatchUseCaseImpl>();
+    b.add::<kamu::CommitDatasetEventUseCaseImpl>();
+    b.add::<kamu::CreateDatasetUseCaseImpl>();
+    b.add::<kamu::CreateDatasetFromSnapshotUseCaseImpl>();
+    b.add::<kamu::DeleteDatasetUseCaseImpl>();
+    b.add::<kamu::RenameDatasetUseCaseImpl>();
+
+    b.add_builder(
+        messaging_outbox::OutboxImmediateImpl::builder()
+            .with_consumer_filter(messaging_outbox::ConsumerFilter::BestEffortConsumers),
+    );
+    b.add::<messaging_outbox::OutboxTransactionalImpl>();
+    b.add::<messaging_outbox::OutboxDispatchingImpl>();
+    b.bind::<dyn messaging_outbox::Outbox, messaging_outbox::OutboxDispatchingImpl>();
+    b.add::<messaging_outbox::OutboxTransactionalProcessor>();
+
+    messaging_outbox::register_message_dispatcher::<kamu::domain::DatasetLifecycleMessage>(
+        &mut b,
+        kamu::domain::MESSAGE_PRODUCER_KAMU_CORE_DATASET_SERVICE,
+    );
+    messaging_outbox::register_message_dispatcher::<
+        kamu_task_system_inmem::domain::TaskProgressMessage,
+    >(
+        &mut b,
+        kamu_task_system_inmem::domain::MESSAGE_PRODUCER_KAMU_TASK_EXECUTOR,
+    );
+    messaging_outbox::register_message_dispatcher::<
+        kamu_flow_system_inmem::domain::FlowConfigurationUpdatedMessage,
+    >(
+        &mut b,
+        kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_CONFIGURATION_SERVICE,
+    );
+
+    b.add_value(messaging_outbox::OutboxConfig::new(
+        Duration::seconds(config.outbox.awaiting_step_secs.unwrap()),
+        config.outbox.batch_size.unwrap(),
+    ));
+
     b.add::<kamu_task_system_services::TaskSchedulerImpl>();
     b.add::<kamu_task_system_services::TaskExecutorImpl>();
 
@@ -366,12 +392,12 @@ pub async fn init_dependencies(
 
     configure_repository(&mut b, repo_url, multi_tenant, &config.repo).await;
 
-    b.add::<LoginPasswordAuthProvider>();
+    b.add::<kamu_accounts_services::LoginPasswordAuthProvider>();
 
     let mut need_to_add_default_predefined_accounts_config = true;
 
     if !multi_tenant {
-        b.add_value(PredefinedAccountsConfig::single_tenant());
+        b.add_value(kamu_accounts::PredefinedAccountsConfig::single_tenant());
         need_to_add_default_predefined_accounts_config = false
     } else {
         for provider in config.auth.providers {
@@ -379,13 +405,13 @@ pub async fn init_dependencies(
                 AuthProviderConfig::Github(github_config) => {
                     b.add::<kamu_adapter_oauth::OAuthGithub>();
 
-                    b.add_value(GithubAuthenticationConfig::new(
+                    b.add_value(kamu_adapter_oauth::GithubAuthenticationConfig::new(
                         github_config.client_id,
                         github_config.client_secret,
                     ));
                 }
                 AuthProviderConfig::Password(prov) => {
-                    b.add_value(PredefinedAccountsConfig {
+                    b.add_value(kamu_accounts::PredefinedAccountsConfig {
                         predefined: prov.accounts,
                     });
                     need_to_add_default_predefined_accounts_config = false
@@ -395,14 +421,16 @@ pub async fn init_dependencies(
     }
 
     if need_to_add_default_predefined_accounts_config {
-        b.add_value(PredefinedAccountsConfig::default());
+        b.add_value(kamu_accounts::PredefinedAccountsConfig::default());
     }
 
-    b.add_value(ServerUrlConfig::new(Protocols {
-        base_url_platform: config.url.base_url_platform,
-        base_url_rest: config.url.base_url_rest,
-        base_url_flightsql: config.url.base_url_flightsql,
-    }));
+    b.add_value(kamu::domain::ServerUrlConfig::new(
+        kamu::domain::Protocols {
+            base_url_platform: config.url.base_url_platform,
+            base_url_rest: config.url.base_url_rest,
+            base_url_flightsql: config.url.base_url_flightsql,
+        },
+    ));
 
     let maybe_jwt_secret = if !config.auth.jwt_secret.is_empty() {
         Some(config.auth.jwt_secret)
@@ -410,23 +438,25 @@ pub async fn init_dependencies(
         None
     };
 
-    b.add_value(JwtAuthenticationConfig::new(maybe_jwt_secret));
+    b.add_value(kamu_accounts::JwtAuthenticationConfig::new(
+        maybe_jwt_secret,
+    ));
 
-    b.add_value(FileUploadLimitConfig::new_in_mb(
+    b.add_value(kamu_adapter_http::FileUploadLimitConfig::new_in_mb(
         config.upload_repo.max_file_size_mb,
     ));
 
     match config.upload_repo.storage {
         UploadRepoStorageConfig::Local => {
-            b.add::<UploadServiceLocal>();
+            b.add::<kamu_adapter_http::UploadServiceLocal>();
         }
         UploadRepoStorageConfig::S3(s3_config) => {
             let s3_upload_direct_url = url::Url::parse(&s3_config.bucket_s3_url).unwrap();
             b.add_builder(
-                UploadServiceS3::builder()
+                kamu_adapter_http::UploadServiceS3::builder()
                     .with_s3_upload_context(S3Context::from_url(&s3_upload_direct_url).await),
             );
-            b.bind::<dyn UploadService, UploadServiceS3>();
+            b.bind::<dyn kamu_adapter_http::UploadService, kamu_adapter_http::UploadServiceS3>();
         }
     }
 
@@ -450,7 +480,7 @@ pub async fn init_dependencies(
                 warn!("Dataset env vars feature will be disabled");
             }
             assert!(
-                DatasetEnvVar::try_asm_256_gcm_from_str(encryption_key).is_ok(),
+                kamu_datasets::DatasetEnvVar::try_asm_256_gcm_from_str(encryption_key).is_ok(),
                 "Invalid dataset env var encryption key. Key must be a 32-character alphanumeric \
                  string",
             );
@@ -488,6 +518,7 @@ async fn configure_repository(
                     .with_multi_tenant(multi_tenant),
             );
             b.bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryLocalFs>();
+            b.bind::<dyn kamu::DatasetRepositoryWriter, kamu::DatasetRepositoryLocalFs>();
 
             b.add::<kamu::ObjectStoreBuilderLocalFs>();
         }
@@ -510,7 +541,8 @@ async fn configure_repository(
                     .with_multi_tenant(true)
                     .with_metadata_cache_local_fs_path(metadata_cache_local_fs_path),
             )
-            .bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>();
+            .bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>()
+            .bind::<dyn kamu::DatasetRepositoryWriter, kamu::DatasetRepositoryS3>();
 
             let allow_http = repo_url.scheme() == "s3+http";
             b.add_value(kamu::ObjectStoreBuilderS3::new(s3_context, allow_http))
@@ -552,7 +584,7 @@ fn find_workspace_rec(p: &Path) -> Option<PathBuf> {
 
 async fn initialize_components(
     catalog: &dill::Catalog,
-    server_account_subject: CurrentAccountSubject,
+    server_account_subject: kamu_accounts::CurrentAccountSubject,
 ) {
     let logged_catalog = dill::CatalogBuilder::new_chained(catalog)
         .add_value(server_account_subject)

@@ -46,6 +46,8 @@ pub struct ApiServerConfig {
     pub url: UrlConfig,
     /// Ingestions sources
     pub source: SourceConfig,
+    /// Outbox configuration
+    pub outbox: OutboxConfig,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -560,6 +562,31 @@ pub enum UploadRepoStorageConfig {
 #[serde(rename_all = "camelCase")]
 pub struct UploadRepoStorageConfigS3 {
     pub bucket_s3_url: String,
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct OutboxConfig {
+    pub awaiting_step_secs: Option<i64>,
+    pub batch_size: Option<i64>,
+}
+
+impl OutboxConfig {
+    pub fn sample() -> Self {
+        Default::default()
+    }
+}
+
+impl Default for OutboxConfig {
+    fn default() -> Self {
+        Self {
+            awaiting_step_secs: Some(1),
+            batch_size: Some(20),
+        }
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
