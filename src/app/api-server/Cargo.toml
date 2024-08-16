@@ -14,14 +14,15 @@ publish = { workspace = true }
 
 
 [dependencies]
-dill = "0.8"
+dill = "0.9"
 container-runtime = { workspace = true }
-event-bus = { workspace = true }
+messaging-outbox = { workspace = true }
 graceful-shutdown = { workspace = true }
 http-common = { workspace = true }
 internal-error = { workspace = true }
 observability = { workspace = true }
 opendatafabric = { workspace = true }
+time-source = { workspace = true }
 database-common = { workspace = true }
 database-common-macros = { workspace = true }
 kamu = { workspace = true }
@@ -29,6 +30,8 @@ kamu-task-system-services = { workspace = true }
 kamu-task-system-inmem = { workspace = true }
 kamu-flow-system-services = { workspace = true }
 kamu-flow-system-inmem = { workspace = true }
+kamu-flow-system-postgres = { workspace = true }
+kamu-flow-system-sqlite = { workspace = true }
 kamu-adapter-graphql = { workspace = true }
 kamu-adapter-http = { workspace = true }
 kamu-adapter-oauth = { workspace = true }
@@ -45,6 +48,9 @@ kamu-datasets-services = { workspace = true }
 kamu-datasets-inmem = { workspace = true }
 kamu-datasets-postgres = { workspace = true }
 kamu-datasets-sqlite = { workspace = true }
+kamu-messaging-outbox-inmem = { workspace = true }
+kamu-messaging-outbox-postgres = { workspace = true }
+kamu-messaging-outbox-sqlite = { workspace = true }
 
 # APIs
 http = "0.2"
@@ -76,7 +82,7 @@ tracing-log = "0.2"
 async-trait = { version = "0.1", default-features = false }
 chrono = "0.4"
 clap = "4"
-datafusion = { version = "39", default-features = false, features = [
+datafusion = { version = "41", default-features = false, features = [
     "crypto_expressions",
     "encoding_expressions",
     "parquet",

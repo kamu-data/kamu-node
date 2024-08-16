@@ -8,7 +8,7 @@ TEST_LOG_PARAMS=RUST_LOG_SPAN_EVENTS=new,close RUST_LOG=debug
 lint:
 	cargo fmt --check
 	cargo test -p kamu-repo-tools
-	cargo deny check
+	cargo deny check --hide-inclusion-graph
 	cargo clippy --workspace --all-targets -- -D warnings
 
 
