@@ -168,6 +168,10 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
                 .get_one::<dyn kamu_flow_system_inmem::domain::FlowService>()
                 .unwrap();
 
+            let outbox_processor = system_catalog
+                .get_one::<messaging_outbox::OutboxTransactionalProcessor>()
+                .unwrap();
+
             let now = system_catalog
                 .get_one::<dyn time_source::SystemTimeSource>()
                 .unwrap()
@@ -190,6 +194,7 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
                 res = flightsql_server.run() => { res.int_err() },
                 res = task_executor.run() => { res.int_err() },
                 res = flow_service.run(now) => { res.int_err() },
+                res = outbox_processor.run() => { res.int_err() },
             }
         }
         _ => unimplemented!(),

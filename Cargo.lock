@@ -3717,7 +3717,7 @@ checksum = "d2fabcfbdc87f4758337ca535fb41a6d701b65693ce38287d856d1674551ec9b"
 
 [[package]]
 name = "graceful-shutdown"
-version = "0.31.0"
+version = "0.31.1"
 dependencies = [
  "tokio",
  "tracing",
@@ -4740,7 +4740,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-api-server"
-version = "0.31.0"
+version = "0.31.1"
 dependencies = [
  "arrow-flight",
  "async-graphql",
@@ -5166,7 +5166,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-oracle-provider"
-version = "0.31.0"
+version = "0.31.1"
 dependencies = [
  "alloy",
  "async-trait",
@@ -5198,7 +5198,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-repo-tools"
-version = "0.31.0"
+version = "0.31.1"
 dependencies = [
  "chrono",
  "clap",
@@ -5917,7 +5917,7 @@ dependencies = [
 
 [[package]]
 name = "observability"
-version = "0.31.0"
+version = "0.31.1"
 dependencies = [
  "async-trait",
  "axum",
