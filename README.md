@@ -13,7 +13,7 @@
 
 ## About
 
-Kamu Compute Node is a set of [Kubernetes](https://kubernetes.io/)-native applications that can be deployed in any cloud or on-prem to:
+Kamu Node is a set of [Kubernetes](https://kubernetes.io/)-native applications that can be deployed in any cloud or on-prem to:
 
 - Operate the stream processing pipelines for a certain set of data flows
 - Continuously verify datasets that you are interested it to catch malicious behavior
@@ -21,10 +21,14 @@ Kamu Compute Node is a set of [Kubernetes](https://kubernetes.io/)-native applic
 
 Nodes are the building pieces of the [Open Data Fabric](https://docs.kamu.dev/odf/) and the primary way of contributing resources to the network. Unlike blockchain nodes that maintain a single ledger, Kamu nodes can form loosely connected clusters based on vested interests of their operators in certain data pipelines.
 
-If you are new to ODF - we recommend you to start with [Kamu CLI](https://github.com/kamu-data/kamu-cli/) instead of a gradual introduction. You should consider Kamu Node when you want to:
-- Build a horizontally-scalable data lake for your data
+If you are new to ODF - we recommend you to start with [Kamu CLI](https://github.com/kamu-data/kamu-cli/) for a gradual introduction.
+
+You should consider Kamu Node when you want to:
+- Build a horizontally-scalable lakehouse for your data
 - Need a decentralized infrastructure for sharing data with your partners or globally without intermediaries
 - Want to continuously operate ODF data pipelines or verify data
+- Need a rich set of [data APIs](https://docs.kamu.dev/node/protocols/)
+- Want to provide data to [ODF blockchain oracle](https://docs.kamu.dev/node/protocols/oracle/)
 
 
 ## API Server
