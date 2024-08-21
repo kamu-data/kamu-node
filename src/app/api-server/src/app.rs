@@ -501,6 +501,8 @@ pub async fn init_dependencies(
 
     b.add::<database_common::DatabaseTransactionRunner>();
 
+    b.add::<kamu_auth_rebac_services::RebacServiceImpl>();
+
     let maybe_db_connection_settings = try_build_db_connection_settings(&config.database);
     if let Some(db_connection_settings) = maybe_db_connection_settings {
         configure_database_components(&mut b, &config.database, db_connection_settings);

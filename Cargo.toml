@@ -54,6 +54,9 @@ kamu-datasets-sqlite = { git = "https://github.com/kamu-data/kamu-cli", tag = "v
 kamu-messaging-outbox-inmem = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.198.0", version = "0.198.0", default-features = false }
 kamu-messaging-outbox-postgres = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.198.0", version = "0.198.0", default-features = false }
 kamu-messaging-outbox-sqlite = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.198.0", version = "0.198.0", default-features = false }
+kamu-auth-rebac-inmem = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.198.0", version = "0.198.0", default-features = false }
+kamu-auth-rebac-services = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.198.0", version = "0.198.0", default-features = false }
+kamu-auth-rebac-sqlite = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.198.0", version = "0.198.0", default-features = false }
 
 
 [workspace.package]
