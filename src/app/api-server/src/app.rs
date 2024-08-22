@@ -338,6 +338,7 @@ pub async fn init_dependencies(
     b.add::<kamu::VerificationServiceImpl>();
     b.add::<kamu::PullServiceImpl>();
     b.add::<kamu::QueryServiceImpl>();
+    b.add::<kamu::ResetServiceImpl>();
 
     b.add::<kamu::AppendDatasetMetadataBatchUseCaseImpl>();
     b.add::<kamu::CommitDatasetEventUseCaseImpl>();
