@@ -483,14 +483,17 @@ pub async fn init_dependencies(
                 && !enabled
             {
                 warn!("Dataset env vars feature will be disabled");
+                b.add::<kamu_datasets_services::DatasetKeyValueServiceSysEnv>();
+                b.add::<kamu_datasets_services::DatasetEnvVarServiceNull>();
+            } else {
+                assert!(
+                    kamu_datasets::DatasetEnvVar::try_asm_256_gcm_from_str(encryption_key).is_ok(),
+                    "Invalid dataset env var encryption key. Key must be a 32-character \
+                     alphanumeric string",
+                );
+                b.add::<kamu_datasets_services::DatasetKeyValueServiceImpl>();
+                b.add::<kamu_datasets_services::DatasetEnvVarServiceImpl>();
             }
-            assert!(
-                kamu_datasets::DatasetEnvVar::try_asm_256_gcm_from_str(encryption_key).is_ok(),
-                "Invalid dataset env var encryption key. Key must be a 32-character alphanumeric \
-                 string",
-            );
-            b.add::<kamu_datasets_services::DatasetKeyValueServiceImpl>();
-            b.add::<kamu_datasets_services::DatasetEnvVarServiceImpl>();
         }
     }
     b.add_value(config.dataset_env_vars);
