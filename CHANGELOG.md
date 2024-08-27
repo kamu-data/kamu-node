@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.33.0] - 2024-08-27
+### Changed
+- Upgrade kamu-cli version to `0.198.0` (address [RUSTSEC-2024-0363](https://rustsec.org/advisories/RUSTSEC-2024-0363))
+
 ## [0.32.1] - 2024-08-22
 ### Fixed
 - Add missed `ResetService` dependency
@@ -27,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.29.2] - 2024-07-30
 ### Changed
-- Upgrade kamu-cli version to 0.191.5 and add init of new DatasetKeyValueService in catalog 
+- Upgrade kamu-cli version to 0.191.5 and add init of new `DatasetKeyValueService` in catalog 
 
 ## [0.29.1] - 2024-07-23
 ### Changed

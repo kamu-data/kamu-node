@@ -18,7 +18,6 @@ deny = [
     ### Crates we shouldn't use ####
     # "Configure `rustls` instead"
     { name = "openssl-sys" },
-
     # Use `md-5` instead, which is part of the RustCrypto ecosystem
     { name = "md5" },
     # TODO: We should decide whether to stick with rustls or openssl and deny one of them
@@ -82,6 +81,4 @@ allow-org = { github = ["kamu-data", "apache"] }
 yanked = "deny"
 # TODO: Remove when patches are available
 #       See more: https://rustsec.org/advisories/RUSTSEC-2023-0071.html
-# TODO: Remove when patch will be released
-#       See more: https://github.com/launchbadge/sqlx/issues/3440
-ignore = ["RUSTSEC-2023-0071", "RUSTSEC-2024-0363"]
+ignore = ["RUSTSEC-2023-0071"]
