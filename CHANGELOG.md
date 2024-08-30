@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.34.0] - 2024-08-30
+### Changed
+- Upgrade kamu-cli version to `0.198.2`
+  - ReBAC: in-memory & SQLite components
+  - Smart Transfer Protocol: breaking changes
+
 ## [0.33.0] - 2024-08-27
 ### Changed
 - Upgrade kamu-cli version to `0.198.0` (address [RUSTSEC-2024-0363](https://rustsec.org/advisories/RUSTSEC-2024-0363))

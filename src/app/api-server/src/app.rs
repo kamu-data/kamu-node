@@ -406,6 +406,8 @@ pub async fn init_dependencies(
         b.add_value(kamu_accounts::PredefinedAccountsConfig::single_tenant());
         need_to_add_default_predefined_accounts_config = false
     } else {
+        b.add::<kamu_auth_rebac_services::MultiTenantRebacDatasetLifecycleMessageConsumer>();
+
         for provider in config.auth.providers {
             match provider {
                 AuthProviderConfig::Github(github_config) => {
@@ -500,6 +502,8 @@ pub async fn init_dependencies(
     b.add_value(config.dataset_env_vars);
 
     b.add::<database_common::DatabaseTransactionRunner>();
+
+    b.add::<kamu_auth_rebac_services::RebacServiceImpl>();
 
     let maybe_db_connection_settings = try_build_db_connection_settings(&config.database);
     if let Some(db_connection_settings) = maybe_db_connection_settings {
