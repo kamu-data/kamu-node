@@ -42,9 +42,9 @@ async fn main_async(
     let _guard = app::init_observability();
 
     match kamu_api_server::app::run(args, config).await {
-        Ok(_) => {}
+        Ok(_) => 0,
         Err(err) => {
-            eprintln!("Error: {err}\nDetails: {err:#?}");
+            tracing::error!(error = %err, error_dbg = ?err, "Server exited with error");
             1
         }
     }
