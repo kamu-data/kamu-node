@@ -8,7 +8,6 @@
 // by the Apache License, Version 2.0.
 
 use clap::Parser;
-use internal_error::InternalError;
 use kamu_oracle_provider::{Cli, Config};
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -27,16 +26,18 @@ fn main() {
         .build()
         .unwrap();
 
-    match rt.block_on(main_async(args, config)) {
-        Ok(_) => {}
-        Err(err) => {
-            tracing::error!(error = %err, error_dbg = ?err, "Provider exited with error");
-            std::process::exit(1)
-        }
-    }
+    let code = rt.block_on(main_async(args, config));
+
+    std::process::exit(code)
 }
 
-async fn main_async(args: Cli, config: Config) -> Result<(), InternalError> {
+async fn main_async(args: Cli, config: Config) -> i32 {
     let _guard = kamu_oracle_provider::app::init_observability();
-    kamu_oracle_provider::app::run(args, config).await
+    match kamu_oracle_provider::app::run(args, config).await {
+        Ok(_) => 0,
+        Err(err) => {
+            tracing::error!(error = %err, error_dbg = ?err, "Provider exited with error");
+            1
+        }
+    }
 }

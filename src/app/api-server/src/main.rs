@@ -7,8 +7,6 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-use internal_error::InternalError;
-
 /////////////////////////////////////////////////////////////////////////////////////////
 
 fn main() {
@@ -30,22 +28,24 @@ fn main() {
 
     let rt = builder.enable_all().build().unwrap();
 
-    match rt.block_on(main_async(matches, config)) {
-        Ok(_) => {}
-        Err(err) => {
-            eprintln!("Error: {err}\nDetails: {err:#?}");
-            std::process::exit(1)
-        }
-    }
+    let code = rt.block_on(main_async(matches, config));
+
+    std::process::exit(code)
 }
 
 async fn main_async(
     args: clap::ArgMatches,
     config: kamu_api_server::config::ApiServerConfig,
-) -> Result<(), InternalError> {
+) -> i32 {
     use kamu_api_server::app;
 
     let _guard = app::init_observability();
 
-    kamu_api_server::app::run(args, config).await
+    match kamu_api_server::app::run(args, config).await {
+        Ok(_) => {}
+        Err(err) => {
+            eprintln!("Error: {err}\nDetails: {err:#?}");
+            1
+        }
+    }
 }
