@@ -2325,8 +2325,8 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 
 [[package]]
 name = "container-runtime"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "cfg-if",
@@ -2609,8 +2609,8 @@ checksum = "e8566979429cf69b49a5c740c60791108e86440e8be149bbea4fe54d2c32d6e2"
 
 [[package]]
 name = "database-common"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "aws-config",
@@ -2634,8 +2634,8 @@ dependencies = [
 
 [[package]]
 name = "database-common-macros"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "quote",
  "syn 2.0.77",
@@ -3286,8 +3286,8 @@ dependencies = [
 
 [[package]]
 name = "enum-variants"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 
 [[package]]
 name = "env_filter"
@@ -3352,8 +3352,8 @@ dependencies = [
 
 [[package]]
 name = "event-sourcing"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -3367,8 +3367,8 @@ dependencies = [
 
 [[package]]
 name = "event-sourcing-macros"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "quote",
  "syn 2.0.77",
@@ -4000,8 +4000,8 @@ dependencies = [
 
 [[package]]
 name = "http-common"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "axum",
  "http 0.2.12",
@@ -4284,8 +4284,8 @@ checksum = "8bb03732005da905c88227371639bf1ad885cc712789c011c31c5fb3ab3ccf02"
 
 [[package]]
 name = "internal-error"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "thiserror",
 ]
@@ -4406,8 +4406,8 @@ dependencies = [
 
 [[package]]
 name = "kamu"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-recursion",
  "async-stream",
@@ -4477,8 +4477,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "base32",
@@ -4504,8 +4504,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts-inmem"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "chrono",
@@ -4521,8 +4521,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts-postgres"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "chrono",
@@ -4539,8 +4539,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts-services"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "argon2",
  "async-trait",
@@ -4564,8 +4564,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts-sqlite"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "chrono",
@@ -4582,8 +4582,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-auth-oso"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "dill",
@@ -4598,8 +4598,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-flight-sql"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "arrow-flight",
  "async-trait",
@@ -4616,8 +4616,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-graphql"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-graphql",
  "async-trait",
@@ -4651,8 +4651,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-http"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "aws-sdk-s3",
@@ -4695,8 +4695,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-oauth"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "chrono",
@@ -4713,8 +4713,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-odata"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "axum",
  "chrono",
@@ -4821,8 +4821,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-rebac"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "internal-error",
@@ -4834,8 +4834,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-rebac-inmem"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "dill",
@@ -4845,8 +4845,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-rebac-services"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "dill",
@@ -4861,8 +4861,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-rebac-sqlite"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "database-common",
@@ -4875,8 +4875,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-core"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -4906,8 +4906,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-data-utils"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "arrow",
  "arrow-digest",
@@ -4928,8 +4928,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "aes-gcm",
  "async-trait",
@@ -4948,8 +4948,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets-inmem"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "chrono",
@@ -4967,8 +4967,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets-postgres"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "chrono",
@@ -4986,8 +4986,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets-services"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "chrono",
@@ -5008,8 +5008,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets-sqlite"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "chrono",
@@ -5027,8 +5027,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "chrono",
@@ -5055,8 +5055,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system-inmem"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -5079,8 +5079,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system-postgres"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -5097,8 +5097,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system-services"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -5126,8 +5126,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system-sqlite"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -5144,8 +5144,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-ingest-datafusion"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "chrono",
@@ -5174,8 +5174,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-messaging-outbox-inmem"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "chrono",
@@ -5190,8 +5190,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-messaging-outbox-postgres"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -5209,8 +5209,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-messaging-outbox-sqlite"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -5272,8 +5272,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "chrono",
@@ -5291,8 +5291,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system-inmem"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "chrono",
@@ -5305,8 +5305,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system-postgres"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -5323,8 +5323,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system-services"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -5345,8 +5345,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system-sqlite"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -5676,8 +5676,8 @@ dependencies = [
 
 [[package]]
 name = "messaging-outbox"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "chrono",
@@ -5794,8 +5794,8 @@ dependencies = [
 
 [[package]]
 name = "multiformats"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "bs58",
  "digest 0.10.7",
@@ -6053,8 +6053,8 @@ checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
 
 [[package]]
 name = "opendatafabric"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "arrow",
  "base64 0.22.1",
@@ -6950,8 +6950,8 @@ dependencies = [
 
 [[package]]
 name = "random-names"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "rand",
 ]
@@ -7553,18 +7553,18 @@ checksum = "a3f0bf26fd526d2a95683cd0f87bf103b8539e2ca1ef48ce002d67aad59aa0b4"
 
 [[package]]
 name = "serde"
-version = "1.0.209"
+version = "1.0.210"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "99fce0ffe7310761ca6bf9faf5115afbc19688edd00171d81b1bb1b116c63e09"
+checksum = "c8e3592472072e6e22e0a54d5904d9febf8508f65fb8552499a1abc7d1078c3a"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.209"
+version = "1.0.210"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a5831b979fd7b5439637af1752d535ff49f4860c0f341d1baeb6faf0f4242170"
+checksum = "243902eda00fad750862fc144cea25caca5e20d615af0a81bee94ca738f1df1f"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -8437,8 +8437,8 @@ dependencies = [
 
 [[package]]
 name = "time-source"
-version = "0.199.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.0#43de6c2226b844e932c8575d5f4b7fabdf3f7d6e"
+version = "0.199.1"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.199.1#9d1700f6d9ce54c382c49ca9b2ced912ef23b202"
 dependencies = [
  "async-trait",
  "chrono",

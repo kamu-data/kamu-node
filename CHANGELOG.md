@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.35.0] - 2024-09-06
 ### Changed
-- Upgrade kamu-cli version to `0.199.0`
+- Upgrade kamu-cli version to `0.199.1`
   - Persistent Tasks & Flows
   - Database schema breaking changes
   - Get Data Panel: use SmTP for pull & push links 
