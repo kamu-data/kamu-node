@@ -161,11 +161,11 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
                 .build();
 
             let task_executor = system_catalog
-                .get_one::<dyn kamu_task_system_inmem::domain::TaskExecutor>()
+                .get_one::<dyn kamu_task_system::TaskExecutor>()
                 .unwrap();
 
-            let flow_service = system_catalog
-                .get_one::<dyn kamu_flow_system_inmem::domain::FlowService>()
+            let flow_executor = system_catalog
+                .get_one::<dyn kamu_flow_system::FlowExecutor>()
                 .unwrap();
 
             let outbox_processor = system_catalog
@@ -183,17 +183,23 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
                 "Serving traffic"
             );
 
+            // Pre-run phase
+            task_executor.pre_run().await?;
+            flow_executor.pre_run(now).await?;
+            outbox_processor.pre_run().await?;
+
             // TODO: Support graceful shutdown for other protocols
             let http_server = http_server.with_graceful_shutdown(async {
                 shutdown_requested.await;
             });
 
+            // Run phase
             // TODO: PERF: Do we need to spawn these into separate tasks?
             tokio::select! {
                 res = http_server => { res.int_err() },
                 res = flightsql_server.run() => { res.int_err() },
                 res = task_executor.run() => { res.int_err() },
-                res = flow_service.run(now) => { res.int_err() },
+                res = flow_executor.run() => { res.int_err() },
                 res = outbox_processor.run() => { res.int_err() },
             }
         }
@@ -360,14 +366,12 @@ pub async fn init_dependencies(
         &mut b,
         kamu::domain::MESSAGE_PRODUCER_KAMU_CORE_DATASET_SERVICE,
     );
-    messaging_outbox::register_message_dispatcher::<
-        kamu_task_system_inmem::domain::TaskProgressMessage,
-    >(
+    messaging_outbox::register_message_dispatcher::<kamu_task_system::TaskProgressMessage>(
         &mut b,
-        kamu_task_system_inmem::domain::MESSAGE_PRODUCER_KAMU_TASK_EXECUTOR,
+        kamu_task_system::MESSAGE_PRODUCER_KAMU_TASK_EXECUTOR,
     );
     messaging_outbox::register_message_dispatcher::<
-        kamu_flow_system_inmem::domain::FlowConfigurationUpdatedMessage,
+        kamu_flow_system::FlowConfigurationUpdatedMessage,
     >(
         &mut b,
         kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_CONFIGURATION_SERVICE,
@@ -378,15 +382,13 @@ pub async fn init_dependencies(
         config.outbox.batch_size.unwrap(),
     ));
 
-    b.add::<kamu_task_system_services::TaskSchedulerImpl>();
-    b.add::<kamu_task_system_services::TaskExecutorImpl>();
+    kamu_task_system_services::register_dependencies(&mut b);
 
-    b.add::<kamu_flow_system_services::FlowConfigurationServiceImpl>();
-    b.add::<kamu_flow_system_services::FlowServiceImpl>();
-    b.add_value(kamu_flow_system_inmem::domain::FlowServiceRunConfig::new(
+    b.add_value(kamu_flow_system::FlowExecutorConfig::new(
         chrono::Duration::try_seconds(1).unwrap(),
         chrono::Duration::try_minutes(1).unwrap(),
     ));
+    kamu_flow_system_services::register_dependencies(&mut b);
 
     b.add::<kamu_accounts_services::AuthenticationServiceImpl>();
     b.add::<kamu_accounts_services::AccessTokenServiceImpl>();

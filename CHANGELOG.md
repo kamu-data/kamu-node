@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.35.0] - 2024-09-06
+### Changed
+- Upgrade kamu-cli version to `0.199.0`
+  - Persistent Tasks & Flows
+  - Database schema breaking changes
+  - Get Data Panel: use SmTP for pull & push links 
+  - GQL api method `setConfigCompaction` allows to set `metadataOnly` configuration for both root and derived datasets
+  - GQL api `triggerFlow` allows to trigger `HARD_COMPACTION` flow in `metadataOnly` mode for both root and derived datasets  
+
 ## [0.34.1] - 2024-08-30
 ### Fixed
 - Critical errors were not logged due to logging guard destroyed before the call to tracing
