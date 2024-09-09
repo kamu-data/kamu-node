@@ -321,7 +321,7 @@ pub async fn init_dependencies(
     if let Some(identity_config) = config
         .identity
         .as_ref()
-        .map(|identity| identity.to_infra_cfg())
+        .and_then(|identity| identity.to_infra_cfg())
     {
         b.add_value(identity_config);
     }
