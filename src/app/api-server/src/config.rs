@@ -48,6 +48,8 @@ pub struct ApiServerConfig {
     pub source: SourceConfig,
     /// Outbox configuration
     pub outbox: OutboxConfig,
+    /// UNSTABLE: Identity configuration
+    pub identity: Option<IdentityConfig>,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -586,6 +588,45 @@ impl Default for OutboxConfig {
             awaiting_step_secs: Some(1),
             batch_size: Some(20),
         }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Identity
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct IdentityConfig {
+    /// Private key used to sign API responses.
+    /// Currently only `ed25519` keys are supported.
+    ///
+    /// To generate use:
+    ///
+    ///     dd if=/dev/urandom bs=1 count=32 status=none |
+    ///         base64 -w0 |
+    ///         tr '+/' '-_' |
+    ///         tr -d '=' |
+    ///         (echo -n u && cat)
+    ///
+    /// The command above:
+    /// - reads 32 random bytes
+    /// - base64-encodes them
+    /// - converts default base64 encoding to base64url and removes padding
+    /// - prepends a multibase prefix
+    pub private_key: Option<opendatafabric::PrivateKey>,
+}
+
+impl IdentityConfig {
+    pub fn new() -> Self {
+        Self { private_key: None }
+    }
+
+    pub fn to_infra_cfg(&self) -> Option<kamu_adapter_http::data::query_types::IdentityConfig> {
+        self.private_key
+            .clone()
+            .map(|private_key| kamu_adapter_http::data::query_types::IdentityConfig { private_key })
     }
 }
 

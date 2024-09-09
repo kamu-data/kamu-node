@@ -318,6 +318,14 @@ pub async fn init_dependencies(
     b.add_value(config.source.mqtt.to_infra_cfg());
     b.add_value(config.source.ethereum.to_infra_cfg());
 
+    if let Some(identity_config) = config
+        .identity
+        .as_ref()
+        .map(|identity| identity.to_infra_cfg())
+    {
+        b.add_value(identity_config);
+    }
+
     b.add::<kamu::DatasetFactoryImpl>();
     b.add::<kamu::ObjectStoreRegistryImpl>();
     b.add::<kamu::RemoteAliasesRegistryImpl>();
@@ -375,6 +383,10 @@ pub async fn init_dependencies(
     >(
         &mut b,
         kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_CONFIGURATION_SERVICE,
+    );
+    messaging_outbox::register_message_dispatcher::<kamu_flow_system::FlowProgressMessage>(
+        &mut b,
+        kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
     );
 
     b.add_value(messaging_outbox::OutboxConfig::new(
