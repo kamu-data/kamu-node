@@ -148,7 +148,13 @@ async fn test_oracle_e2e() {
 
     // Setup and run provider
     let rpc_client = provider::app::init_rpc_client(&config).await.unwrap();
+
     let api_client = Arc::new(MockOdfApiClient);
+
+    // let api_client = Arc::new(
+    //     OdfApiClientRest::new(url::Url::parse("https://api.demo.kamu.dev").unwrap(), None).unwrap(),
+    // );
+
     let provider = provider::OdfOracleProvider::new(
         config,
         rpc_client.clone(),
@@ -176,28 +182,35 @@ impl OdfApiClient for MockOdfApiClient {
         assert_eq!(
             serde_json::to_value(&request).unwrap(),
             serde_json::json!({
-                "aliases": [{
-                    "alias": "kamu/covid19.canada.case-details",
-                    "id": "did:odf:fed01c8788dc7825dc95dfaa6c67f989b758d3ebcb1efcb9f47ea914470bd1f7f2bbb",
-                }],
-                "dataFormat": "JsonAoa",
-                "includeDataHash": true,
-                "includeSchema": false,
-                "includeState": true,
+                "include": ["Input"],
                 "query": request.query,
+                "queryDialect": "SqlDataFusion",
+                "dataFormat": "JsonAoa",
+                "datasets": [{
+                    "alias": "kamu/covid19.canada.case-details",
+                    "id": "did:odf:fed01dcda047d51fc88246c730db522d36791c9e2286af23d9f2b920f09c65952e3d0",
+                }],
             }),
         );
 
         Ok(QueryResponse {
-            data: json!([["ON", 100500]]),
-            schema: None,
-            data_hash: Some(Multihash::from_multibase("f9680c00120cf2b593b861a048762d0d8451a92ca391ae994594421e2c8b47b455d7673a6f8").unwrap()),
-            state: Some(QueryState {
-                inputs: vec![QueryDatasetState {
-                    id: DatasetID::from_did_str("did:odf:fed01c8788dc7825dc95dfaa6c67f989b758d3ebcb1efcb9f47ea914470bd1f7f2bbb").unwrap(),
-                    block_hash: Multihash::from_multibase("f162080b0979126041b122a0b0851f286503e8a501b03ba2008bf260b348801abc76f").unwrap(),
-                }],
+            input: Some(QueryRequest {
+                include: vec![Include::Input],
+                query: request.query,
+                query_dialect: Some(QueryDialect::SqlDataFusion),
+                data_format: Some(DataFormat::JsonAoa),
+                datasets: Some(vec![DatasetState {
+                    id: DatasetID::from_did_str("did:odf:fed01dcda047d51fc88246c730db522d36791c9e2286af23d9f2b920f09c65952e3d0").unwrap(),
+                    alias: "kamu/covid19.canada.case-details".to_string(),
+                    block_hash: Some(Multihash::from_multibase("f162080b0979126041b122a0b0851f286503e8a501b03ba2008bf260b348801abc76f").unwrap()),
+                }]),
+                skip: Some(0),
+                limit: Some(1000),
             }),
+            output: Outputs{
+                data: json!([["ON", 100500]]),
+                data_format: DataFormat::JsonAoa,
+            }
         })
     }
 }

@@ -8,7 +8,7 @@
 // by the Apache License, Version 2.0.
 
 use internal_error::*;
-use opendatafabric::{DatasetID, Multihash};
+use opendatafabric as odf;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -20,41 +20,30 @@ pub trait OdfApiClient {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, serde::Serialize)]
+// TODO: Separate HTTP API request/response types into a crate to make writing
+// clients easier
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct QueryRequest {
-    /// SQL query
+    /// Query string
     pub query: String,
+
+    /// Dialect of the query
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub query_dialect: Option<QueryDialect>,
 
     /// How data should be layed out in the response
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data_format: Option<DataFormat>,
 
-    /// What representation to use for the schema
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub schema_format: Option<String>,
+    /// What information to include
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub include: Vec<Include>,
 
-    /// Mapping between dataset names used in the query and their stable IDs, to
-    /// make query resistant to datasets being renamed
+    /// Optional information used to affix an alias to the specific
+    /// [`odf::DatasetID`] and reproduce the query at a specific state in time
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub aliases: Option<Vec<QueryDatasetAlias>>,
-
-    /// State information used to reproduce query at a specific point in time
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub as_of_state: Option<QueryState>,
-
-    /// Whether to include schema info about the response
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub include_schema: Option<bool>,
-
-    /// Whether to include dataset state info for query reproducibility
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub include_state: Option<bool>,
-
-    /// Whether to include a logical hash of the resulting data batch.
-    /// See: https://docs.kamu.dev/odf/spec/#physical-and-logical-hashes
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub include_data_hash: Option<bool>,
+    pub datasets: Option<Vec<DatasetState>>,
 
     /// Pagination: skips first N records
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -70,16 +59,66 @@ pub struct QueryRequest {
 #[derive(Debug, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct QueryResponse {
+    /// Inputs that can be used to fully reproduce the query
+    #[serde(default)]
+    pub input: Option<QueryRequest>,
+
+    /// Query results
+    pub output: Outputs,
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Outputs {
+    /// Resulting data
     pub data: serde_json::Value,
 
-    #[serde(default)]
-    pub schema: Option<String>,
+    /// How data is layed out in the response
+    pub data_format: DataFormat,
+}
 
-    #[serde(default)]
-    pub state: Option<QueryState>,
+/////////////////////////////////////////////////////////////////////////////////
 
-    #[serde(default)]
-    pub data_hash: Option<Multihash>,
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ::serde::Serialize, ::serde::Deserialize)]
+pub enum QueryDialect {
+    SqlDataFusion,
+    SqlFlink,
+    SqlRisingWave,
+    SqlSpark,
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    strum::Display,
+    strum::EnumString,
+    serde::Serialize,
+    serde::Deserialize,
+)]
+#[strum(serialize_all = "PascalCase")]
+#[strum(ascii_case_insensitive)]
+pub enum Include {
+    /// Include input block that can be used to fully reproduce the query
+    #[serde(alias = "input")]
+    Input,
+
+    /// Include cryptographic proof that lets you hold the node accountable for
+    /// the response
+    #[serde(alias = "proof")]
+    Proof,
+
+    /// Include schema of the data query resulted in
+    #[serde(alias = "schema")]
+    Schema,
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -99,28 +138,21 @@ pub enum DataFormat {
     JsonAoa,
 }
 
-/////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct QueryDatasetAlias {
+pub struct DatasetState {
+    /// Globally unique identity of the dataset
+    pub id: odf::DatasetID,
+
+    /// Alias to be used in the query
     pub alias: String,
-    pub id: DatasetID,
-}
 
-/////////////////////////////////////////////////////////////////////////////////
-
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct QueryState {
-    pub inputs: Vec<QueryDatasetState>,
-}
-
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct QueryDatasetState {
-    pub id: DatasetID,
-    pub block_hash: Multihash,
+    /// Last block hash of the input datasets that was or should be considered
+    /// during the query planning
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub block_hash: Option<odf::Multihash>,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

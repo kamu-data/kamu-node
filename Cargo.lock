@@ -5259,6 +5259,7 @@ dependencies = [
  "reqwest 0.12.7",
  "serde",
  "serde_json",
+ "strum 0.26.3",
  "test-group",
  "test-log",
  "thiserror",

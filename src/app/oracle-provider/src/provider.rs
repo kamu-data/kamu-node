@@ -91,7 +91,6 @@ struct OdfResult {
 #[derive(Debug)]
 struct OdfResultOk {
     pub data: serde_json::Value,
-    pub data_hash: Multihash,
     pub state: Vec<(DatasetID, Multihash)>,
 }
 
@@ -119,7 +118,7 @@ impl OdfResult {
                     V::Integer(Self::VERSION.into()),
                     V::Bool(true),
                     super::cbor::json_to_cbor(v.data),
-                    V::Bytes(v.data_hash.as_bytes().to_vec()),
+                    V::Bytes(Vec::new()),
                     V::Array(state),
                 ])
             }
@@ -513,20 +512,21 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
         tracing::debug!(?request, "Executing API query");
 
         let rest_request = QueryRequest {
+            include: vec![Include::Input],
             query: request.sql,
+            query_dialect: Some(QueryDialect::SqlDataFusion),
             data_format: Some(DataFormat::JsonAoa),
-            schema_format: None,
-            aliases: Some(
+            datasets: Some(
                 request
                     .aliases
                     .into_iter()
-                    .map(|(alias, id)| QueryDatasetAlias { alias, id })
+                    .map(|(alias, id)| DatasetState {
+                        alias,
+                        id,
+                        block_hash: None,
+                    })
                     .collect(),
             ),
-            as_of_state: None,
-            include_schema: Some(false),
-            include_state: Some(true),
-            include_data_hash: Some(true),
             // TODO: Pagination / detect limits
             skip: None,
             limit: None,
@@ -540,14 +540,14 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
                 Ok(Some(OdfResult {
                     request_id: request.id,
                     inner: Ok(OdfResultOk {
-                        data: rest_response.data,
-                        data_hash: rest_response.data_hash.unwrap(),
+                        data: rest_response.output.data,
                         state: rest_response
-                            .state
+                            .input
                             .unwrap()
-                            .inputs
+                            .datasets
+                            .unwrap_or_default()
                             .into_iter()
-                            .map(|i| (i.id, i.block_hash))
+                            .map(|i| (i.id, i.block_hash.unwrap()))
                             .collect(),
                     }),
                 }))
