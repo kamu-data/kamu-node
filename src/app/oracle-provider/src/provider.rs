@@ -10,11 +10,13 @@
 use std::sync::Arc;
 use std::time::Duration;
 
+use alloy::eips::BlockNumberOrTag;
 use alloy::primitives::U256;
 use alloy::providers::Provider;
 use alloy::rpc::types::eth::{Filter, Log};
 use alloy::sol_types::{SolEvent, SolEventInterface};
 use alloy::transports::BoxTransport;
+use chrono::{DateTime, Utc};
 use internal_error::*;
 use opendatafabric::{DatasetID, Multihash};
 
@@ -236,8 +238,98 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
         Ok(balance)
     }
 
+    /// Determines the block to start scanning from based on multiple config
+    /// options
+    pub async fn get_starting_block(&self) -> Result<u64, InternalError> {
+        if let Some(scan_from_block) = self.config.scan_from_block {
+            Ok(scan_from_block)
+        } else if let Some(scan_last_blocks) = self.config.scan_last_blocks {
+            let latest_block = self.rpc_client.get_block_number().await.int_err()?;
+            Ok(latest_block.saturating_sub(scan_last_blocks))
+        } else if let Some(scan_last_blocks_period) = self.config.scan_last_blocks_period {
+            let lookback: Duration = scan_last_blocks_period.into();
+            self.get_approx_block_number_by_time(Utc::now() - lookback)
+                .await
+        } else {
+            Err("Config does not specify the scanning interval".int_err())
+        }
+    }
+
+    pub async fn get_approx_block_number_by_time(
+        &self,
+        time: DateTime<Utc>,
+    ) -> Result<u64, InternalError> {
+        let latest_block = self
+            .rpc_client
+            .get_block_by_number(BlockNumberOrTag::Latest, false)
+            .await
+            .int_err()?
+            .ok_or("Could not read latest block".int_err())?;
+
+        let latest_block_number = latest_block.header.number.unwrap();
+
+        // Jump back N blocks to calculate average hash rate
+        let jump_back = 1_000;
+        if latest_block_number < jump_back {
+            Err(format!(
+                "With {latest_block_number} blocks there is not enough history to estimate the \
+                 hash rate"
+            )
+            .int_err())?;
+        }
+        let jump_block = self
+            .rpc_client
+            .get_block_by_number(
+                BlockNumberOrTag::Number(latest_block_number - jump_back),
+                false,
+            )
+            .await
+            .int_err()?
+            .ok_or("Could not read block".int_err())?;
+
+        let seconds_per_block = ((latest_block.header.timestamp - jump_block.header.timestamp)
+            as f64)
+            / (jump_back as f64);
+
+        let target_timestamp = u64::try_from(time.timestamp()).unwrap();
+        if target_timestamp > latest_block.header.timestamp {
+            Err(format!(
+                "Target time is in the future: {target_timestamp} > {}",
+                latest_block.header.timestamp
+            )
+            .int_err())?;
+        }
+
+        let approx_block_number = latest_block_number
+            - (f64::floor(
+                ((latest_block.header.timestamp - target_timestamp) as f64) / seconds_per_block,
+            ) as u64);
+
+        let target_block = self
+            .rpc_client
+            .get_block_by_number(BlockNumberOrTag::Number(approx_block_number), false)
+            .await
+            .int_err()?
+            .ok_or("Could not read block".int_err())?;
+
+        tracing::info!(
+            target_timestamp,
+            latest_block_number,
+            latest_block_timestamp = latest_block.header.timestamp,
+            jump_block_number = latest_block_number - jump_back,
+            jump_block_timestamp = jump_block.header.timestamp,
+            seconds_per_block,
+            approx_block_number,
+            actual_timestamp = target_block.header.timestamp,
+            off_by_seconds = u64::abs_diff(target_block.header.timestamp, target_timestamp),
+            "Calculated approximate block number by time",
+        );
+
+        Ok(approx_block_number)
+    }
+
     pub async fn run(self) -> Result<(), InternalError> {
-        let mut from_block = self.config.oracle_contract_first_block;
+        let mut from_block = self.get_starting_block().await?;
         let mut idle_start = None;
 
         // Pre-flight loop: Wait until we have basic pre-requisites to function
@@ -284,7 +376,11 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
         from_block: Option<u64>,
         to_block: Option<u64>,
     ) -> Result<(), InternalError> {
-        let from_block = from_block.unwrap_or(self.config.oracle_contract_first_block);
+        let from_block = if let Some(from_block) = from_block {
+            from_block
+        } else {
+            self.get_starting_block().await?
+        };
 
         let to_block = if let Some(to_block) = to_block {
             to_block
@@ -382,6 +478,12 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
                 tracing::trace!(?log, "Observed log");
 
                 match log_decoded.data {
+                    IOdfProvider::IOdfProviderEvents::SendRequest(event)
+                        if self.config.ignore_requests.contains(&event.requestId)
+                            || self.config.ignore_consumers.contains(&event.consumerAddr) =>
+                    {
+                        tracing::debug!(request_id = ?event.requestId, "Ignoring request as per configuration");
+                    }
                     IOdfProvider::IOdfProviderEvents::SendRequest(event) => {
                         tracing::debug!(request_id = ?event.requestId, "Adding pending request");
                         pending_requests.insert(

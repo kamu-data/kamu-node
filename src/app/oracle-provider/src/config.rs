@@ -8,6 +8,7 @@
 // by the Apache License, Version 2.0.
 
 use alloy::primitives::Address;
+use duration_string::DurationString;
 use url::Url;
 
 #[derive(confique::Config, Debug)]
@@ -31,14 +32,23 @@ pub struct Config {
     /// Address of the oracle contract to read logs from
     pub oracle_contract_address: Address,
 
-    #[config(default = 0)]
-    pub oracle_contract_first_block: u64,
-
     /// Address of this provider's account to use when submitting transactions
     pub provider_address: Address,
 
     /// Private key of the provider to use when signing transactions.
     pub provider_private_key: String,
+
+    /// Block number to start scanning from on startup (precedence:
+    /// scan_from_block, scan_last_blocks, scan_last_blocks_period)
+    pub scan_from_block: Option<u64>,
+
+    /// Number of last blocks to scan on startup (precedence: scan_from_block,
+    /// scan_last_blocks, scan_last_blocks_period)
+    pub scan_last_blocks: Option<u64>,
+
+    /// Time period in which blocks will be scanned on startup (precedence:
+    /// scan_from_block, scan_last_blocks, scan_last_blocks_period)
+    pub scan_last_blocks_period: Option<DurationString>,
 
     /// Number of blocks to examine per one getLogs RPC request when catching up
     #[config(default = 100_000)]
@@ -61,4 +71,14 @@ pub struct Config {
 
     /// API token to use for authentication with the server
     pub api_access_token: Option<String>,
+
+    /// Request IDs that provider should skip over (use as a disaster recovery
+    /// mechanism only)
+    #[config(default = [])]
+    pub ignore_requests: Vec<u64>,
+
+    /// Consumer addresses to ignore requests from (use as a disaster recovery
+    /// mechanism only)
+    #[config(default = [])]
+    pub ignore_consumers: Vec<Address>,
 }

@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Changed
-- Oracle provider updated to use V2 `/query` REST API
+- Oracle Provider: Updated to use V2 `/query` REST API
+- Oracle Provider: Added ability to scan back only a certain interval of past blocks
+- Oracle Provider: Added ability to ignore requests by ID and from certain consumers
 
 ## [0.35.2] - 2024-09-09
 ### Fixed

@@ -105,7 +105,9 @@ async fn test_oracle_e2e() {
         rpc_url: url::Url::parse(&anvil.endpoint()).unwrap(),
         chain_id: anvil.chain_id(),
         oracle_contract_address,
-        oracle_contract_first_block: 0,
+        scan_from_block: Some(0),
+        scan_last_blocks: None,
+        scan_last_blocks_period: None,
         provider_address,
         provider_private_key,
         blocks_stride: 100_000,
@@ -114,6 +116,8 @@ async fn test_oracle_e2e() {
         transaction_timeout_s: 5,
         api_url: url::Url::parse("http://dontcare.com").unwrap(),
         api_access_token: None,
+        ignore_requests: Vec::new(),
+        ignore_consumers: Vec::new(),
     };
 
     // Authorize provider and generate a request
