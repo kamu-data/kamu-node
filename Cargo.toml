@@ -130,14 +130,16 @@ debug = 2
 container-runtime = { debug = 1 }
 internal-error = { debug = 1 }
 opendatafabric = { debug = 1 }
-kamu-task-system = { debug = 1 }
 kamu = { debug = 1 }
-kamu-task-system-inmem = { debug = 1 }
+kamu-api-server = { debug = 1 }
 kamu-adapter-graphql = { debug = 1 }
 kamu-adapter-http = { debug = 1 }
 kamu-adapter-oauth = { debug = 1 }
 kamu-adapter-auth-oso = { debug = 1 }
 kamu-adapter-flight-sql = { debug = 1 }
+kamu-task-system = { debug = 1 }
+kamu-task-system-inmem = { debug = 1 }
+kamu-oracle-provider = { debug = 1 }
 
 
 [profile.ci]
