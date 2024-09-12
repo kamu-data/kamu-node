@@ -32,20 +32,22 @@ const DEFAULT_RUST_LOG: &str = "debug,kamu=trace,alloy_transport_http=info,alloy
 pub async fn run(args: Cli, config: Config) -> Result<(), InternalError> {
     tracing::info!(?args, ?config, "Starting ODF Oracle provider");
 
-    let metrics_reg = prometheus::Registry::new();
-
-    let http_server = build_http_server(
-        config.http_address.parse().unwrap(),
-        config.http_port,
-        metrics_reg.clone(),
-    );
+    let http_address = config.http_address.parse().unwrap();
+    let http_port = config.http_port;
 
     let rpc_client = init_rpc_client(&config).await?;
     let api_client = init_api_client(&config).await?;
 
-    let metrics = OdfOracleProviderMetrics::new();
+    let metrics_reg = prometheus::Registry::new();
+    let metrics =
+        OdfOracleProviderMetrics::new(config.chain_id, config.api_url.host_str().unwrap());
     metrics.register(&metrics_reg).int_err()?;
+
     let provider = OdfOracleProvider::new(config, rpc_client, api_client, metrics);
+
+    let catalog = dill::CatalogBuilder::new().add_value(metrics_reg).build();
+
+    let http_server = build_http_server(http_address, http_port, catalog);
 
     tracing::info!("HTTP API is listening on {}", http_server.local_addr());
 
@@ -126,7 +128,7 @@ pub async fn init_api_client(config: &Config) -> Result<Arc<dyn OdfApiClient>, I
 fn build_http_server(
     address: std::net::IpAddr,
     http_port: u16,
-    metrics_reg: prometheus::Registry,
+    catalog: dill::Catalog,
 ) -> axum::Server<hyper::server::conn::AddrIncoming, axum::routing::IntoMakeService<axum::Router>> {
     let app = axum::Router::new()
         .route(
@@ -137,10 +139,7 @@ fn build_http_server(
             "/system/metrics",
             axum::routing::get(observability::metrics::metrics_handler),
         )
-        .layer(axum::extract::Extension(
-            dill::CatalogBuilder::new().build(),
-        ))
-        .layer(axum::extract::Extension(metrics_reg));
+        .layer(axum::extract::Extension(catalog));
 
     let addr = std::net::SocketAddr::from((address, http_port));
 

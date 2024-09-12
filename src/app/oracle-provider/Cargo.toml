@@ -15,7 +15,10 @@ publish = { workspace = true }
 
 [dependencies]
 graceful-shutdown = { workspace = true, default-features = false }
-observability = { workspace = true, default-features = false }
+observability = { workspace = true, default-features = false, features = [
+    "opentelemetry",
+    "prometheus",
+] }
 opendatafabric = { workspace = true, default-features = false }
 
 alloy = { version = "0.2", default-features = false, features = [

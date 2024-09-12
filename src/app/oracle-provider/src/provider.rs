@@ -19,6 +19,7 @@ use alloy::transports::BoxTransport;
 use chrono::{DateTime, Utc};
 use internal_error::*;
 use opendatafabric::{DatasetID, Multihash};
+use tracing::Instrument;
 
 use crate::api_client::*;
 use crate::Config;
@@ -148,21 +149,23 @@ pub struct OdfOracleProviderMetrics {
 }
 
 impl OdfOracleProviderMetrics {
-    pub fn new() -> Self {
+    pub fn new(chain_id: u64, node_host: &str) -> Self {
+        use prometheus::*;
+
         Self {
-            wallet_balance: prometheus::Gauge::new(
-                "wallet_balance",
-                "Balance of the provider's wallet",
+            wallet_balance: Gauge::with_opts(
+                Opts::new("wallet_balance", "Balance of the provider's wallet")
+                    .const_label("chain_id", chain_id.to_string()),
             )
             .unwrap(),
-            api_queries_num: prometheus::IntCounter::new(
-                "api_queries_num",
-                "ODF API queries executed",
+            api_queries_num: IntCounter::with_opts(
+                Opts::new("api_queries_num", "ODF API queries executed")
+                    .const_label("node_host", node_host),
             )
             .unwrap(),
-            transactions_num: prometheus::IntCounter::new(
-                "transactions_num",
-                "Chain transactions submitted",
+            transactions_num: IntCounter::with_opts(
+                Opts::new("transactions_num", "Chain transactions submitted")
+                    .const_label("chain_id", chain_id.to_string()),
             )
             .unwrap(),
         }
@@ -173,12 +176,6 @@ impl OdfOracleProviderMetrics {
         reg.register(Box::new(self.api_queries_num.clone()))?;
         reg.register(Box::new(self.transactions_num.clone()))?;
         Ok(())
-    }
-}
-
-impl Default for OdfOracleProviderMetrics {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -338,10 +335,10 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
         loop {
             // TODO: Operate on blocks that have >N confirmations to avoid running into too
             // many reorgs?
-            let last_block = self.rpc_client.get_block_number().await.int_err()?;
+            let to_block = self.rpc_client.get_block_number().await.int_err()?;
 
             // TODO: Reorg resistance
-            if from_block > last_block {
+            if from_block > to_block {
                 if idle_start.is_none() {
                     tracing::debug!("Waiting for new blocks");
                     idle_start = Some(std::time::Instant::now());
@@ -357,17 +354,15 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
                 idle_start = None;
             }
 
-            // TODO: Refactor towards concurrent streams model where blockchain scanning
-            // continues independently from execution and submitting
-            // transactions
-            let pending_requests = self.scan_block_range(from_block, last_block).await?;
-            if !pending_requests.is_empty() {
-                let results = self.process_request_batch(pending_requests).await?;
-                self.send_results(results).await?;
-            }
+            let span =
+                observability::tracing::root_span!("process_block_range", from_block, to_block);
+
+            self.process_block_range(from_block, to_block)
+                .instrument(span)
+                .await?;
 
             // TODO: Chain reorg resistance
-            from_block = last_block + 1;
+            from_block = to_block + 1;
         }
     }
 
@@ -393,9 +388,7 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
             return Ok(());
         }
 
-        let pending_requests = self.scan_block_range(from_block, to_block).await?;
-        let results = self.process_request_batch(pending_requests).await?;
-        self.send_results(results).await?;
+        self.process_block_range(from_block, to_block).await?;
 
         Ok(())
     }
@@ -429,6 +422,22 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
                 first = false;
             }
             tokio::time::sleep(Duration::from_secs(5)).await;
+        }
+        Ok(())
+    }
+
+    async fn process_block_range(
+        &self,
+        from_block: u64,
+        to_block: u64,
+    ) -> Result<(), InternalError> {
+        // TODO: Refactor towards concurrent streams model where blockchain scanning
+        // continues independently from execution and submitting
+        // transactions
+        let pending_requests = self.scan_block_range(from_block, to_block).await?;
+        if !pending_requests.is_empty() {
+            let results = self.process_request_batch(pending_requests).await?;
+            self.send_results(results).await?;
         }
         Ok(())
     }

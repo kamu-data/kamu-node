@@ -1,6 +1,6 @@
 [package]
 name = "observability"
-description = "Utilities for tracing and structured logging"
+description = "Utilities for tracing, structured logging, and metrics"
 version = { workspace = true }
 homepage = { workspace = true }
 repository = { workspace = true }
@@ -21,6 +21,20 @@ workspace = true
 doctest = false
 
 
+[features]
+default = []
+
+opentelemetry = [
+    "dep:opentelemetry",
+    "dep:opentelemetry_sdk",
+    "dep:opentelemetry-otlp",
+    "dep:opentelemetry-semantic-conventions",
+    "dep:tracing-opentelemetry",
+]
+
+prometheus = ["dep:prometheus"]
+
+
 [dependencies]
 async-trait = { version = "0.1" }
 axum = { version = "0.6", default-features = false, features = [
@@ -30,25 +44,27 @@ axum = { version = "0.6", default-features = false, features = [
 ] }
 dill = { version = "0.9", default-features = false }
 http = { version = "0.2", default-features = false }
-opentelemetry = { version = "0.23", default-features = false }
-opentelemetry_sdk = { version = "0.23", default-features = false, features = [
-    "rt-tokio",
-] }
-opentelemetry-otlp = { version = "0.16", default-features = false, features = [
-    "trace",
-    "grpc-tonic",
-] }
-opentelemetry-semantic-conventions = { version = "0.16", default-features = false }
-prometheus = { version = "0.13", default-features = false }
 serde = { version = "1", default-features = false, features = ["derive"] }
 serde_json = { version = "1", default-features = false }
 thiserror = { version = "1", default-features = false }
 tracing = { version = "0.1", default-features = false }
 tracing-appender = { version = "0.2", default-features = false }
-tracing-opentelemetry = { version = "0.24", default-features = false }
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 tower = { version = "0.4", default-features = false }
 tower-http = { version = "0.4", default-features = false, features = ["trace"] }
+
+opentelemetry = { optional = true, version = "0.23", default-features = false }
+opentelemetry_sdk = { optional = true, version = "0.23", default-features = false, features = [
+    "rt-tokio",
+] }
+opentelemetry-otlp = { optional = true, version = "0.16", default-features = false, features = [
+    "trace",
+    "grpc-tonic",
+] }
+opentelemetry-semantic-conventions = { optional = true, version = "0.16", default-features = false }
+tracing-opentelemetry = { optional = true, version = "0.24", default-features = false }
+
+prometheus = { optional = true, version = "0.13", default-features = false }
 
 
 [dev-dependencies]

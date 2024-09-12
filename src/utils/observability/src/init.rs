@@ -8,9 +8,7 @@
 // by the Apache License, Version 2.0.
 
 use std::io::IsTerminal;
-use std::time::Duration;
 
-use opentelemetry_otlp::WithExportConfig as _;
 use tracing_subscriber::fmt::format::FmtSpan;
 use tracing_subscriber::layer::SubscriberExt as _;
 use tracing_subscriber::util::SubscriberInitExt as _;
@@ -44,6 +42,7 @@ pub fn dev(cfg: Config) -> Guard {
         .with_thread_names(true)
         .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE);
 
+    #[cfg(feature = "opentelemetry")]
     let (otel_layer, otlp_guard) = if cfg.otlp_endpoint.is_none() {
         (None, None)
     } else {
@@ -57,14 +56,23 @@ pub fn dev(cfg: Config) -> Guard {
         )
     };
 
+    #[cfg(feature = "opentelemetry")]
     tracing_subscriber::registry()
         .with(env_filter)
         .with(otel_layer)
         .with(text_layer)
         .init();
 
+    #[cfg(not(feature = "opentelemetry"))]
+    tracing_subscriber::registry()
+        .with(env_filter)
+        .with(text_layer)
+        .init();
+
     Guard {
         non_blocking_appender: None,
+
+        #[cfg(feature = "opentelemetry")]
         otlp_guard,
     }
 }
@@ -85,6 +93,7 @@ pub fn service(cfg: Config) -> Guard {
         .with_thread_names(true)
         .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE);
 
+    #[cfg(feature = "opentelemetry")]
     let (otel_layer, otlp_guard) = if cfg.otlp_endpoint.is_none() {
         (None, None)
     } else {
@@ -98,22 +107,35 @@ pub fn service(cfg: Config) -> Guard {
         )
     };
 
+    #[cfg(feature = "opentelemetry")]
     tracing_subscriber::registry()
         .with(env_filter)
         .with(otel_layer)
         .with(text_layer)
         .init();
 
+    #[cfg(not(feature = "opentelemetry"))]
+    tracing_subscriber::registry()
+        .with(env_filter)
+        .with(text_layer)
+        .init();
+
     Guard {
         non_blocking_appender: Some(guard),
+
+        #[cfg(feature = "opentelemetry")]
         otlp_guard,
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#[cfg(feature = "opentelemetry")]
 fn init_otel_tracer(cfg: &Config) -> opentelemetry_sdk::trace::Tracer {
+    use std::time::Duration;
+
     use opentelemetry::KeyValue;
+    use opentelemetry_otlp::WithExportConfig as _;
     use opentelemetry_semantic_conventions::resource as otel_resource;
 
     let otel_exporter = opentelemetry_otlp::new_exporter()
@@ -145,11 +167,14 @@ fn init_otel_tracer(cfg: &Config) -> opentelemetry_sdk::trace::Tracer {
 #[derive(Default)]
 pub struct Guard {
     pub non_blocking_appender: Option<tracing_appender::non_blocking::WorkerGuard>,
+
+    #[cfg(feature = "opentelemetry")]
     pub otlp_guard: Option<OtlpGuard>,
 }
 
 pub struct OtlpGuard;
 
+#[cfg(feature = "opentelemetry")]
 impl Drop for OtlpGuard {
     fn drop(&mut self) {
         opentelemetry::global::shutdown_tracer_provider();

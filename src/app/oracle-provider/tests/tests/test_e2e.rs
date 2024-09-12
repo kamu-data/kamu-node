@@ -163,7 +163,7 @@ async fn test_oracle_e2e() {
         config,
         rpc_client.clone(),
         api_client,
-        provider::OdfOracleProviderMetrics::new(),
+        provider::OdfOracleProviderMetrics::new(0, "localhost"),
     );
 
     provider.run_once(Some(0), None).await.unwrap();

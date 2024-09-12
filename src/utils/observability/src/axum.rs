@@ -75,30 +75,22 @@ pub struct MakeSpan;
 
 impl<B> tower_http::trace::MakeSpan<B> for MakeSpan {
     fn make_span(&mut self, request: &http::Request<B>) -> tracing::Span {
-        use opentelemetry::trace::TraceContextExt as _;
-        use tracing_opentelemetry::OpenTelemetrySpanExt as _;
-
         // TODO: Extract parent context from the request
 
         let method = request.method();
         let route = RouteOrUri::from(request);
 
-        let span = tracing::info_span!(
+        let span = crate::tracing::root_span!(
             "http_request",
             %method,
             %route,
-            // Placeholders for OTEL fileds that will be populated after span creation
-            trace_id = tracing::field::Empty,
             "otel.name" = tracing::field::Empty,
         );
 
-        // Extract trace ID from the OTEL context and add it to the tracing span
-        let context = span.context();
-        let otel_span = context.span();
-        let span_context = otel_span.span_context();
-        let trace_id = span_context.trace_id();
-        if span_context.is_valid() {
-            span.record("trace_id", tracing::field::display(trace_id));
+        #[cfg(feature = "opentelemetry")]
+        {
+            crate::tracing::include_otel_trace_id(&span);
+
             span.record(
                 "otel.name",
                 tracing::field::display(SpanName::new(method, route)),

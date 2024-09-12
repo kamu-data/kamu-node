@@ -24,14 +24,20 @@ pub trait HealthCheck: Send + Sync {
 pub async fn health_handler(
     axum::Extension(catalog): axum::Extension<dill::Catalog>,
     axum::extract::Query(args): axum::extract::Query<CheckArgs>,
-) -> Result<axum::Json<serde_json::Value>, CheckError> {
+) -> Result<axum::Json<CheckSuccess>, CheckError> {
     for checker in catalog.get::<dill::AllOf<dyn HealthCheck>>().unwrap() {
         checker.check(args.r#type).await?;
     }
 
-    Ok(axum::Json(serde_json::json!({
-        "ok": true,
-    })))
+    Ok(axum::Json(CheckSuccess { ok: true }))
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CheckSuccess {
+    pub ok: bool,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -77,3 +83,5 @@ pub struct CheckArgs {
     #[serde(default)]
     pub r#type: CheckType,
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

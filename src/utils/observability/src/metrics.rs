@@ -10,9 +10,9 @@
 use prometheus::Encoder as _;
 
 #[allow(clippy::unused_async)]
-pub async fn metrics_handler(
-    axum::extract::Extension(reg): axum::extract::Extension<prometheus::Registry>,
-) -> String {
+pub async fn metrics_handler(axum::Extension(catalog): axum::Extension<dill::Catalog>) -> String {
+    let reg = catalog.get_one::<prometheus::Registry>().unwrap();
+
     let mut buf = Vec::new();
 
     prometheus::TextEncoder::new()

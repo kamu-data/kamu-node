@@ -1,7 +1,7 @@
 [bans]
 # Forbid multiple versions of same dependency (with some exceptions)
 # TODO: Change to "deny" once we crack down on duplication
-multiple-versions = "warn"
+multiple-versions = "allow"
 
 # Avoid adding dependencies to this list as this slows down compilation.
 # Find another ways to avoid duplication.
@@ -11,8 +11,11 @@ skip-tree = []
 wildcards = "deny"
 
 # We specify features explicitly to avoid bloat
-workspace-default-features = "deny"
-features = []
+# TODO: https://github.com/EmbarkStudios/cargo-deny/issues/699
+# external-default-features = "deny"
+
+# TODO: https://github.com/EmbarkStudios/cargo-deny/issues/700
+# workspace-default-features = "deny"
 
 deny = [
     ### Crates we shouldn't use ####
@@ -85,4 +88,3 @@ ignore = [
     "RUSTSEC-2023-0071", # https://rustsec.org/advisories/RUSTSEC-2023-0071.html,
     "RUSTSEC-2024-0370", # https://rustsec.org/advisories/RUSTSEC-2024-0370.html
 ]
-
