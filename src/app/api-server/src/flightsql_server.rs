@@ -56,11 +56,33 @@ impl FlightSqlServer {
 
     pub fn run(self) -> impl Future<Output = Result<(), impl std::error::Error>> {
         Server::builder()
+            .trace_fn(trace_grpc_request)
             .add_service(FlightServiceServer::new(self.service))
             .serve_with_incoming(tokio_stream::wrappers::TcpListenerStream::new(
                 self.listener,
             ))
     }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+// TODO: Move to `kamu-adapter-flightsql`
+fn trace_grpc_request(request: &http::Request<()>) -> tracing::Span {
+    let (service, method) = request
+        .uri()
+        .path()
+        .strip_prefix('/')
+        .and_then(|s| s.split_once('/'))
+        .unzip();
+
+    let otel_name = request.uri().path().strip_prefix('/');
+
+    observability::tracing::root_span!(
+        "flightsql_request",
+        service = service.unwrap_or_default(),
+        method = method.unwrap_or_default(),
+        "otel.name" = otel_name.unwrap_or_default(),
+    )
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

@@ -9,10 +9,13 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-fn main() {
-    let matches = kamu_api_server::cli().get_matches();
+use clap::Parser;
+use kamu_api_server::cli::Cli;
 
-    let config = kamu_api_server::load_config(matches.get_one("config")).unwrap();
+fn main() {
+    let args = Cli::parse();
+
+    let config = kamu_api_server::load_config(args.config.as_ref()).unwrap();
 
     let mut builder = tokio::runtime::Builder::new_multi_thread();
 
@@ -28,15 +31,12 @@ fn main() {
 
     let rt = builder.enable_all().build().unwrap();
 
-    let code = rt.block_on(main_async(matches, config));
+    let code = rt.block_on(main_async(args, config));
 
     std::process::exit(code)
 }
 
-async fn main_async(
-    args: clap::ArgMatches,
-    config: kamu_api_server::config::ApiServerConfig,
-) -> i32 {
+async fn main_async(args: Cli, config: kamu_api_server::config::ApiServerConfig) -> i32 {
     use kamu_api_server::app;
 
     let _guard = app::init_observability();

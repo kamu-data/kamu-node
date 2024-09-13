@@ -26,6 +26,7 @@ use crate::config::{
     ACCOUNT_KAMU,
 };
 use crate::{
+    cli,
     configure_database_components,
     configure_in_memory_components,
     connect_database_initially,
@@ -41,7 +42,7 @@ const DEFAULT_RUST_LOG: &str = "debug,";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(), InternalError> {
+pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), InternalError> {
     let repo_url = if let Some(repo_url) = config.repo.repo_url.as_ref().cloned() {
         repo_url
     } else {
@@ -55,7 +56,7 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
         Url::from_directory_path(workspace_dir.join("datasets")).unwrap()
     };
 
-    let multi_tenant = matches.get_flag("multi-tenant") || repo_url.scheme() != "file";
+    let multi_tenant = args.multi_tenant || repo_url.scheme() != "file";
 
     let local_dir = tempfile::tempdir().unwrap();
 
@@ -90,6 +91,9 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
         .bind::<dyn kamu::domain::DependencyGraphRepository, kamu::DependencyGraphRepositoryInMemory>()
         .build();
 
+    // Register metrics
+    let metrics_registry = observability::metrics::register_all(&catalog);
+
     // Database requires extra actions:
     let final_catalog = if db_config.needs_database() {
         // Connect database and obtain a connection pool
@@ -105,30 +109,29 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
 
     initialize_components(&final_catalog, server_account_subject.clone()).await;
 
-    match matches.subcommand() {
-        Some(("gql", sub)) => match sub.subcommand() {
-            Some(("schema", _)) => {
+    match args.command {
+        cli::Command::Gql(c) => match c.subcommand {
+            cli::Gql::Schema(_) => {
                 println!("{}", kamu_adapter_graphql::schema().sdl());
                 Ok(())
             }
-            Some(("query", qsub)) => {
-                let result = crate::gql_server::gql_query(
-                    qsub.get_one("query").map(String::as_str).unwrap(),
-                    qsub.get_flag("full"),
-                    final_catalog,
-                )
-                .await;
+            cli::Gql::Query(sc) => {
+                let result = crate::gql_server::gql_query(&sc.query, sc.full, final_catalog).await;
                 print!("{}", result);
                 Ok(())
             }
-            _ => unimplemented!(),
         },
-        Some(("run", sub)) => {
+        cli::Command::Metrics(_) => {
+            // TODO: Proper implementation is blocked by https://github.com/tikv/rust-prometheus/issues/526
+            let metric_families = metrics_registry.gather();
+            println!("{metric_families:#?}");
+            Ok(())
+        }
+        cli::Command::Run(c) => {
             let shutdown_requested = graceful_shutdown::trap_signals();
 
-            let address = sub
-                .get_one::<std::net::IpAddr>("address")
-                .copied()
+            let address = c
+                .address
                 .unwrap_or(std::net::Ipv4Addr::new(127, 0, 0, 1).into());
 
             // API servers are built from the regular catalog
@@ -137,14 +140,14 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
             // all processing in the user context.
             let http_server = crate::http_server::build_server(
                 address,
-                sub.get_one("http-port").copied(),
+                c.http_port,
                 final_catalog.clone(),
                 multi_tenant,
             );
 
             let flightsql_server = crate::flightsql_server::FlightSqlServer::new(
                 address,
-                sub.get_one("flightsql-port").copied(),
+                c.flightsql_port,
                 final_catalog.clone(),
             )
             .await;
@@ -203,7 +206,6 @@ pub async fn run(matches: clap::ArgMatches, config: ApiServerConfig) -> Result<(
                 res = outbox_processor.run() => { res.int_err() },
             }
         }
-        _ => unimplemented!(),
     }
 }
 
@@ -293,6 +295,8 @@ pub async fn init_dependencies(
 
     b.add::<time_source::SystemTimeSourceDefault>();
 
+    b.add_value(prometheus::Registry::new());
+
     b.add::<container_runtime::ContainerRuntime>();
     b.add_value(container_runtime::ContainerRuntimeConfig {
         runtime: config.engine.runtime,
@@ -369,6 +373,7 @@ pub async fn init_dependencies(
     b.add::<messaging_outbox::OutboxDispatchingImpl>();
     b.bind::<dyn messaging_outbox::Outbox, messaging_outbox::OutboxDispatchingImpl>();
     b.add::<messaging_outbox::OutboxTransactionalProcessor>();
+    b.add::<messaging_outbox::OutboxTransactionalProcessorMetrics>();
 
     messaging_outbox::register_message_dispatcher::<kamu::domain::DatasetLifecycleMessage>(
         &mut b,

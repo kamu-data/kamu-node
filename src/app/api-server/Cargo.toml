@@ -13,6 +13,10 @@ edition = { workspace = true }
 publish = { workspace = true }
 
 
+[lib]
+doctest = false
+
+
 [dependencies]
 dill = "0.9"
 container-runtime = { workspace = true }
@@ -78,7 +82,8 @@ tonic = { version = "0.11", default-features = false }
 tower = { version = "0.4" }
 tower-http = { version = "0.4", features = ["trace", "cors"] }
 
-# Tracing / logging / telemetry
+# Tracing / logging / telemetry / metrics
+prometheus = { version = "0.13", default-features = false }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", default-features = false, features = [
     "std",
@@ -91,7 +96,18 @@ tracing-log = "0.2"
 # Utils
 async-trait = { version = "0.1", default-features = false }
 chrono = "0.4"
-clap = "4"
+clap = { version = "4", default-features = false, features = [
+    "std",
+    "color",
+    "help",
+    "usage",
+    "error-context",
+    "suggestions",
+    "derive",
+    "cargo",
+    # "env",
+    "wrap_help",
+] }
 datafusion = { version = "41", default-features = false, features = [
     "crypto_expressions",
     "encoding_expressions",

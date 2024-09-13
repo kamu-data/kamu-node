@@ -75,11 +75,15 @@ pub(crate) fn build_server(
                 .allow_headers(tower_http::cors::Any),
         )
         .layer(observability::axum::http_layer())
-        // Note: Healthcheck route is placed before the tracing layer (as layers execute bottom-up)
-        // to avoid spam in logs
+        // Note: Healthcheck and metrics routes are placed before the tracing layer (layers
+        // execute bottom-up) to avoid spam in logs
         .route(
             "/system/health",
             axum::routing::get(observability::health::health_handler),
+        )
+        .route(
+            "/system/metrics",
+            axum::routing::get(observability::metrics::metrics_handler),
         )
         .layer(axum::extract::Extension(gql_schema))
         .layer(axum::extract::Extension(catalog));

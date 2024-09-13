@@ -13,6 +13,10 @@ edition = { workspace = true }
 publish = { workspace = true }
 
 
+[lib]
+doctest = false
+
+
 [dependencies]
 graceful-shutdown = { workspace = true, default-features = false }
 observability = { workspace = true, default-features = false, features = [
