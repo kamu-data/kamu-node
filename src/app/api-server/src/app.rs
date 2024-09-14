@@ -295,7 +295,7 @@ pub async fn init_dependencies(
 
     b.add::<time_source::SystemTimeSourceDefault>();
 
-    b.add_value(prometheus::Registry::new());
+    b.add_value(prometheus::Registry::new_custom(Some("kamu_api_server".into()), None).unwrap());
 
     b.add::<container_runtime::ContainerRuntime>();
     b.add_value(container_runtime::ContainerRuntimeConfig {

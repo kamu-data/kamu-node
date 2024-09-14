@@ -38,7 +38,8 @@ pub async fn run(args: Cli, config: Config) -> Result<(), InternalError> {
     let rpc_client = init_rpc_client(&config).await?;
     let api_client = init_api_client(&config).await?;
 
-    let metrics_reg = prometheus::Registry::new();
+    let metrics_reg =
+        prometheus::Registry::new_custom(Some("kamu_oracle_provider".into()), None).unwrap();
     let metrics =
         OdfOracleProviderMetrics::new(config.chain_id, config.api_url.host_str().unwrap());
     metrics.register(&metrics_reg).int_err()?;
