@@ -154,18 +154,28 @@ impl OdfOracleProviderMetrics {
 
         Self {
             wallet_balance: Gauge::with_opts(
-                Opts::new("wallet_balance", "Balance of the provider's wallet")
-                    .const_label("chain_id", chain_id.to_string()),
+                Opts::new(
+                    "oracle_provider_wallet_balance_wei",
+                    "Balance of the provider's wallet",
+                )
+                .const_label("chain_id", chain_id.to_string()),
             )
             .unwrap(),
             api_queries_num: IntCounter::with_opts(
-                Opts::new("api_queries_num", "ODF API queries executed")
-                    .const_label("node_host", node_host),
+                Opts::new(
+                    "oracle_provider_api_queries_total",
+                    "ODF API queries executed",
+                )
+                .const_label("chain_id", chain_id.to_string())
+                .const_label("node_host", node_host),
             )
             .unwrap(),
             transactions_num: IntCounter::with_opts(
-                Opts::new("transactions_num", "Chain transactions submitted")
-                    .const_label("chain_id", chain_id.to_string()),
+                Opts::new(
+                    "oracle_provider_transactions_submitted_total",
+                    "Chain transactions submitted",
+                )
+                .const_label("chain_id", chain_id.to_string()),
             )
             .unwrap(),
         }
