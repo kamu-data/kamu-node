@@ -171,8 +171,8 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
                 .get_one::<dyn kamu_flow_system::FlowExecutor>()
                 .unwrap();
 
-            let outbox_processor = system_catalog
-                .get_one::<messaging_outbox::OutboxTransactionalProcessor>()
+            let outbox_executor = system_catalog
+                .get_one::<messaging_outbox::OutboxExecutor>()
                 .unwrap();
 
             let now = system_catalog
@@ -189,7 +189,7 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
             // Pre-run phase
             task_executor.pre_run().await?;
             flow_executor.pre_run(now).await?;
-            outbox_processor.pre_run().await?;
+            outbox_executor.pre_run().await?;
 
             // TODO: Support graceful shutdown for other protocols
             let http_server = http_server.with_graceful_shutdown(async {
@@ -203,7 +203,7 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
                 res = flightsql_server.run() => { res.int_err() },
                 res = task_executor.run() => { res.int_err() },
                 res = flow_executor.run() => { res.int_err() },
-                res = outbox_processor.run() => { res.int_err() },
+                res = outbox_executor.run() => { res.int_err() },
             }
         }
     }
@@ -372,8 +372,8 @@ pub async fn init_dependencies(
     b.add::<messaging_outbox::OutboxTransactionalImpl>();
     b.add::<messaging_outbox::OutboxDispatchingImpl>();
     b.bind::<dyn messaging_outbox::Outbox, messaging_outbox::OutboxDispatchingImpl>();
-    b.add::<messaging_outbox::OutboxTransactionalProcessor>();
-    b.add::<messaging_outbox::OutboxTransactionalProcessorMetrics>();
+    b.add::<messaging_outbox::OutboxExecutor>();
+    b.add::<messaging_outbox::OutboxExecutorMetrics>();
 
     messaging_outbox::register_message_dispatcher::<kamu::domain::DatasetLifecycleMessage>(
         &mut b,
