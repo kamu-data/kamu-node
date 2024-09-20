@@ -7,6 +7,7 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
+use std::net::SocketAddr;
 use std::str::FromStr;
 use std::sync::Arc;
 
@@ -48,13 +49,18 @@ pub async fn run(args: Cli, config: Config) -> Result<(), InternalError> {
 
     let catalog = dill::CatalogBuilder::new().add_value(metrics_reg).build();
 
-    let http_server = build_http_server(http_address, http_port, catalog);
+    let (http_server, local_addr) = build_http_server(http_address, http_port, catalog).await?;
 
-    tracing::info!("HTTP API is listening on {}", http_server.local_addr());
+    tracing::info!("HTTP API is listening on {}", local_addr);
 
     let shutdown_requested = graceful_shutdown::trap_signals();
-    let http_server = http_server.with_graceful_shutdown(async {
-        shutdown_requested.await;
+
+    let http_server = Box::pin(async move {
+        let server_with_graceful_shutdown = http_server.with_graceful_shutdown(async move {
+            shutdown_requested.await;
+        });
+
+        server_with_graceful_shutdown.await
     });
 
     tracing::info!("Entering provider loop");
@@ -126,11 +132,17 @@ pub async fn init_api_client(config: &Config) -> Result<Arc<dyn OdfApiClient>, I
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-fn build_http_server(
+async fn build_http_server(
     address: std::net::IpAddr,
     http_port: u16,
     catalog: dill::Catalog,
-) -> axum::Server<hyper::server::conn::AddrIncoming, axum::routing::IntoMakeService<axum::Router>> {
+) -> Result<
+    (
+        axum::serve::Serve<axum::routing::IntoMakeService<axum::Router>, axum::Router>,
+        SocketAddr,
+    ),
+    InternalError,
+> {
     let app = axum::Router::new()
         .route(
             "/system/health",
@@ -143,8 +155,11 @@ fn build_http_server(
         .layer(axum::extract::Extension(catalog));
 
     let addr = std::net::SocketAddr::from((address, http_port));
+    let listener = tokio::net::TcpListener::bind(addr).await.int_err()?;
+    let local_addr = listener.local_addr().unwrap();
 
-    axum::Server::bind(&addr).serve(app.into_make_service())
+    let server = axum::serve(listener, app.into_make_service());
+    Ok((server, local_addr))
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
