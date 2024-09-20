@@ -7,8 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.39.0] - 2024-09-20
 ### Changed
-- Upgrade kamu-cli version to `0.202.0`:
-  
+Upgrade kamu-cli version to `0.202.0`:
+  - Major dependency upgrades:
+    - DataFusion 42
+    - HTTP stack v.1
+    - Axum 0.7
+    - latest AWS SDK
+    - latest versions of all remaining libs we depend on
+  - Outbox refactoring towards true parallelism via Tokio spaned tasks instead of futures
+### Fixed
+- Failed flows should still propagate `finishedAt` time
+- Eliminate span.enter, replaced with instrument everywhere  
 
 ## [0.38.0] - 2024-09-19
 ### Added
