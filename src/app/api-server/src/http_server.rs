@@ -12,15 +12,22 @@ use std::net::SocketAddr;
 use database_common_macros::transactional_handler;
 use http_common::ApiError;
 use indoc::indoc;
+use internal_error::{InternalError, ResultIntoInternal};
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-pub(crate) fn build_server(
+pub(crate) async fn build_server(
     address: std::net::IpAddr,
     http_port: Option<u16>,
     catalog: dill::Catalog,
     multi_tenant_workspace: bool,
-) -> axum::Server<hyper::server::conn::AddrIncoming, axum::routing::IntoMakeService<axum::Router>> {
+) -> Result<
+    (
+        axum::serve::Serve<axum::routing::IntoMakeService<axum::Router>, axum::Router>,
+        SocketAddr,
+    ),
+    InternalError,
+> {
     let gql_schema = kamu_adapter_graphql::schema();
 
     let app = axum::Router::new()
@@ -89,8 +96,11 @@ pub(crate) fn build_server(
         .layer(axum::extract::Extension(catalog));
 
     let addr = SocketAddr::from((address, http_port.unwrap_or(0)));
+    let listener = tokio::net::TcpListener::bind(addr).await.int_err()?;
+    let local_addr = listener.local_addr().unwrap();
 
-    axum::Server::bind(&addr).serve(app.into_make_service())
+    let server = axum::serve(listener, app.into_make_service());
+    Ok((server, local_addr))
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

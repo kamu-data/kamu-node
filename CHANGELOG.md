@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.39.0] - 2024-09-20
+### Changed
+Upgrade kamu-cli version to `0.202.0`:
+  - Major dependency upgrades:
+    - DataFusion 42
+    - HTTP stack v.1
+    - Axum 0.7
+    - latest AWS SDK
+    - latest versions of all remaining libs we depend on
+  - Outbox refactoring towards true parallelism via Tokio spaned tasks instead of futures
+### Fixed
+- Re-enabled missing optional features for eth, ftp, mqtt ingest and JSON SQL extensions
+- Failed flows should still propagate `finishedAt` time
+- Eliminate span.enter, replaced with instrument everywhere
+
 ## [0.38.0] - 2024-09-19
 ### Added
 - REST API: New `/verify` endpoint allows verification of query commitment

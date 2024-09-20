@@ -267,7 +267,7 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
             .int_err()?
             .ok_or("Could not read latest block".int_err())?;
 
-        let latest_block_number = latest_block.header.number.unwrap();
+        let latest_block_number = latest_block.header.number;
 
         // Jump back N blocks to calculate average hash rate
         let jump_back = 1_000;

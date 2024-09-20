@@ -138,12 +138,13 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
             // that does not contain any auth subject, thus they will rely on
             // their own middlewares to authenticate per request / session and execute
             // all processing in the user context.
-            let http_server = crate::http_server::build_server(
+            let (http_server, local_addr) = crate::http_server::build_server(
                 address,
                 c.http_port,
                 final_catalog.clone(),
                 multi_tenant,
-            );
+            )
+            .await?;
 
             let flightsql_server = crate::flightsql_server::FlightSqlServer::new(
                 address,
@@ -181,7 +182,7 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
                 .now();
 
             info!(
-                http_endpoint = format!("http://{}", http_server.local_addr()),
+                http_endpoint = format!("http://{}", local_addr),
                 flightsql_endpoint = format!("flightsql://{}", flightsql_server.local_addr()),
                 "Serving traffic"
             );
@@ -191,9 +192,13 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
             flow_executor.pre_run(now).await?;
             outbox_executor.pre_run().await?;
 
-            // TODO: Support graceful shutdown for other protocols
-            let http_server = http_server.with_graceful_shutdown(async {
-                shutdown_requested.await;
+            let http_server = Box::pin(async move {
+                let server_with_graceful_shutdown =
+                    http_server.with_graceful_shutdown(async move {
+                        shutdown_requested.await;
+                    });
+
+                server_with_graceful_shutdown.await
             });
 
             // Run phase
