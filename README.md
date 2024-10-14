@@ -83,7 +83,7 @@ To use it:
 cargo run --bin kamu-api-server -- --config config.yaml run | bunyan
 
 # Alternative: pass the repo url via env:
-KAMU_API_SERVER_CONFIG_repo__repoUrls3://example.com/kamu_repo \
+KAMU_API_SERVER_CONFIG_repo__repoUrl=s3://example.com/kamu_repo \
   kamu-api-server run | bunyan
 ```
 
