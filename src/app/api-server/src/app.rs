@@ -230,6 +230,10 @@ pub fn load_config(path: Option<&PathBuf>) -> Result<ApiServerConfig, InternalEr
     ));
 
     if let Some(path) = path {
+        if !path.is_file() {
+            return InternalError::bail(format!("Config file '{}' not found", path.display()));
+        }
+
         figment = figment.merge(figment::providers::Yaml::file(path));
     };
 
