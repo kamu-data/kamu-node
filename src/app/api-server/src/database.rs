@@ -177,6 +177,7 @@ pub(crate) async fn connect_database_initially(
         }
         DatabaseProvider::Sqlite => {
             SqlitePlugin::catalog_with_connected_pool(base_catalog, &db_connection_settings)
+                .await
                 .int_err()
         }
     }

@@ -107,7 +107,7 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
         catalog
     };
 
-    initialize_components(&final_catalog, server_account_subject.clone()).await;
+    initialize_components(&final_catalog, server_account_subject.clone()).await?;
 
     match args.command {
         cli::Command::Gql(c) => match c.subcommand {
@@ -176,21 +176,11 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
                 .get_one::<messaging_outbox::OutboxExecutor>()
                 .unwrap();
 
-            let now = system_catalog
-                .get_one::<dyn time_source::SystemTimeSource>()
-                .unwrap()
-                .now();
-
             info!(
                 http_endpoint = format!("http://{}", local_addr),
                 flightsql_endpoint = format!("flightsql://{}", flightsql_server.local_addr()),
                 "Serving traffic"
             );
-
-            // Pre-run phase
-            task_executor.pre_run().await?;
-            flow_executor.pre_run(now).await?;
-            outbox_executor.pre_run().await?;
 
             let http_server = Box::pin(async move {
                 let server_with_graceful_shutdown =
@@ -622,28 +612,14 @@ fn find_workspace_rec(p: &Path) -> Option<PathBuf> {
 async fn initialize_components(
     catalog: &dill::Catalog,
     server_account_subject: kamu_accounts::CurrentAccountSubject,
-) {
+) -> Result<(), InternalError> {
     let logged_catalog = dill::CatalogBuilder::new_chained(catalog)
         .add_value(server_account_subject)
         .build();
 
-    database_common::DatabaseTransactionRunner::new(logged_catalog.clone())
-        .transactional(|transactional_catalog| async move {
-            let registrator = transactional_catalog
-                .get_one::<kamu_accounts_services::PredefinedAccountsRegistrator>()
-                .unwrap();
-            registrator
-                .ensure_predefined_accounts_are_registered()
-                .await
-                .unwrap();
-
-            let initializer = transactional_catalog
-                .get_one::<kamu::DatasetOwnershipServiceInMemoryStateInitializer>()
-                .unwrap();
-            initializer.eager_initialization().await
-        })
+    init_on_startup::run_startup_jobs(&logged_catalog)
         .await
-        .unwrap();
+        .int_err()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
