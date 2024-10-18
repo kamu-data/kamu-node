@@ -28,19 +28,22 @@ query-extensions-json = ["kamu/query-extensions-json"]
 
 [dependencies]
 dill = "0.9"
+
 container-runtime = { workspace = true }
-messaging-outbox = { workspace = true }
+database-common = { workspace = true }
+database-common-macros = { workspace = true }
 graceful-shutdown = { workspace = true }
 http-common = { workspace = true }
+init-on-startup = { workspace = true }
 internal-error = { workspace = true }
+messaging-outbox = { workspace = true }
 observability = { workspace = true, default-features = false, features = [
     "opentelemetry",
     "prometheus",
 ] }
 opendatafabric = { workspace = true }
 time-source = { workspace = true }
-database-common = { workspace = true }
-database-common-macros = { workspace = true }
+
 kamu = { workspace = true }
 kamu-task-system = { workspace = true }
 kamu-task-system-services = { workspace = true }
