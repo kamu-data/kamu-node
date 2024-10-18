@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- `kamu-api-server`: error if specialized config is not found
+
 ## [0.40.1] - 2024-09-24
 ### Changed
 Upgrade kamu-cli version to `0.203.1`:
@@ -16,7 +20,7 @@ Upgrade kamu-cli version to `0.203.1`:
 
 ## [0.39.0] - 2024-09-20
 ### Changed
-Upgrade kamu-cli version to `0.202.0`:
+- Upgrade kamu-cli version to `0.202.0`:
   - Major dependency upgrades:
     - DataFusion 42
     - HTTP stack v.1
@@ -27,7 +31,7 @@ Upgrade kamu-cli version to `0.202.0`:
 ### Fixed
 - Re-enabled missing optional features for eth, ftp, mqtt ingest and JSON SQL extensions
 - Failed flows should still propagate `finishedAt` time
-- Eliminate span.enter, replaced with instrument everywhere
+- Eliminate `span.enter`, replaced with instrument everywhere
 
 ## [0.38.0] - 2024-09-19
 ### Added
