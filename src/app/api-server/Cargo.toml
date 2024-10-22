@@ -1,6 +1,6 @@
 [package]
 name = "kamu-api-server"
-description = "Kamu Compute Node API component"
+description = "Kamu Node's API server component"
 version = { workspace = true }
 homepage = { workspace = true }
 repository = { workspace = true }
@@ -94,6 +94,11 @@ async-graphql-axum = "7"
 tonic = { version = "0.12", default-features = false }
 tower = { version = "0.5" }
 tower-http = { version = "0.5", features = ["trace", "cors"] }
+utoipa = { version = "5", default-features = true, features = ["macros"] }
+utoipa-swagger-ui = { version = "8", default-features = false, features = [
+    "axum",
+] }
+utoipa-axum = { version = "0.1", default-features = false, features = [] }
 
 # Tracing / logging / telemetry / metrics
 prometheus = { version = "0.13", default-features = false }
@@ -154,5 +159,6 @@ kamu = { workspace = true, features = ["testing"] }
 
 env_logger = "0.11"
 rand = "0.8"
+reqwest = { version = "0.12", default-features = false, features = [] }
 test-group = { version = "1" }
 test-log = { version = "0.2", features = ["trace"] }

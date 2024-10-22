@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Introduced OpenAPI spec generation
+  - `/openapi.json` endpoint now returns the generated spec
+  - `/swagger` endpoint serves an embedded Swagger UI for viewing the spec directly in the running server
+  - OpenAPI schema is available in the repo `resources/openapi.json` beside its multi-tenant version
+- Added endpoint to read a recently uploaded file (`GET /platform/file/upload/{upload_token}`)
 ### Changed
 - Upgrade kamu-cli version to `0.205.0`:
   - Simplified organization of startup initialization code over different components
