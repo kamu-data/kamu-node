@@ -61,6 +61,7 @@ pub(crate) async fn build_server(
             },
         )
         .nest("/", kamu_adapter_http::data::root_router())
+        .nest("/", kamu_adapter_http::general::root_router())
         .nest(
             if multi_tenant_workspace {
                 "/:account_name/:dataset_name"
