@@ -99,12 +99,13 @@ pub(crate) fn configure_database_components(
 pub(crate) fn configure_in_memory_components(b: &mut CatalogBuilder) {
     b.add::<kamu_messaging_outbox_inmem::InMemoryOutboxMessageRepository>();
     b.add::<kamu_messaging_outbox_inmem::InMemoryOutboxMessageConsumptionRepository>();
-    b.add::<kamu_datasets_inmem::InMemoryDatasetEnvVarRepository>();
     b.add::<kamu_accounts_inmem::InMemoryAccountRepository>();
     b.add::<kamu_accounts_inmem::InMemoryAccessTokenRepository>();
     b.add::<kamu_flow_system_inmem::InMemoryFlowConfigurationEventStore>();
     b.add::<kamu_flow_system_inmem::InMemoryFlowEventStore>();
     b.add::<kamu_task_system_inmem::InMemoryTaskEventStore>();
+    b.add::<kamu_datasets_inmem::InMemoryDatasetEnvVarRepository>();
+    b.add::<kamu_datasets_inmem::InMemoryDatasetEntryRepository>();
     b.add::<kamu_auth_rebac_inmem::InMemoryRebacRepository>();
 
     NoOpDatabasePlugin::init_database_components(b);
