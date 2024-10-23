@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgrade kamu-cli version to `0.205.0`:
   - Simplified organization of startup initialization code over different components
   - Postgres implementation for dataset entry and account Re-BAC repositories
+  - `DatasetEntry` integration that will allow us to build dataset indexing
   - Added REST API endpoint:
     - `GET /info`
     - `GET /accounts/me`
