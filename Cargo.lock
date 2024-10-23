@@ -5008,6 +5008,7 @@ dependencies = [
  "kamu-adapter-oauth",
  "kamu-adapter-odata",
  "kamu-auth-rebac-inmem",
+ "kamu-auth-rebac-postgres",
  "kamu-auth-rebac-services",
  "kamu-auth-rebac-sqlite",
  "kamu-datasets",
@@ -5074,6 +5075,20 @@ dependencies = [
  "async-trait",
  "dill",
  "kamu-auth-rebac",
+ "tokio",
+]
+
+[[package]]
+name = "kamu-auth-rebac-postgres"
+version = "0.205.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.205.0#b84630a7b868c2519d44bfb3cf1b5579002bdc75"
+dependencies = [
+ "async-trait",
+ "database-common",
+ "dill",
+ "internal-error",
+ "kamu-auth-rebac",
+ "sqlx",
  "tokio",
 ]
 
@@ -7128,7 +7143,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e9552f850d5f0964a4e4d0bf306459ac29323ddfbae05e35a7c0d35cb0803cc5"
 dependencies = [
  "anyhow",
- "itertools 0.10.5",
+ "itertools 0.13.0",
  "proc-macro2",
  "quote",
  "syn 2.0.77",
