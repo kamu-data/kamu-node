@@ -274,7 +274,7 @@ pub async fn init_dependencies(
     multi_tenant: bool,
     local_dir: &Path,
 ) -> CatalogBuilder {
-    let mut b = dill::CatalogBuilder::new();
+    let mut b = CatalogBuilder::new();
 
     // TODO: Improve output multiplexing and cache interface
     let run_info_dir = local_dir.join("run");
@@ -369,6 +369,9 @@ pub async fn init_dependencies(
     b.bind::<dyn messaging_outbox::Outbox, messaging_outbox::OutboxDispatchingImpl>();
     b.add::<messaging_outbox::OutboxExecutor>();
     b.add::<messaging_outbox::OutboxExecutorMetrics>();
+
+    b.add::<kamu_datasets_services::DatasetEntryService>();
+    b.add::<kamu_datasets_services::DatasetEntryIndexer>();
 
     messaging_outbox::register_message_dispatcher::<kamu::domain::DatasetLifecycleMessage>(
         &mut b,
