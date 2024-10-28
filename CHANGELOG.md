@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.41.2] - 2024-10-28
+### Changed
+Upgrade kamu-cli version to `0.206.3`:
+  - GraphQL: Removed deprecated `JSON_LD` in favor of `ND_JSON` in `DataBatchFormat`
+  - GraphQL: In `DataBatchFormat` introduced `JSON_AOS` format to replace the now deprecated JSON in effort to harmonize format names with REST API
+### Fixed
+- GraphQL: Fixed invalid JSON encoding in `PARQUET_JSON` schema format when column names contain special character
+- Improved telemetry for dataset entry indexing process
+- Corrected recent migration related to outbox consumptions of old dataset events
+
 ## [0.41.1] - 2024-10-24
 ### Changed
 - Upgrade kamu-cli version to `0.206.1`:
