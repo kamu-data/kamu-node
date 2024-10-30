@@ -840,7 +840,7 @@
       "name": ""
     },
     "title": "kamu-api-server",
-    "version": "0.41.2"
+    "version": "0.41.3"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -1121,6 +1121,7 @@
           }
         },
         "security": [
+          {},
           {
             "api_key": []
           }
