@@ -12,7 +12,7 @@ resolver = "2"
 
 [workspace.dependencies]
 # Utils
-graceful-shutdown = { path = "src/utils/graceful-shutdown", version = "0.42.2", default-features = false }
+graceful-shutdown = { path = "src/utils/graceful-shutdown", version = "0.43.0", default-features = false }
 # Utils (core)
 container-runtime = { git = "https://github.com/kamu-data/kamu-cli", branch = "857-show-tables-query-times-out-after-a-minute", version = "0.207.2", default-features = false }
 database-common = { git = "https://github.com/kamu-data/kamu-cli", branch = "857-show-tables-query-times-out-after-a-minute", version = "0.207.2", default-features = false }
@@ -64,7 +64,7 @@ kamu-task-system-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branc
 
 
 [workspace.package]
-version = "0.42.2"
+version = "0.43.0"
 edition = "2021"
 homepage = "https://github.com/kamu-data/kamu-platform"
 repository = "https://github.com/kamu-data/kamu-platform"
