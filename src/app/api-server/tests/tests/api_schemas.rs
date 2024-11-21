@@ -7,6 +7,10 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
+use kamu::domain::TenancyConfig;
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 #[tokio::test]
 async fn update_api_schemas() {
     let mut schemas_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
@@ -18,20 +22,22 @@ async fn update_api_schemas() {
     std::fs::write(schemas_path.join("schema.gql"), gql_schema).unwrap();
 
     // OpenAPI
-    let openapi_schema = get_openapi_schema(false).await;
+    let openapi_schema = get_openapi_schema(TenancyConfig::SingleTenant).await;
     std::fs::write(schemas_path.join("openapi.json"), openapi_schema).unwrap();
 
-    let openapi_schema = get_openapi_schema(true).await;
+    let openapi_schema = get_openapi_schema(TenancyConfig::MultiTenant).await;
     std::fs::write(schemas_path.join("openapi-mt.json"), openapi_schema).unwrap();
 }
 
-async fn get_openapi_schema(multi_tenant: bool) -> String {
+/////////////////////////////////////////////////////////////////////////////////////////
+
+async fn get_openapi_schema(tenancy_config: TenancyConfig) -> String {
     // Starts the HTTP server and fetches schema from the endpoint
     let (server, addr) = kamu_api_server::http_server::build_server(
         "127.0.0.1".parse().unwrap(),
         None,
         dill::Catalog::builder().build(),
-        multi_tenant,
+        tenancy_config,
     )
     .await
     .unwrap();
@@ -54,3 +60,5 @@ async fn get_openapi_schema(multi_tenant: bool) -> String {
 
     serde_json::to_string_pretty(&openapi_schema).unwrap()
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
