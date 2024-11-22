@@ -328,6 +328,7 @@ pub async fn init_dependencies(
     b.add::<kamu::DatasetFactoryImpl>();
     b.add::<kamu::ObjectStoreRegistryImpl>();
     b.add::<kamu::RemoteAliasesRegistryImpl>();
+    b.add::<kamu::RemoteAliasResolverImpl>();
 
     // TODO: initialize graph dependencies when starting API server
     b.add::<kamu::DependencyGraphServiceInMemory>();
