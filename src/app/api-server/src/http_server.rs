@@ -13,6 +13,7 @@ use database_common_macros::transactional_handler;
 use http_common::ApiError;
 use indoc::indoc;
 use internal_error::{InternalError, ResultIntoInternal};
+use kamu::domain::TenancyConfig;
 use utoipa::OpenApi as _;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
@@ -23,7 +24,7 @@ pub async fn build_server(
     address: std::net::IpAddr,
     http_port: Option<u16>,
     catalog: dill::Catalog,
-    multi_tenant_workspace: bool,
+    tenancy_config: TenancyConfig,
 ) -> Result<
     (
         axum::serve::Serve<axum::routing::IntoMakeService<axum::Router>, axum::Router>,
@@ -52,23 +53,21 @@ pub async fn build_server(
         .merge(kamu_adapter_http::general::root_router())
         .nest(
             "/odata",
-            if multi_tenant_workspace {
-                kamu_adapter_odata::router_multi_tenant()
-            } else {
-                kamu_adapter_odata::router_single_tenant()
+            match tenancy_config {
+                TenancyConfig::MultiTenant => kamu_adapter_odata::router_multi_tenant(),
+                TenancyConfig::SingleTenant => kamu_adapter_odata::router_single_tenant(),
             },
         )
         .nest(
-            if multi_tenant_workspace {
-                "/:account_name/:dataset_name"
-            } else {
-                "/:dataset_name"
+            match tenancy_config {
+                TenancyConfig::MultiTenant => "/:account_name/:dataset_name",
+                TenancyConfig::SingleTenant => "/:dataset_name",
             },
             kamu_adapter_http::add_dataset_resolver_layer(
                 OpenApiRouter::new()
                     .merge(kamu_adapter_http::smart_transfer_protocol_router())
                     .merge(kamu_adapter_http::data::dataset_router()),
-                multi_tenant_workspace,
+                tenancy_config,
             ),
         )
         .layer(kamu_adapter_http::AuthenticationLayer::new())

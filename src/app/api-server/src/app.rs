@@ -13,6 +13,7 @@ use std::sync::Arc;
 use chrono::Duration;
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
+use kamu::domain::TenancyConfig;
 use kamu::utils::s3_context::S3Context;
 use opendatafabric::{AccountID, AccountName};
 use tracing::{error, info, warn};
@@ -56,7 +57,11 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
         Url::from_directory_path(workspace_dir.join("datasets")).unwrap()
     };
 
-    let multi_tenant = args.multi_tenant || repo_url.scheme() != "file";
+    let tenancy_config = if args.multi_tenant || repo_url.scheme() != "file" {
+        TenancyConfig::MultiTenant
+    } else {
+        TenancyConfig::SingleTenant
+    };
 
     let local_dir = tempfile::tempdir().unwrap();
 
@@ -78,14 +83,14 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
     let dependencies_graph_repository = prepare_dependencies_graph_repository(
         server_account_subject.clone(),
         &repo_url,
-        multi_tenant,
         &config,
+        tenancy_config,
     )
     .await;
 
     let db_config = config.database.clone();
 
-    let catalog = init_dependencies(config, &repo_url, multi_tenant, local_dir.path())
+    let catalog = init_dependencies(config, &repo_url, tenancy_config, local_dir.path())
         .await
         .add_value(dependencies_graph_repository)
         .bind::<dyn kamu::domain::DependencyGraphRepository, kamu::DependencyGraphRepositoryInMemory>()
@@ -142,7 +147,7 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
                 address,
                 c.http_port,
                 final_catalog.clone(),
-                multi_tenant,
+                tenancy_config,
             )
             .await?;
 
@@ -244,8 +249,8 @@ pub fn load_config(path: Option<&PathBuf>) -> Result<ApiServerConfig, InternalEr
 pub async fn prepare_dependencies_graph_repository(
     current_account_subject: kamu_accounts::CurrentAccountSubject,
     repo_url: &Url,
-    multi_tenant: bool,
     config: &ApiServerConfig,
+    tenancy_config: TenancyConfig,
 ) -> kamu::DependencyGraphRepositoryInMemory {
     // Construct a special catalog just to create 1 object, but with a repository
     // bound to API server command line user. It also should be authorized to access
@@ -253,9 +258,10 @@ pub async fn prepare_dependencies_graph_repository(
 
     let mut b = CatalogBuilder::new();
 
-    configure_repository(&mut b, repo_url, multi_tenant, &config.repo).await;
+    configure_repository(&mut b, repo_url, &config.repo).await;
 
     let special_catalog = b
+        .add_value(tenancy_config)
         .add::<time_source::SystemTimeSourceDefault>()
         .add_value(current_account_subject)
         .add::<kamu::domain::auth::AlwaysHappyDatasetActionAuthorizer>()
@@ -271,7 +277,7 @@ pub async fn prepare_dependencies_graph_repository(
 pub async fn init_dependencies(
     config: ApiServerConfig,
     repo_url: &Url,
-    multi_tenant: bool,
+    tenancy_config: TenancyConfig,
     local_dir: &Path,
 ) -> CatalogBuilder {
     let mut b = CatalogBuilder::new();
@@ -283,6 +289,8 @@ pub async fn init_dependencies(
     std::fs::create_dir_all(&run_info_dir).unwrap();
     std::fs::create_dir_all(&cache_dir).unwrap();
     std::fs::create_dir_all(&remote_repos_dir).unwrap();
+
+    b.add_value(tenancy_config);
 
     b.add_value(kamu::domain::RunInfoDir::new(run_info_dir));
     b.add_value(kamu::domain::CacheDir::new(cache_dir));
@@ -340,30 +348,42 @@ pub async fn init_dependencies(
 
     b.add::<kamu::RemoteRepositoryRegistryImpl>();
 
+    b.add::<kamu::utils::simple_transfer_protocol::SimpleTransferProtocol>();
     b.add::<kamu_adapter_http::SmartTransferProtocolClientWs>();
 
     b.add::<kamu::DataFormatRegistryImpl>();
 
     b.add::<kamu::PollingIngestServiceImpl>();
     b.add::<kamu::PushIngestServiceImpl>();
-    b.add::<kamu::TransformServiceImpl>();
+    b.add::<kamu::TransformRequestPlannerImpl>();
+    b.add::<kamu::TransformElaborationServiceImpl>();
+    b.add::<kamu::TransformExecutionServiceImpl>();
     b.add::<kamu::SyncServiceImpl>();
+    b.add::<kamu::SyncRequestBuilder>();
     b.add::<kamu::CompactionServiceImpl>();
     b.add::<kamu::VerificationServiceImpl>();
-    b.add::<kamu::PullServiceImpl>();
+    b.add::<kamu::PullRequestPlannerImpl>();
+    b.add::<kamu::PushRequestPlannerImpl>();
+    b.add::<kamu::WatermarkServiceImpl>();
     b.add::<kamu::QueryServiceImpl>();
     b.add::<kamu::ResetServiceImpl>();
 
     b.add::<kamu::AppendDatasetMetadataBatchUseCaseImpl>();
     b.add::<kamu::CommitDatasetEventUseCaseImpl>();
+    b.add::<kamu::CompactDatasetUseCaseImpl>();
     b.add::<kamu::CreateDatasetUseCaseImpl>();
     b.add::<kamu::CreateDatasetFromSnapshotUseCaseImpl>();
     b.add::<kamu::DeleteDatasetUseCaseImpl>();
+    b.add::<kamu::PullDatasetUseCaseImpl>();
+    b.add::<kamu::PushDatasetUseCaseImpl>();
     b.add::<kamu::RenameDatasetUseCaseImpl>();
+    b.add::<kamu::ResetDatasetUseCaseImpl>();
+    b.add::<kamu::SetWatermarkUseCaseImpl>();
+    b.add::<kamu::VerifyDatasetUseCaseImpl>();
 
     b.add_builder(
         messaging_outbox::OutboxImmediateImpl::builder()
-            .with_consumer_filter(messaging_outbox::ConsumerFilter::BestEffortConsumers),
+            .with_consumer_filter(messaging_outbox::ConsumerFilter::ImmediateConsumers),
     );
     b.add::<messaging_outbox::OutboxTransactionalImpl>();
     b.add::<messaging_outbox::OutboxDispatchingImpl>();
@@ -371,7 +391,7 @@ pub async fn init_dependencies(
     b.add::<messaging_outbox::OutboxExecutor>();
     b.add::<messaging_outbox::OutboxExecutorMetrics>();
 
-    b.add::<kamu_datasets_services::DatasetEntryService>();
+    b.add::<kamu_datasets_services::DatasetEntryServiceImpl>();
     b.add::<kamu_datasets_services::DatasetEntryIndexer>();
 
     messaging_outbox::register_message_dispatcher::<kamu::domain::DatasetLifecycleMessage>(
@@ -414,33 +434,36 @@ pub async fn init_dependencies(
     b.add::<kamu_adapter_auth_oso::OsoDatasetAuthorizer>();
     b.add::<kamu::domain::auth::DummyOdfServerAccessTokenResolver>();
 
-    configure_repository(&mut b, repo_url, multi_tenant, &config.repo).await;
+    configure_repository(&mut b, repo_url, &config.repo).await;
 
     b.add::<kamu_accounts_services::LoginPasswordAuthProvider>();
 
     let mut need_to_add_default_predefined_accounts_config = true;
 
-    if !multi_tenant {
-        b.add_value(kamu_accounts::PredefinedAccountsConfig::single_tenant());
-        need_to_add_default_predefined_accounts_config = false
-    } else {
-        b.add::<kamu_auth_rebac_services::MultiTenantRebacDatasetLifecycleMessageConsumer>();
+    match tenancy_config {
+        TenancyConfig::SingleTenant => {
+            b.add_value(kamu_accounts::PredefinedAccountsConfig::single_tenant());
+            need_to_add_default_predefined_accounts_config = false;
+        }
+        TenancyConfig::MultiTenant => {
+            b.add::<kamu_auth_rebac_services::MultiTenantRebacDatasetLifecycleMessageConsumer>();
 
-        for provider in config.auth.providers {
-            match provider {
-                AuthProviderConfig::Github(github_config) => {
-                    b.add::<kamu_adapter_oauth::OAuthGithub>();
+            for provider in config.auth.providers {
+                match provider {
+                    AuthProviderConfig::Github(github_config) => {
+                        b.add::<kamu_adapter_oauth::OAuthGithub>();
 
-                    b.add_value(kamu_adapter_oauth::GithubAuthenticationConfig::new(
-                        github_config.client_id,
-                        github_config.client_secret,
-                    ));
-                }
-                AuthProviderConfig::Password(prov) => {
-                    b.add_value(kamu_accounts::PredefinedAccountsConfig {
-                        predefined: prov.accounts,
-                    });
-                    need_to_add_default_predefined_accounts_config = false
+                        b.add_value(kamu_adapter_oauth::GithubAuthenticationConfig::new(
+                            github_config.client_id,
+                            github_config.client_secret,
+                        ));
+                    }
+                    AuthProviderConfig::Password(prov) => {
+                        b.add_value(kamu_accounts::PredefinedAccountsConfig {
+                            predefined: prov.accounts,
+                        });
+                        need_to_add_default_predefined_accounts_config = false
+                    }
                 }
             }
         }
@@ -533,20 +556,13 @@ pub async fn init_dependencies(
     b
 }
 
-async fn configure_repository(
-    b: &mut CatalogBuilder,
-    repo_url: &Url,
-    multi_tenant: bool,
-    config: &RepoConfig,
-) {
+async fn configure_repository(b: &mut CatalogBuilder, repo_url: &Url, config: &RepoConfig) {
     match repo_url.scheme() {
         "file" => {
             let datasets_dir = repo_url.to_file_path().unwrap();
 
             b.add_builder(
-                kamu::DatasetRepositoryLocalFs::builder()
-                    .with_root(datasets_dir.clone())
-                    .with_multi_tenant(multi_tenant),
+                kamu::DatasetRepositoryLocalFs::builder().with_root(datasets_dir.clone()),
             );
             b.bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryLocalFs>();
             b.bind::<dyn kamu::DatasetRepositoryWriter, kamu::DatasetRepositoryLocalFs>();
@@ -569,7 +585,6 @@ async fn configure_repository(
             b.add_builder(
                 kamu::DatasetRepositoryS3::builder()
                     .with_s3_context(s3_context.clone())
-                    .with_multi_tenant(true)
                     .with_metadata_cache_local_fs_path(metadata_cache_local_fs_path),
             )
             .bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>()
