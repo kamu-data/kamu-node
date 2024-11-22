@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.43.0] - 2024-11-22
+### Changed
+Introduced `DatasetRegistry` abstraction, encapsulating listing and resolution of datasets (kamu-cli version to `0.208.0`):
+- Registry is backed by database-stored dataset entries, which are automatically maintained
+- Scope for `DatasetRepository` is now limited to support `DatasetRegistry` and in-memory dataset dependency graph
+- New concept of `ResolvedDataset`: a wrapper arround `Arc<dyn Dataset>`, aware of dataset identity
+- Query and Dataset Search functions now consider only the datasets accessible for current user
+- Core services now explicitly separate planning (transactional) and execution (non-transactional) processing phases
+- Similar decomposition introduced in task system execution logic
+- Batched form for dataset authorization checks
+- Ensuring correct transactionality for dataset lookup and authorization checks all over the code base
+- Passing multi/single tenancy as an enum configuration instead of boolean
+- Renamed outbox "durability" term to "delivery mechanism" to clarify the design intent
+
 ## [0.42.3] - 2024-11-22
 ### Fixed
 - Upgrade kamu-cli version to `0.207.3` (Outbox versions)
