@@ -11,7 +11,7 @@ api-server:
 		--build-arg KAMU_VERSION=$(KAMU_VERSION) \
 		--build-arg NODE_VERSION=$(NODE_VERSION) \
 		-t $(IMAGE_REPO)/kamu-api-server:$(NODE_VERSION) \
-		api-server/
+		kamu-api-server/
 
 
 .PHONY: api-server-push
@@ -29,7 +29,7 @@ api-server-with-data:
 		--build-arg KAMU_VERSION=latest-with-data \
 		--build-arg NODE_VERSION=$(NODE_VERSION) \
 		-t $(IMAGE_REPO)/kamu-api-server:latest-with-data \
-		api-server/
+		kamu-api-server/
 
 
 .PHONY: api-server-with-data-push
@@ -45,7 +45,7 @@ api-server-with-data-mt:
 		--build-arg KAMU_VERSION=latest-with-data-mt \
 		--build-arg NODE_VERSION=$(NODE_VERSION) \
 		-t $(IMAGE_REPO)/kamu-api-server:latest-with-data-mt \
-		api-server-with-data-mt/
+		kamu-api-server-with-data-mt/
 
 
 .PHONY: api-server-with-data-mt-push
@@ -61,7 +61,7 @@ oracle-provider:
 		--build-arg KAMU_VERSION=$(KAMU_VERSION) \
 		--build-arg NODE_VERSION=$(NODE_VERSION) \
 		-t $(IMAGE_REPO)/kamu-oracle-provider:$(NODE_VERSION) \
-		oracle-provider/
+		kamu-oracle-provider/
 
 
 .PHONY: oracle-provider-push
