@@ -7,10 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- Improved OpenAPI integration
+- Replaced Swagger with Scalar for presenting OpenAPI spec
 - `kamu-api-server`: error if specialized config is not found
 
 ## [0.43.1] - 2024-11-22
-Upgrade kamu-cli version to `0.208.1` (minor updates in data image)
+### Changed
+- Upgrade kamu-cli version to `0.208.1` (minor updates in data image)
 
 ## [0.43.0] - 2024-11-22
 ### Changed

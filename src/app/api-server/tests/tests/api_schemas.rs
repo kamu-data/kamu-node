@@ -11,6 +11,7 @@ use kamu::domain::TenancyConfig;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+#[test_group::group(resourcegen)]
 #[tokio::test]
 async fn update_api_schemas() {
     let mut schemas_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
@@ -18,7 +19,6 @@ async fn update_api_schemas() {
 
     // GraphQL
     let gql_schema = kamu_adapter_graphql::schema().sdl();
-
     std::fs::write(schemas_path.join("schema.gql"), gql_schema).unwrap();
 
     // OpenAPI
