@@ -26,6 +26,7 @@ use crate::config::{
     UploadRepoStorageConfig,
     ACCOUNT_KAMU,
 };
+use crate::ui_configuration::{UIConfiguration, UIFeatureFlags};
 use crate::{
     cli,
     configure_database_components,
@@ -90,6 +91,14 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
 
     let db_config = config.database.clone();
 
+    let ui_config = UIConfiguration {
+        ingest_upload_file_limit_mb: config.upload_repo.max_file_size_mb,
+        feature_flags: UIFeatureFlags {
+            enable_dataset_env_vars_management: config.dataset_env_vars.is_enabled(),
+            ..UIFeatureFlags::default()
+        },
+    };
+
     let catalog = init_dependencies(config, &repo_url, tenancy_config, local_dir.path())
         .await
         .add_value(dependencies_graph_repository)
@@ -148,6 +157,7 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
                 c.http_port,
                 final_catalog.clone(),
                 tenancy_config,
+                ui_config,
             )
             .await?;
 

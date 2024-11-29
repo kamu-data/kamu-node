@@ -8,6 +8,7 @@
 // by the Apache License, Version 2.0.
 
 use kamu::domain::TenancyConfig;
+use kamu_api_server::ui_configuration::UIConfiguration;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -38,6 +39,7 @@ async fn get_openapi_schema(tenancy_config: TenancyConfig) -> String {
         None,
         dill::Catalog::builder().build(),
         tenancy_config,
+        UIConfiguration::default(),
     )
     .await
     .unwrap();

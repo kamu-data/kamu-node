@@ -17,6 +17,7 @@ pub(crate) mod database;
 pub(crate) mod flightsql_server;
 pub(crate) mod gql_server;
 pub mod http_server;
+pub mod ui_configuration;
 
 pub use app::*;
 pub(crate) use database::*;
