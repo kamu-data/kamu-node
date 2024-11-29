@@ -17,6 +17,8 @@ use kamu::domain::TenancyConfig;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
+use crate::ui_configuration::UIConfiguration;
+
 /////////////////////////////////////////////////////////////////////////////////////////
 
 pub async fn build_server(
@@ -24,6 +26,7 @@ pub async fn build_server(
     http_port: Option<u16>,
     catalog: dill::Catalog,
     tenancy_config: TenancyConfig,
+    ui_config: UIConfiguration,
 ) -> Result<
     (
         axum::serve::Serve<axum::routing::IntoMakeService<axum::Router>, axum::Router>,
@@ -62,6 +65,10 @@ pub async fn build_server(
         .build(),
     )
     .route("/", axum::routing::get(root_handler))
+    .route(
+        "/ui-config",
+        axum::routing::get(ui_configuration_handler),
+    )
     .route(
         "/graphql",
         axum::routing::get(graphql_playground_handler).post(graphql_handler),
@@ -117,6 +124,7 @@ pub async fn build_server(
     .merge(kamu_adapter_http::openapi::router().into())
     .layer(axum::extract::Extension(gql_schema))
     .layer(axum::extract::Extension(catalog))
+    .layer(axum::extract::Extension(ui_config))
     .split_for_parts();
 
     let router = router.layer(axum::extract::Extension(std::sync::Arc::new(api)));
@@ -146,6 +154,14 @@ async fn root_handler() -> impl axum::response::IntoResponse {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
+
+async fn ui_configuration_handler(
+    axum::extract::Extension(ui_config): axum::extract::Extension<UIConfiguration>,
+) -> axum::Json<UIConfiguration> {
+    axum::Json(ui_config)
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[transactional_handler]
 async fn graphql_handler(

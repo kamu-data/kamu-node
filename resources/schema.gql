@@ -257,6 +257,27 @@ type CompactionMetadataOnly {
 	recursive: Boolean!
 }
 
+union CompareChainsResult = CompareChainsResultStatus | CompareChainsResultError
+
+type CompareChainsResultError {
+	reason: CompareChainsResultReason!
+}
+
+type CompareChainsResultReason {
+	message: String!
+}
+
+type CompareChainsResultStatus {
+	message: CompareChainsStatus!
+}
+
+enum CompareChainsStatus {
+	EQUAL
+	BEHIND
+	AHEAD
+	DIVERGED
+}
+
 enum CompressionFormat {
 	GZIP
 	ZIP
@@ -628,6 +649,10 @@ type DatasetMetadata {
 	"""
 	currentPushSources: [AddPushSource!]!
 	"""
+	Sync statuses of push remotes
+	"""
+	pushSyncStatuses: DatasetPushStatuses!
+	"""
 	Current transformation used by the derivative dataset
 	"""
 	currentTransform: SetTransform
@@ -698,7 +723,18 @@ type DatasetPermissions {
 	canSchedule: Boolean!
 }
 
+type DatasetPushStatus {
+	remote: DatasetRefRemote!
+	result: CompareChainsResult!
+}
+
+type DatasetPushStatuses {
+	statuses: [DatasetPushStatus!]!
+}
+
 scalar DatasetRef
+
+scalar DatasetRefRemote
 
 type DatasetState {
 	"""
