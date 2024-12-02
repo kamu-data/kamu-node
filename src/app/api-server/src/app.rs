@@ -81,13 +81,6 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
         kamu_account_name,
         true,
     );
-    let dependencies_graph_repository = prepare_dependencies_graph_repository(
-        server_account_subject.clone(),
-        &repo_url,
-        &config,
-        tenancy_config,
-    )
-    .await;
 
     let db_config = config.database.clone();
 
@@ -101,8 +94,6 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
 
     let catalog = init_dependencies(config, &repo_url, tenancy_config, local_dir.path())
         .await
-        .add_value(dependencies_graph_repository)
-        .bind::<dyn kamu::domain::DependencyGraphRepository, kamu::DependencyGraphRepositoryInMemory>()
         .build();
 
     // Register metrics
@@ -259,35 +250,6 @@ pub fn load_config(path: Option<&PathBuf>) -> Result<ApiServerConfig, InternalEr
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO: Get rid of this
-pub async fn prepare_dependencies_graph_repository(
-    current_account_subject: kamu_accounts::CurrentAccountSubject,
-    repo_url: &Url,
-    config: &ApiServerConfig,
-    tenancy_config: TenancyConfig,
-) -> kamu::DependencyGraphRepositoryInMemory {
-    // Construct a special catalog just to create 1 object, but with a repository
-    // bound to API server command line user. It also should be authorized to access
-    // any dataset.
-
-    let mut b = CatalogBuilder::new();
-
-    configure_repository(&mut b, repo_url, &config.repo).await;
-
-    let special_catalog = b
-        .add_value(tenancy_config)
-        .add::<time_source::SystemTimeSourceDefault>()
-        .add_value(current_account_subject)
-        .add::<kamu::domain::auth::AlwaysHappyDatasetActionAuthorizer>()
-        .add::<kamu::DependencyGraphServiceInMemory>()
-        // Don't add its own initializer, leave optional dependency uninitialized
-        .build();
-
-    let dataset_repo = special_catalog.get_one().unwrap();
-
-    kamu::DependencyGraphRepositoryInMemory::new(dataset_repo)
-}
-
 pub async fn init_dependencies(
     config: ApiServerConfig,
     repo_url: &Url,
@@ -352,9 +314,6 @@ pub async fn init_dependencies(
     b.add::<kamu::RemoteAliasesRegistryImpl>();
     b.add::<kamu::RemoteAliasResolverImpl>();
 
-    // TODO: initialize graph dependencies when starting API server
-    b.add::<kamu::DependencyGraphServiceInMemory>();
-
     b.add::<kamu::DatasetOwnershipServiceInMemory>();
     b.add::<kamu::DatasetOwnershipServiceInMemoryStateInitializer>();
 
@@ -406,7 +365,9 @@ pub async fn init_dependencies(
     b.add::<messaging_outbox::OutboxExecutorMetrics>();
 
     b.add::<kamu_datasets_services::DatasetEntryServiceImpl>();
+    b.add::<kamu_datasets_services::DependencyGraphServiceImpl>();
     b.add::<kamu_datasets_services::DatasetEntryIndexer>();
+    b.add::<kamu_datasets_services::DependencyGraphIndexer>();
 
     messaging_outbox::register_message_dispatcher::<kamu::domain::DatasetLifecycleMessage>(
         &mut b,
