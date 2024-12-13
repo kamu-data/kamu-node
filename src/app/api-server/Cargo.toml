@@ -123,7 +123,7 @@ clap = { version = "4", default-features = false, features = [
     # "env",
     "wrap_help",
 ] }
-datafusion = { version = "42", default-features = false, features = [
+datafusion = { version = "43", default-features = false, features = [
     "crypto_expressions",
     "encoding_expressions",
     "parquet",
@@ -147,7 +147,7 @@ tokio = { version = "1", default-features = false, features = [
 ] }
 tokio-stream = { version = "0.1", default-features = false, features = ["net"] }
 tokio-util = { version = "0.7", default-features = false, features = ["rt"] }
-thiserror = { version = "1", default-features = false }
+thiserror = { version = "2", default-features = false }
 url = "2"
 
 

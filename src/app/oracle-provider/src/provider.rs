@@ -14,6 +14,7 @@ use alloy::eips::BlockNumberOrTag;
 use alloy::primitives::U256;
 use alloy::providers::Provider;
 use alloy::rpc::types::eth::{Filter, Log};
+use alloy::rpc::types::BlockTransactionsKind;
 use alloy::sol_types::{SolEvent, SolEventInterface};
 use alloy::transports::BoxTransport;
 use chrono::{DateTime, Utc};
@@ -262,7 +263,7 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
     ) -> Result<u64, InternalError> {
         let latest_block = self
             .rpc_client
-            .get_block_by_number(BlockNumberOrTag::Latest, false)
+            .get_block_by_number(BlockNumberOrTag::Latest, BlockTransactionsKind::Hashes)
             .await
             .int_err()?
             .ok_or("Could not read latest block".int_err())?;
@@ -282,7 +283,7 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
             .rpc_client
             .get_block_by_number(
                 BlockNumberOrTag::Number(latest_block_number - jump_back),
-                false,
+                BlockTransactionsKind::Hashes,
             )
             .await
             .int_err()?
@@ -308,7 +309,10 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
 
         let target_block = self
             .rpc_client
-            .get_block_by_number(BlockNumberOrTag::Number(approx_block_number), false)
+            .get_block_by_number(
+                BlockNumberOrTag::Number(approx_block_number),
+                BlockTransactionsKind::Hashes,
+            )
             .await
             .int_err()?
             .ok_or("Could not read block".int_err())?;

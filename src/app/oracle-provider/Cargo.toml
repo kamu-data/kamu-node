@@ -25,7 +25,7 @@ observability = { workspace = true, default-features = false, features = [
 ] }
 opendatafabric = { workspace = true, default-features = false }
 
-alloy = { version = "0.5", default-features = false, features = [
+alloy = { version = "0.6", default-features = false, features = [
     "std",
     "contract",
     "network",
@@ -91,7 +91,7 @@ tracing-subscriber = { version = "0.3", default-features = false, features = [
     "fmt",
     "std",
 ] }
-thiserror = { version = "1", default-features = false }
+thiserror = { version = "2", default-features = false }
 url = { version = "2", default-features = false, features = ["serde"] }
 
 
