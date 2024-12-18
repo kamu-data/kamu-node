@@ -170,16 +170,16 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
                 .add_value(server_account_subject)
                 .build();
 
-            let task_executor = system_catalog
-                .get_one::<dyn kamu_task_system::TaskExecutor>()
+            let task_agent = system_catalog
+                .get_one::<dyn kamu_task_system::TaskAgent>()
                 .unwrap();
 
-            let flow_executor = system_catalog
-                .get_one::<dyn kamu_flow_system::FlowExecutor>()
+            let flow_agent = system_catalog
+                .get_one::<dyn kamu_flow_system::FlowAgent>()
                 .unwrap();
 
-            let outbox_executor = system_catalog
-                .get_one::<messaging_outbox::OutboxExecutor>()
+            let outbox_agent = system_catalog
+                .get_one::<messaging_outbox::OutboxAgent>()
                 .unwrap();
 
             info!(
@@ -202,9 +202,9 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
             tokio::select! {
                 res = http_server => { res.int_err() },
                 res = flightsql_server.run() => { res.int_err() },
-                res = task_executor.run() => { res.int_err() },
-                res = flow_executor.run() => { res.int_err() },
-                res = outbox_executor.run() => { res.int_err() },
+                res = task_agent.run() => { res.int_err() },
+                res = flow_agent.run() => { res.int_err() },
+                res = outbox_agent.run() => { res.int_err() },
             }
         }
     }
@@ -327,19 +327,23 @@ pub async fn init_dependencies(
     b.add::<kamu::DataFormatRegistryImpl>();
 
     b.add::<kamu::PollingIngestServiceImpl>();
-    b.add::<kamu::PushIngestServiceImpl>();
+    b.add::<kamu::PushIngestPlannerImpl>();
+    b.add::<kamu::PushIngestExecutorImpl>();
     b.add::<kamu::TransformRequestPlannerImpl>();
     b.add::<kamu::TransformElaborationServiceImpl>();
-    b.add::<kamu::TransformExecutionServiceImpl>();
+    b.add::<kamu::TransformExecutorImpl>();
     b.add::<kamu::SyncServiceImpl>();
     b.add::<kamu::SyncRequestBuilder>();
-    b.add::<kamu::CompactionServiceImpl>();
+    b.add::<kamu::CompactionPlannerImpl>();
+    b.add::<kamu::CompactionExecutorImpl>();
     b.add::<kamu::VerificationServiceImpl>();
     b.add::<kamu::PullRequestPlannerImpl>();
     b.add::<kamu::PushRequestPlannerImpl>();
-    b.add::<kamu::WatermarkServiceImpl>();
+    b.add::<kamu::SetWatermarkPlannerImpl>();
+    b.add::<kamu::SetWatermarkExecutorImpl>();
     b.add::<kamu::QueryServiceImpl>();
-    b.add::<kamu::ResetServiceImpl>();
+    b.add::<kamu::ResetPlannerImpl>();
+    b.add::<kamu::ResetExecutorImpl>();
 
     b.add::<kamu::AppendDatasetMetadataBatchUseCaseImpl>();
     b.add::<kamu::CommitDatasetEventUseCaseImpl>();
@@ -361,8 +365,8 @@ pub async fn init_dependencies(
     b.add::<messaging_outbox::OutboxTransactionalImpl>();
     b.add::<messaging_outbox::OutboxDispatchingImpl>();
     b.bind::<dyn messaging_outbox::Outbox, messaging_outbox::OutboxDispatchingImpl>();
-    b.add::<messaging_outbox::OutboxExecutor>();
-    b.add::<messaging_outbox::OutboxExecutorMetrics>();
+    b.add::<messaging_outbox::OutboxAgent>();
+    b.add::<messaging_outbox::OutboxAgentMetrics>();
 
     b.add::<kamu_datasets_services::DatasetEntryServiceImpl>();
     b.add::<kamu_datasets_services::DependencyGraphServiceImpl>();
@@ -375,7 +379,7 @@ pub async fn init_dependencies(
     );
     messaging_outbox::register_message_dispatcher::<kamu_task_system::TaskProgressMessage>(
         &mut b,
-        kamu_task_system::MESSAGE_PRODUCER_KAMU_TASK_EXECUTOR,
+        kamu_task_system::MESSAGE_PRODUCER_KAMU_TASK_AGENT,
     );
     messaging_outbox::register_message_dispatcher::<
         kamu_flow_system::FlowConfigurationUpdatedMessage,
@@ -395,7 +399,7 @@ pub async fn init_dependencies(
 
     kamu_task_system_services::register_dependencies(&mut b);
 
-    b.add_value(kamu_flow_system::FlowExecutorConfig::new(
+    b.add_value(kamu_flow_system::FlowAgentConfig::new(
         chrono::Duration::try_seconds(1).unwrap(),
         chrono::Duration::try_minutes(1).unwrap(),
     ));

@@ -5,11 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.46.0]
 ### Changed
-- Upgrade kamu-cli version to `0.212.0`
+- Upgrade kamu-cli version to `0.213.0`
   - Upgrade to `datafusion v43`
   - Upgrade to `alloy v0.6`
+  - Planners and executors in key dataset manipulation services
+### Fixed
+- Environment variables are automatically deleted if the dataset they refer to is deleted.
 
 ## [0.45.0]
 ### Changed
