@@ -341,6 +341,7 @@ pub async fn init_dependencies(
     b.add::<kamu::PushRequestPlannerImpl>();
     b.add::<kamu::SetWatermarkPlannerImpl>();
     b.add::<kamu::SetWatermarkExecutorImpl>();
+    b.add::<kamu::MetadataQueryServiceImpl>();
     b.add::<kamu::QueryServiceImpl>();
     b.add::<kamu::ResetPlannerImpl>();
     b.add::<kamu::ResetExecutorImpl>();
