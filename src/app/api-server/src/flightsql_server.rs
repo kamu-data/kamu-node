@@ -108,8 +108,22 @@ impl SessionFactory for SessionFactoryImpl {
         let subject =
             CurrentAccountSubject::Anonymous(AnonymousAccountReason::NoAuthenticationProvided);
 
+        // Extract transaction manager, specific for the database
+        let db_transaction_manager = self
+            .base_catalog
+            .get_one::<dyn database_common::DatabaseTransactionManager>()
+            .unwrap();
+
+        // This is a read-only transaction, so we don't need a COMMIT.
+        // It will be automatically rolled back when catalog is dropped.
+        let transaction_ref = db_transaction_manager.make_transaction_ref().await.map_err(|e| {
+            tracing::error!(error = %e, error_dbg = ?e, "Failed to open database transaction for FlightSQL session");
+            Status::internal("could not start database transaction")
+        })?;
+
         let session_catalog = dill::CatalogBuilder::new_chained(&self.base_catalog)
             .add_value(subject)
+            .add_value(transaction_ref)
             .build();
 
         let query_svc = session_catalog
