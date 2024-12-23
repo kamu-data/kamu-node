@@ -359,7 +359,12 @@ impl EthRpcEndpoint {
 pub struct ProtocolConfig {
     /// IPFS configuration
     pub ipfs: IpfsConfig,
+
+    /// FlightSQL configuration
+    pub flight_sql: FlightSqlConfig,
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -392,6 +397,39 @@ impl IpfsConfig {
         kamu::IpfsGateway {
             url: self.http_gateway,
             pre_resolve_dnslink: self.pre_resolve_dnslink,
+        }
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct FlightSqlConfig {
+    /// Time after which FlightSQL client session will be forgotten and client
+    /// will have to re-authroize
+    pub session_expiration_timeout: DurationString,
+
+    /// Time after which FlightSQL session context will be released to free the
+    /// resources
+    pub session_inactivity_timeout: DurationString,
+}
+
+impl Default for FlightSqlConfig {
+    fn default() -> Self {
+        Self {
+            session_expiration_timeout: DurationString::from_string("5m".to_owned()).unwrap(),
+            session_inactivity_timeout: DurationString::from_string("5s".to_owned()).unwrap(),
+        }
+    }
+}
+
+impl FlightSqlConfig {
+    pub fn into_system_config(self) -> kamu_adapter_flight_sql::SessionCachingConfig {
+        kamu_adapter_flight_sql::SessionCachingConfig {
+            session_expiration_timeout: self.session_expiration_timeout.into(),
+            session_inactivity_timeout: self.session_inactivity_timeout.into(),
         }
     }
 }
