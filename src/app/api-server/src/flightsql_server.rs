@@ -13,19 +13,25 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 
 use arrow_flight::flight_service_server::FlightServiceServer;
+use datafusion::logical_expr::LogicalPlan;
 use datafusion::prelude::SessionContext;
 use futures::Future;
 use kamu_accounts::{AnonymousAccountReason, CurrentAccountSubject};
-use kamu_adapter_flight_sql::{KamuFlightSqlService, SessionFactory, Token};
+use kamu_adapter_flight_sql::{
+    KamuFlightSqlService,
+    PlanToken,
+    SessionManager,
+    SessionManagerCaching,
+    SessionToken,
+};
 use tokio::net::TcpListener;
 use tonic::transport::Server;
 use tonic::Status;
 
-use crate::config::ACCOUNT_KAMU;
-
 /////////////////////////////////////////////////////////////////////////////////////////
 
 pub(crate) struct FlightSqlServer {
+    base_catalog: dill::Catalog,
     service: KamuFlightSqlService,
     listener: TcpListener,
 }
@@ -40,14 +46,17 @@ impl FlightSqlServer {
     ) -> Self {
         let service = kamu_adapter_flight_sql::KamuFlightSqlService::builder()
             .with_server_name(crate::BINARY_NAME, crate::VERSION)
-            .with_session_factory(Arc::new(SessionFactoryImpl { base_catalog }))
             .build();
 
         let listener = TcpListener::bind((address, port.unwrap_or_default()))
             .await
             .unwrap();
 
-        Self { service, listener }
+        Self {
+            base_catalog,
+            service,
+            listener,
+        }
     }
 
     pub fn local_addr(&self) -> SocketAddr {
@@ -57,6 +66,12 @@ impl FlightSqlServer {
     pub fn run(self) -> impl Future<Output = Result<(), impl std::error::Error>> {
         Server::builder()
             .trace_fn(trace_grpc_request)
+            .layer(tonic::service::interceptor(
+                move |mut req: tonic::Request<()>| {
+                    req.extensions_mut().insert(self.base_catalog.clone());
+                    Ok(req)
+                },
+            ))
             .add_service(FlightServiceServer::new(self.service))
             .serve_with_incoming(tokio_stream::wrappers::TcpListenerStream::new(
                 self.listener,
@@ -87,24 +102,15 @@ fn trace_grpc_request(request: &http::Request<()>) -> tracing::Span {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-struct SessionFactoryImpl {
+/// Transactional wrapper on top of [`SessionManagerCaching`]
+#[dill::component]
+#[dill::interface(dyn SessionManager)]
+pub struct SessionManagerCachingTransactional {
     base_catalog: dill::Catalog,
 }
 
-#[async_trait::async_trait]
-impl SessionFactory for SessionFactoryImpl {
-    #[tracing::instrument(level = "debug", skip_all, fields(username))]
-    async fn authenticate(&self, username: &str, password: &str) -> Result<Token, Status> {
-        // TODO: SEC: Real auth via app token
-        if username == ACCOUNT_KAMU && password == username {
-            Ok(String::new())
-        } else {
-            Err(Status::unauthenticated("Invalid credentials!"))
-        }
-    }
-
-    #[tracing::instrument(level = "debug", skip_all)]
-    async fn get_context(&self, _token: &Token) -> Result<Arc<SessionContext>, Status> {
+impl SessionManagerCachingTransactional {
+    async fn inner(&self) -> Result<Arc<SessionManagerCaching>, Status> {
         let subject =
             CurrentAccountSubject::Anonymous(AnonymousAccountReason::NoAuthenticationProvided);
 
@@ -126,12 +132,47 @@ impl SessionFactory for SessionFactoryImpl {
             .add_value(transaction_ref)
             .build();
 
-        let query_svc = session_catalog
-            .get_one::<dyn kamu::domain::QueryService>()
-            .unwrap();
+        session_catalog
+            .get_one()
+            .map_err(|e| Status::internal(e.to_string()))
+    }
+}
 
-        let ctx = Arc::new(query_svc.create_session().await.unwrap());
+#[async_trait::async_trait]
+impl SessionManager for SessionManagerCachingTransactional {
+    async fn auth_basic(&self, username: &str, password: &str) -> Result<SessionToken, Status> {
+        self.inner().await?.auth_basic(username, password).await
+    }
 
-        Ok(ctx)
+    async fn end_session(&self, token: &SessionToken) -> Result<(), Status> {
+        self.inner().await?.end_session(token).await
+    }
+
+    async fn get_context(&self, token: &SessionToken) -> Result<Arc<SessionContext>, Status> {
+        self.inner().await?.get_context(token).await
+    }
+
+    async fn cache_plan(
+        &self,
+        token: &SessionToken,
+        plan: LogicalPlan,
+    ) -> Result<PlanToken, Status> {
+        self.inner().await?.cache_plan(token, plan).await
+    }
+
+    async fn get_plan(
+        &self,
+        token: &SessionToken,
+        plan_token: &PlanToken,
+    ) -> Result<LogicalPlan, Status> {
+        self.inner().await?.get_plan(token, plan_token).await
+    }
+
+    async fn remove_plan(
+        &self,
+        token: &SessionToken,
+        plan_token: &PlanToken,
+    ) -> Result<(), Status> {
+        self.inner().await?.remove_plan(token, plan_token).await
     }
 }

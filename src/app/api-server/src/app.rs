@@ -296,6 +296,17 @@ pub async fn init_dependencies(
     b.add_value(config.protocol.ipfs.into_gateway_config());
     b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
 
+    b.add_value(config.protocol.flight_sql.into_system_config());
+    // TODO: SEC: Unstub FlightSQL authentication
+    b.add_builder(
+        kamu_adapter_flight_sql::SessionAuthBasicPredefined::builder()
+            .with_accounts_passwords([("kamu".to_string(), "kamu".to_string())].into()),
+    );
+    b.bind::<dyn kamu_adapter_flight_sql::SessionAuth, kamu_adapter_flight_sql::SessionAuthBasicPredefined>();
+    b.add::<kamu_adapter_flight_sql::SessionManagerCachingState>();
+    b.add_builder(kamu_adapter_flight_sql::SessionManagerCaching::builder());
+    b.add::<crate::flightsql_server::SessionManagerCachingTransactional>();
+
     b.add::<kamu::FetchService>();
     b.add_value(config.source.to_infra_cfg());
     b.add_value(config.source.mqtt.to_infra_cfg());
