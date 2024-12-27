@@ -399,6 +399,10 @@ pub async fn init_dependencies(
         &mut b,
         kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_CONFIGURATION_SERVICE,
     );
+    messaging_outbox::register_message_dispatcher::<kamu_flow_system::FlowTriggerUpdatedMessage>(
+        &mut b,
+        kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_TRIGGER_SERVICE,
+    );
     messaging_outbox::register_message_dispatcher::<kamu_flow_system::FlowProgressMessage>(
         &mut b,
         kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
