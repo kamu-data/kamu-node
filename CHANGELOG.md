@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.48.0]
 ### Changed
-- Flow configuration separation (CLI v 0.215.0)
+- Flow configuration separation (kamu CLI `0.215.0`)
 
 ## [0.47.0]
 ### Changed
