@@ -407,29 +407,52 @@ impl IpfsConfig {
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct FlightSqlConfig {
+    /// Whether clients can authenticate as 'anonymous' user
+    pub allow_anonymous: bool,
+
     /// Time after which FlightSQL client session will be forgotten and client
-    /// will have to re-authroize
-    pub session_expiration_timeout: DurationString,
+    /// will have to re-authroize (for authenticated clients)
+    pub authed_session_expiration_timeout: DurationString,
 
     /// Time after which FlightSQL session context will be released to free the
-    /// resources
-    pub session_inactivity_timeout: DurationString,
+    /// resources (for authenticated clients)
+    pub authed_session_inactivity_timeout: DurationString,
+
+    /// Time after which FlightSQL client session will be forgotten and client
+    /// will have to re-authroize (for anonymous clients)
+    pub anon_session_expiration_timeout: DurationString,
+
+    /// Time after which FlightSQL session context will be released to free the
+    /// resources (for anonymous clients)
+    pub anon_session_inactivity_timeout: DurationString,
 }
 
 impl Default for FlightSqlConfig {
     fn default() -> Self {
         Self {
-            session_expiration_timeout: DurationString::from_string("5m".to_owned()).unwrap(),
-            session_inactivity_timeout: DurationString::from_string("5s".to_owned()).unwrap(),
+            allow_anonymous: true,
+            authed_session_expiration_timeout: DurationString::from_string("30m".to_owned())
+                .unwrap(),
+            authed_session_inactivity_timeout: DurationString::from_string("5s".to_owned())
+                .unwrap(),
+            anon_session_expiration_timeout: DurationString::from_string("5m".to_owned()).unwrap(),
+            anon_session_inactivity_timeout: DurationString::from_string("5s".to_owned()).unwrap(),
         }
     }
 }
 
 impl FlightSqlConfig {
-    pub fn into_system_config(self) -> kamu_adapter_flight_sql::SessionCachingConfig {
+    pub fn to_session_auth_config(&self) -> kamu_adapter_flight_sql::SessionAuthConfig {
+        kamu_adapter_flight_sql::SessionAuthConfig {
+            allow_anonymous: self.allow_anonymous,
+        }
+    }
+    pub fn to_session_caching_config(&self) -> kamu_adapter_flight_sql::SessionCachingConfig {
         kamu_adapter_flight_sql::SessionCachingConfig {
-            session_expiration_timeout: self.session_expiration_timeout.into(),
-            session_inactivity_timeout: self.session_inactivity_timeout.into(),
+            authed_session_expiration_timeout: self.authed_session_expiration_timeout.into(),
+            authed_session_inactivity_timeout: self.authed_session_inactivity_timeout.into(),
+            anon_session_expiration_timeout: self.anon_session_expiration_timeout.into(),
+            anon_session_inactivity_timeout: self.anon_session_inactivity_timeout.into(),
         }
     }
 }

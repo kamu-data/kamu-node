@@ -28,6 +28,11 @@ async fn test_di_graph_validates_local() {
 
     catalog_builder.add_value(kamu_adapter_http::AccessToken::new("some-token"));
 
+    // SessionId is assigned by FlightSQL auth middleware
+    catalog_builder.add_value(kamu_adapter_flight_sql::SessionId(
+        "some-session-id".to_string(),
+    ));
+
     // TODO: We should ensure this test covers parameters requested by commands and
     // types needed for GQL/HTTP adapter that are currently being constructed
     // manually
@@ -75,6 +80,11 @@ async fn test_di_graph_validates_remote() {
     catalog_builder.add_value(kamu_accounts::CurrentAccountSubject::new_test());
 
     catalog_builder.add_value(kamu_adapter_http::AccessToken::new("some-token"));
+
+    // SessionId is assigned by FlightSQL auth middleware
+    catalog_builder.add_value(kamu_adapter_flight_sql::SessionId(
+        "some-session-id".to_string(),
+    ));
 
     // TODO: We should ensure this test covers parameters requested by commands and
     // types needed for GQL/HTTP adapter that are currently being constructed

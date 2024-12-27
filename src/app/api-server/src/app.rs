@@ -10,6 +10,7 @@
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+use arrow_flight::sql::SqlInfo;
 use chrono::Duration;
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
@@ -296,16 +297,20 @@ pub async fn init_dependencies(
     b.add_value(config.protocol.ipfs.into_gateway_config());
     b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
 
-    b.add_value(config.protocol.flight_sql.into_system_config());
-    // TODO: SEC: Unstub FlightSQL authentication
-    b.add_builder(
-        kamu_adapter_flight_sql::SessionAuthBasicPredefined::builder()
-            .with_accounts_passwords([("kamu".to_string(), "kamu".to_string())].into()),
-    );
-    b.bind::<dyn kamu_adapter_flight_sql::SessionAuth, kamu_adapter_flight_sql::SessionAuthBasicPredefined>();
+    // FlightSQL
+    let mut sql_info = kamu_adapter_flight_sql::sql_info::default_sql_info();
+    sql_info.append(SqlInfo::FlightSqlServerName, crate::BINARY_NAME);
+    sql_info.append(SqlInfo::FlightSqlServerVersion, crate::VERSION);
+    b.add_value(sql_info.build().unwrap());
+
+    b.add_value(config.protocol.flight_sql.to_session_auth_config());
+    b.add_value(config.protocol.flight_sql.to_session_caching_config());
+
+    b.add::<kamu_adapter_flight_sql::SessionAuthAnonymous>();
+    b.add::<kamu_adapter_flight_sql::SessionManagerCaching>();
     b.add::<kamu_adapter_flight_sql::SessionManagerCachingState>();
-    b.add_builder(kamu_adapter_flight_sql::SessionManagerCaching::builder());
-    b.add::<crate::flightsql_server::SessionManagerCachingTransactional>();
+    b.add::<kamu_adapter_flight_sql::KamuFlightSqlService>();
+    //
 
     b.add::<kamu::FetchService>();
     b.add_value(config.source.to_infra_cfg());
