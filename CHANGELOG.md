@@ -5,31 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.48.1]
+## [0.49.0] - 2024-12-30
+### Changed
+- Flight SQL authentication (see https://github.com/kamu-data/kamu-cli/pull/1012)
+
+## [0.48.1] - 2024-12-30
 ### Changed
 - `/verify` endpoint hot fix (kamu CLI `0.215.1`)
 
-## [0.48.0]
+## [0.48.0] - 2024-12-27
 ### Changed
 - Flow configuration separation (kamu CLI `0.215.0`)
 
-## [0.47.0]
+## [0.47.0] - 2024-12-23
 ### Changed
 - Improved FlightSQL session state management (CLI v 0.214.0)
 
-## [0.46.3]
+## [0.46.3] - 2024-12-21
 ### Fixed
 - Regression in FlightSQL interface related to database-backed `QueryService`
 
-## [0.46.2]
+## [0.46.2] - 2024-12-19
 ### Fixed
 - Less aggressive telemetry for key dataset services, like ingestion (CLI v0.213.1)
 
-## [0.46.1]
+## [0.46.1] - 2024-12-18
 ### Fixed
 - Eliminated regression crash on metadata queries
 
-## [0.46.0]
+## [0.46.0] - 2024-12-18
 ### Changed
 - Upgrade kamu-cli version to `0.213.0`
   - Upgrade to `datafusion v43`
@@ -38,12 +42,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Environment variables are automatically deleted if the dataset they refer to is deleted.
 
-## [0.45.0]
+## [0.45.0] - 2024-12-03
 ### Changed
 - Upgrade kamu-cli version to `0.211.0`:
   - Dataset dependency graph is now backed with a database, removing need in dependendency scanning at startup.
 
-## [0.44.0]
+## [0.44.0] - 2024-11-29
 ### Changed
 - Upgrade kamu-cli version to `0.210.0`:
   - Improved OpenAPI integration
