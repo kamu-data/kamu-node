@@ -504,6 +504,9 @@ pub struct RemoteDatabaseConfig {
     pub database_name: String,
     pub host: String,
     pub port: Option<u16>,
+    pub max_connections: Option<u32>,
+    pub max_lifetime_secs: Option<u64>,
+    pub acquire_timeout_secs: Option<u64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
