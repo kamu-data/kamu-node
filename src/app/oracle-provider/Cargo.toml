@@ -25,7 +25,7 @@ observability = { workspace = true, default-features = false, features = [
 ] }
 opendatafabric = { workspace = true, default-features = false }
 
-alloy = { version = "0.6", default-features = false, features = [
+alloy = { version = "0.9", default-features = false, features = [
     "std",
     "contract",
     "network",
