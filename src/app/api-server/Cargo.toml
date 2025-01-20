@@ -27,7 +27,7 @@ query-extensions-json = ["kamu/query-extensions-json"]
 
 
 [dependencies]
-dill = { version = "0.10", default-features = false }
+dill = { version = "0.11", default-features = false }
 
 container-runtime = { workspace = true }
 database-common = { workspace = true }
@@ -41,7 +41,8 @@ observability = { workspace = true, default-features = false, features = [
     "opentelemetry",
     "prometheus",
 ] }
-opendatafabric = { workspace = true }
+odf = { workspace = true }
+s3-utils = { workspace = true }
 time-source = { workspace = true }
 
 kamu = { workspace = true }
@@ -50,7 +51,7 @@ kamu-accounts-inmem = { workspace = true }
 kamu-accounts-postgres = { workspace = true }
 kamu-accounts-services = { workspace = true }
 kamu-accounts-sqlite = { workspace = true }
-kamu-adapter-auth-oso = { workspace = true }
+kamu-adapter-auth-oso-rebac = { workspace = true }
 kamu-adapter-flight-sql = { workspace = true }
 kamu-adapter-graphql = { workspace = true }
 kamu-adapter-http = { workspace = true }
@@ -153,6 +154,7 @@ url = "2"
 
 [dev-dependencies]
 kamu = { workspace = true, features = ["testing"] }
+test-utils = { workspace = true }
 
 env_logger = "0.11"
 rand = "0.8"

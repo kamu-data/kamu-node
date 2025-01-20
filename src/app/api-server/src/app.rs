@@ -14,9 +14,9 @@ use arrow_flight::sql::SqlInfo;
 use chrono::Duration;
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
-use kamu::domain::TenancyConfig;
-use kamu::utils::s3_context::S3Context;
-use opendatafabric::{AccountID, AccountName};
+use kamu::domain::{DidGeneratorDefault, TenancyConfig};
+use kamu::{DatasetStorageUnitLocalFs, DatasetStorageUnitS3, DatasetStorageUnitWriter};
+use s3_utils::S3Context;
 use tracing::{error, info, warn};
 use url::Url;
 
@@ -76,9 +76,9 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
         "Initializing Kamu API Server",
     );
 
-    let kamu_account_name = AccountName::new_unchecked(ACCOUNT_KAMU);
+    let kamu_account_name = odf::AccountName::new_unchecked(ACCOUNT_KAMU);
     let server_account_subject = kamu_accounts::CurrentAccountSubject::logged(
-        AccountID::new_seeded_ed25519(kamu_account_name.as_bytes()),
+        odf::AccountID::new_seeded_ed25519(kamu_account_name.as_bytes()),
         kamu_account_name,
         true,
     );
@@ -275,6 +275,8 @@ pub async fn init_dependencies(
 
     b.add::<time_source::SystemTimeSourceDefault>();
 
+    b.add::<DidGeneratorDefault>();
+
     b.add_value(prometheus::Registry::new_custom(Some("kamu_api_server".into()), None).unwrap());
 
     b.add::<container_runtime::ContainerRuntime>();
@@ -325,13 +327,10 @@ pub async fn init_dependencies(
         b.add_value(identity_config);
     }
 
-    b.add::<kamu::DatasetFactoryImpl>();
+    b.add::<odf::dataset::DatasetFactoryImpl>();
     b.add::<kamu::ObjectStoreRegistryImpl>();
     b.add::<kamu::RemoteAliasesRegistryImpl>();
     b.add::<kamu::RemoteAliasResolverImpl>();
-
-    b.add::<kamu::DatasetOwnershipServiceInMemory>();
-    b.add::<kamu::DatasetOwnershipServiceInMemoryStateInitializer>();
 
     b.add::<kamu::DatasetChangesServiceImpl>();
 
@@ -366,9 +365,11 @@ pub async fn init_dependencies(
     b.add::<kamu::AppendDatasetMetadataBatchUseCaseImpl>();
     b.add::<kamu::CommitDatasetEventUseCaseImpl>();
     b.add::<kamu::CompactDatasetUseCaseImpl>();
-    b.add::<kamu::CreateDatasetUseCaseImpl>();
     b.add::<kamu::CreateDatasetFromSnapshotUseCaseImpl>();
+    b.add::<kamu::CreateDatasetUseCaseImpl>();
     b.add::<kamu::DeleteDatasetUseCaseImpl>();
+    b.add::<kamu::GetDatasetDownstreamDependenciesUseCaseImpl>();
+    b.add::<kamu::GetDatasetUpstreamDependenciesUseCaseImpl>();
     b.add::<kamu::PullDatasetUseCaseImpl>();
     b.add::<kamu::PushDatasetUseCaseImpl>();
     b.add::<kamu::RenameDatasetUseCaseImpl>();
@@ -431,13 +432,16 @@ pub async fn init_dependencies(
     b.add::<kamu_accounts_services::AccessTokenServiceImpl>();
     b.add::<kamu_accounts_services::PredefinedAccountsRegistrator>();
 
-    b.add::<kamu_adapter_auth_oso::KamuAuthOso>();
-    b.add::<kamu_adapter_auth_oso::OsoDatasetAuthorizer>();
-    b.add::<kamu::domain::auth::DummyOdfServerAccessTokenResolver>();
+    kamu_adapter_auth_oso_rebac::register_dependencies(&mut b);
+
+    b.add::<kamu_auth_rebac_services::RebacIndexer>();
+
+    b.add::<odf::dataset::DummyOdfServerAccessTokenResolver>();
 
     configure_repository(&mut b, repo_url, &config.repo).await;
 
     b.add::<kamu_accounts_services::LoginPasswordAuthProvider>();
+    b.add::<kamu_accounts_services::AccountServiceImpl>();
 
     let mut need_to_add_default_predefined_accounts_config = true;
 
@@ -501,7 +505,7 @@ pub async fn init_dependencies(
             b.add::<kamu_adapter_http::UploadServiceLocal>();
         }
         UploadRepoStorageConfig::S3(s3_config) => {
-            let s3_upload_direct_url = url::Url::parse(&s3_config.bucket_s3_url).unwrap();
+            let s3_upload_direct_url = Url::parse(&s3_config.bucket_s3_url).unwrap();
             b.add_builder(
                 kamu_adapter_http::UploadServiceS3::builder()
                     .with_s3_upload_context(S3Context::from_url(&s3_upload_direct_url).await),
@@ -546,6 +550,11 @@ pub async fn init_dependencies(
     b.add::<database_common::DatabaseTransactionRunner>();
 
     b.add::<kamu_auth_rebac_services::RebacServiceImpl>();
+    b.add_value(kamu_auth_rebac_services::DefaultAccountProperties { is_admin: false });
+    b.add_value(kamu_auth_rebac_services::DefaultDatasetProperties {
+        allows_anonymous_read: false,
+        allows_public_read: false,
+    });
 
     let maybe_db_connection_settings = try_build_db_connection_settings(&config.database);
     if let Some(db_connection_settings) = maybe_db_connection_settings {
@@ -562,16 +571,14 @@ async fn configure_repository(b: &mut CatalogBuilder, repo_url: &Url, config: &R
         "file" => {
             let datasets_dir = repo_url.to_file_path().unwrap();
 
-            b.add_builder(
-                kamu::DatasetRepositoryLocalFs::builder().with_root(datasets_dir.clone()),
-            );
-            b.bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryLocalFs>();
-            b.bind::<dyn kamu::DatasetRepositoryWriter, kamu::DatasetRepositoryLocalFs>();
+            b.add_builder(DatasetStorageUnitLocalFs::builder().with_root(datasets_dir.clone()));
+            b.bind::<dyn odf::DatasetStorageUnit, DatasetStorageUnitLocalFs>();
+            b.bind::<dyn DatasetStorageUnitWriter, DatasetStorageUnitLocalFs>();
 
             b.add::<kamu::ObjectStoreBuilderLocalFs>();
         }
         "s3" | "s3+http" | "s3+https" => {
-            let s3_context = kamu::utils::s3_context::S3Context::from_url(repo_url).await;
+            let s3_context = S3Context::from_url(repo_url).await;
 
             if config.caching.registry_cache_enabled {
                 b.add::<kamu::S3RegistryCache>();
@@ -584,12 +591,12 @@ async fn configure_repository(b: &mut CatalogBuilder, repo_url: &Url, config: &R
                 .map(Arc::new);
 
             b.add_builder(
-                kamu::DatasetRepositoryS3::builder()
+                DatasetStorageUnitS3::builder()
                     .with_s3_context(s3_context.clone())
                     .with_metadata_cache_local_fs_path(metadata_cache_local_fs_path),
-            )
-            .bind::<dyn kamu::domain::DatasetRepository, kamu::DatasetRepositoryS3>()
-            .bind::<dyn kamu::DatasetRepositoryWriter, kamu::DatasetRepositoryS3>();
+            );
+            b.bind::<dyn odf::DatasetStorageUnit, DatasetStorageUnitS3>();
+            b.bind::<dyn DatasetStorageUnitWriter, DatasetStorageUnitS3>();
 
             let allow_http = repo_url.scheme() == "s3+http";
             b.add_value(kamu::ObjectStoreBuilderS3::new(s3_context, allow_http))

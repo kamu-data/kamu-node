@@ -13,6 +13,7 @@ use container_runtime::{ContainerRuntimeType, NetworkNamespaceType};
 use duration_string::DurationString;
 use kamu_accounts::AccountConfig;
 use kamu_datasets::DatasetEnvVarsConfig;
+use odf::dataset::IpfsGateway;
 use serde::{Deserialize, Deserializer, Serialize};
 use url::Url;
 
@@ -384,7 +385,7 @@ pub struct IpfsConfig {
 
 impl Default for IpfsConfig {
     fn default() -> Self {
-        let defaults = kamu::IpfsGateway::default();
+        let defaults = IpfsGateway::default();
         Self {
             http_gateway: defaults.url,
             pre_resolve_dnslink: defaults.pre_resolve_dnslink,
@@ -393,8 +394,8 @@ impl Default for IpfsConfig {
 }
 
 impl IpfsConfig {
-    pub fn into_gateway_config(self) -> kamu::IpfsGateway {
-        kamu::IpfsGateway {
+    pub fn into_gateway_config(self) -> IpfsGateway {
+        IpfsGateway {
             url: self.http_gateway,
             pre_resolve_dnslink: self.pre_resolve_dnslink,
         }
@@ -679,7 +680,7 @@ pub struct IdentityConfig {
     /// - base64-encodes them
     /// - converts default base64 encoding to base64url and removes padding
     /// - prepends a multibase prefix
-    pub private_key: Option<opendatafabric::PrivateKey>,
+    pub private_key: Option<odf::metadata::PrivateKey>,
 }
 
 impl IdentityConfig {

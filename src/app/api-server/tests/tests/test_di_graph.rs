@@ -8,6 +8,7 @@
 // by the Apache License, Version 2.0.
 
 use kamu::domain::TenancyConfig;
+use test_utils::MinioServer;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -59,7 +60,7 @@ async fn test_di_graph_validates_remote() {
     let bucket = "test-bucket";
     std::fs::create_dir(tmp_repo_dir.path().join(bucket)).unwrap();
 
-    let minio = kamu::testing::MinioServer::new(tmp_repo_dir.path(), access_key, secret_key).await;
+    let minio = MinioServer::new(tmp_repo_dir.path(), access_key, secret_key).await;
 
     use std::str::FromStr;
     let repo_url = url::Url::from_str(&format!(
