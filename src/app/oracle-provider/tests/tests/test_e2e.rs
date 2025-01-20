@@ -14,10 +14,9 @@ use alloy::primitives::Address;
 use alloy::sol;
 use kamu_oracle_provider::api_client::*;
 use kamu_oracle_provider::{self as provider};
-use opendatafabric::{DatasetID, Multihash};
 use serde_json::json;
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 sol! {
     #[sol(rpc)]
@@ -47,7 +46,7 @@ sol! {
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 fn get_contracts_dir() -> PathBuf {
     let dir = if let Ok(dir) = std::env::var("KAMU_CONTRACTS_DIR") {
@@ -63,7 +62,7 @@ fn get_contracts_dir() -> PathBuf {
     dir
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[test_group::group(e2e, oracle, flaky)]
 #[test_log::test(tokio::test)]
@@ -175,7 +174,7 @@ async fn test_oracle_e2e() {
     );
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // TODO: Replace with real API server
 struct MockOdfApiClient;
@@ -204,9 +203,9 @@ impl OdfApiClient for MockOdfApiClient {
                 query_dialect: Some(QueryDialect::SqlDataFusion),
                 data_format: Some(DataFormat::JsonAoa),
                 datasets: Some(vec![DatasetState {
-                    id: DatasetID::from_did_str("did:odf:fed01dcda047d51fc88246c730db522d36791c9e2286af23d9f2b920f09c65952e3d0").unwrap(),
+                    id: odf::DatasetID::from_did_str("did:odf:fed01dcda047d51fc88246c730db522d36791c9e2286af23d9f2b920f09c65952e3d0").unwrap(),
                     alias: "kamu/covid19.canada.case-details".to_string(),
-                    block_hash: Some(Multihash::from_multibase("f162080b0979126041b122a0b0851f286503e8a501b03ba2008bf260b348801abc76f").unwrap()),
+                    block_hash: Some(odf::Multihash::from_multibase("f162080b0979126041b122a0b0851f286503e8a501b03ba2008bf260b348801abc76f").unwrap()),
                 }]),
                 skip: Some(0),
                 limit: Some(1000),

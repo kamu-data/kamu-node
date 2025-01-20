@@ -19,13 +19,12 @@ use alloy::sol_types::{SolEvent, SolEventInterface};
 use alloy::transports::BoxTransport;
 use chrono::{DateTime, Utc};
 use internal_error::*;
-use opendatafabric::{DatasetID, Multihash};
 use tracing::Instrument;
 
 use crate::api_client::*;
 use crate::Config;
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Must be in sync with https://github.com/kamu-data/kamu-contracts/blob/master/src/Odf.sol
 alloy::sol! {
@@ -73,18 +72,18 @@ alloy::sol! {
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[allow(dead_code)]
 #[derive(Debug)]
 struct OdfRequest {
     pub id: u64,
     pub sql: String,
-    pub aliases: Vec<(String, DatasetID)>,
+    pub aliases: Vec<(String, odf::DatasetID)>,
     pub log: Log<IOdfProvider::SendRequest>,
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[derive(Debug)]
 struct OdfResult {
@@ -95,7 +94,7 @@ struct OdfResult {
 #[derive(Debug)]
 struct OdfResultOk {
     pub data: serde_json::Value,
-    pub state: Vec<(DatasetID, Multihash)>,
+    pub state: Vec<(odf::DatasetID, odf::Multihash)>,
 }
 
 #[derive(Debug)]
@@ -135,13 +134,13 @@ impl OdfResult {
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[derive(Debug, thiserror::Error)]
 #[error("Provider is not authorized to provide results to the oracle contract")]
 pub struct ProviderUnauthorized;
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub struct OdfOracleProviderMetrics {
     pub wallet_balance: prometheus::Gauge,
@@ -184,7 +183,7 @@ impl OdfOracleProviderMetrics {
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub struct OdfOracleProvider<P: Provider> {
     config: Config,
@@ -599,7 +598,7 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
                     let Some(ciborium::Value::Bytes(did)) = raw.next() else {
                         Err("Expected a dataset ID".int_err())?
                     };
-                    let Ok(did) = DatasetID::from_bytes(&did) else {
+                    let Ok(did) = odf::DatasetID::from_bytes(&did) else {
                         Err("Expected DID bytes".int_err())?
                     };
                     aliases.push((alias, did));

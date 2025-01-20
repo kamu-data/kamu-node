@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.51.0] - 2025-01-20
+### Changed
+- Toolchain updated to `nightly-2024-12-26`
+- Core changes from the Private Datasets epic (kamu CLI `0.219.1`)
+
 ## [0.50.4] - 2024-01-15
 ### Fixed
 - Telemetry-driven fixes in flow listings (kamu CLI `0.217.3`)
@@ -39,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.47.0] - 2024-12-23
 ### Changed
-- Improved FlightSQL session state management (CLI v 0.214.0)
+- Improved FlightSQL session state management (kamu CLI `0.214.0`)
 
 ## [0.46.3] - 2024-12-21
 ### Fixed
@@ -47,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.46.2] - 2024-12-19
 ### Fixed
-- Less aggressive telemetry for key dataset services, like ingestion (CLI v0.213.1)
+- Less aggressive telemetry for key dataset services, like ingestion (kamu CLI `0.213.1`)
 
 ## [0.46.1] - 2024-12-18
 ### Fixed
@@ -65,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.45.0] - 2024-12-03
 ### Changed
 - Upgrade kamu-cli version to `0.211.0`:
-  - Dataset dependency graph is now backed with a database, removing need in dependendency scanning at startup.
+  - Dataset dependency graph is now backed with a database, removing need in dependency scanning at startup.
 
 ## [0.44.0] - 2024-11-29
 ### Changed
@@ -84,7 +89,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduced `DatasetRegistry` abstraction, encapsulating listing and resolution of datasets (kamu-cli version to `0.208.0`):
   - Registry is backed by database-stored dataset entries, which are automatically maintained
   - Scope for `DatasetRepository` is now limited to support `DatasetRegistry` and in-memory dataset dependency graph
-  - New concept of `ResolvedDataset`: a wrapper arround `Arc<dyn Dataset>`, aware of dataset identity
+  - New concept of `ResolvedDataset`: a wrapper around `Arc<dyn Dataset>`, aware of dataset identity
   - Query and Dataset Search functions now consider only the datasets accessible for current user
   - Core services now explicitly separate planning (transactional) and execution (non-transactional) processing phases
   - Similar decomposition introduced in task system execution logic
@@ -164,7 +169,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Axum 0.7
     - latest AWS SDK
     - latest versions of all remaining libs we depend on
-  - Outbox refactoring towards true parallelism via Tokio spaned tasks instead of futures
+  - Outbox refactoring towards true parallelism via Tokio spanned tasks instead of futures
 ### Fixed
 - Re-enabled missing optional features for eth, ftp, mqtt ingest and JSON SQL extensions
 - Failed flows should still propagate `finishedAt` time

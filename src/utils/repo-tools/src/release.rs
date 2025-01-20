@@ -16,7 +16,11 @@ use clap::ArgAction;
 use regex::Captures;
 use semver::Version;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 const CHANGE_DATE_YEARS: i32 = 4;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 fn main() {
     let matches = clap::Command::new("release")
@@ -35,7 +39,7 @@ fn main() {
         .get_matches();
 
     let current_version = get_current_version();
-    eprintln!("Current version: {}", current_version);
+    eprintln!("Current version: {current_version}");
 
     let new_version: Version = if let Some(v) = matches.get_one::<String>("version") {
         v.strip_prefix('v').unwrap_or(v).parse().unwrap()
@@ -51,14 +55,23 @@ fn main() {
             ..current_version.clone()
         }
     } else {
-        panic!("Specivy a --version or --minor flag");
+        panic!("Specify a --version or --minor flag");
     };
 
-    eprintln!("New version: {}", new_version);
+    eprintln!("New version: {new_version}");
+
+    let current_date = chrono::Utc::now().naive_utc().date();
 
     update_crates(&new_version);
 
-    update_license(Path::new("LICENSE.txt"), &current_version, &new_version);
+    update_changelog(Path::new("CHANGELOG.md"), &new_version, current_date);
+
+    update_license(
+        Path::new("LICENSE.txt"),
+        &current_version,
+        &new_version,
+        current_date,
+    );
 
     update_openapi_schema(Path::new("resources/openapi.json"), &new_version);
     update_openapi_schema(Path::new("resources/openapi-mt.json"), &new_version);
@@ -85,21 +98,21 @@ fn update_crates(new_version: &Version) {
         ])
         .status()
         .expect(
-            "Failed to execute `cargo set-version` - make sure `cago-edit` is installed (`cargo \
+            "Failed to execute `cargo set-version` - make sure `cargo-edit` is installed (`cargo \
              install cargo-edit`)",
         )
         .exit_ok()
         .expect("`cargo set-version` returned non-zero exit code");
 }
 
-fn update_license(license_path: &Path, current_version: &Version, new_version: &Version) {
+fn update_license(
+    license_path: &Path,
+    current_version: &Version,
+    new_version: &Version,
+    current_date: NaiveDate,
+) {
     let text = std::fs::read_to_string(license_path).expect("Could not read the license file");
-    let new_text = update_license_text(
-        &text,
-        current_version,
-        new_version,
-        &chrono::Utc::now().naive_utc().date(),
-    );
+    let new_text = update_license_text(&text, current_version, new_version, current_date);
     assert_ne!(text, new_text);
     std::fs::write(license_path, new_text).expect("Failed to write to license file");
 }
@@ -122,21 +135,20 @@ fn update_license_text(
     text: &str,
     current_version: &Version,
     new_version: &Version,
-    current_date: &NaiveDate,
+    current_date: NaiveDate,
 ) -> String {
     let significant_version =
         new_version.major != current_version.major || new_version.minor != current_version.minor;
 
-    eprintln!("Updating license version: {}", new_version);
-    let re =
-        regex::Regex::new(r"(Licensed Work:[ ]+Kamu Platform Version )(\d+\.\d+\.\d+)").unwrap();
+    eprintln!("Updating license version: {new_version}");
+    let re = regex::Regex::new(r"(Licensed Work: +Kamu Platform Version )(\d+\.\d+\.\d+)").unwrap();
     let text = re.replace(text, |c: &Captures| format!("{}{}", &c[1], new_version));
 
     if significant_version {
         let change_date = add_years(current_date, CHANGE_DATE_YEARS);
-        let re = regex::Regex::new(r"(Change Date:[ ]+)(\d+-\d+-\d+)").unwrap();
+        let re = regex::Regex::new(r"(Change Date: +)(\d+-\d+-\d+)").unwrap();
 
-        eprintln!("Updating license change date: {}", change_date);
+        eprintln!("Updating license change date: {change_date}");
         re.replace(&text, |c: &Captures| format!("{}{}", &c[1], change_date))
     } else {
         text
@@ -144,16 +156,31 @@ fn update_license_text(
     .to_string()
 }
 
-fn add_years(d: &NaiveDate, years: i32) -> NaiveDate {
+fn update_changelog(path: &Path, new_version: &Version, current_date: NaiveDate) {
+    let text = std::fs::read_to_string(path).expect("Could not read the changelog file");
+
+    let re = regex::Regex::new(r#"## +\[?Unreleased\]? *"#).unwrap();
+    let new_text = re
+        .replace(&text, |_: &Captures| {
+            format!("## [{new_version}] - {current_date}")
+        })
+        .to_string();
+
+    assert_ne!(text, new_text, "Unreleased changes section not found");
+
+    std::fs::write(path, new_text).expect("Failed to write to changelog file");
+}
+
+fn add_years(d: NaiveDate, years: i32) -> NaiveDate {
     NaiveDate::from_ymd_opt(d.year() + years, d.month(), d.day()).unwrap_or_else(|| {
-        *d + (NaiveDate::from_ymd_opt(d.year() + years, 1, 1).unwrap()
+        d + (NaiveDate::from_ymd_opt(d.year() + years, 1, 1).unwrap()
             - NaiveDate::from_ymd_opt(d.year(), 1, 1).unwrap())
     })
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Tests
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[cfg(test)]
 mod tests {
@@ -184,7 +211,7 @@ mod tests {
             orig_text,
             &Version::new(0, 63, 0),
             &Version::new(0, 63, 1),
-            &NaiveDate::from_str("2021-09-01").unwrap(),
+            NaiveDate::from_str("2021-09-01").unwrap(),
         );
 
         assert_eq!(
@@ -200,7 +227,7 @@ mod tests {
                 ...
                 "#
             )
-        )
+        );
     }
 
     #[test]
@@ -223,7 +250,7 @@ mod tests {
             orig_text,
             &Version::new(0, 63, 0),
             &Version::new(0, 64, 0),
-            &NaiveDate::from_str("2021-09-01").unwrap(),
+            NaiveDate::from_str("2021-09-01").unwrap(),
         );
 
         assert_eq!(
@@ -239,6 +266,6 @@ mod tests {
                 ...
                 "#
             )
-        )
+        );
     }
 }

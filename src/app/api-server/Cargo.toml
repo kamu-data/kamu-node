@@ -27,7 +27,7 @@ query-extensions-json = ["kamu/query-extensions-json"]
 
 
 [dependencies]
-dill = { version = "0.10", default-features = false }
+dill = { version = "0.11", default-features = false }
 
 container-runtime = { workspace = true }
 database-common = { workspace = true }
@@ -41,7 +41,8 @@ observability = { workspace = true, default-features = false, features = [
     "opentelemetry",
     "prometheus",
 ] }
-opendatafabric = { workspace = true }
+odf = { workspace = true, default-features = false }
+s3-utils = { workspace = true }
 time-source = { workspace = true }
 
 kamu = { workspace = true }
@@ -50,7 +51,7 @@ kamu-accounts-inmem = { workspace = true }
 kamu-accounts-postgres = { workspace = true }
 kamu-accounts-services = { workspace = true }
 kamu-accounts-sqlite = { workspace = true }
-kamu-adapter-auth-oso = { workspace = true }
+kamu-adapter-auth-oso-rebac = { workspace = true }
 kamu-adapter-flight-sql = { workspace = true }
 kamu-adapter-graphql = { workspace = true }
 kamu-adapter-http = { workspace = true }
@@ -81,10 +82,8 @@ kamu-task-system-sqlite = { workspace = true }
 
 # APIs
 http = "1"
-hyper = "1"
 arrow-flight = { version = "53", features = ["flight-sql-experimental"] }
 axum = { version = "0.7", features = ["ws"] }
-axum-extra = { version = "0.9", features = ["async-read-body"] }
 async-graphql = { version = "7", features = [
     "chrono",
     "url",
@@ -100,16 +99,8 @@ utoipa-axum = { version = "=0.1.3", default-features = false, features = [] }
 # Tracing / logging / telemetry / metrics
 prometheus = { version = "0.13", default-features = false }
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", default-features = false, features = [
-    "std",
-    "env-filter",
-    "fmt",
-    "ansi",
-] }
-tracing-log = "0.2"
 
 # Utils
-async-trait = { version = "0.1", default-features = false }
 chrono = "0.4"
 clap = { version = "4", default-features = false, features = [
     "std",
@@ -122,14 +113,6 @@ clap = { version = "4", default-features = false, features = [
     "cargo",
     # "env",
     "wrap_help",
-] }
-datafusion = { version = "44", default-features = false, features = [
-    "crypto_expressions",
-    "encoding_expressions",
-    "parquet",
-    "regex_expressions",
-    "unicode_expressions",
-    "compression",
 ] }
 duration-string = { version = "0.4", default-features = false, features = [
     "serde",
@@ -146,16 +129,13 @@ tokio = { version = "1", default-features = false, features = [
     "signal",
 ] }
 tokio-stream = { version = "0.1", default-features = false, features = ["net"] }
-tokio-util = { version = "0.7", default-features = false, features = ["rt"] }
-thiserror = { version = "2", default-features = false }
 url = "2"
 
 
 [dev-dependencies]
 kamu = { workspace = true, features = ["testing"] }
+test-utils = { workspace = true }
 
-env_logger = "0.11"
-rand = "0.8"
 reqwest = { version = "0.12", default-features = false, features = [] }
 test-group = { version = "1" }
 test-log = { version = "0.2", features = ["trace"] }
