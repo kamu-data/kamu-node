@@ -19,7 +19,6 @@ use alloy::sol_types::{SolEvent, SolEventInterface};
 use alloy::transports::BoxTransport;
 use chrono::{DateTime, Utc};
 use internal_error::*;
-use opendatafabric::{DatasetID, Multihash};
 use tracing::Instrument;
 
 use crate::api_client::*;
@@ -80,7 +79,7 @@ alloy::sol! {
 struct OdfRequest {
     pub id: u64,
     pub sql: String,
-    pub aliases: Vec<(String, DatasetID)>,
+    pub aliases: Vec<(String, odf::DatasetID)>,
     pub log: Log<IOdfProvider::SendRequest>,
 }
 
@@ -95,7 +94,7 @@ struct OdfResult {
 #[derive(Debug)]
 struct OdfResultOk {
     pub data: serde_json::Value,
-    pub state: Vec<(DatasetID, Multihash)>,
+    pub state: Vec<(odf::DatasetID, odf::Multihash)>,
 }
 
 #[derive(Debug)]
@@ -599,7 +598,7 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
                     let Some(ciborium::Value::Bytes(did)) = raw.next() else {
                         Err("Expected a dataset ID".int_err())?
                     };
-                    let Ok(did) = DatasetID::from_bytes(&did) else {
+                    let Ok(did) = odf::DatasetID::from_bytes(&did) else {
                         Err("Expected DID bytes".int_err())?
                     };
                     aliases.push((alias, did));

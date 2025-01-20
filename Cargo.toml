@@ -32,7 +32,6 @@ time-source = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.219.1",
 odf = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.219.1", version = "0.219.1", default-features = false, package = "opendatafabric" }
 
 # Domain
-opendatafabric = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.219.1", version = "0.219.1", default-features = false }
 kamu-task-system = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.219.1", version = "0.219.1", default-features = false }
 kamu-task-system-services = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.219.1", version = "0.219.1", default-features = false }
 kamu-flow-system = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.219.1", version = "0.219.1", default-features = false }

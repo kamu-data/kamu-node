@@ -41,7 +41,7 @@ observability = { workspace = true, default-features = false, features = [
     "opentelemetry",
     "prometheus",
 ] }
-odf = { workspace = true }
+odf = { workspace = true, default-features = false }
 s3-utils = { workspace = true }
 time-source = { workspace = true }
 
