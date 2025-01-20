@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [0.51.0] - 2025-01-20
 ### Changed
 - Toolchain updated to `nightly-2024-12-26`
 - Core changes from the Private Datasets epic (kamu CLI `0.219.1`)
