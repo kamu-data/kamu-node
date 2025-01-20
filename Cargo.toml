@@ -23,7 +23,6 @@ init-on-startup = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.219
 internal-error = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.219.1", version = "0.219.1", default-features = false }
 messaging-outbox = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.219.1", version = "0.219.1", default-features = false }
 observability = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.219.1", version = "0.219.1", default-features = false }
-random-names = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.219.1", version = "0.219.1", default-features = false }
 s3-utils = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.219.1", version = "0.219.1", default-features = false }
 test-utils = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.219.1", version = "0.219.1", default-features = false }
 time-source = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.219.1", version = "0.219.1", default-features = false }

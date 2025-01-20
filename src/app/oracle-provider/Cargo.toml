@@ -62,7 +62,6 @@ duration-string = { version = "0.4", default-features = false, features = [
 ] }
 hex = { version = "0.4" }
 http = { version = "1", default-features = false }
-hyper = { version = "1", default-features = false }
 internal-error = { workspace = true }
 prometheus = { version = "0.13", default-features = false }
 reqwest = { version = "0.12", default-features = false, features = [
@@ -84,13 +83,6 @@ tokio = { version = "1", default-features = false, features = [
     "macros",
 ] }
 tracing = { version = "0.1", default-features = false, features = [] }
-tracing-log = "0.2"
-tracing-subscriber = { version = "0.3", default-features = false, features = [
-    "ansi",
-    "env-filter",
-    "fmt",
-    "std",
-] }
 thiserror = { version = "2", default-features = false }
 url = { version = "2", default-features = false, features = ["serde"] }
 
