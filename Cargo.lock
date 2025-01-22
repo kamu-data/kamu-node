@@ -1284,6 +1284,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "assert_cmd"
+version = "2.0.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dc1835b7f27878de8525dc71410b5a31cdcc5f230aed5ba5df968e09c201b23d"
+dependencies = [
+ "anstyle",
+ "bstr",
+ "doc-comment",
+ "libc",
+ "predicates",
+ "predicates-core",
+ "predicates-tree",
+ "wait-timeout",
+]
+
+[[package]]
 name = "async-compression"
 version = "0.4.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2542,6 +2558,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "convert_case"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ec182b0ca2f35d8fc196cf3404988fd8b8c739a4d270ff118a398feb0cbec1ca"
+dependencies = [
+ "unicode-segmentation",
+]
+
+[[package]]
 name = "core-foundation"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3406,6 +3431,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56254986775e3233ffa9c4d7d3faaf6d36a2c09d30b20687e9f88bc8bafc16c8"
 
 [[package]]
+name = "difflib"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6184e33543162437515c2e2b48714794e37845ec9851711914eec9d308f6ebe8"
+
+[[package]]
 name = "digest"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3479,6 +3510,12 @@ dependencies = [
  "quote",
  "syn 2.0.96",
 ]
+
+[[package]]
+name = "doc-comment"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fea41bba32d969b513997752735605054bc0dfa92b4c56bf1189f2e174be7a10"
 
 [[package]]
 name = "dotenvy"
@@ -5344,12 +5381,14 @@ dependencies = [
  "futures",
  "headers",
  "http 1.2.0",
+ "http-body-util",
  "http-common",
  "indoc 2.0.5",
  "internal-error",
  "kamu",
  "kamu-accounts",
  "kamu-core",
+ "messaging-outbox",
  "opendatafabric",
  "reqwest",
  "s3-utils",
@@ -5879,6 +5918,108 @@ dependencies = [
  "internal-error",
  "messaging-outbox",
  "sqlx",
+]
+
+[[package]]
+name = "kamu-node-e2e-common"
+version = "0.53.0"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "convert_case",
+ "http-common",
+ "indoc 2.0.5",
+ "internal-error",
+ "kamu-adapter-http",
+ "kamu-flow-system",
+ "kamu-node-e2e-common-macros",
+ "kamu-node-puppet",
+ "lazy_static",
+ "opendatafabric",
+ "pretty_assertions",
+ "regex",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_urlencoded",
+ "serde_yaml",
+ "sqlx",
+ "thiserror 2.0.11",
+ "tokio",
+ "tokio-retry",
+]
+
+[[package]]
+name = "kamu-node-e2e-common-macros"
+version = "0.53.0"
+dependencies = [
+ "quote",
+ "syn 2.0.96",
+]
+
+[[package]]
+name = "kamu-node-e2e-postgres"
+version = "0.53.0"
+dependencies = [
+ "database-common",
+ "indoc 2.0.5",
+ "kamu-node-e2e-common",
+ "kamu-node-e2e-repo-tests",
+ "sqlx",
+ "test-group",
+ "test-log",
+ "tokio",
+]
+
+[[package]]
+name = "kamu-node-e2e-repo-tests"
+version = "0.53.0"
+dependencies = [
+ "chrono",
+ "datafusion",
+ "indoc 2.0.5",
+ "kamu-accounts",
+ "kamu-adapter-http",
+ "kamu-node-e2e-common",
+ "opendatafabric",
+ "paste",
+ "pretty_assertions",
+ "reqwest",
+ "serde_json",
+ "tempfile",
+ "url",
+]
+
+[[package]]
+name = "kamu-node-e2e-sqlite"
+version = "0.53.0"
+dependencies = [
+ "database-common",
+ "indoc 2.0.5",
+ "kamu-node-e2e-common",
+ "kamu-node-e2e-repo-tests",
+ "sqlx",
+ "test-group",
+ "test-log",
+ "tokio",
+]
+
+[[package]]
+name = "kamu-node-puppet"
+version = "0.53.0"
+dependencies = [
+ "assert_cmd",
+ "async-trait",
+ "chrono",
+ "datafusion",
+ "indoc 2.0.5",
+ "opendatafabric",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "url",
 ]
 
 [[package]]
@@ -7630,6 +7771,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a5d19ee57562043d37e82899fade9a22ebab7be9cef5026b07fda9cdd4293573"
 dependencies = [
  "anstyle",
+ "difflib",
  "predicates-core",
 ]
 
@@ -9607,6 +9749,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.96",
+]
+
+[[package]]
+name = "tokio-retry"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f57eb36ecbe0fc510036adff84824dd3c24bb781e21bfa67b69d556aa85214f"
+dependencies = [
+ "pin-project",
+ "rand",
+ "tokio",
 ]
 
 [[package]]

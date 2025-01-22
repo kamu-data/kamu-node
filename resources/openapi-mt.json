@@ -942,20 +942,9 @@
         ]
       }
     },
-    "/odata/{account_name}": {
+    "/odata": {
       "get": {
-        "operationId": "odata_service_handler_mt",
-        "parameters": [
-          {
-            "description": "Account name",
-            "in": "path",
-            "name": "account_name",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "operationId": "odata_service_handler_st",
         "responses": {
           "200": {
             "content": {
@@ -980,20 +969,9 @@
         ]
       }
     },
-    "/odata/{account_name}/$metadata": {
+    "/odata/$metadata": {
       "get": {
-        "operationId": "odata_metadata_handler_mt",
-        "parameters": [
-          {
-            "description": "Account name",
-            "in": "path",
-            "name": "account_name",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "operationId": "odata_metadata_handler_st",
         "responses": {
           "200": {
             "content": {
@@ -1018,19 +996,10 @@
         ]
       }
     },
-    "/odata/{account_name}/{dataset_name}": {
+    "/odata/{dataset_name}": {
       "get": {
-        "operationId": "odata_collection_handler_mt",
+        "operationId": "odata_collection_handler_st",
         "parameters": [
-          {
-            "description": "Account name",
-            "in": "path",
-            "name": "account_name",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "description": "Dataset name",
             "in": "path",
@@ -1504,7 +1473,7 @@
         ]
       }
     },
-    "/{account_name}/{dataset_name}/blocks/{block_hash}": {
+    "/{dataset_name}/blocks/{block_hash}": {
       "get": {
         "operationId": "dataset_blocks_handler",
         "parameters": [
@@ -1560,7 +1529,7 @@
         ]
       }
     },
-    "/{account_name}/{dataset_name}/checkpoints/{physical_hash}": {
+    "/{dataset_name}/checkpoints/{physical_hash}": {
       "get": {
         "operationId": "dataset_checkpoints_get_handler",
         "parameters": [
@@ -1685,7 +1654,7 @@
         ]
       }
     },
-    "/{account_name}/{dataset_name}/data/{physical_hash}": {
+    "/{dataset_name}/data/{physical_hash}": {
       "get": {
         "operationId": "dataset_data_get_handler",
         "parameters": [
@@ -1810,7 +1779,7 @@
         ]
       }
     },
-    "/{account_name}/{dataset_name}/ingest": {
+    "/{dataset_name}/ingest": {
       "post": {
         "operationId": "dataset_ingest_handler",
         "parameters": [
@@ -1887,7 +1856,7 @@
         ]
       }
     },
-    "/{account_name}/{dataset_name}/metadata": {
+    "/{dataset_name}/metadata": {
       "get": {
         "operationId": "dataset_metadata_handler",
         "parameters": [
@@ -1952,7 +1921,7 @@
         ]
       }
     },
-    "/{account_name}/{dataset_name}/pull": {
+    "/{dataset_name}/pull": {
       "get": {
         "operationId": "dataset_pull_ws_upgrade_handler",
         "parameters": [
@@ -1999,7 +1968,7 @@
         ]
       }
     },
-    "/{account_name}/{dataset_name}/push": {
+    "/{dataset_name}/push": {
       "get": {
         "operationId": "dataset_push_ws_upgrade_handler",
         "parameters": [
@@ -2046,7 +2015,7 @@
         ]
       }
     },
-    "/{account_name}/{dataset_name}/refs/{reference}": {
+    "/{dataset_name}/refs/{reference}": {
       "get": {
         "operationId": "dataset_refs_handler",
         "parameters": [
@@ -2102,7 +2071,7 @@
         ]
       }
     },
-    "/{account_name}/{dataset_name}/tail": {
+    "/{dataset_name}/tail": {
       "get": {
         "operationId": "dataset_tail_handler",
         "parameters": [

@@ -7,6 +7,13 @@ members = [
     # Apps
     "src/app/api-server",
     "src/app/oracle-provider",
+    # E2E
+    "src/e2e/app/common",
+    "src/e2e/app/common-macros",
+    "src/e2e/app/kamu-node-puppet",
+    "src/e2e/app/repo-tests",
+    "src/e2e/app/postgres",
+    "src/e2e/app/sqlite",
 ]
 resolver = "2"
 
@@ -71,6 +78,11 @@ kamu-task-system-inmem = { git = "https://github.com/kamu-data/kamu-cli", tag = 
 kamu-task-system-postgres = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.221.0", version = "0.221.0", default-features = false }
 kamu-task-system-sqlite = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.221.0", version = "0.221.0", default-features = false }
 
+# E2E
+kamu-node-e2e-common = { path = "src/e2e/app/common", version = "0.53.0", default-features = false }
+kamu-node-e2e-common-macros = { path = "src/e2e/app/common-macros", version = "0.53.0", default-features = false }
+kamu-node-puppet = { path = "src/e2e/app/kamu-node-puppet", version = "0.53.0", default-features = false }
+kamu-node-e2e-repo-tests = { path = "src/e2e/app/repo-tests", version = "0.53.0", default-features = false }
 
 [workspace.package]
 version = "0.53.0"
