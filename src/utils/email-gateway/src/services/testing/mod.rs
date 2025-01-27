@@ -7,6 +7,6 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-mod api_schemas;
-mod notifiers;
-mod test_di_graph;
+mod fake_email_sender;
+
+pub use fake_email_sender::*;

@@ -7,6 +7,24 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-mod api_schemas;
-mod notifiers;
-mod test_di_graph;
+mod dummy;
+mod email_sender;
+
+pub use dummy::*;
+pub use email_sender::*;
+
+// ----
+
+#[cfg(feature = "postmark")]
+mod postmark;
+
+#[cfg(feature = "postmark")]
+pub use postmark::*;
+
+// ----
+
+#[cfg(feature = "testing")]
+mod testing;
+
+#[cfg(feature = "testing")]
+pub use testing::*;

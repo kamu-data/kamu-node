@@ -21,7 +21,9 @@ async fn test_di_graph_validates_local() {
     let repo_url = url::Url::from_directory_path(tempdir.path()).unwrap();
 
     let mut catalog_builder =
-        kamu_api_server::init_dependencies(config, &repo_url, tenancy_config, tempdir.path()).await;
+        kamu_api_server::init_dependencies(config, &repo_url, tenancy_config, tempdir.path())
+            .await
+            .unwrap();
 
     // CurrentAccountSubject is inserted by middlewares, but won't be present in
     // the default dependency graph, so we have to add it manually
@@ -74,7 +76,8 @@ async fn test_di_graph_validates_remote() {
 
     let mut catalog_builder =
         kamu_api_server::init_dependencies(config, &repo_url, tenancy_config, tmp_repo_dir.path())
-            .await;
+            .await
+            .unwrap();
 
     // CurrentAccountSubject is inserted by middlewares, but won't be present in
     // the default dependency graph, so we have to add it manually
