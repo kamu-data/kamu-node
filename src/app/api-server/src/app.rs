@@ -368,6 +368,7 @@ pub async fn init_dependencies(
     b.add::<kamu::CreateDatasetFromSnapshotUseCaseImpl>();
     b.add::<kamu::CreateDatasetUseCaseImpl>();
     b.add::<kamu::DeleteDatasetUseCaseImpl>();
+    b.add::<kamu::EditDatasetUseCaseImpl>();
     b.add::<kamu::GetDatasetDownstreamDependenciesUseCaseImpl>();
     b.add::<kamu::GetDatasetUpstreamDependenciesUseCaseImpl>();
     b.add::<kamu::PullDatasetUseCaseImpl>();
@@ -376,6 +377,7 @@ pub async fn init_dependencies(
     b.add::<kamu::ResetDatasetUseCaseImpl>();
     b.add::<kamu::SetWatermarkUseCaseImpl>();
     b.add::<kamu::VerifyDatasetUseCaseImpl>();
+    b.add::<kamu::ViewDatasetUseCaseImpl>();
 
     b.add_builder(
         messaging_outbox::OutboxImmediateImpl::builder()
