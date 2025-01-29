@@ -14,6 +14,7 @@ use http_common::ApiError;
 use indoc::indoc;
 use internal_error::{InternalError, ResultIntoInternal};
 use kamu::domain::TenancyConfig;
+use kamu_adapter_http::DatasetAuthorizationLayer;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
@@ -99,7 +100,8 @@ pub async fn build_server(
         kamu_adapter_http::add_dataset_resolver_layer(
             OpenApiRouter::new()
                 .merge(kamu_adapter_http::smart_transfer_protocol_router())
-                .merge(kamu_adapter_http::data::dataset_router()),
+                .merge(kamu_adapter_http::data::dataset_router())
+                .layer(DatasetAuthorizationLayer::default()),
             tenancy_config,
         ),
     )

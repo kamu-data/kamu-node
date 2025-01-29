@@ -31,32 +31,34 @@ time-source = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0",
 odf = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false, package = "opendatafabric" }
 
 # Domain
-kamu-task-system = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
-kamu-task-system-services = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
+kamu-accounts = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
+kamu-accounts-services = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
+kamu-auth-rebac-services = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
+kamu-datasets = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
+kamu-datasets-services = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
 kamu-flow-system = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
 kamu-flow-system-services = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
-kamu-accounts = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
-kamu-datasets = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
+kamu-task-system = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
+kamu-task-system-services = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
 
-# Infra
-kamu = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
-kamu-accounts-inmem = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
-kamu-accounts-postgres = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
-kamu-accounts-services = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
-kamu-accounts-sqlite = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
+# Adapter
 kamu-adapter-auth-oso-rebac = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
 kamu-adapter-flight-sql = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
 kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
 kamu-adapter-http = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
 kamu-adapter-oauth = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
 kamu-adapter-odata = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
+
+# Infra
+kamu = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
+kamu-accounts-inmem = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
+kamu-accounts-postgres = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
+kamu-accounts-sqlite = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
 kamu-auth-rebac-inmem = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
 kamu-auth-rebac-postgres = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
-kamu-auth-rebac-services = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
 kamu-auth-rebac-sqlite = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
 kamu-datasets-inmem = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
 kamu-datasets-postgres = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
-kamu-datasets-services = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
 kamu-datasets-sqlite = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
 kamu-flow-system-inmem = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
 kamu-flow-system-postgres = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.220.0", version = "0.220.0", default-features = false }
