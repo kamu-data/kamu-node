@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.52.1] - 2025-01-29
+### Fixed
+- Corrected access rights checks for transport protocols (SiTP, SmTP)
+
 ## [0.52.0] - 2025-01-28
 ### Changed
 - Core changes from the Private Datasets epic (kamu CLI `0.220.0`), Vol. 2
