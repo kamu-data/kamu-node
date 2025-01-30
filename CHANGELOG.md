@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    - Config support for gateway settings (API key, sender address & name)
    - Applied `askoma` templating engine and defined base HTML-rich template for all emails
    - Emails are fire-and-forget / best effort
-   - First email implemented: account registration
+   - First emails implemented: account registration, flow failed
 - GQL suport to query and update email on the currently logged account
 ### Changed
 - Emails are mandatory for Kamu accounts now:
