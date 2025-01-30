@@ -21,3 +21,6 @@ pub mod ui_configuration;
 
 pub use app::*;
 pub(crate) use database::*;
+
+mod emails;
+pub use emails::*;

@@ -32,6 +32,8 @@ dill = { version = "0.11", default-features = false }
 container-runtime = { workspace = true }
 database-common = { workspace = true }
 database-common-macros = { workspace = true }
+email-utils = { workspace = true }
+email-gateway = { workspace = true }
 graceful-shutdown = { workspace = true }
 http-common = { workspace = true }
 init-on-startup = { workspace = true }
@@ -101,6 +103,8 @@ prometheus = { version = "0.13", default-features = false }
 tracing = "0.1"
 
 # Utils
+async-trait = { version = "0.1", default-features = false }
+askama = { version = "0.12" }
 chrono = "0.4"
 clap = { version = "4", default-features = false, features = [
     "std",
@@ -133,6 +137,7 @@ url = "2"
 
 
 [dev-dependencies]
+email-gateway = { workspace = true, features = ["testing"] }
 kamu = { workspace = true, features = ["testing"] }
 test-utils = { workspace = true }
 

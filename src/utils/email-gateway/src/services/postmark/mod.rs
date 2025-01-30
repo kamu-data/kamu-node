@@ -7,6 +7,8 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-mod api_schemas;
-mod notifiers;
-mod test_di_graph;
+mod postmark_email_sender;
+mod postmark_gateway_settings;
+
+pub use postmark_email_sender::*;
+pub use postmark_gateway_settings::*;

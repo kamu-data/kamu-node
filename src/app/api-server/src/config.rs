@@ -49,6 +49,8 @@ pub struct ApiServerConfig {
     pub source: SourceConfig,
     /// Outbox configuration
     pub outbox: OutboxConfig,
+    /// Email gateway configuration
+    pub email: EmailConfig,
     /// UNSTABLE: Identity configuration
     pub identity: Option<IdentityConfig>,
 }
@@ -693,6 +695,39 @@ impl IdentityConfig {
             .clone()
             .map(|private_key| kamu_adapter_http::data::query_types::IdentityConfig { private_key })
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct EmailConfig {
+    pub sender_address: String,
+    pub sender_name: Option<String>,
+    pub gateway: EmailConfigGateway,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+#[serde(tag = "kind")]
+pub enum EmailConfigGateway {
+    Dummy,
+    Postmark(EmailConfigPostmarkGateway),
+}
+
+impl Default for EmailConfigGateway {
+    fn default() -> Self {
+        Self::Dummy
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct EmailConfigPostmarkGateway {
+    pub api_key: String,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

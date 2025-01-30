@@ -23,6 +23,8 @@ use url::Url;
 use crate::config::{
     ApiServerConfig,
     AuthProviderConfig,
+    EmailConfig,
+    EmailConfigGateway,
     RepoConfig,
     UploadRepoStorageConfig,
     ACCOUNT_KAMU,
@@ -35,6 +37,8 @@ use crate::{
     connect_database_initially,
     spawn_password_refreshing_job,
     try_build_db_connection_settings,
+    AccountLifecycleNotifier,
+    FlowProgressNotifier,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,7 +98,7 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
     };
 
     let catalog = init_dependencies(config, &repo_url, tenancy_config, local_dir.path())
-        .await
+        .await?
         .build();
 
     // Register metrics
@@ -256,7 +260,7 @@ pub async fn init_dependencies(
     repo_url: &Url,
     tenancy_config: TenancyConfig,
     local_dir: &Path,
-) -> CatalogBuilder {
+) -> Result<CatalogBuilder, InternalError> {
     let mut b = CatalogBuilder::new();
 
     // TODO: Improve output multiplexing and cache interface
@@ -416,6 +420,10 @@ pub async fn init_dependencies(
         &mut b,
         kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
     );
+    messaging_outbox::register_message_dispatcher::<kamu_accounts::AccountLifecycleMessage>(
+        &mut b,
+        kamu_accounts::MESSAGE_PRODUCER_KAMU_ACCOUNTS_SERVICE,
+    );
 
     b.add_value(messaging_outbox::OutboxConfig::new(
         Duration::seconds(config.outbox.awaiting_step_secs.unwrap()),
@@ -558,6 +566,10 @@ pub async fn init_dependencies(
         allows_public_read: false,
     });
 
+    configure_email_gateway(&mut b, &config.email)?;
+    b.add::<AccountLifecycleNotifier>();
+    b.add::<FlowProgressNotifier>();
+
     let maybe_db_connection_settings = try_build_db_connection_settings(&config.database);
     if let Some(db_connection_settings) = maybe_db_connection_settings {
         configure_database_components(&mut b, &config.database, db_connection_settings);
@@ -565,7 +577,7 @@ pub async fn init_dependencies(
         configure_in_memory_components(&mut b);
     };
 
-    b
+    Ok(b)
 }
 
 async fn configure_repository(b: &mut CatalogBuilder, repo_url: &Url, config: &RepoConfig) {
@@ -610,6 +622,27 @@ async fn configure_repository(b: &mut CatalogBuilder, repo_url: &Url, config: &R
         }
         _ => panic!("Unsupported repository scheme: {}", repo_url.scheme()),
     }
+}
+
+fn configure_email_gateway(
+    catalog_builder: &mut dill::CatalogBuilder,
+    email_config: &EmailConfig,
+) -> Result<(), InternalError> {
+    let email_config = match &email_config.gateway {
+        EmailConfigGateway::Dummy => email_gateway::EmailConfig::Dummy,
+        EmailConfigGateway::Postmark(postmark_config) => {
+            email_gateway::EmailConfig::Postmark(email_gateway::PostmarkGatewaySettings {
+                sender_address: email_utils::Email::parse(email_config.sender_address.as_str())
+                    .int_err()?,
+                sender_name: email_config.sender_name.clone(),
+                api_key: secrecy::SecretString::from(postmark_config.api_key.as_str()),
+            })
+        }
+    };
+
+    email_gateway::register_dependencies(catalog_builder, email_config);
+
+    Ok(())
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

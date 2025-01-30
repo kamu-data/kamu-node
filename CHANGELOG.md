@@ -5,23 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.53.0] - 2025-01-30
+### Added
+- Integration of email gateway (Postmark):
+   - Defined `EmailSender` crate and prototyped `Postmark`-based implementation
+   - Config support for gateway settings (API key, sender address & name)
+   - Applied `askoma` templating engine and defined base HTML-rich template for all emails
+   - Emails are fire-and-forget / best effort
+   - First emails implemented: account registration, flow failed
+- GQL suport to query and update email on the currently logged account
+### Changed
+- Emails are mandatory for Kamu accounts now:
+   - predefined users need to specify an email in config
+   - predefined users are auto-synced at startup in case they existed before
+   - GitHub users are queried for primary verified email, even if it is not public
+   - migration code for the database existing users
+
 ## [0.52.1] - 2025-01-29
 ### Fixed
 - Corrected access rights checks for transport protocols (SiTP, SmTP)
-
-## [0.52.0] - 2025-01-28
-### Changed
-- Core changes from the Private Datasets epic (kamu CLI `0.220.0`), Vol. 2
-
-## [0.51.0] - 2025-01-20
-### Changed
-- Toolchain updated to `nightly-2024-12-26`
-- Core changes from the Private Datasets epic (kamu CLI `0.219.1`)
-
-## [0.50.4] - 2024-01-15
-### Fixed
-- Telemetry-driven fixes in flow listings (kamu CLI `0.217.3`)
-
 ## [0.50.3] - 2024-01-13
 ### Changed
 - Batched loading of flows and tasks (kamu CLI `0.217.2`)
