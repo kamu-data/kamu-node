@@ -11,24 +11,12 @@ use std::str::FromStr;
 
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
-use convert_case::{Case, Casing};
-use http_common::comma_separated::CommaSeparatedSet;
 use internal_error::{ErrorIntoInternal, InternalError, ResultIntoInternal};
-use kamu_adapter_http::data::metadata_handler::{
-    DatasetMetadataParams,
-    DatasetMetadataResponse,
-    Include as MetadataInclude,
-};
-use kamu_adapter_http::data::query_types::{QueryRequest, QueryResponse};
-use kamu_adapter_http::data::verify_types::{VerifyRequest, VerifyResponse};
 use kamu_adapter_http::general::{AccountResponse, DatasetInfoResponse, NodeInfoResponse};
 use kamu_adapter_http::{LoginRequestBody, PlatformFileUploadQuery, UploadContext};
-use kamu_flow_system::{DatasetFlowType, FlowID};
 use lazy_static::lazy_static;
 use reqwest::{Method, StatusCode, Url};
 use thiserror::Error;
-use tokio_retry::strategy::FixedInterval;
-use tokio_retry::Retry;
 
 use crate::{AccessToken, KamuApiServerClient, RequestBody};
 
@@ -166,13 +154,7 @@ pub trait KamuApiServerClientExt {
 
     fn dataset(&self) -> DatasetApi;
 
-    fn flow(&self) -> FlowApi;
-
     fn odf_core(&self) -> OdfCoreApi;
-
-    fn odf_transfer(&self) -> OdfTransferApi;
-
-    fn odf_query(&self) -> OdfQuery;
 
     fn swagger(&self) -> SwaggerApi;
 
@@ -195,20 +177,8 @@ impl KamuApiServerClientExt for KamuApiServerClient {
         DatasetApi { client: self }
     }
 
-    fn flow(&self) -> FlowApi {
-        FlowApi { client: self }
-    }
-
     fn odf_core(&self) -> OdfCoreApi {
         OdfCoreApi { client: self }
-    }
-
-    fn odf_transfer(&self) -> OdfTransferApi {
-        OdfTransferApi { client: self }
-    }
-
-    fn odf_query(&self) -> OdfQuery {
-        OdfQuery { client: self }
     }
 
     fn swagger(&self) -> SwaggerApi {
@@ -669,126 +639,6 @@ pub struct DatasetBlocksResponse {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// API: Flow
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-pub struct FlowApi<'a> {
-    client: &'a KamuApiServerClient,
-}
-
-impl FlowApi<'_> {
-    pub async fn trigger(
-        &self,
-        dataset_id: &odf::DatasetID,
-        dataset_flow_type: DatasetFlowType,
-    ) -> FlowTriggerResponse {
-        let response = self
-            .client
-            .graphql_api_call(
-                indoc::indoc!(
-                    r#"
-                    mutation {
-                      datasets {
-                        byId(datasetId: "<dataset_id>") {
-                          flows {
-                            runs {
-                              triggerFlow(datasetFlowType: <dataset_flow_type>) {
-                                message
-                                ... on TriggerFlowSuccess {
-                                  flow {
-                                    flowId
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                    "#
-                )
-                .replace("<dataset_id>", &dataset_id.as_did_str().to_stack_string())
-                .replace(
-                    "<dataset_flow_type>",
-                    &format!("{dataset_flow_type:?}").to_case(Case::ScreamingSnake),
-                )
-                .as_str(),
-            )
-            .await;
-
-        let trigger_node = &response["datasets"]["byId"]["flows"]["runs"]["triggerFlow"];
-        let message = trigger_node["message"].as_str().unwrap();
-
-        if message == "Success" {
-            let flow_id_as_str = trigger_node["flow"]["flowId"].as_str().unwrap();
-            let flow_id = flow_id_as_str.parse::<u64>().unwrap();
-
-            FlowTriggerResponse::Success(flow_id.into())
-        } else {
-            FlowTriggerResponse::Error(message.to_owned())
-        }
-    }
-
-    pub async fn wait(&self, dataset_id: &odf::DatasetID) {
-        let retry_strategy = FixedInterval::from_millis(5_000).take(18); // 1m 30s
-
-        Retry::spawn(retry_strategy, || async {
-            let response = self
-                .client
-                .graphql_api_call(
-                    indoc::indoc!(
-                        r#"
-                        query {
-                          datasets {
-                            byId(datasetId: "<dataset_id>") {
-                              flows {
-                                runs {
-                                  listFlows {
-                                    edges {
-                                      node {
-                                        status
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                        "#
-                    )
-                    .replace("<dataset_id>", &dataset_id.as_did_str().to_stack_string())
-                    .as_str(),
-                )
-                .await;
-
-            let edges = response["datasets"]["byId"]["flows"]["runs"]["listFlows"]["edges"]
-                .as_array()
-                .unwrap();
-            let all_finished = edges.iter().all(|edge| {
-                let status = edge["node"]["status"].as_str().unwrap();
-
-                status == "FINISHED"
-            });
-
-            if all_finished {
-                Ok(())
-            } else {
-                Err(())
-            }
-        })
-        .await
-        .unwrap();
-    }
-}
-
-#[derive(Debug)]
-pub enum FlowTriggerResponse {
-    Success(FlowID),
-    Error(String),
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // API: ODF, core
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -805,234 +655,6 @@ impl OdfCoreApi<'_> {
             unexpected_status => panic!("Unexpected status: {unexpected_status}"),
         }
     }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// API: ODF, transfer
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-pub struct OdfTransferApi<'a> {
-    client: &'a KamuApiServerClient,
-}
-
-impl OdfTransferApi<'_> {
-    pub async fn metadata_block_hash_by_ref(
-        &self,
-        dataset_alias: &odf::DatasetAlias,
-        block_ref: odf::BlockRef,
-    ) -> Result<odf::Multihash, MetadataBlockHashByRefError> {
-        let response = self
-            .client
-            .rest_api_call(
-                Method::GET,
-                &format!("{dataset_alias}/refs/{block_ref}"),
-                None,
-            )
-            .await;
-
-        match response.status() {
-            StatusCode::OK => {
-                let raw_response_body = response.text().await.int_err()?;
-                Ok(odf::Multihash::from_multibase(&raw_response_body).int_err()?)
-            }
-            StatusCode::NOT_FOUND => Err(MetadataBlockHashByRefError::NotFound),
-            unexpected_status => Err(format!("Unexpected status: {unexpected_status}")
-                .int_err()
-                .into()),
-        }
-    }
-}
-
-#[derive(Error, Debug)]
-pub enum MetadataBlockHashByRefError {
-    #[error("Not found")]
-    NotFound,
-    #[error(transparent)]
-    Internal(#[from] InternalError),
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// API: ODF, query
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-pub struct OdfQuery<'a> {
-    client: &'a KamuApiServerClient,
-}
-
-impl OdfQuery<'_> {
-    pub async fn query(&self, query: &str) -> String {
-        let response = self
-            .client
-            .graphql_api_call(
-                indoc::indoc!(
-                    r#"
-                    query {
-                      data {
-                        query(
-                          query: """
-                          <query>
-                          """,
-                          queryDialect: SQL_DATA_FUSION,
-                          dataFormat: CSV
-                        ) {
-                          __typename
-                          ... on DataQueryResultSuccess {
-                            data {
-                              content
-                            }
-                          }
-                          ... on DataQueryResultError {
-                            errorKind
-                            errorMessage
-                          }
-                        }
-                      }
-                    }
-                    "#,
-                )
-                .replace("<query>", query)
-                .as_str(),
-            )
-            .await;
-        let query_node = &response["data"]["query"];
-
-        assert_eq!(
-            query_node["__typename"].as_str(),
-            Some("DataQueryResultSuccess"),
-            "{}",
-            indoc::formatdoc!(
-                r#"
-                Query:
-                {query}
-                Unexpected response:
-                {query_node:#}
-                "#
-            )
-        );
-
-        let content = query_node["data"]["content"]
-            .as_str()
-            .map(ToOwned::to_owned)
-            .unwrap();
-
-        content
-    }
-
-    pub async fn query_player_scores_dataset(&self) -> String {
-        // Without unstable "offset" column
-        self.query(indoc::indoc!(
-            r#"
-            SELECT op,
-                   system_time,
-                   match_time,
-                   match_id,
-                   player_id,
-                   score
-            FROM 'player-scores'
-            ORDER BY match_id, score, player_id
-            "#
-        ))
-        .await
-    }
-
-    pub async fn query_via_rest(
-        &self,
-        options: &QueryRequest,
-    ) -> Result<QueryResponse, InternalError> {
-        let request_body_json = serde_json::to_value(options).int_err()?;
-
-        let response = self
-            .client
-            .rest_api_call(
-                Method::POST,
-                "/query",
-                Some(RequestBody::Json(request_body_json)),
-            )
-            .await;
-
-        match response.status() {
-            StatusCode::OK => Ok(response.json().await.int_err()?),
-            unexpected_status => {
-                let message = response.text().await.int_err()?;
-
-                Err(format!("Unexpected status: {unexpected_status}, message: {message}").int_err())
-            }
-        }
-    }
-
-    pub async fn verify(&self, options: VerifyRequest) -> Result<VerifyResponse, InternalError> {
-        let request_body_json = serde_json::to_value(&options).int_err()?;
-
-        let response = self
-            .client
-            .rest_api_call(
-                Method::POST,
-                "/verify",
-                Some(RequestBody::Json(request_body_json)),
-            )
-            .await;
-
-        match response.status() {
-            StatusCode::OK => Ok(response.json().await.int_err()?),
-            unexpected_status => {
-                let message = response.text().await.int_err()?;
-
-                Err(format!("Unexpected status: {unexpected_status}, message: {message}").int_err())
-            }
-        }
-    }
-
-    pub async fn metadata(
-        &self,
-        dataset_alias: &odf::DatasetAlias,
-        maybe_include_events: Option<CommaSeparatedSet<MetadataInclude>>,
-    ) -> Result<DatasetMetadataResponse, InternalError> {
-        let include_events =
-            maybe_include_events.unwrap_or_else(DatasetMetadataParams::default_include);
-        let include_events_json = serde_json::to_value(include_events).int_err()?;
-        let include_query_param_value = include_events_json
-            .as_str()
-            .ok_or_else(|| "Failed get JSON as string".int_err())?
-            .trim_matches('"');
-
-        let response = self
-            .client
-            .rest_api_call(
-                Method::GET,
-                &format!("{dataset_alias}/metadata?include={include_query_param_value}"),
-                None,
-            )
-            .await;
-
-        let status = response.status();
-
-        if status != StatusCode::OK {
-            return Err(format!("Unexpected status: {status}").int_err());
-        }
-
-        response.json::<DatasetMetadataResponse>().await.int_err()
-    }
-
-    pub async fn tail(&self, dataset_alias: &odf::DatasetAlias) -> serde_json::Value {
-        let response = self
-            .client
-            .rest_api_call(Method::GET, &format!("{dataset_alias}/tail"), None)
-            .await;
-
-        match response.status() {
-            StatusCode::OK => response.json().await.unwrap(),
-            StatusCode::NO_CONTENT => serde_json::Value::Null,
-            unexpected_status => panic!("Unexpected status: {unexpected_status}"),
-        }
-    }
-}
-
-#[derive(Error, Debug)]
-pub enum QueryError {
-    #[error("Unauthorized")]
-    Unauthorized,
-    #[error(transparent)]
-    Internal(#[from] InternalError),
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
