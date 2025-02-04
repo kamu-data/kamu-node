@@ -88,21 +88,21 @@ pub async fn test_login_enabled_methods(kamu_api_server_client: KamuApiServerCli
 pub async fn test_kamu_access_token_middleware(mut kamu_api_server_client: KamuApiServerClient) {
     // 1. Grub a JWT
     let login_response = kamu_api_server_client
-     .graphql_api_call(indoc::indoc!(
-        r#"
-        mutation {
-            auth {
-                login(loginMethod: "password", loginCredentialsJson: "{\"login\":\"kamu\",\"password\":\"kamu\"}") {
-                    accessToken,
-                    account {
-                        id
-                    }
-                }
-            }
-        }
-        "#,
-         ))
-     .await;
+   .graphql_api_call(indoc::indoc!(
+      r#"
+      mutation {
+          auth {
+              login(loginMethod: "password", loginCredentialsJson: "{\"login\":\"kamu\",\"password\":\"kamu\"}") {
+                  accessToken,
+                  account {
+                      id
+                  }
+              }
+          }
+      }
+      "#,
+       ))
+   .await;
     let access_token = login_response["auth"]["login"]["accessToken"]
         .as_str()
         .map(ToOwned::to_owned)
@@ -120,22 +120,22 @@ pub async fn test_kamu_access_token_middleware(mut kamu_api_server_client: KamuA
         .graphql_api_call(
             indoc::indoc!(
                 r#"
-            mutation {
-                auth {
-                    createAccessToken (accountId: "<account_id>", tokenName: "foo") {
-                        __typename
-                        message
-                        ... on CreateAccessTokenResultSuccess {
-                            token {
-                                id,
-                                name,
-                                composed
-                            }
-                        }
-                    }
-                }
-            }
-            "#,
+          mutation {
+              auth {
+                  createAccessToken (accountId: "<account_id>", tokenName: "foo") {
+                      __typename
+                      message
+                      ... on CreateAccessTokenResultSuccess {
+                          token {
+                              id,
+                              name,
+                              composed
+                          }
+                      }
+                  }
+              }
+          }
+          "#,
             )
             .replace("<account_id>", account_id.as_str())
             .as_str(),
