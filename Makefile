@@ -43,17 +43,17 @@ echo "SQLX_OFFLINE=false" >> $(2)/.env;
 endef
 
 .PHONY: sqlx-local-setup
-sqlx-local-setup: sqlx-local-setup-postgres sqlx-local-setup-mariadb sqlx-local-setup-sqlite
+sqlx-local-setup: sqlx-local-setup-postgres sqlx-local-setup-sqlite
 
 .PHONY: sqlx-local-setup-postgres
 sqlx-local-setup-postgres:
 	$(KAMU_CONTAINER_RUNTIME_TYPE) pull postgres:latest
-	$(KAMU_CONTAINER_RUNTIME_TYPE) stop kamu-postgres || true && $(KAMU_CONTAINER_RUNTIME_TYPE) rm kamu-postgres || true
-	$(KAMU_CONTAINER_RUNTIME_TYPE) run --name kamu-postgres -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=root -d postgres:latest
-	$(foreach crate,$(POSTGRES_CRATES),$(call Setup_EnvFile,postgres,5432,$(crate)))
+	$(KAMU_CONTAINER_RUNTIME_TYPE) stop kamu-node-postgres || true && $(KAMU_CONTAINER_RUNTIME_TYPE) rm kamu-node-postgres || true
+	$(KAMU_CONTAINER_RUNTIME_TYPE) run --name kamu-node-postgres -p 5433:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=root -d postgres:latest
+	$(foreach crate,$(POSTGRES_CRATES),$(call Setup_EnvFile,postgres,5433,$(crate)))
 	sleep 3  # Letting the container to start
-	until PGPASSWORD=root psql -h localhost -U root -p 5432 -d root -c '\q'; do sleep 3; done
-	sqlx database create --database-url postgres://root:root@localhost:5432/kamu
+	until PGPASSWORD=root psql -h localhost -U root -p 5433 -d root -c '\q'; do sleep 3; done
+	sqlx database create --database-url postgres://root:root@localhost:5433/kamu
 
 .PHONY: sqlx-local-setup-sqlite
 sqlx-local-setup-sqlite:
@@ -63,7 +63,7 @@ sqlx-local-setup-sqlite:
 
 .PHONY: sqlx-local-clean-postgres
 sqlx-local-clean-postgres:
-	$(KAMU_CONTAINER_RUNTIME_TYPE) stop kamu-postgres || true && $(KAMU_CONTAINER_RUNTIME_TYPE) rm kamu-postgres || true
+	$(KAMU_CONTAINER_RUNTIME_TYPE) stop kamu-node-postgres || true && $(KAMU_CONTAINER_RUNTIME_TYPE) rm kamu-node-postgres || true
 	$(foreach crate,$(POSTGRES_CRATES),rm $(crate)/.env -f ;)
 
 .PHONY: sqlx-local-clean-sqlite

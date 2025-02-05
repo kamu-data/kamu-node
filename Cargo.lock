@@ -5999,7 +5999,6 @@ dependencies = [
  "assert_cmd",
  "async-trait",
  "indoc 2.0.5",
- "pretty_assertions",
  "serde",
  "tempfile",
  "tokio",

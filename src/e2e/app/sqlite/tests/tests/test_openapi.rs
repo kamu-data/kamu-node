@@ -13,14 +13,6 @@ use kamu_node_e2e_common::prelude::*;
 
 kamu_node_run_api_server_e2e_test!(
     storage = sqlite,
-    fixture = kamu_node_e2e_repo_tests::test_openapi_st,
-    extra_test_groups = "resourcegen",
-);
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-kamu_node_run_api_server_e2e_test!(
-    storage = sqlite,
     fixture = kamu_node_e2e_repo_tests::test_openapi_mt,
     extra_test_groups = "resourcegen",
 );

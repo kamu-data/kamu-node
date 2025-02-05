@@ -43,7 +43,6 @@ serde_urlencoded = { version = "0.7" }
 serde_yaml = { version = "0.9" }
 sqlx = { version = "0.8", default-features = false, features = [
     "postgres",
-    "mysql",
     "sqlite",
 ] }
 thiserror = { version = "2", default-features = false }

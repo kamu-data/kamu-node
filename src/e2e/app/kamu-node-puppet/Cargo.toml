@@ -26,7 +26,6 @@ extensions = [
     # External
     "dep:async-trait",
     "dep:indoc",
-    "dep:pretty_assertions",
     "dep:serde",
 ]
 
@@ -39,7 +38,6 @@ tokio = { version = "1", default-features = false, features = ["rt"] }
 
 async-trait = { optional = true, version = "0.1" }
 indoc = { optional = true, version = "2" }
-pretty_assertions = { optional = true, version = "1" }
 serde = { optional = true, version = "1", default-features = false, features = [
     "derive",
 ] }

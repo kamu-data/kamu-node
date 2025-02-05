@@ -26,12 +26,6 @@ async fn test_openapi(kamu_api_server_client: KamuApiServerClient, schema_path: 
     std::fs::write(&schema_path, &schema).unwrap();
 }
 
-pub async fn test_openapi_st(kamu_api_server_client: KamuApiServerClient) {
-    let mut schema_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    schema_path.push("../../../../resources/openapi.json");
-    test_openapi(kamu_api_server_client, schema_path).await;
-}
-
 pub async fn test_openapi_mt(kamu_api_server_client: KamuApiServerClient) {
     let mut schema_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     schema_path.push("../../../../resources/openapi-mt.json");

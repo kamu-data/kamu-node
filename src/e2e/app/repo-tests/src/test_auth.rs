@@ -19,43 +19,6 @@ use serde_json::json;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pub async fn test_login_password_predefined_successful(
-    kamu_api_server_client: KamuApiServerClient,
-) {
-    kamu_api_server_client
-        .graphql_api_call_assert(
-            indoc::indoc!(
-                r#"
-                mutation {
-                  auth {
-                    login(loginMethod: "password", loginCredentialsJson: "{\"login\":\"kamu\",\"password\":\"kamu\"}") {
-                      account {
-                        accountName
-                      }
-                    }
-                  }
-                }
-                "#,
-            ),
-            Ok(indoc::indoc!(
-                r#"
-                {
-                  "auth": {
-                    "login": {
-                      "account": {
-                        "accountName": "kamu"
-                      }
-                    }
-                  }
-                }
-                "#,
-            )),
-        )
-        .await;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 pub async fn test_login_enabled_methods(kamu_api_server_client: KamuApiServerClient) {
     kamu_api_server_client
         .graphql_api_call_assert(

@@ -53,15 +53,6 @@ fn kamu_node_e2e_test_impl(harness_method: &Ident, input: TokenStream) -> TokenS
                     .await;
             }
         },
-        "mysql" => quote! {
-            #[test_group::group(e2e, database, mysql, #extra_test_groups)]
-            #[test_log::test(sqlx::test(migrator = "database_common::MYSQL_MIGRATOR"))]
-            async fn #test_function_name (mysql_pool: sqlx::MySqlPool) {
-                KamuNodeApiServerHarness::mysql(&mysql_pool, #options )
-                    . #harness_method ( #fixture )
-                    .await;
-            }
-        },
         "sqlite" => quote! {
             #[test_group::group(e2e, database, sqlite, #extra_test_groups)]
             #[test_log::test(sqlx::test(migrator = "database_common::SQLITE_MIGRATOR"))]
@@ -73,8 +64,8 @@ fn kamu_node_e2e_test_impl(harness_method: &Ident, input: TokenStream) -> TokenS
         },
         unexpected => {
             panic!(
-                "Unexpected E2E test storage: \"{unexpected}\"!\nAllowable values: \"postgres\", \
-                 \"mysql\", and \"sqlite\"."
+                "Unexpected E2E test storage: \"{unexpected}\"!\nAllowable values: \"postgres\" \
+                 and \"sqlite\"."
             );
         }
     };

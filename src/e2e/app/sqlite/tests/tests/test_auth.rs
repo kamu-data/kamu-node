@@ -20,34 +20,7 @@ kamu_node_run_api_server_e2e_test!(
 
 kamu_node_run_api_server_e2e_test!(
     storage = sqlite,
-    fixture = kamu_node_e2e_repo_tests::test_login_password_predefined_successful,
-    options = Options::default().with_kamu_config(indoc::indoc!(
-        r#"
-        auth:
-          providers:
-              - kind: password
-                accounts:
-                  - accountName: kamu
-                    email: kamu@example.com
-        "#
-    ))
-);
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-kamu_node_run_api_server_e2e_test!(
-    storage = sqlite,
     fixture = kamu_node_e2e_repo_tests::test_kamu_access_token_middleware,
-    options = Options::default().with_kamu_config(indoc::indoc!(
-        r#"
-        auth:
-          providers:
-              - kind: password
-                accounts:
-                  - accountName: kamu
-                    email: kamu@example.com
-        "#
-    ))
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,16 +28,6 @@ kamu_node_run_api_server_e2e_test!(
 kamu_node_run_api_server_e2e_test!(
     storage = sqlite,
     fixture = kamu_node_e2e_repo_tests::test_token_validate,
-    options = Options::default().with_kamu_config(indoc::indoc!(
-        r#"
-        auth:
-          providers:
-              - kind: password
-                accounts:
-                  - accountName: kamu
-                    email: kamu@example.com
-        "#
-    ))
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -72,16 +35,6 @@ kamu_node_run_api_server_e2e_test!(
 kamu_node_run_api_server_e2e_test!(
     storage = sqlite,
     fixture = kamu_node_e2e_repo_tests::test_login_via_rest_password,
-    options = Options::default().with_kamu_config(indoc::indoc!(
-        r#"
-        auth:
-          providers:
-              - kind: password
-                accounts:
-                  - accountName: kamu
-                    email: kamu@example.com
-        "#
-    ))
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,16 +42,6 @@ kamu_node_run_api_server_e2e_test!(
 kamu_node_run_api_server_e2e_test!(
     storage = sqlite,
     fixture = kamu_node_e2e_repo_tests::test_login_via_rest_unauthorized,
-    options = Options::default().with_kamu_config(indoc::indoc!(
-        r#"
-        auth:
-          providers:
-              - kind: password
-                accounts:
-                  - accountName: kamu
-                    email: kamu@example.com
-        "#
-    ))
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

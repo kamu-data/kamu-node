@@ -44,6 +44,12 @@ impl KamuNodePuppet {
                 r#"
                 repo:
                     repoUrl: {path}
+                auth:
+                    providers:
+                        - kind: password
+                          accounts:
+                            - accountName: kamu
+                              email: kamu@example.com
                 "#,
                 path = dataset_path.display()
             ));

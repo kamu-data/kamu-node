@@ -12,7 +12,7 @@ use std::future::Future;
 use kamu_node_puppet::extensions::KamuNodePuppetExt;
 use kamu_node_puppet::{KamuNodePuppet, NewWorkspaceOptions};
 use regex::Regex;
-use sqlx::{MySqlPool, PgPool, SqlitePool};
+use sqlx::{PgPool, SqlitePool};
 
 use crate::{api_server_e2e_test, KamuApiServerClient};
 
@@ -22,18 +22,11 @@ use crate::{api_server_e2e_test, KamuApiServerClient};
 pub struct KamuNodeApiServerHarnessOptions {
     env_vars: Vec<(String, String)>,
     kamu_config: Option<String>,
-    is_multi_tenant: bool,
 }
 
 impl KamuNodeApiServerHarnessOptions {
     pub fn with_kamu_config(mut self, content: &str) -> Self {
         self.kamu_config = Some(content.into());
-
-        self
-    }
-
-    pub fn with_multi_tenant(mut self) -> Self {
-        self.is_multi_tenant = true;
 
         self
     }
@@ -60,29 +53,6 @@ impl KamuNodeApiServerHarness {
                         rawPassword: {password}
                 databaseName: {database}
             "#,
-            host = db.get_host(),
-            user = db.get_username(),
-            password = db.get_username(), // It's intended: password is same as user for tests
-            database = db.get_database().unwrap(),
-        );
-
-        Self::new(options, Some(kamu_config))
-    }
-
-    pub fn mysql(mysql_pool: &MySqlPool, options: KamuNodeApiServerHarnessOptions) -> Self {
-        let db = mysql_pool.connect_options();
-        let kamu_config = indoc::formatdoc!(
-            r#"
-            database:
-                provider: mySql
-                host: {host}
-                credentialsPolicy:
-                    source:
-                        kind: rawPassword
-                        userName: {user}
-                        rawPassword: {password}
-                databaseName: {database}
-                "#,
             host = db.get_host(),
             user = db.get_username(),
             password = db.get_username(), // It's intended: password is same as user for tests
@@ -142,11 +112,10 @@ impl KamuNodeApiServerHarness {
         Fixture: FnOnce(KamuApiServerClient) -> FixtureResult,
         FixtureResult: Future<Output = ()> + Send + 'static,
     {
-        let is_multi_tenant = self.options.is_multi_tenant;
         let kamu = self.into_kamu();
 
         let e2e_data_file_path = kamu.get_e2e_output_data_path();
-        let server_run_fut = kamu.start_api_server(e2e_data_file_path.clone(), is_multi_tenant);
+        let server_run_fut = kamu.start_api_server(e2e_data_file_path.clone());
 
         api_server_e2e_test(e2e_data_file_path, server_run_fut, fixture).await;
     }

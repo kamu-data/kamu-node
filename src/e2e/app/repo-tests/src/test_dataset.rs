@@ -48,12 +48,6 @@ pub async fn test_datasets_by_id(mut kamu_api_server_client: KamuApiServerClient
         .create_player_scores_dataset()
         .await;
 
-    // let expected_owner = DatasetOwnerInfo {
-    //     account_name: odf::AccountName::new_unchecked("kamu"),
-    //     // TODO: Private Datasets: replace with account id
-    //     account_id: None,
-    // };
-
     assert_matches!(
         kamu_api_server_client.dataset().by_id(&dataset_id).await,
         Ok(DatasetInfoResponse {
@@ -62,7 +56,7 @@ pub async fn test_datasets_by_id(mut kamu_api_server_client: KamuApiServerClient
             dataset_name
         })
             if id == dataset_id
-                && owner.is_none() // TODO: Private Datasets: use expected_owner
+                && owner.is_some()
                 && dataset_name == odf::DatasetName::new_unchecked("player-scores")
     );
 }
