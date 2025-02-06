@@ -7,7 +7,7 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-use kamu_node_e2e_common::KamuApiServerClient;
+use kamu_cli_e2e_common::KamuApiServerClient;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

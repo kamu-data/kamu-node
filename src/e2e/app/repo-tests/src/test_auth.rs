@@ -9,7 +9,8 @@
 
 use std::assert_matches::assert_matches;
 
-use kamu_node_e2e_common::{
+use kamu_cli_e2e_common::{
+    GraphQLResponseExt,
     KamuApiServerClient,
     KamuApiServerClientExt,
     LoginError,
@@ -65,7 +66,9 @@ pub async fn test_kamu_access_token_middleware(mut kamu_api_server_client: KamuA
       }
       "#,
        ))
-   .await;
+   .await
+   .data();
+
     let access_token = login_response["auth"]["login"]["accessToken"]
         .as_str()
         .map(ToOwned::to_owned)
@@ -103,7 +106,9 @@ pub async fn test_kamu_access_token_middleware(mut kamu_api_server_client: KamuA
             .replace("<account_id>", account_id.as_str())
             .as_str(),
         )
-        .await;
+        .await
+        .data();
+
     let kamu_token = create_token_response["auth"]["createAccessToken"]["token"]["composed"]
         .as_str()
         .map(ToOwned::to_owned)

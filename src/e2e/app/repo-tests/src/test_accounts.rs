@@ -10,7 +10,7 @@
 use std::assert_matches::assert_matches;
 
 use kamu_accounts::{DEFAULT_ACCOUNT_ID, DEFAULT_ACCOUNT_NAME};
-use kamu_node_e2e_common::*;
+use kamu_cli_e2e_common::{AccountMeError, KamuApiServerClient, KamuApiServerClientExt};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

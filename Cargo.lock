@@ -2156,6 +2156,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "bon"
+version = "3.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fe7acc34ff59877422326db7d6f2d845a582b16396b6b08194942bf34c6528ab"
+dependencies = [
+ "bon-macros",
+ "rustversion",
+]
+
+[[package]]
+name = "bon-macros"
+version = "3.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4159dd617a7fbc9be6a692fe69dc2954f8e6bb6bb5e4d7578467441390d77fd0"
+dependencies = [
+ "darling",
+ "ident_case",
+ "prettyplease",
+ "proc-macro2",
+ "quote",
+ "rustversion",
+ "syn 2.0.96",
+]
+
+[[package]]
 name = "brotli"
 version = "7.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2555,6 +2580,15 @@ dependencies = [
  "tokio",
  "tracing",
  "url",
+]
+
+[[package]]
+name = "convert_case"
+version = "0.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bb402b8d4c85569410425650ce3eddc7d698ed96d39a73f941b08fb63082f1e7"
+dependencies = [
+ "unicode-segmentation",
 ]
 
 [[package]]
@@ -5601,6 +5635,68 @@ dependencies = [
 ]
 
 [[package]]
+name = "kamu-cli-e2e-common"
+version = "0.221.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+dependencies = [
+ "async-graphql",
+ "async-trait",
+ "chrono",
+ "convert_case",
+ "http-common",
+ "indoc 2.0.5",
+ "internal-error",
+ "kamu-adapter-http",
+ "kamu-cli-e2e-common-macros",
+ "kamu-cli-puppet",
+ "kamu-core",
+ "kamu-flow-system",
+ "lazy_static",
+ "opendatafabric",
+ "pretty_assertions",
+ "regex",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_urlencoded",
+ "serde_yaml",
+ "sqlx",
+ "thiserror 2.0.11",
+ "tokio",
+ "tokio-retry",
+]
+
+[[package]]
+name = "kamu-cli-e2e-common-macros"
+version = "0.221.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+dependencies = [
+ "quote",
+ "syn 2.0.96",
+]
+
+[[package]]
+name = "kamu-cli-puppet"
+version = "0.221.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+dependencies = [
+ "assert_cmd",
+ "async-trait",
+ "bon",
+ "chrono",
+ "datafusion",
+ "indoc 2.0.5",
+ "opendatafabric",
+ "pretty_assertions",
+ "regex",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "url",
+]
+
+[[package]]
 name = "kamu-core"
 version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
@@ -5920,6 +6016,7 @@ dependencies = [
  "indoc 2.0.5",
  "internal-error",
  "kamu-adapter-http",
+ "kamu-cli-e2e-common",
  "kamu-node-e2e-common-macros",
  "kamu-node-puppet",
  "lazy_static",
@@ -5968,7 +6065,7 @@ dependencies = [
  "indoc 2.0.5",
  "kamu-accounts",
  "kamu-adapter-http",
- "kamu-node-e2e-common",
+ "kamu-cli-e2e-common",
  "opendatafabric",
  "paste",
  "pretty_assertions",
@@ -7781,6 +7878,16 @@ checksum = "3ae130e2f271fbc2ac3a40fb1d07180839cdbbe443c7a27e1e3c13c5cac0116d"
 dependencies = [
  "diff",
  "yansi",
+]
+
+[[package]]
+name = "prettyplease"
+version = "0.2.29"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6924ced06e1f7dfe3fa48d57b9f74f55d8915f5036121bef647ef4b204895fac"
+dependencies = [
+ "proc-macro2",
+ "syn 2.0.96",
 ]
 
 [[package]]

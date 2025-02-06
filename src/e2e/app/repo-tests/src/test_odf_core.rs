@@ -10,7 +10,7 @@
 use std::assert_matches::assert_matches;
 
 use kamu_adapter_http::general::NodeInfoResponse;
-use kamu_node_e2e_common::{KamuApiServerClient, KamuApiServerClientExt};
+use kamu_cli_e2e_common::{KamuApiServerClient, KamuApiServerClientExt};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -9,12 +9,13 @@
 
 use std::future::Future;
 
+use kamu_cli_e2e_common::KamuApiServerClient;
 use kamu_node_puppet::extensions::KamuNodePuppetExt;
 use kamu_node_puppet::{KamuNodePuppet, NewWorkspaceOptions};
 use regex::Regex;
 use sqlx::{PgPool, SqlitePool};
 
-use crate::{api_server_e2e_test, KamuApiServerClient};
+use crate::api_server_e2e_test;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

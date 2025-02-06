@@ -26,7 +26,7 @@ normal = ["kamu-node"]
 
 
 [dependencies]
-kamu-node-e2e-common = { workspace = true }
+kamu-cli-e2e-common = { workspace = true }
 kamu-adapter-http = { workspace = true }
 kamu-accounts = { workspace = true }
 odf = { workspace = true }

@@ -11,12 +11,11 @@ use std::future::Future;
 use std::path::PathBuf;
 
 use internal_error::{InternalError, ResultIntoInternal};
+use kamu_cli_e2e_common::KamuApiServerClient;
 use kamu_node_puppet::extensions::ServerOutput;
 use reqwest::Url;
 use tokio_retry::strategy::FixedInterval;
 use tokio_retry::Retry;
-
-use crate::KamuApiServerClient;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
