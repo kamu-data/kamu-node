@@ -37,6 +37,7 @@ pub const MESSAGE_CONSUMER_KAMU_API_SERVER_ACCESS_TOKEN_LIFECYCLE_NOTIFIER: &str
 pub struct AccessTokenLifecycleNotifier {
     email_sender: Arc<dyn EmailSender>,
     authentication_service: Arc<dyn kamu_accounts::AuthenticationService>,
+    server_url_config: Arc<kamu::domain::ServerUrlConfig>,
 }
 
 #[component(pub)]
@@ -53,10 +54,12 @@ impl AccessTokenLifecycleNotifier {
     pub fn new(
         email_sender: Arc<dyn EmailSender>,
         authentication_service: Arc<dyn kamu_accounts::AuthenticationService>,
+        server_url_config: Arc<kamu::domain::ServerUrlConfig>,
     ) -> Self {
         Self {
             email_sender,
             authentication_service,
+            server_url_config,
         }
     }
 
@@ -64,8 +67,10 @@ impl AccessTokenLifecycleNotifier {
         &self,
         created_token: &AccessTokenLifecycleMessageCreated,
     ) -> Result<(), InternalError> {
+        let token_list_url = self.format_access_token_list_url();
         let registration_email = AccessTokenCreatedEmail {
             token_name: &created_token.token_name,
+            token_list_url: token_list_url.as_str(),
         };
         let rendered_registration_body = registration_email.render().unwrap();
 
@@ -85,6 +90,13 @@ impl AccessTokenLifecycleNotifier {
             )
             .await
             .int_err()
+    }
+
+    fn format_access_token_list_url(&self) -> String {
+        format!(
+            "{}v/settings/access-tokens",
+            self.server_url_config.protocols.base_url_platform,
+        )
     }
 }
 
@@ -121,6 +133,7 @@ impl MessageConsumerT<AccessTokenLifecycleMessage> for AccessTokenLifecycleNotif
 #[template(path = "access-token-created.html")]
 struct AccessTokenCreatedEmail<'a> {
     token_name: &'a str,
+    token_list_url: &'a str,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

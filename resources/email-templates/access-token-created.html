@@ -4,4 +4,9 @@
 
 {% block content %}
 <p>The new access token with {{token_name}} was successfully created</p>
+<p style="margin-bottom: 25px">
+    Check list of access tokens in your account to see the details.
+    <br>
+    <a href="{{ token_list_url }}">View token list page</a>
+</p>
 {% endblock %}

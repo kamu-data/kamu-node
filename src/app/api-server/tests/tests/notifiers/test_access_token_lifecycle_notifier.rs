@@ -12,7 +12,7 @@ use std::sync::Arc;
 use database_common::NoOpDatabasePlugin;
 use dill::*;
 use email_gateway::FakeEmailSender;
-use kamu::domain::TenancyConfig;
+use kamu::domain::{ServerUrlConfig, TenancyConfig};
 use kamu_accounts::{
     AccessTokenLifecycleMessage,
     JwtAuthenticationConfig,
@@ -44,16 +44,19 @@ async fn test_access_token_created_email() {
     let emails = harness.fake_email_sender.get_recorded_emails();
     assert_eq!(emails.len(), 1);
 
-    let flow_failed_email = emails.first().unwrap();
+    let access_token_created_email = emails.first().unwrap();
     assert_eq!(
-        flow_failed_email.recipient.as_ref(),
+        access_token_created_email.recipient.as_ref(),
         DUMMY_EMAIL_ADDRESS.as_ref()
     );
     assert_eq!(
-        flow_failed_email.subject,
+        access_token_created_email.subject,
         format!("{ACCESS_TOKEN_CREATED_SUBJECT}")
     );
-    assert!(flow_failed_email.body.contains("foo"));
+    assert!(access_token_created_email.body.contains("foo"));
+    assert!(access_token_created_email
+        .body
+        .contains("href=\"http://platform.example.com/v/settings/access-tokens\""));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,6 +87,7 @@ impl AccessTokenLifecycleNotifierHarness {
             .add::<LoginPasswordAuthProvider>()
             .add_value(PredefinedAccountsConfig::single_tenant())
             .add_value(JwtAuthenticationConfig::default())
+            .add_value(ServerUrlConfig::new_test(None))
             .add::<FakeEmailSender>();
 
         NoOpDatabasePlugin::init_database_components(&mut b);
