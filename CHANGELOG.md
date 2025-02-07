@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- New access token notifier
+- New access token notifier that sends an email to the user each time a new access token is created (kamu CLI `0.222.0`)
 
 ## [0.53.1] - 2025-02-03
 ### Fixed
