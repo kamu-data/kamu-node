@@ -68,11 +68,11 @@ impl AccessTokenLifecycleNotifier {
         created_token: &AccessTokenLifecycleMessageCreated,
     ) -> Result<(), InternalError> {
         let token_list_url = self.format_access_token_list_url();
-        let registration_email = AccessTokenCreatedEmail {
+        let access_token_email = AccessTokenCreatedEmail {
             token_name: &created_token.token_name,
             token_list_url: token_list_url.as_str(),
         };
-        let rendered_registration_body = registration_email.render().unwrap();
+        let rendered_access_token_body = access_token_email.render().unwrap();
 
         let owner_account_res = self
             .authentication_service
@@ -86,7 +86,7 @@ impl AccessTokenLifecycleNotifier {
             .send_email(
                 &owner_account.email,
                 ACCESS_TOKEN_CREATED_SUBJECT,
-                &rendered_registration_body,
+                &rendered_access_token_body,
             )
             .await
             .int_err()
