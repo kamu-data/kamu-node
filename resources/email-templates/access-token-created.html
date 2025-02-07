@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}New Access Token Created{% endblock %}
+
+{% block header %}The new access token with name <i>{{token_name}}</i> was successfully created.{% endblock %}
+
+{% block content %}
+<p style="margin-bottom: 25px; margin-left: 50px;">
+    Check list of access tokens in your account to see the details.
+    <br>
+    <a href="{{ token_list_url }}">View token list page</a>
+</p>
+{% endblock %}
