@@ -165,6 +165,7 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
                 address,
                 c.flightsql_port,
                 final_catalog.clone(),
+                args.e2e_output_data_path.as_ref(),
             )
             .await;
 

@@ -10,6 +10,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use std::net::SocketAddr;
+use std::path::PathBuf;
 
 use arrow_flight::flight_service_server::FlightServiceServer;
 use futures::Future;
@@ -27,10 +28,21 @@ pub(crate) struct FlightSqlServer {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 impl FlightSqlServer {
-    pub async fn new(address: std::net::IpAddr, port: Option<u16>, catalog: dill::Catalog) -> Self {
+    pub async fn new(
+        address: std::net::IpAddr,
+        port: Option<u16>,
+        catalog: dill::Catalog,
+        e2e_output_data_path: Option<&PathBuf>,
+    ) -> Self {
         let listener = TcpListener::bind((address, port.unwrap_or_default()))
             .await
             .unwrap();
+        let base_url = url::Url::parse(&format!("http://{}", listener.local_addr().unwrap()))
+            .expect("URL failed to parse");
+
+        if let Some(path) = e2e_output_data_path {
+            std::fs::write(path, format!("\n{}", base_url.to_string())).unwrap();
+        };
 
         Self { catalog, listener }
     }

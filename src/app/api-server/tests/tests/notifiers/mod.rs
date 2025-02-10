@@ -7,5 +7,6 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
+mod test_access_token_lifecycle_notifier;
 mod test_account_lifecycle_notifier;
 mod test_flow_progress_notifier;

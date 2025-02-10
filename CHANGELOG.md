@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- New access token notifier that sends an email to the user each time a new access token is created (kamu CLI `0.222.0`)
+
+## [0.53.1] - 2025-02-03
+### Fixed
+- Private Datasets: hot-fixes (kamu CLI `0.221.1`)
+
 ## [0.53.0] - 2025-01-30
 ### Added
 - Integration of email gateway (Postmark):
@@ -13,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    - Applied `askoma` templating engine and defined base HTML-rich template for all emails
    - Emails are fire-and-forget / best effort
    - First emails implemented: account registration, flow failed
-- GQL suport to query and update email on the currently logged account
+- GQL support to query and update email on the currently logged account
 ### Changed
 - Emails are mandatory for Kamu accounts now:
    - predefined users need to specify an email in config

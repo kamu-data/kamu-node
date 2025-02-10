@@ -1461,6 +1461,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-utils"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-trait",
+ "tokio",
+]
+
+[[package]]
 name = "async_io_stream"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2573,7 +2582,26 @@ dependencies = [
  "dill",
  "libc",
  "once_cell",
- "random-names",
+ "random-names 0.221.0",
+ "regex",
+ "serde",
+ "thiserror 2.0.11",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "container-runtime"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-trait",
+ "cfg-if",
+ "dill",
+ "libc",
+ "once_cell",
+ "random-names 0.222.0",
  "regex",
  "serde",
  "thiserror 2.0.11",
@@ -2892,7 +2920,33 @@ dependencies = [
  "futures",
  "hex",
  "hmac",
- "internal-error",
+ "internal-error 0.221.0",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "sha2",
+ "sqlx",
+ "thiserror 2.0.11",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "database-common"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-stream",
+ "async-trait",
+ "aws-config",
+ "aws-credential-types",
+ "aws-sdk-secretsmanager",
+ "chrono",
+ "dill",
+ "futures",
+ "hex",
+ "hmac",
+ "internal-error 0.222.0",
  "secrecy",
  "serde",
  "serde_json",
@@ -2907,6 +2961,15 @@ dependencies = [
 name = "database-common-macros"
 version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+dependencies = [
+ "quote",
+ "syn 2.0.96",
+]
+
+[[package]]
+name = "database-common-macros"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "quote",
  "syn 2.0.96",
@@ -3670,12 +3733,12 @@ dependencies = [
 
 [[package]]
 name = "email-gateway"
-version = "0.53.0"
+version = "0.53.1"
 dependencies = [
  "async-trait",
  "dill",
- "email-utils",
- "internal-error",
+ "email-utils 0.222.0",
+ "internal-error 0.222.0",
  "reqwest",
  "secrecy",
  "serde",
@@ -3688,6 +3751,16 @@ dependencies = [
 name = "email-utils"
 version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+dependencies = [
+ "serde",
+ "thiserror 2.0.11",
+ "validator",
+]
+
+[[package]]
+name = "email-utils"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "serde",
  "thiserror 2.0.11",
@@ -3737,6 +3810,11 @@ dependencies = [
 name = "enum-variants"
 version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+
+[[package]]
+name = "enum-variants"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 
 [[package]]
 name = "env_filter"
@@ -3804,8 +3882,22 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc
 dependencies = [
  "async-stream",
  "async-trait",
- "event-sourcing-macros",
- "internal-error",
+ "event-sourcing-macros 0.221.0",
+ "internal-error 0.221.0",
+ "thiserror 2.0.11",
+ "tokio-stream",
+ "tracing",
+]
+
+[[package]]
+name = "event-sourcing"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-stream",
+ "async-trait",
+ "event-sourcing-macros 0.222.0",
+ "internal-error 0.222.0",
  "thiserror 2.0.11",
  "tokio-stream",
  "tracing",
@@ -3815,6 +3907,15 @@ dependencies = [
 name = "event-sourcing-macros"
 version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+dependencies = [
+ "quote",
+ "syn 2.0.96",
+]
+
+[[package]]
+name = "event-sourcing-macros"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "quote",
  "syn 2.0.96",
@@ -3902,6 +4003,11 @@ dependencies = [
 name = "file-utils"
 version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+
+[[package]]
+name = "file-utils"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 
 [[package]]
 name = "filetime"
@@ -4187,7 +4293,7 @@ checksum = "a8d1add55171497b4705a648c6b583acafb01d58050a51727785f0b2c8e0a2b2"
 
 [[package]]
 name = "graceful-shutdown"
-version = "0.53.0"
+version = "0.53.1"
 dependencies = [
  "tokio",
  "tracing",
@@ -4561,9 +4667,25 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc
 dependencies = [
  "axum",
  "http 1.2.0",
- "internal-error",
- "kamu-core",
- "opendatafabric",
+ "internal-error 0.221.0",
+ "kamu-core 0.221.0",
+ "opendatafabric 0.221.0",
+ "serde",
+ "thiserror 2.0.11",
+ "tracing",
+ "utoipa",
+]
+
+[[package]]
+name = "http-common"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "axum",
+ "http 1.2.0",
+ "internal-error 0.222.0",
+ "kamu-core 0.222.0",
+ "opendatafabric 0.222.0",
  "serde",
  "thiserror 2.0.11",
  "tracing",
@@ -4943,9 +5065,23 @@ version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
 dependencies = [
  "async-trait",
- "database-common",
+ "database-common 0.221.0",
  "dill",
- "internal-error",
+ "internal-error 0.221.0",
+ "petgraph 0.7.1",
+ "thiserror 2.0.11",
+ "tracing",
+]
+
+[[package]]
+name = "init-on-startup"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-trait",
+ "database-common 0.222.0",
+ "dill",
+ "internal-error 0.222.0",
  "petgraph 0.7.1",
  "thiserror 2.0.11",
  "tracing",
@@ -4976,6 +5112,14 @@ checksum = "8bb03732005da905c88227371639bf1ad885cc712789c011c31c5fb3ab3ccf02"
 name = "internal-error"
 version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+dependencies = [
+ "thiserror 2.0.11",
+]
+
+[[package]]
+name = "internal-error"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "thiserror 2.0.11",
 ]
@@ -5115,11 +5259,10 @@ name = "kamu"
 version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
 dependencies = [
- "alloy",
  "async-recursion",
  "async-stream",
  "async-trait",
- "async-utils",
+ "async-utils 0.221.0",
  "aws-config",
  "aws-credential-types",
  "aws-sdk-s3",
@@ -5128,7 +5271,76 @@ dependencies = [
  "bytes",
  "cfg-if",
  "chrono",
- "container-runtime",
+ "container-runtime 0.221.0",
+ "dashmap",
+ "datafusion",
+ "digest 0.10.7",
+ "dill",
+ "file-utils 0.221.0",
+ "flatbuffers",
+ "flate2",
+ "futures",
+ "glob",
+ "hex",
+ "hickory-resolver",
+ "http 1.2.0",
+ "init-on-startup 0.221.0",
+ "internal-error 0.221.0",
+ "itertools 0.14.0",
+ "kamu-accounts 0.221.0",
+ "kamu-core 0.221.0",
+ "kamu-datasets 0.221.0",
+ "kamu-ingest-datafusion 0.221.0",
+ "lazy_static",
+ "libc",
+ "like",
+ "messaging-outbox 0.221.0",
+ "object_store",
+ "opendatafabric 0.221.0",
+ "pin-project",
+ "rand",
+ "random-names 0.221.0",
+ "regex",
+ "reqwest",
+ "ringbuf",
+ "s3-utils 0.221.0",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "serde_yaml",
+ "sha3",
+ "tempfile",
+ "thiserror 2.0.11",
+ "time-source 0.221.0",
+ "tokio",
+ "tokio-stream",
+ "tokio-util",
+ "tower 0.5.2",
+ "tower-http",
+ "tracing",
+ "url",
+ "zip",
+]
+
+[[package]]
+name = "kamu"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "alloy",
+ "async-recursion",
+ "async-stream",
+ "async-trait",
+ "async-utils 0.222.0",
+ "aws-config",
+ "aws-credential-types",
+ "aws-sdk-s3",
+ "aws-smithy-types",
+ "axum",
+ "bytes",
+ "cfg-if",
+ "chrono",
+ "container-runtime 0.222.0",
  "curl",
  "curl-sys",
  "dashmap",
@@ -5137,7 +5349,7 @@ dependencies = [
  "datafusion-functions-json",
  "digest 0.10.7",
  "dill",
- "file-utils",
+ "file-utils 0.222.0",
  "flatbuffers",
  "flate2",
  "futures",
@@ -5145,28 +5357,28 @@ dependencies = [
  "hex",
  "hickory-resolver",
  "http 1.2.0",
- "init-on-startup",
- "internal-error",
+ "init-on-startup 0.222.0",
+ "internal-error 0.222.0",
  "itertools 0.14.0",
- "kamu-accounts",
- "kamu-core",
- "kamu-datasets",
- "kamu-ingest-datafusion",
+ "kamu-accounts 0.222.0",
+ "kamu-core 0.222.0",
+ "kamu-datasets 0.222.0",
+ "kamu-ingest-datafusion 0.222.0",
  "lazy_static",
  "libc",
  "like",
- "messaging-outbox",
+ "messaging-outbox 0.222.0",
  "mockall",
  "object_store",
- "opendatafabric",
+ "opendatafabric 0.222.0",
  "pin-project",
  "rand",
- "random-names",
+ "random-names 0.222.0",
  "regex",
  "reqwest",
  "ringbuf",
  "rumqttc",
- "s3-utils",
+ "s3-utils 0.222.0",
  "serde",
  "serde_json",
  "serde_with",
@@ -5174,7 +5386,7 @@ dependencies = [
  "sha3",
  "tempfile",
  "thiserror 2.0.11",
- "time-source",
+ "time-source 0.222.0",
  "tokio",
  "tokio-stream",
  "tokio-util",
@@ -5194,18 +5406,46 @@ dependencies = [
  "base32",
  "chrono",
  "crc32fast",
- "database-common",
- "email-utils",
+ "database-common 0.221.0",
+ "email-utils 0.221.0",
  "futures",
- "internal-error",
+ "internal-error 0.221.0",
  "jsonwebtoken",
  "lazy_static",
  "merge",
- "messaging-outbox",
+ "messaging-outbox 0.221.0",
  "mockall",
- "opendatafabric",
+ "opendatafabric 0.221.0",
  "rand",
- "random-names",
+ "random-names 0.221.0",
+ "reusable",
+ "serde",
+ "serde_with",
+ "thiserror 2.0.11",
+ "uuid",
+]
+
+[[package]]
+name = "kamu-accounts"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-trait",
+ "base32",
+ "chrono",
+ "crc32fast",
+ "database-common 0.222.0",
+ "email-utils 0.222.0",
+ "futures",
+ "internal-error 0.222.0",
+ "jsonwebtoken",
+ "lazy_static",
+ "merge",
+ "messaging-outbox 0.222.0",
+ "mockall",
+ "opendatafabric 0.222.0",
+ "rand",
+ "random-names 0.222.0",
  "reusable",
  "serde",
  "serde_with",
@@ -5216,36 +5456,36 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts-inmem"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-trait",
  "chrono",
- "database-common",
+ "database-common 0.222.0",
  "dill",
- "email-utils",
+ "email-utils 0.222.0",
  "futures",
- "internal-error",
- "kamu-accounts",
- "opendatafabric",
+ "internal-error 0.222.0",
+ "kamu-accounts 0.222.0",
+ "opendatafabric 0.222.0",
  "uuid",
 ]
 
 [[package]]
 name = "kamu-accounts-postgres"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
- "database-common",
+ "database-common 0.222.0",
  "dill",
- "email-utils",
+ "email-utils 0.222.0",
  "futures",
- "internal-error",
- "kamu-accounts",
- "opendatafabric",
+ "internal-error 0.222.0",
+ "kamu-accounts 0.222.0",
+ "opendatafabric 0.222.0",
  "sqlx",
  "tracing",
  "uuid",
@@ -5253,25 +5493,25 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts-services"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "argon2",
  "async-trait",
  "chrono",
- "database-common",
+ "database-common 0.222.0",
  "dill",
  "futures",
- "init-on-startup",
- "internal-error",
+ "init-on-startup 0.222.0",
+ "internal-error 0.222.0",
  "jsonwebtoken",
- "kamu-accounts",
- "messaging-outbox",
- "opendatafabric",
+ "kamu-accounts 0.222.0",
+ "messaging-outbox 0.222.0",
+ "opendatafabric 0.222.0",
  "password-hash",
  "serde",
  "serde_json",
- "time-source",
+ "time-source 0.222.0",
  "tokio",
  "tracing",
  "uuid",
@@ -5279,19 +5519,19 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts-sqlite"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
- "database-common",
+ "database-common 0.222.0",
  "dill",
- "email-utils",
+ "email-utils 0.222.0",
  "futures",
- "internal-error",
- "kamu-accounts",
- "opendatafabric",
+ "internal-error 0.222.0",
+ "kamu-accounts 0.222.0",
+ "opendatafabric 0.222.0",
  "sqlx",
  "tracing",
  "uuid",
@@ -5299,22 +5539,22 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-auth-oso-rebac"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-trait",
- "database-common",
+ "database-common 0.222.0",
  "dill",
  "futures",
- "init-on-startup",
- "internal-error",
- "kamu-accounts",
+ "init-on-startup 0.222.0",
+ "internal-error 0.222.0",
+ "kamu-accounts 0.222.0",
  "kamu-auth-rebac",
  "kamu-auth-rebac-services",
- "kamu-core",
- "kamu-datasets",
- "messaging-outbox",
- "opendatafabric",
+ "kamu-core 0.222.0",
+ "kamu-datasets 0.222.0",
+ "messaging-outbox 0.222.0",
+ "opendatafabric 0.222.0",
  "oso",
  "thiserror 2.0.11",
  "tokio",
@@ -5323,8 +5563,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-flight-sql"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "arrow-flight",
  "async-trait",
@@ -5332,17 +5572,17 @@ dependencies = [
  "base64 0.22.1",
  "bytes",
  "chrono",
- "database-common",
+ "database-common 0.222.0",
  "datafusion",
  "dill",
  "futures",
  "http 1.2.0",
- "kamu-accounts",
- "kamu-core",
+ "kamu-accounts 0.222.0",
+ "kamu-core 0.222.0",
  "like",
  "prost",
  "rand",
- "time-source",
+ "time-source 0.222.0",
  "tokio",
  "tonic",
  "tower 0.5.2",
@@ -5352,28 +5592,28 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-graphql"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-graphql",
  "async-trait",
  "chrono",
- "database-common",
+ "database-common 0.222.0",
  "datafusion",
  "dill",
- "email-utils",
- "event-sourcing",
+ "email-utils 0.222.0",
+ "event-sourcing 0.222.0",
  "futures",
- "internal-error",
- "kamu",
- "kamu-accounts",
+ "internal-error 0.222.0",
+ "kamu 0.222.0",
+ "kamu-accounts 0.222.0",
  "kamu-auth-rebac",
- "kamu-core",
- "kamu-datasets",
- "kamu-flow-system",
+ "kamu-core 0.222.0",
+ "kamu-datasets 0.222.0",
+ "kamu-flow-system 0.222.0",
  "kamu-flow-system-services",
- "kamu-task-system",
- "opendatafabric",
+ "kamu-task-system 0.222.0",
+ "opendatafabric 0.222.0",
  "secrecy",
  "serde",
  "serde_json",
@@ -5396,34 +5636,85 @@ dependencies = [
  "bytes",
  "canonical_json",
  "chrono",
- "database-common",
- "database-common-macros",
+ "database-common 0.221.0",
+ "database-common-macros 0.221.0",
  "datafusion",
  "dill",
  "ed25519-dalek",
- "email-utils",
+ "email-utils 0.221.0",
  "flate2",
  "futures",
  "headers",
  "http 1.2.0",
- "http-body-util",
- "http-common",
+ "http-common 0.221.0",
  "indoc 2.0.5",
- "internal-error",
- "kamu",
- "kamu-accounts",
- "kamu-core",
- "messaging-outbox",
- "opendatafabric",
+ "internal-error 0.221.0",
+ "kamu 0.221.0",
+ "kamu-accounts 0.221.0",
+ "kamu-core 0.221.0",
+ "opendatafabric 0.221.0",
  "reqwest",
- "s3-utils",
+ "s3-utils 0.221.0",
  "serde",
  "serde_json",
  "serde_with",
  "strum",
  "tar",
  "thiserror 2.0.11",
- "time-source",
+ "time-source 0.221.0",
+ "tokio",
+ "tokio-stream",
+ "tokio-tungstenite 0.26.1",
+ "tokio-util",
+ "tower 0.5.2",
+ "tracing",
+ "url",
+ "utoipa",
+ "utoipa-axum",
+ "uuid",
+]
+
+[[package]]
+name = "kamu-adapter-http"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-trait",
+ "aws-sdk-s3",
+ "axum",
+ "axum-extra",
+ "base64 0.22.1",
+ "bytes",
+ "canonical_json",
+ "chrono",
+ "database-common 0.222.0",
+ "database-common-macros 0.222.0",
+ "datafusion",
+ "dill",
+ "ed25519-dalek",
+ "email-utils 0.222.0",
+ "flate2",
+ "futures",
+ "headers",
+ "http 1.2.0",
+ "http-body-util",
+ "http-common 0.222.0",
+ "indoc 2.0.5",
+ "internal-error 0.222.0",
+ "kamu 0.222.0",
+ "kamu-accounts 0.222.0",
+ "kamu-core 0.222.0",
+ "messaging-outbox 0.222.0",
+ "opendatafabric 0.222.0",
+ "reqwest",
+ "s3-utils 0.222.0",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "strum",
+ "tar",
+ "thiserror 2.0.11",
+ "time-source 0.222.0",
  "tokio",
  "tokio-stream",
  "tokio-tungstenite 0.26.1",
@@ -5438,16 +5729,16 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-oauth"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-trait",
  "dill",
- "email-utils",
+ "email-utils 0.222.0",
  "http 1.2.0",
- "internal-error",
- "kamu-accounts",
- "opendatafabric",
+ "internal-error 0.222.0",
+ "kamu-accounts 0.222.0",
+ "opendatafabric 0.222.0",
  "reqwest",
  "serde",
  "serde_json",
@@ -5456,22 +5747,22 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-odata"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "axum",
  "chrono",
- "database-common",
- "database-common-macros",
+ "database-common 0.222.0",
+ "database-common-macros 0.222.0",
  "datafusion",
  "datafusion-odata",
  "dill",
  "futures",
  "http 1.2.0",
- "http-common",
- "internal-error",
- "kamu-core",
- "opendatafabric",
+ "http-common 0.222.0",
+ "internal-error 0.222.0",
+ "kamu-core 0.222.0",
+ "opendatafabric 0.222.0",
  "tracing",
  "utoipa",
  "utoipa-axum",
@@ -5479,7 +5770,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-api-server"
-version = "0.53.0"
+version = "0.53.1"
 dependencies = [
  "arrow-flight",
  "askama",
@@ -5489,23 +5780,23 @@ dependencies = [
  "axum",
  "chrono",
  "clap",
- "container-runtime",
- "database-common",
- "database-common-macros",
+ "container-runtime 0.222.0",
+ "database-common 0.222.0",
+ "database-common-macros 0.222.0",
  "dill",
  "duration-string",
  "email-gateway",
- "email-utils",
+ "email-utils 0.222.0",
  "figment",
  "futures",
  "graceful-shutdown",
  "http 1.2.0",
- "http-common",
+ "http-common 0.222.0",
  "indoc 2.0.5",
- "init-on-startup",
- "internal-error",
- "kamu",
- "kamu-accounts",
+ "init-on-startup 0.222.0",
+ "internal-error 0.222.0",
+ "kamu 0.222.0",
+ "kamu-accounts 0.222.0",
  "kamu-accounts-inmem",
  "kamu-accounts-postgres",
  "kamu-accounts-services",
@@ -5513,19 +5804,19 @@ dependencies = [
  "kamu-adapter-auth-oso-rebac",
  "kamu-adapter-flight-sql",
  "kamu-adapter-graphql",
- "kamu-adapter-http",
+ "kamu-adapter-http 0.222.0",
  "kamu-adapter-oauth",
  "kamu-adapter-odata",
  "kamu-auth-rebac-inmem",
  "kamu-auth-rebac-postgres",
  "kamu-auth-rebac-services",
  "kamu-auth-rebac-sqlite",
- "kamu-datasets",
+ "kamu-datasets 0.222.0",
  "kamu-datasets-inmem",
  "kamu-datasets-postgres",
  "kamu-datasets-services",
  "kamu-datasets-sqlite",
- "kamu-flow-system",
+ "kamu-flow-system 0.222.0",
  "kamu-flow-system-inmem",
  "kamu-flow-system-postgres",
  "kamu-flow-system-services",
@@ -5533,17 +5824,17 @@ dependencies = [
  "kamu-messaging-outbox-inmem",
  "kamu-messaging-outbox-postgres",
  "kamu-messaging-outbox-sqlite",
- "kamu-task-system",
+ "kamu-task-system 0.222.0",
  "kamu-task-system-inmem",
  "kamu-task-system-postgres",
  "kamu-task-system-services",
  "kamu-task-system-sqlite",
- "messaging-outbox",
- "observability",
- "opendatafabric",
+ "messaging-outbox 0.222.0",
+ "observability 0.222.0",
+ "opendatafabric 0.222.0",
  "prometheus",
  "reqwest",
- "s3-utils",
+ "s3-utils 0.222.0",
  "secrecy",
  "serde",
  "serde_json",
@@ -5551,7 +5842,7 @@ dependencies = [
  "test-group",
  "test-log",
  "test-utils",
- "time-source",
+ "time-source 0.222.0",
  "tokio",
  "tokio-stream",
  "tonic",
@@ -5565,12 +5856,12 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-rebac"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-trait",
- "internal-error",
- "opendatafabric",
+ "internal-error 0.222.0",
+ "opendatafabric 0.222.0",
  "sqlx",
  "strum",
  "thiserror 2.0.11",
@@ -5578,8 +5869,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-rebac-inmem"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-trait",
  "dill",
@@ -5589,47 +5880,47 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-rebac-postgres"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-trait",
- "database-common",
+ "database-common 0.222.0",
  "dill",
- "internal-error",
+ "internal-error 0.222.0",
  "kamu-auth-rebac",
  "sqlx",
 ]
 
 [[package]]
 name = "kamu-auth-rebac-services"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-trait",
- "database-common",
+ "database-common 0.222.0",
  "dill",
  "futures",
- "init-on-startup",
- "internal-error",
- "kamu-accounts",
+ "init-on-startup 0.222.0",
+ "internal-error 0.222.0",
+ "kamu-accounts 0.222.0",
  "kamu-auth-rebac",
- "kamu-core",
- "kamu-datasets",
+ "kamu-core 0.222.0",
+ "kamu-datasets 0.222.0",
  "kamu-datasets-services",
- "messaging-outbox",
- "opendatafabric",
+ "messaging-outbox 0.222.0",
+ "opendatafabric 0.222.0",
  "tracing",
 ]
 
 [[package]]
 name = "kamu-auth-rebac-sqlite"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-trait",
- "database-common",
+ "database-common 0.222.0",
  "dill",
- "internal-error",
+ "internal-error 0.222.0",
  "kamu-auth-rebac",
  "sqlx",
 ]
@@ -5643,16 +5934,16 @@ dependencies = [
  "async-trait",
  "chrono",
  "convert_case",
- "http-common",
+ "http-common 0.221.0",
  "indoc 2.0.5",
- "internal-error",
- "kamu-adapter-http",
+ "internal-error 0.221.0",
+ "kamu-adapter-http 0.221.0",
  "kamu-cli-e2e-common-macros",
  "kamu-cli-puppet",
- "kamu-core",
- "kamu-flow-system",
+ "kamu-core 0.221.0",
+ "kamu-flow-system 0.221.0",
  "lazy_static",
- "opendatafabric",
+ "opendatafabric 0.221.0",
  "pretty_assertions",
  "regex",
  "reqwest",
@@ -5686,7 +5977,7 @@ dependencies = [
  "chrono",
  "datafusion",
  "indoc 2.0.5",
- "opendatafabric",
+ "opendatafabric 0.221.0",
  "pretty_assertions",
  "regex",
  "serde",
@@ -5704,18 +5995,49 @@ dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
- "container-runtime",
+ "container-runtime 0.221.0",
  "datafusion",
  "dill",
- "file-utils",
+ "file-utils 0.221.0",
  "futures",
- "internal-error",
+ "internal-error 0.221.0",
  "itertools 0.14.0",
- "kamu-datasets",
- "messaging-outbox",
+ "kamu-datasets 0.221.0",
+ "messaging-outbox 0.221.0",
+ "object_store",
+ "opendatafabric 0.221.0",
+ "pathdiff",
+ "serde",
+ "serde_with",
+ "strum",
+ "thiserror 2.0.11",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+ "url",
+ "utoipa",
+]
+
+[[package]]
+name = "kamu-core"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-stream",
+ "async-trait",
+ "chrono",
+ "container-runtime 0.222.0",
+ "datafusion",
+ "dill",
+ "file-utils 0.222.0",
+ "futures",
+ "internal-error 0.222.0",
+ "itertools 0.14.0",
+ "kamu-datasets 0.222.0",
+ "messaging-outbox 0.222.0",
  "mockall",
  "object_store",
- "opendatafabric",
+ "opendatafabric 0.222.0",
  "oso",
  "pathdiff",
  "serde",
@@ -5737,11 +6059,32 @@ dependencies = [
  "aes-gcm",
  "async-trait",
  "chrono",
- "database-common",
+ "database-common 0.221.0",
  "futures",
- "internal-error",
+ "internal-error 0.221.0",
  "merge",
- "opendatafabric",
+ "opendatafabric 0.221.0",
+ "secrecy",
+ "serde",
+ "serde_with",
+ "thiserror 2.0.11",
+ "tokio-stream",
+ "uuid",
+]
+
+[[package]]
+name = "kamu-datasets"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "aes-gcm",
+ "async-trait",
+ "chrono",
+ "database-common 0.222.0",
+ "futures",
+ "internal-error 0.222.0",
+ "merge",
+ "opendatafabric 0.222.0",
  "secrecy",
  "serde",
  "serde_with",
@@ -5753,16 +6096,16 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets-inmem"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-trait",
- "database-common",
+ "database-common 0.222.0",
  "dill",
  "futures",
- "internal-error",
- "kamu-datasets",
- "opendatafabric",
+ "internal-error 0.222.0",
+ "kamu-datasets 0.222.0",
+ "opendatafabric 0.222.0",
  "tokio",
  "tokio-stream",
  "uuid",
@@ -5770,43 +6113,43 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets-postgres"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-stream",
  "async-trait",
- "database-common",
+ "database-common 0.222.0",
  "dill",
  "futures",
- "internal-error",
- "kamu-datasets",
- "opendatafabric",
+ "internal-error 0.222.0",
+ "kamu-datasets 0.222.0",
+ "opendatafabric 0.222.0",
  "sqlx",
  "uuid",
 ]
 
 [[package]]
 name = "kamu-datasets-services"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
- "database-common",
+ "database-common 0.222.0",
  "dill",
  "futures",
- "init-on-startup",
- "internal-error",
- "kamu-accounts",
- "kamu-core",
- "kamu-datasets",
- "messaging-outbox",
- "opendatafabric",
+ "init-on-startup 0.222.0",
+ "internal-error 0.222.0",
+ "kamu-accounts 0.222.0",
+ "kamu-core 0.222.0",
+ "kamu-datasets 0.222.0",
+ "messaging-outbox 0.222.0",
+ "opendatafabric 0.222.0",
  "petgraph 0.7.1",
  "secrecy",
  "thiserror 2.0.11",
- "time-source",
+ "time-source 0.222.0",
  "tokio",
  "tokio-stream",
  "tracing",
@@ -5815,17 +6158,17 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets-sqlite"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-stream",
  "async-trait",
- "database-common",
+ "database-common 0.222.0",
  "dill",
  "futures",
- "internal-error",
- "kamu-datasets",
- "opendatafabric",
+ "internal-error 0.222.0",
+ "kamu-datasets 0.222.0",
+ "opendatafabric 0.222.0",
  "sqlx",
  "uuid",
 ]
@@ -5838,16 +6181,42 @@ dependencies = [
  "async-trait",
  "chrono",
  "cron",
- "database-common",
+ "database-common 0.221.0",
  "dill",
- "enum-variants",
- "event-sourcing",
- "internal-error",
- "kamu-core",
- "kamu-task-system",
+ "enum-variants 0.221.0",
+ "event-sourcing 0.221.0",
+ "internal-error 0.221.0",
+ "kamu-core 0.221.0",
+ "kamu-task-system 0.221.0",
  "lazy_static",
- "messaging-outbox",
- "opendatafabric",
+ "messaging-outbox 0.221.0",
+ "opendatafabric 0.221.0",
+ "serde",
+ "serde_with",
+ "sqlx",
+ "strum",
+ "thiserror 2.0.11",
+ "tokio-stream",
+]
+
+[[package]]
+name = "kamu-flow-system"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "cron",
+ "database-common 0.222.0",
+ "dill",
+ "enum-variants 0.222.0",
+ "event-sourcing 0.222.0",
+ "internal-error 0.222.0",
+ "kamu-core 0.222.0",
+ "kamu-task-system 0.222.0",
+ "lazy_static",
+ "messaging-outbox 0.222.0",
+ "opendatafabric 0.222.0",
  "serde",
  "serde_with",
  "sqlx",
@@ -5858,17 +6227,17 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system-inmem"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
- "database-common",
+ "database-common 0.222.0",
  "dill",
  "futures",
- "kamu-flow-system",
- "opendatafabric",
+ "kamu-flow-system 0.222.0",
+ "opendatafabric 0.222.0",
  "tokio",
  "tokio-stream",
  "tracing",
@@ -5876,17 +6245,17 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system-postgres"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
- "database-common",
+ "database-common 0.222.0",
  "dill",
  "futures",
- "kamu-flow-system",
- "opendatafabric",
+ "kamu-flow-system 0.222.0",
+ "opendatafabric 0.222.0",
  "serde_json",
  "sqlx",
  "tracing",
@@ -5894,44 +6263,44 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system-services"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
- "database-common",
- "database-common-macros",
+ "database-common 0.222.0",
+ "database-common-macros 0.222.0",
  "dill",
  "futures",
- "init-on-startup",
- "internal-error",
- "kamu-accounts",
- "kamu-core",
- "kamu-datasets",
- "kamu-flow-system",
- "kamu-task-system",
- "messaging-outbox",
- "observability",
- "opendatafabric",
- "time-source",
+ "init-on-startup 0.222.0",
+ "internal-error 0.222.0",
+ "kamu-accounts 0.222.0",
+ "kamu-core 0.222.0",
+ "kamu-datasets 0.222.0",
+ "kamu-flow-system 0.222.0",
+ "kamu-task-system 0.222.0",
+ "messaging-outbox 0.222.0",
+ "observability 0.222.0",
+ "opendatafabric 0.222.0",
+ "time-source 0.222.0",
  "tokio",
  "tracing",
 ]
 
 [[package]]
 name = "kamu-flow-system-sqlite"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
- "database-common",
+ "database-common 0.222.0",
  "dill",
  "futures",
- "kamu-flow-system",
- "opendatafabric",
+ "kamu-flow-system 0.222.0",
+ "opendatafabric 0.222.0",
  "serde_json",
  "sqlx",
  "tracing",
@@ -5945,14 +6314,40 @@ dependencies = [
  "async-trait",
  "chrono",
  "datafusion",
- "file-utils",
+ "file-utils 0.221.0",
  "futures",
  "geo-types",
  "geojson",
  "glob",
- "internal-error",
- "kamu-core",
- "opendatafabric",
+ "internal-error 0.221.0",
+ "kamu-core 0.221.0",
+ "opendatafabric 0.221.0",
+ "serde",
+ "serde_json",
+ "shapefile",
+ "thiserror 2.0.11",
+ "tokio",
+ "tracing",
+ "walkdir",
+ "zip",
+]
+
+[[package]]
+name = "kamu-ingest-datafusion"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "datafusion",
+ "file-utils 0.222.0",
+ "futures",
+ "geo-types",
+ "geojson",
+ "glob",
+ "internal-error 0.222.0",
+ "kamu-core 0.222.0",
+ "opendatafabric 0.222.0",
  "serde",
  "serde_json",
  "shapefile",
@@ -5965,62 +6360,62 @@ dependencies = [
 
 [[package]]
 name = "kamu-messaging-outbox-inmem"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-trait",
  "dill",
- "internal-error",
- "messaging-outbox",
+ "internal-error 0.222.0",
+ "messaging-outbox 0.222.0",
  "tokio",
  "tokio-stream",
 ]
 
 [[package]]
 name = "kamu-messaging-outbox-postgres"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-stream",
  "async-trait",
- "database-common",
+ "database-common 0.222.0",
  "dill",
  "futures",
- "internal-error",
- "messaging-outbox",
+ "internal-error 0.222.0",
+ "messaging-outbox 0.222.0",
  "sqlx",
 ]
 
 [[package]]
 name = "kamu-messaging-outbox-sqlite"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-stream",
  "async-trait",
- "database-common",
+ "database-common 0.222.0",
  "dill",
  "futures",
  "indoc 2.0.5",
- "internal-error",
- "messaging-outbox",
+ "internal-error 0.222.0",
+ "messaging-outbox 0.222.0",
  "sqlx",
 ]
 
 [[package]]
 name = "kamu-node-e2e-common"
-version = "0.53.0"
+version = "0.53.1"
 dependencies = [
  "async-trait",
  "chrono",
  "indoc 2.0.5",
- "internal-error",
- "kamu-adapter-http",
+ "internal-error 0.222.0",
+ "kamu-adapter-http 0.222.0",
  "kamu-cli-e2e-common",
  "kamu-node-e2e-common-macros",
  "kamu-node-puppet",
  "lazy_static",
- "opendatafabric",
+ "opendatafabric 0.222.0",
  "pretty_assertions",
  "regex",
  "reqwest",
@@ -6036,7 +6431,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-common-macros"
-version = "0.53.0"
+version = "0.53.1"
 dependencies = [
  "quote",
  "syn 2.0.96",
@@ -6044,9 +6439,9 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-postgres"
-version = "0.53.0"
+version = "0.53.1"
 dependencies = [
- "database-common",
+ "database-common 0.222.0",
  "indoc 2.0.5",
  "kamu-node-e2e-common",
  "kamu-node-e2e-repo-tests",
@@ -6058,15 +6453,15 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-repo-tests"
-version = "0.53.0"
+version = "0.53.1"
 dependencies = [
  "chrono",
  "datafusion",
  "indoc 2.0.5",
- "kamu-accounts",
- "kamu-adapter-http",
+ "kamu-accounts 0.222.0",
+ "kamu-adapter-http 0.222.0",
  "kamu-cli-e2e-common",
- "opendatafabric",
+ "opendatafabric 0.222.0",
  "paste",
  "pretty_assertions",
  "reqwest",
@@ -6077,9 +6472,9 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-sqlite"
-version = "0.53.0"
+version = "0.53.1"
 dependencies = [
- "database-common",
+ "database-common 0.222.0",
  "indoc 2.0.5",
  "kamu-node-e2e-common",
  "kamu-node-e2e-repo-tests",
@@ -6091,7 +6486,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-puppet"
-version = "0.53.0"
+version = "0.53.1"
 dependencies = [
  "assert_cmd",
  "async-trait",
@@ -6103,7 +6498,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-oracle-provider"
-version = "0.53.0"
+version = "0.53.1"
 dependencies = [
  "alloy",
  "async-trait",
@@ -6117,9 +6512,9 @@ dependencies = [
  "graceful-shutdown",
  "hex",
  "http 1.2.0",
- "internal-error",
- "observability",
- "opendatafabric",
+ "internal-error 0.222.0",
+ "observability 0.222.0",
+ "opendatafabric 0.222.0",
  "prometheus",
  "reqwest",
  "serde",
@@ -6135,7 +6530,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-repo-tools"
-version = "0.53.0"
+version = "0.53.1"
 dependencies = [
  "chrono",
  "clap",
@@ -6155,13 +6550,33 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc
 dependencies = [
  "async-trait",
  "chrono",
- "database-common",
- "enum-variants",
- "event-sourcing",
- "internal-error",
- "kamu-core",
- "messaging-outbox",
- "opendatafabric",
+ "database-common 0.221.0",
+ "enum-variants 0.221.0",
+ "event-sourcing 0.221.0",
+ "internal-error 0.221.0",
+ "kamu-core 0.221.0",
+ "messaging-outbox 0.221.0",
+ "opendatafabric 0.221.0",
+ "serde",
+ "sqlx",
+ "thiserror 2.0.11",
+ "tokio-stream",
+]
+
+[[package]]
+name = "kamu-task-system"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "database-common 0.222.0",
+ "enum-variants 0.222.0",
+ "event-sourcing 0.222.0",
+ "internal-error 0.222.0",
+ "kamu-core 0.222.0",
+ "messaging-outbox 0.222.0",
+ "opendatafabric 0.222.0",
  "serde",
  "sqlx",
  "thiserror 2.0.11",
@@ -6170,70 +6585,70 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system-inmem"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-trait",
- "database-common",
+ "database-common 0.222.0",
  "dill",
  "futures",
- "kamu-task-system",
- "opendatafabric",
+ "kamu-task-system 0.222.0",
+ "opendatafabric 0.222.0",
 ]
 
 [[package]]
 name = "kamu-task-system-postgres"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-stream",
  "async-trait",
- "database-common",
+ "database-common 0.222.0",
  "dill",
  "futures",
- "kamu-task-system",
- "opendatafabric",
+ "kamu-task-system 0.222.0",
+ "opendatafabric 0.222.0",
  "serde_json",
  "sqlx",
 ]
 
 [[package]]
 name = "kamu-task-system-services"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-trait",
- "database-common",
- "database-common-macros",
+ "database-common 0.222.0",
+ "database-common-macros 0.222.0",
  "dill",
  "futures",
- "init-on-startup",
- "internal-error",
- "kamu-core",
- "kamu-datasets",
- "kamu-task-system",
- "messaging-outbox",
- "observability",
- "opendatafabric",
+ "init-on-startup 0.222.0",
+ "internal-error 0.222.0",
+ "kamu-core 0.222.0",
+ "kamu-datasets 0.222.0",
+ "kamu-task-system 0.222.0",
+ "messaging-outbox 0.222.0",
+ "observability 0.222.0",
+ "opendatafabric 0.222.0",
  "serde_json",
- "time-source",
+ "time-source 0.222.0",
  "tokio",
  "tracing",
 ]
 
 [[package]]
 name = "kamu-task-system-sqlite"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
- "database-common",
+ "database-common 0.222.0",
  "dill",
  "futures",
- "kamu-task-system",
- "opendatafabric",
+ "kamu-task-system 0.222.0",
+ "opendatafabric 0.222.0",
  "serde_json",
  "sqlx",
 ]
@@ -6629,20 +7044,46 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc
 dependencies = [
  "async-trait",
  "chrono",
- "database-common",
- "database-common-macros",
+ "database-common 0.221.0",
+ "database-common-macros 0.221.0",
  "dill",
  "futures",
- "init-on-startup",
- "internal-error",
+ "init-on-startup 0.221.0",
+ "internal-error 0.221.0",
  "itertools 0.14.0",
  "mockall",
- "observability",
+ "observability 0.221.0",
  "prometheus",
  "serde",
  "serde_json",
  "thiserror 2.0.11",
- "time-source",
+ "time-source 0.221.0",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+]
+
+[[package]]
+name = "messaging-outbox"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "database-common 0.222.0",
+ "database-common-macros 0.222.0",
+ "dill",
+ "futures",
+ "init-on-startup 0.222.0",
+ "internal-error 0.222.0",
+ "itertools 0.14.0",
+ "mockall",
+ "observability 0.222.0",
+ "prometheus",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.11",
+ "time-source 0.222.0",
  "tokio",
  "tokio-stream",
  "tracing",
@@ -6737,6 +7178,25 @@ dependencies = [
 name = "multiformats"
 version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+dependencies = [
+ "base64 0.22.1",
+ "bs58",
+ "digest 0.10.7",
+ "ed25519-dalek",
+ "hex",
+ "rand",
+ "serde",
+ "serde_json",
+ "sha3",
+ "thiserror 2.0.11",
+ "unsigned-varint",
+ "utoipa",
+]
+
+[[package]]
+name = "multiformats"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "base64 0.22.1",
  "bs58",
@@ -6975,6 +7435,25 @@ dependencies = [
  "axum",
  "dill",
  "http 1.2.0",
+ "prometheus",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.11",
+ "tower-http",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "observability"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-trait",
+ "axum",
+ "dill",
+ "http 1.2.0",
  "opentelemetry",
  "opentelemetry-otlp",
  "opentelemetry-semantic-conventions",
@@ -7021,15 +7500,31 @@ name = "opendatafabric"
 version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
 dependencies = [
- "opendatafabric-data-utils",
- "opendatafabric-dataset",
- "opendatafabric-dataset-impl",
- "opendatafabric-metadata",
- "opendatafabric-storage",
- "opendatafabric-storage-http",
- "opendatafabric-storage-inmem",
- "opendatafabric-storage-lfs",
- "opendatafabric-storage-s3",
+ "opendatafabric-data-utils 0.221.0",
+ "opendatafabric-dataset 0.221.0",
+ "opendatafabric-dataset-impl 0.221.0",
+ "opendatafabric-metadata 0.221.0",
+ "opendatafabric-storage 0.221.0",
+ "opendatafabric-storage-http 0.221.0",
+ "opendatafabric-storage-inmem 0.221.0",
+ "opendatafabric-storage-lfs 0.221.0",
+ "opendatafabric-storage-s3 0.221.0",
+]
+
+[[package]]
+name = "opendatafabric"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "opendatafabric-data-utils 0.222.0",
+ "opendatafabric-dataset 0.222.0",
+ "opendatafabric-dataset-impl 0.222.0",
+ "opendatafabric-metadata 0.222.0",
+ "opendatafabric-storage 0.222.0",
+ "opendatafabric-storage-http 0.222.0",
+ "opendatafabric-storage-inmem 0.222.0",
+ "opendatafabric-storage-lfs 0.222.0",
+ "opendatafabric-storage-s3 0.222.0",
 ]
 
 [[package]]
@@ -7044,7 +7539,29 @@ dependencies = [
  "datafusion",
  "digest 0.10.7",
  "hex",
- "opendatafabric-metadata",
+ "opendatafabric-metadata 0.221.0",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "sha3",
+ "thiserror 2.0.11",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "opendatafabric-data-utils"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "arrow",
+ "arrow-digest",
+ "arrow-json",
+ "async-trait",
+ "datafusion",
+ "digest 0.10.7",
+ "hex",
+ "opendatafabric-metadata 0.222.0",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -7062,12 +7579,35 @@ dependencies = [
  "async-trait",
  "chrono",
  "dill",
- "file-utils",
+ "file-utils 0.221.0",
  "futures",
- "internal-error",
+ "internal-error 0.221.0",
  "mockall",
- "opendatafabric-metadata",
- "opendatafabric-storage",
+ "opendatafabric-metadata 0.221.0",
+ "opendatafabric-storage 0.221.0",
+ "pin-project",
+ "serde",
+ "serde_with",
+ "strum",
+ "thiserror 2.0.11",
+ "tokio-stream",
+ "url",
+]
+
+[[package]]
+name = "opendatafabric-dataset"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "dill",
+ "file-utils 0.222.0",
+ "futures",
+ "internal-error 0.222.0",
+ "mockall",
+ "opendatafabric-metadata 0.222.0",
+ "opendatafabric-storage 0.222.0",
  "pin-project",
  "serde",
  "serde_with",
@@ -7086,21 +7626,53 @@ dependencies = [
  "async-trait",
  "chrono",
  "dill",
- "file-utils",
+ "file-utils 0.221.0",
  "hickory-resolver",
  "http 1.2.0",
- "internal-error",
+ "internal-error 0.221.0",
  "mockall",
- "opendatafabric-data-utils",
- "opendatafabric-dataset",
- "opendatafabric-metadata",
- "opendatafabric-storage",
- "opendatafabric-storage-http",
- "opendatafabric-storage-lfs",
- "opendatafabric-storage-s3",
+ "opendatafabric-data-utils 0.221.0",
+ "opendatafabric-dataset 0.221.0",
+ "opendatafabric-metadata 0.221.0",
+ "opendatafabric-storage 0.221.0",
+ "opendatafabric-storage-http 0.221.0",
+ "opendatafabric-storage-lfs 0.221.0",
+ "opendatafabric-storage-s3 0.221.0",
  "regex",
  "reqwest",
- "s3-utils",
+ "s3-utils 0.221.0",
+ "serde_yaml",
+ "thiserror 2.0.11",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "opendatafabric-dataset-impl"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-stream",
+ "async-trait",
+ "chrono",
+ "dill",
+ "file-utils 0.222.0",
+ "hickory-resolver",
+ "http 1.2.0",
+ "internal-error 0.222.0",
+ "mockall",
+ "opendatafabric-data-utils 0.222.0",
+ "opendatafabric-dataset 0.222.0",
+ "opendatafabric-metadata 0.222.0",
+ "opendatafabric-storage 0.222.0",
+ "opendatafabric-storage-http 0.222.0",
+ "opendatafabric-storage-lfs 0.222.0",
+ "opendatafabric-storage-s3 0.222.0",
+ "regex",
+ "reqwest",
+ "s3-utils 0.222.0",
  "serde_yaml",
  "thiserror 2.0.11",
  "tokio",
@@ -7121,11 +7693,41 @@ dependencies = [
  "datafusion",
  "digest 0.10.7",
  "ed25519-dalek",
- "enum-variants",
+ "enum-variants 0.221.0",
  "flatbuffers",
- "internal-error",
+ "internal-error 0.221.0",
  "like",
- "multiformats",
+ "multiformats 0.221.0",
+ "prost",
+ "rand",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "serde_yaml",
+ "sha3",
+ "thiserror 2.0.11",
+ "tonic",
+ "url",
+ "utoipa",
+]
+
+[[package]]
+name = "opendatafabric-metadata"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "arrow",
+ "base64 0.22.1",
+ "bitflags 2.7.0",
+ "chrono",
+ "datafusion",
+ "digest 0.10.7",
+ "ed25519-dalek",
+ "enum-variants 0.222.0",
+ "flatbuffers",
+ "internal-error 0.222.0",
+ "like",
+ "multiformats 0.222.0",
  "prost",
  "rand",
  "serde",
@@ -7146,15 +7748,34 @@ version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
 dependencies = [
  "async-trait",
- "async-utils",
+ "async-utils 0.221.0",
  "bytes",
  "chrono",
  "dashmap",
  "http 1.2.0",
- "internal-error",
- "opendatafabric-metadata",
+ "internal-error 0.221.0",
+ "opendatafabric-metadata 0.221.0",
  "pretty_assertions",
- "random-names",
+ "random-names 0.221.0",
+ "thiserror 2.0.11",
+ "url",
+]
+
+[[package]]
+name = "opendatafabric-storage"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-trait",
+ "async-utils 0.222.0",
+ "bytes",
+ "chrono",
+ "dashmap",
+ "http 1.2.0",
+ "internal-error 0.222.0",
+ "opendatafabric-metadata 0.222.0",
+ "pretty_assertions",
+ "random-names 0.222.0",
  "thiserror 2.0.11",
  "url",
 ]
@@ -7165,13 +7786,32 @@ version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
 dependencies = [
  "async-trait",
- "async-utils",
+ "async-utils 0.221.0",
  "bytes",
  "futures",
  "http 1.2.0",
- "internal-error",
- "opendatafabric-metadata",
- "opendatafabric-storage",
+ "internal-error 0.221.0",
+ "opendatafabric-metadata 0.221.0",
+ "opendatafabric-storage 0.221.0",
+ "reqwest",
+ "tokio-util",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "opendatafabric-storage-http"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-trait",
+ "async-utils 0.222.0",
+ "bytes",
+ "futures",
+ "http 1.2.0",
+ "internal-error 0.222.0",
+ "opendatafabric-metadata 0.222.0",
+ "opendatafabric-storage 0.222.0",
  "reqwest",
  "tokio-util",
  "tracing",
@@ -7184,11 +7824,27 @@ version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
 dependencies = [
  "async-trait",
- "async-utils",
+ "async-utils 0.221.0",
  "bytes",
- "internal-error",
- "opendatafabric-metadata",
- "opendatafabric-storage",
+ "internal-error 0.221.0",
+ "opendatafabric-metadata 0.221.0",
+ "opendatafabric-storage 0.221.0",
+ "sha3",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "opendatafabric-storage-inmem"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-trait",
+ "async-utils 0.222.0",
+ "bytes",
+ "internal-error 0.222.0",
+ "opendatafabric-metadata 0.222.0",
+ "opendatafabric-storage 0.222.0",
  "sha3",
  "tracing",
  "url",
@@ -7200,13 +7856,32 @@ version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
 dependencies = [
  "async-trait",
- "async-utils",
+ "async-utils 0.221.0",
  "bytes",
  "digest 0.10.7",
- "internal-error",
- "opendatafabric-data-utils",
- "opendatafabric-metadata",
- "opendatafabric-storage",
+ "internal-error 0.221.0",
+ "opendatafabric-data-utils 0.221.0",
+ "opendatafabric-metadata 0.221.0",
+ "opendatafabric-storage 0.221.0",
+ "sha3",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "opendatafabric-storage-lfs"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-trait",
+ "async-utils 0.222.0",
+ "bytes",
+ "digest 0.10.7",
+ "internal-error 0.222.0",
+ "opendatafabric-data-utils 0.222.0",
+ "opendatafabric-metadata 0.222.0",
+ "opendatafabric-storage 0.222.0",
  "sha3",
  "tokio",
  "tracing",
@@ -7219,16 +7894,38 @@ version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
 dependencies = [
  "async-trait",
- "async-utils",
+ "async-utils 0.221.0",
  "aws-sdk-s3",
  "bytes",
  "chrono",
  "digest 0.10.7",
  "http 1.2.0",
- "internal-error",
- "opendatafabric-metadata",
- "opendatafabric-storage",
- "s3-utils",
+ "internal-error 0.221.0",
+ "opendatafabric-metadata 0.221.0",
+ "opendatafabric-storage 0.221.0",
+ "s3-utils 0.221.0",
+ "sha3",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "opendatafabric-storage-s3"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-trait",
+ "async-utils 0.222.0",
+ "aws-sdk-s3",
+ "bytes",
+ "chrono",
+ "digest 0.10.7",
+ "http 1.2.0",
+ "internal-error 0.222.0",
+ "opendatafabric-metadata 0.222.0",
+ "opendatafabric-storage 0.222.0",
+ "s3-utils 0.222.0",
  "sha3",
  "tokio",
  "tracing",
@@ -8240,6 +8937,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "random-names"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "rand",
+]
+
+[[package]]
 name = "redox_syscall"
 version = "0.5.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8707,11 +9412,27 @@ name = "s3-utils"
 version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
 dependencies = [
- "async-utils",
+ "async-utils 0.221.0",
  "aws-config",
  "aws-sdk-s3",
  "aws-smithy-types",
- "internal-error",
+ "internal-error 0.221.0",
+ "reqwest",
+ "tokio-util",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "s3-utils"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
+dependencies = [
+ "async-utils 0.222.0",
+ "aws-config",
+ "aws-sdk-s3",
+ "aws-smithy-types",
+ "internal-error 0.222.0",
  "reqwest",
  "tokio-util",
  "tracing",
@@ -9652,11 +10373,11 @@ dependencies = [
 
 [[package]]
 name = "test-utils"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "axum",
- "container-runtime",
+ "container-runtime 0.222.0",
  "rand",
  "tempfile",
  "tokio",
@@ -9770,6 +10491,17 @@ dependencies = [
 name = "time-source"
 version = "0.221.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "dill",
+ "tokio",
+]
+
+[[package]]
+name = "time-source"
+version = "0.222.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.222.0#1ea1a6e001da7a0ea9561515bcb20deb80656cf7"
 dependencies = [
  "async-trait",
  "chrono",
