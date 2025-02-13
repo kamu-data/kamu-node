@@ -24,7 +24,7 @@ use kamu_accounts::{
 use kamu_accounts_inmem::{InMemoryAccessTokenRepository, InMemoryAccountRepository};
 use kamu_accounts_services::{
     AccessTokenServiceImpl,
-    AuthenticationServiceImpl,
+    AccountServiceImpl,
     LoginPasswordAuthProvider,
     PredefinedAccountsRegistrator,
 };
@@ -80,7 +80,7 @@ impl AccessTokenLifecycleNotifierHarness {
             .bind::<dyn Outbox, OutboxImmediateImpl>()
             .add::<SystemTimeSourceDefault>()
             .add::<InMemoryAccountRepository>()
-            .add::<AuthenticationServiceImpl>()
+            .add::<AccountServiceImpl>()
             .add::<AccessTokenServiceImpl>()
             .add::<InMemoryAccessTokenRepository>()
             .add::<PredefinedAccountsRegistrator>()
