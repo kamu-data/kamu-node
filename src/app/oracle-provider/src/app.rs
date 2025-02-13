@@ -138,7 +138,11 @@ async fn build_http_server(
     catalog: dill::Catalog,
 ) -> Result<
     (
-        axum::serve::Serve<axum::routing::IntoMakeService<axum::Router>, axum::Router>,
+        axum::serve::Serve<
+            tokio::net::TcpListener,
+            axum::routing::IntoMakeService<axum::Router>,
+            axum::Router,
+        >,
         SocketAddr,
     ),
     InternalError,

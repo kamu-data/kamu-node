@@ -30,7 +30,11 @@ pub async fn build_server(
     ui_config: UIConfiguration,
 ) -> Result<
     (
-        axum::serve::Serve<axum::routing::IntoMakeService<axum::Router>, axum::Router>,
+        axum::serve::Serve<
+            tokio::net::TcpListener,
+            axum::routing::IntoMakeService<axum::Router>,
+            axum::Router,
+        >,
         SocketAddr,
     ),
     InternalError,
@@ -94,8 +98,8 @@ pub async fn build_server(
     )
     .nest(
         match tenancy_config {
-            TenancyConfig::MultiTenant => "/:account_name/:dataset_name",
-            TenancyConfig::SingleTenant => "/:dataset_name",
+            TenancyConfig::MultiTenant => "/{account_name}/{dataset_name}",
+            TenancyConfig::SingleTenant => "/{dataset_name}",
         },
         kamu_adapter_http::add_dataset_resolver_layer(
             OpenApiRouter::new()
