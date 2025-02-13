@@ -36,7 +36,7 @@ pub struct FlowProgressNotifier {
     email_sender: Arc<dyn EmailSender>,
     flow_query_service: Arc<dyn kamu_fs::FlowQueryService>,
     dataset_entry_service: Arc<dyn kamu_datasets::DatasetEntryService>,
-    authentication_service: Arc<dyn kamu_accounts::AuthenticationService>,
+    account_service: Arc<dyn kamu_accounts::AccountService>,
     server_url_config: Arc<kamu::domain::ServerUrlConfig>,
     tenancy_config: Arc<kamu::domain::TenancyConfig>,
 }
@@ -56,7 +56,7 @@ impl FlowProgressNotifier {
         email_sender: Arc<dyn EmailSender>,
         flow_query_service: Arc<dyn kamu_fs::FlowQueryService>,
         dataset_entry_service: Arc<dyn kamu_datasets::DatasetEntryService>,
-        authentication_service: Arc<dyn kamu_accounts::AuthenticationService>,
+        account_service: Arc<dyn kamu_accounts::AccountService>,
         server_url_config: Arc<kamu::domain::ServerUrlConfig>,
         tenancy_config: Arc<kamu::domain::TenancyConfig>,
     ) -> Self {
@@ -64,7 +64,7 @@ impl FlowProgressNotifier {
             email_sender,
             flow_query_service,
             dataset_entry_service,
-            authentication_service,
+            account_service,
             server_url_config,
             tenancy_config,
         }
@@ -89,7 +89,7 @@ impl FlowProgressNotifier {
 
                 // Owner account is needed for proper links as a minimum
                 let owner_account = self
-                    .authentication_service
+                    .account_service
                     .account_by_id(&dataset_entry.owner_id)
                     .await
                     .int_err()?
@@ -152,7 +152,7 @@ impl FlowProgressNotifier {
             && m.initiator_account_id != owner_account.id
         {
             let initiator_account = self
-                .authentication_service
+                .account_service
                 .account_by_id(&m.initiator_account_id)
                 .await?
                 .expect("Account must be resolved");

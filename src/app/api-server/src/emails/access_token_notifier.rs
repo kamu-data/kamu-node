@@ -36,7 +36,7 @@ pub const MESSAGE_CONSUMER_KAMU_API_SERVER_ACCESS_TOKEN_LIFECYCLE_NOTIFIER: &str
 
 pub struct AccessTokenLifecycleNotifier {
     email_sender: Arc<dyn EmailSender>,
-    authentication_service: Arc<dyn kamu_accounts::AuthenticationService>,
+    account_service: Arc<dyn kamu_accounts::AccountService>,
     server_url_config: Arc<kamu::domain::ServerUrlConfig>,
 }
 
@@ -53,12 +53,12 @@ pub struct AccessTokenLifecycleNotifier {
 impl AccessTokenLifecycleNotifier {
     pub fn new(
         email_sender: Arc<dyn EmailSender>,
-        authentication_service: Arc<dyn kamu_accounts::AuthenticationService>,
+        account_service: Arc<dyn kamu_accounts::AccountService>,
         server_url_config: Arc<kamu::domain::ServerUrlConfig>,
     ) -> Self {
         Self {
             email_sender,
-            authentication_service,
+            account_service,
             server_url_config,
         }
     }
@@ -75,7 +75,7 @@ impl AccessTokenLifecycleNotifier {
         let rendered_access_token_body = access_token_email.render().unwrap();
 
         let owner_account_res = self
-            .authentication_service
+            .account_service
             .account_by_id(&created_token.owner_id)
             .await
             .int_err()?;
