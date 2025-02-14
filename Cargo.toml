@@ -13,8 +13,8 @@ resolver = "2"
 
 [workspace.dependencies]
 # Utils
-email-gateway = { path = "src/utils/email-gateway", version = "0.53.1", default-features = false, features = ["postmark"] }
-graceful-shutdown = { path = "src/utils/graceful-shutdown", version = "0.53.1", default-features = false }
+email-gateway = { path = "src/utils/email-gateway", version = "0.54.0", default-features = false, features = ["postmark"] }
+graceful-shutdown = { path = "src/utils/graceful-shutdown", version = "0.54.0", default-features = false }
 
 # Utils (core)
 container-runtime = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.223.0", version = "0.223.0", default-features = false }
@@ -73,7 +73,7 @@ kamu-task-system-sqlite = { git = "https://github.com/kamu-data/kamu-cli", tag =
 
 
 [workspace.package]
-version = "0.53.1"
+version = "0.54.0"
 edition = "2021"
 homepage = "https://github.com/kamu-data/kamu-platform"
 repository = "https://github.com/kamu-data/kamu-platform"
