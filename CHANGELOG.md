@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.54.1] - 2025-02-14
+### Fixed
+- Added access token notifier registration
+
 ## [0.54.0] - 2025-02-13
 ### Added
 - New access token notifier that sends an email to the user each time a new access token is created (kamu CLI `0.222.0`)
