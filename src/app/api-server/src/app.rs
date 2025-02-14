@@ -37,6 +37,7 @@ use crate::{
     connect_database_initially,
     spawn_password_refreshing_job,
     try_build_db_connection_settings,
+    AccessTokenLifecycleNotifier,
     AccountLifecycleNotifier,
     FlowProgressNotifier,
 };
@@ -420,6 +421,10 @@ pub async fn init_dependencies(
         &mut b,
         kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
     );
+    messaging_outbox::register_message_dispatcher::<kamu_accounts::AccessTokenLifecycleMessage>(
+        &mut b,
+        kamu_accounts::MESSAGE_PRODUCER_KAMU_ACCESS_TOKEN_SERVICE,
+    );
     messaging_outbox::register_message_dispatcher::<kamu_accounts::AccountLifecycleMessage>(
         &mut b,
         kamu_accounts::MESSAGE_PRODUCER_KAMU_ACCOUNTS_SERVICE,
@@ -567,6 +572,7 @@ pub async fn init_dependencies(
     });
 
     configure_email_gateway(&mut b, &config.email)?;
+    b.add::<AccessTokenLifecycleNotifier>();
     b.add::<AccountLifecycleNotifier>();
     b.add::<FlowProgressNotifier>();
 
