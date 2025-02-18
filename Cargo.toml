@@ -178,7 +178,7 @@ incremental = false
 # full debugging symbols that are only useful when attaching a debugger.
 debug = 1
 
-# Use this section to test or apply emergency ovverides to dependencies
+# Use this section to test or apply emergency overrides to dependencies
 # See: https://doc.rust-lang.org/cargo/reference/overriding-dependencies.html
 [patch.crates-io]
 # datafusion-odata = { git = 'https://github.com/kamu-data/datafusion-odata.git', branch = '42.0.0-axum-0.6' }
