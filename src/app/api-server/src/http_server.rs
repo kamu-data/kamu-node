@@ -34,7 +34,11 @@ pub async fn build_server(
     e2e_output_data_path: Option<&PathBuf>,
 ) -> Result<
     (
-        axum::serve::Serve<axum::routing::IntoMakeService<axum::Router>, axum::Router>,
+        axum::serve::Serve<
+            tokio::net::TcpListener,
+            axum::routing::IntoMakeService<axum::Router>,
+            axum::Router,
+        >,
         SocketAddr,
         Option<Arc<Notify>>,
     ),
@@ -99,8 +103,8 @@ pub async fn build_server(
     )
     .nest(
         match tenancy_config {
-            TenancyConfig::MultiTenant => "/:account_name/:dataset_name",
-            TenancyConfig::SingleTenant => "/:dataset_name",
+            TenancyConfig::MultiTenant => "/{account_name}/{dataset_name}",
+            TenancyConfig::SingleTenant => "/{dataset_name}",
         },
         kamu_adapter_http::add_dataset_resolver_layer(
             OpenApiRouter::new()

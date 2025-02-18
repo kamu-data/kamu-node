@@ -17,7 +17,7 @@ use chrono::Duration;
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
 use kamu::domain::{DidGeneratorDefault, TenancyConfig};
-use kamu::{DatasetStorageUnitLocalFs, DatasetStorageUnitS3, DatasetStorageUnitWriter};
+use kamu::{DatasetStorageUnitLocalFs, DatasetStorageUnitS3};
 use s3_utils::S3Context;
 use tracing::{error, info, warn};
 use url::Url;
@@ -39,6 +39,7 @@ use crate::{
     connect_database_initially,
     spawn_password_refreshing_job,
     try_build_db_connection_settings,
+    AccessTokenLifecycleNotifier,
     AccountLifecycleNotifier,
     FlowProgressNotifier,
 };
@@ -379,22 +380,22 @@ pub async fn init_dependencies(
     b.add::<kamu::ResetExecutorImpl>();
     b.add::<kamu::RemoteStatusServiceImpl>();
 
-    b.add::<kamu::AppendDatasetMetadataBatchUseCaseImpl>();
-    b.add::<kamu::CommitDatasetEventUseCaseImpl>();
+    b.add::<kamu_datasets_services::AppendDatasetMetadataBatchUseCaseImpl>();
+    b.add::<kamu_datasets_services::CommitDatasetEventUseCaseImpl>();
     b.add::<kamu::CompactDatasetUseCaseImpl>();
-    b.add::<kamu::CreateDatasetFromSnapshotUseCaseImpl>();
-    b.add::<kamu::CreateDatasetUseCaseImpl>();
-    b.add::<kamu::DeleteDatasetUseCaseImpl>();
-    b.add::<kamu::EditDatasetUseCaseImpl>();
+    b.add::<kamu_datasets_services::CreateDatasetFromSnapshotUseCaseImpl>();
+    b.add::<kamu_datasets_services::CreateDatasetUseCaseImpl>();
+    b.add::<kamu_datasets_services::DeleteDatasetUseCaseImpl>();
+    b.add::<kamu_datasets_services::EditDatasetUseCaseImpl>();
     b.add::<kamu::GetDatasetDownstreamDependenciesUseCaseImpl>();
     b.add::<kamu::GetDatasetUpstreamDependenciesUseCaseImpl>();
     b.add::<kamu::PullDatasetUseCaseImpl>();
     b.add::<kamu::PushDatasetUseCaseImpl>();
-    b.add::<kamu::RenameDatasetUseCaseImpl>();
+    b.add::<kamu_datasets_services::RenameDatasetUseCaseImpl>();
     b.add::<kamu::ResetDatasetUseCaseImpl>();
     b.add::<kamu::SetWatermarkUseCaseImpl>();
     b.add::<kamu::VerifyDatasetUseCaseImpl>();
-    b.add::<kamu::ViewDatasetUseCaseImpl>();
+    b.add::<kamu_datasets_services::ViewDatasetUseCaseImpl>();
 
     b.add_builder(
         messaging_outbox::OutboxImmediateImpl::builder()
@@ -411,9 +412,9 @@ pub async fn init_dependencies(
     b.add::<kamu_datasets_services::DatasetEntryIndexer>();
     b.add::<kamu_datasets_services::DependencyGraphIndexer>();
 
-    messaging_outbox::register_message_dispatcher::<kamu::domain::DatasetLifecycleMessage>(
+    messaging_outbox::register_message_dispatcher::<kamu_datasets::DatasetLifecycleMessage>(
         &mut b,
-        kamu::domain::MESSAGE_PRODUCER_KAMU_CORE_DATASET_SERVICE,
+        kamu_datasets::MESSAGE_PRODUCER_KAMU_DATASET_SERVICE,
     );
     messaging_outbox::register_message_dispatcher::<kamu_task_system::TaskProgressMessage>(
         &mut b,
@@ -432,6 +433,10 @@ pub async fn init_dependencies(
     messaging_outbox::register_message_dispatcher::<kamu_flow_system::FlowProgressMessage>(
         &mut b,
         kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
+    );
+    messaging_outbox::register_message_dispatcher::<kamu_accounts::AccessTokenLifecycleMessage>(
+        &mut b,
+        kamu_accounts::MESSAGE_PRODUCER_KAMU_ACCESS_TOKEN_SERVICE,
     );
     messaging_outbox::register_message_dispatcher::<kamu_accounts::AccountLifecycleMessage>(
         &mut b,
@@ -580,6 +585,7 @@ pub async fn init_dependencies(
     });
 
     configure_email_gateway(&mut b, &config.email)?;
+    b.add::<AccessTokenLifecycleNotifier>();
     b.add::<AccountLifecycleNotifier>();
     b.add::<FlowProgressNotifier>();
 
@@ -600,7 +606,7 @@ async fn configure_repository(b: &mut CatalogBuilder, repo_url: &Url, config: &R
 
             b.add_builder(DatasetStorageUnitLocalFs::builder().with_root(datasets_dir.clone()));
             b.bind::<dyn odf::DatasetStorageUnit, DatasetStorageUnitLocalFs>();
-            b.bind::<dyn DatasetStorageUnitWriter, DatasetStorageUnitLocalFs>();
+            b.bind::<dyn odf::DatasetStorageUnitWriter, DatasetStorageUnitLocalFs>();
 
             b.add::<kamu::ObjectStoreBuilderLocalFs>();
         }
@@ -623,7 +629,7 @@ async fn configure_repository(b: &mut CatalogBuilder, repo_url: &Url, config: &R
                     .with_metadata_cache_local_fs_path(metadata_cache_local_fs_path),
             );
             b.bind::<dyn odf::DatasetStorageUnit, DatasetStorageUnitS3>();
-            b.bind::<dyn DatasetStorageUnitWriter, DatasetStorageUnitS3>();
+            b.bind::<dyn odf::DatasetStorageUnitWriter, DatasetStorageUnitS3>();
 
             let allow_http = repo_url.scheme() == "s3+http";
             b.add_value(kamu::ObjectStoreBuilderS3::new(s3_context, allow_http))
