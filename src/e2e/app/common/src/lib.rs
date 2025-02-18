@@ -11,12 +11,10 @@
 
 mod e2e_harness;
 mod e2e_test;
-// mod kamu_api_server_client;
-// mod kamu_api_server_client_ext;
+mod kamu_flight_sql_client;
 
 pub use e2e_harness::*;
 pub use e2e_test::*;
-// pub use kamu_api_server_client::*;
-// pub use kamu_api_server_client_ext::*;
+pub use kamu_flight_sql_client::*;
 
 pub mod prelude;

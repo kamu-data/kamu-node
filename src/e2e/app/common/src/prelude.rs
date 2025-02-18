@@ -8,7 +8,10 @@
 // by the Apache License, Version 2.0.
 
 // Re-exports
-pub use kamu_node_e2e_common_macros::kamu_node_run_api_server_e2e_test;
+pub use kamu_node_e2e_common_macros::{
+    kamu_node_run_api_server_e2e_test,
+    kamu_node_run_flight_sql_server_e2e_test,
+};
 
 pub use crate::e2e_harness::{
     KamuNodeApiServerHarness,

@@ -1,0 +1,6 @@
+kind: DatasetConfig
+version: 1
+content:
+  pullAliases: []
+  pushAliases:
+  - odf+http://localhost:8124/vessels.gps

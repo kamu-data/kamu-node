@@ -968,23 +968,59 @@ dependencies = [
 
 [[package]]
 name = "arrow"
+version = "53.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eaf3437355979f1e93ba84ba108c38be5767713051f3c8ffbf07c094e2e61f9f"
+dependencies = [
+ "arrow-arith 53.4.0",
+ "arrow-array 53.4.0",
+ "arrow-buffer 53.4.0",
+ "arrow-cast 53.4.0",
+ "arrow-csv 53.4.0",
+ "arrow-data 53.4.0",
+ "arrow-ipc 53.4.0",
+ "arrow-json 53.4.0",
+ "arrow-ord 53.4.0",
+ "arrow-row 53.4.0",
+ "arrow-schema 53.4.0",
+ "arrow-select 53.4.0",
+ "arrow-string 53.4.0",
+]
+
+[[package]]
+name = "arrow"
 version = "54.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6422e12ac345a0678d7a17e316238e3a40547ae7f92052b77bd86d5e0239f3fc"
 dependencies = [
- "arrow-arith",
- "arrow-array",
- "arrow-buffer",
- "arrow-cast",
- "arrow-csv",
- "arrow-data",
- "arrow-ipc",
- "arrow-json",
- "arrow-ord",
- "arrow-row",
- "arrow-schema",
- "arrow-select",
- "arrow-string",
+ "arrow-arith 54.1.0",
+ "arrow-array 54.1.0",
+ "arrow-buffer 54.1.0",
+ "arrow-cast 54.1.0",
+ "arrow-csv 54.1.0",
+ "arrow-data 54.1.0",
+ "arrow-ipc 54.1.0",
+ "arrow-json 54.1.0",
+ "arrow-ord 54.1.0",
+ "arrow-row 54.1.0",
+ "arrow-schema 54.1.0",
+ "arrow-select 54.1.0",
+ "arrow-string 54.1.0",
+]
+
+[[package]]
+name = "arrow-arith"
+version = "53.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "31dce77d2985522288edae7206bffd5fc4996491841dda01a13a58415867e681"
+dependencies = [
+ "arrow-array 53.4.0",
+ "arrow-buffer 53.4.0",
+ "arrow-data 53.4.0",
+ "arrow-schema 53.4.0",
+ "chrono",
+ "half",
+ "num",
 ]
 
 [[package]]
@@ -993,11 +1029,28 @@ version = "54.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23cf34bb1f48c41d3475927bcc7be498665b8e80b379b88f62a840337f8b8248"
 dependencies = [
- "arrow-array",
- "arrow-buffer",
- "arrow-data",
- "arrow-schema",
+ "arrow-array 54.1.0",
+ "arrow-buffer 54.1.0",
+ "arrow-data 54.1.0",
+ "arrow-schema 54.1.0",
  "chrono",
+ "num",
+]
+
+[[package]]
+name = "arrow-array"
+version = "53.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2d45fe6d3faed0435b7313e59a02583b14c6c6339fa7729e94c32a20af319a79"
+dependencies = [
+ "ahash",
+ "arrow-buffer 53.4.0",
+ "arrow-data 53.4.0",
+ "arrow-schema 53.4.0",
+ "chrono",
+ "chrono-tz 0.10.0",
+ "half",
+ "hashbrown 0.15.2",
  "num",
 ]
 
@@ -1008,13 +1061,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fb4a06d507f54b70a277be22a127c8ffe0cec6cd98c0ad8a48e77779bbda8223"
 dependencies = [
  "ahash",
- "arrow-buffer",
- "arrow-data",
- "arrow-schema",
+ "arrow-buffer 54.1.0",
+ "arrow-data 54.1.0",
+ "arrow-schema 54.1.0",
  "chrono",
  "chrono-tz 0.10.0",
  "half",
  "hashbrown 0.15.2",
+ "num",
+]
+
+[[package]]
+name = "arrow-buffer"
+version = "53.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b02656a35cc103f28084bc80a0159668e0a680d919cef127bd7e0aaccb06ec1"
+dependencies = [
+ "bytes",
+ "half",
  "num",
 ]
 
@@ -1031,15 +1095,36 @@ dependencies = [
 
 [[package]]
 name = "arrow-cast"
+version = "53.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c73c6233c5b5d635a56f6010e6eb1ab9e30e94707db21cea03da317f67d84cf3"
+dependencies = [
+ "arrow-array 53.4.0",
+ "arrow-buffer 53.4.0",
+ "arrow-data 53.4.0",
+ "arrow-schema 53.4.0",
+ "arrow-select 53.4.0",
+ "atoi",
+ "base64 0.22.1",
+ "chrono",
+ "comfy-table",
+ "half",
+ "lexical-core",
+ "num",
+ "ryu",
+]
+
+[[package]]
+name = "arrow-cast"
 version = "54.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "626e65bd42636a84a238bed49d09c8777e3d825bf81f5087a70111c2831d9870"
 dependencies = [
- "arrow-array",
- "arrow-buffer",
- "arrow-data",
- "arrow-schema",
- "arrow-select",
+ "arrow-array 54.1.0",
+ "arrow-buffer 54.1.0",
+ "arrow-data 54.1.0",
+ "arrow-schema 54.1.0",
+ "arrow-select 54.1.0",
  "atoi",
  "base64 0.22.1",
  "chrono",
@@ -1052,13 +1137,32 @@ dependencies = [
 
 [[package]]
 name = "arrow-csv"
+version = "53.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ec222848d70fea5a32af9c3602b08f5d740d5e2d33fbd76bf6fd88759b5b13a7"
+dependencies = [
+ "arrow-array 53.4.0",
+ "arrow-buffer 53.4.0",
+ "arrow-cast 53.4.0",
+ "arrow-data 53.4.0",
+ "arrow-schema 53.4.0",
+ "chrono",
+ "csv",
+ "csv-core",
+ "lazy_static",
+ "lexical-core",
+ "regex",
+]
+
+[[package]]
+name = "arrow-csv"
 version = "54.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "71c8f959f7a1389b1dbd883cdcd37c3ed12475329c111912f7f69dad8195d8c6"
 dependencies = [
- "arrow-array",
- "arrow-cast",
- "arrow-schema",
+ "arrow-array 54.1.0",
+ "arrow-cast 54.1.0",
+ "arrow-schema 54.1.0",
  "chrono",
  "csv",
  "csv-core",
@@ -1068,12 +1172,24 @@ dependencies = [
 
 [[package]]
 name = "arrow-data"
+version = "53.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b7f2861ffa86f107b8ab577d86cff7c7a490243eabe961ba1e1af4f27542bb79"
+dependencies = [
+ "arrow-buffer 53.4.0",
+ "arrow-schema 53.4.0",
+ "half",
+ "num",
+]
+
+[[package]]
+name = "arrow-data"
 version = "54.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1858e7c7d01c44cf71c21a85534fd1a54501e8d60d1195d0d6fbcc00f4b10754"
 dependencies = [
- "arrow-buffer",
- "arrow-schema",
+ "arrow-buffer 54.1.0",
+ "arrow-schema 54.1.0",
  "half",
  "num",
 ]
@@ -1084,7 +1200,7 @@ version = "54.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1adcf298af7191eaf601facaa202015999cdebf702c41e6be5a3137d9b7e7925"
 dependencies = [
- "arrow",
+ "arrow 54.1.0",
  "digest 0.10.7",
 ]
 
@@ -1094,17 +1210,17 @@ version = "54.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a9b3aaba47ed4b6146563c8b79ad0f7aa283f794cde0c057c656291b81196746"
 dependencies = [
- "arrow-arith",
- "arrow-array",
- "arrow-buffer",
- "arrow-cast",
- "arrow-data",
- "arrow-ipc",
- "arrow-ord",
- "arrow-row",
- "arrow-schema",
- "arrow-select",
- "arrow-string",
+ "arrow-arith 54.1.0",
+ "arrow-array 54.1.0",
+ "arrow-buffer 54.1.0",
+ "arrow-cast 54.1.0",
+ "arrow-data 54.1.0",
+ "arrow-ipc 54.1.0",
+ "arrow-ord 54.1.0",
+ "arrow-row 54.1.0",
+ "arrow-schema 54.1.0",
+ "arrow-select 54.1.0",
+ "arrow-string 54.1.0",
  "base64 0.22.1",
  "bytes",
  "futures",
@@ -1117,16 +1233,51 @@ dependencies = [
 
 [[package]]
 name = "arrow-ipc"
+version = "53.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0270dc511f11bb5fa98a25020ad51a99ca5b08d8a8dfbd17503bb9dba0388f0b"
+dependencies = [
+ "arrow-array 53.4.0",
+ "arrow-buffer 53.4.0",
+ "arrow-cast 53.4.0",
+ "arrow-data 53.4.0",
+ "arrow-schema 53.4.0",
+ "flatbuffers",
+ "lz4_flex",
+]
+
+[[package]]
+name = "arrow-ipc"
 version = "54.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a6bb3f727f049884c7603f0364bc9315363f356b59e9f605ea76541847e06a1e"
 dependencies = [
- "arrow-array",
- "arrow-buffer",
- "arrow-data",
- "arrow-schema",
+ "arrow-array 54.1.0",
+ "arrow-buffer 54.1.0",
+ "arrow-data 54.1.0",
+ "arrow-schema 54.1.0",
  "flatbuffers",
  "lz4_flex",
+]
+
+[[package]]
+name = "arrow-json"
+version = "53.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0eff38eeb8a971ad3a4caf62c5d57f0cff8a48b64a55e3207c4fd696a9234aad"
+dependencies = [
+ "arrow-array 53.4.0",
+ "arrow-buffer 53.4.0",
+ "arrow-cast 53.4.0",
+ "arrow-data 53.4.0",
+ "arrow-schema 53.4.0",
+ "chrono",
+ "half",
+ "indexmap 2.7.1",
+ "lexical-core",
+ "num",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -1135,11 +1286,11 @@ version = "54.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "35de94f165ed8830aede72c35f238763794f0d49c69d30c44d49c9834267ff8c"
 dependencies = [
- "arrow-array",
- "arrow-buffer",
- "arrow-cast",
- "arrow-data",
- "arrow-schema",
+ "arrow-array 54.1.0",
+ "arrow-buffer 54.1.0",
+ "arrow-cast 54.1.0",
+ "arrow-data 54.1.0",
+ "arrow-schema 54.1.0",
  "chrono",
  "half",
  "indexmap 2.7.1",
@@ -1151,15 +1302,44 @@ dependencies = [
 
 [[package]]
 name = "arrow-ord"
+version = "53.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c6f202a879d287099139ff0d121e7f55ae5e0efe634b8cf2106ebc27a8715dee"
+dependencies = [
+ "arrow-array 53.4.0",
+ "arrow-buffer 53.4.0",
+ "arrow-data 53.4.0",
+ "arrow-schema 53.4.0",
+ "arrow-select 53.4.0",
+ "half",
+ "num",
+]
+
+[[package]]
+name = "arrow-ord"
 version = "54.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8aa06e5f267dc53efbacb933485c79b6fc1685d3ffbe870a16ce4e696fb429da"
 dependencies = [
- "arrow-array",
- "arrow-buffer",
- "arrow-data",
- "arrow-schema",
- "arrow-select",
+ "arrow-array 54.1.0",
+ "arrow-buffer 54.1.0",
+ "arrow-data 54.1.0",
+ "arrow-schema 54.1.0",
+ "arrow-select 54.1.0",
+]
+
+[[package]]
+name = "arrow-row"
+version = "53.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a8f936954991c360ba762dff23f5dda16300774fafd722353d9683abd97630ae"
+dependencies = [
+ "ahash",
+ "arrow-array 53.4.0",
+ "arrow-buffer 53.4.0",
+ "arrow-data 53.4.0",
+ "arrow-schema 53.4.0",
+ "half",
 ]
 
 [[package]]
@@ -1168,12 +1348,18 @@ version = "54.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "66f1144bb456a2f9d82677bd3abcea019217e572fc8f07de5a7bac4b2c56eb2c"
 dependencies = [
- "arrow-array",
- "arrow-buffer",
- "arrow-data",
- "arrow-schema",
+ "arrow-array 54.1.0",
+ "arrow-buffer 54.1.0",
+ "arrow-data 54.1.0",
+ "arrow-schema 54.1.0",
  "half",
 ]
+
+[[package]]
+name = "arrow-schema"
+version = "53.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9579b9d8bce47aa41389fe344f2c6758279983b7c0ebb4013e283e3e91bb450e"
 
 [[package]]
 name = "arrow-schema"
@@ -1186,16 +1372,47 @@ dependencies = [
 
 [[package]]
 name = "arrow-select"
+version = "53.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7471ba126d0b0aaa24b50a36bc6c25e4e74869a1fd1a5553357027a0b1c8d1f1"
+dependencies = [
+ "ahash",
+ "arrow-array 53.4.0",
+ "arrow-buffer 53.4.0",
+ "arrow-data 53.4.0",
+ "arrow-schema 53.4.0",
+ "num",
+]
+
+[[package]]
+name = "arrow-select"
 version = "54.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f690752fdbd2dee278b5f1636fefad8f2f7134c85e20fd59c4199e15a39a6807"
 dependencies = [
  "ahash",
- "arrow-array",
- "arrow-buffer",
- "arrow-data",
- "arrow-schema",
+ "arrow-array 54.1.0",
+ "arrow-buffer 54.1.0",
+ "arrow-data 54.1.0",
+ "arrow-schema 54.1.0",
  "num",
+]
+
+[[package]]
+name = "arrow-string"
+version = "53.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "72993b01cb62507b06f1fb49648d7286c8989ecfabdb7b77a750fcb54410731b"
+dependencies = [
+ "arrow-array 53.4.0",
+ "arrow-buffer 53.4.0",
+ "arrow-data 53.4.0",
+ "arrow-schema 53.4.0",
+ "arrow-select 53.4.0",
+ "memchr",
+ "num",
+ "regex",
+ "regex-syntax 0.8.5",
 ]
 
 [[package]]
@@ -1204,11 +1421,11 @@ version = "54.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d0fff9cd745a7039b66c47ecaf5954460f9fa12eed628f65170117ea93e64ee0"
 dependencies = [
- "arrow-array",
- "arrow-buffer",
- "arrow-data",
- "arrow-schema",
- "arrow-select",
+ "arrow-array 54.1.0",
+ "arrow-buffer 54.1.0",
+ "arrow-data 54.1.0",
+ "arrow-schema 54.1.0",
+ "arrow-select 54.1.0",
  "memchr",
  "num",
  "regex",
@@ -1439,15 +1656,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.96",
-]
-
-[[package]]
-name = "async-utils"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "tokio",
 ]
 
 [[package]]
@@ -2224,31 +2432,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bon"
-version = "3.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fe7acc34ff59877422326db7d6f2d845a582b16396b6b08194942bf34c6528ab"
-dependencies = [
- "bon-macros",
- "rustversion",
-]
-
-[[package]]
-name = "bon-macros"
-version = "3.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4159dd617a7fbc9be6a692fe69dc2954f8e6bb6bb5e4d7578467441390d77fd0"
-dependencies = [
- "darling",
- "ident_case",
- "prettyplease",
- "proc-macro2",
- "quote",
- "rustversion",
- "syn 2.0.96",
-]
-
-[[package]]
 name = "brotli"
 version = "7.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2633,25 +2816,6 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 
 [[package]]
 name = "container-runtime"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "cfg-if",
- "dill",
- "libc",
- "once_cell",
- "random-names 0.221.0",
- "regex",
- "serde",
- "thiserror 2.0.11",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "container-runtime"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
@@ -2660,7 +2824,7 @@ dependencies = [
  "dill",
  "libc",
  "once_cell",
- "random-names 0.222.0",
+ "random-names",
  "regex",
  "serde",
  "thiserror 2.0.11",
@@ -2966,32 +3130,6 @@ checksum = "e8566979429cf69b49a5c740c60791108e86440e8be149bbea4fe54d2c32d6e2"
 
 [[package]]
 name = "database-common"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-stream",
- "async-trait",
- "aws-config",
- "aws-credential-types",
- "aws-sdk-secretsmanager",
- "chrono",
- "dill",
- "futures",
- "hex",
- "hmac",
- "internal-error 0.221.0",
- "secrecy",
- "serde",
- "serde_json",
- "sha2",
- "sqlx",
- "thiserror 2.0.11",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "database-common"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
@@ -3005,7 +3143,7 @@ dependencies = [
  "futures",
  "hex",
  "hmac",
- "internal-error 0.222.0",
+ "internal-error",
  "secrecy",
  "serde",
  "serde_json",
@@ -3014,15 +3152,6 @@ dependencies = [
  "thiserror 2.0.11",
  "tokio",
  "tracing",
-]
-
-[[package]]
-name = "database-common-macros"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "quote",
- "syn 2.0.96",
 ]
 
 [[package]]
@@ -3036,32 +3165,76 @@ dependencies = [
 
 [[package]]
 name = "datafusion"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "014fc8c384ecacedaabb3bc8359c2a6c6e9d8f7bea65be3434eccacfc37f52d9"
+dependencies = [
+ "arrow 53.4.0",
+ "arrow-array 53.4.0",
+ "arrow-ipc 53.4.0",
+ "arrow-schema 53.4.0",
+ "async-trait",
+ "bytes",
+ "chrono",
+ "dashmap",
+ "datafusion-catalog 44.0.0",
+ "datafusion-common 44.0.0",
+ "datafusion-common-runtime 44.0.0",
+ "datafusion-execution 44.0.0",
+ "datafusion-expr 44.0.0",
+ "datafusion-functions 44.0.0",
+ "datafusion-functions-aggregate 44.0.0",
+ "datafusion-functions-table 44.0.0",
+ "datafusion-functions-window 44.0.0",
+ "datafusion-optimizer 44.0.0",
+ "datafusion-physical-expr 44.0.0",
+ "datafusion-physical-expr-common 44.0.0",
+ "datafusion-physical-optimizer 44.0.0",
+ "datafusion-physical-plan 44.0.0",
+ "datafusion-sql 44.0.0",
+ "futures",
+ "glob",
+ "itertools 0.13.0",
+ "log",
+ "object_store",
+ "parking_lot",
+ "rand",
+ "regex",
+ "sqlparser",
+ "tempfile",
+ "tokio",
+ "url",
+ "uuid",
+]
+
+[[package]]
+name = "datafusion"
 version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eae420e7a5b0b7f1c39364cc76cbcd0f5fdc416b2514ae3847c2676bbd60702a"
 dependencies = [
- "arrow",
- "arrow-array",
- "arrow-ipc",
- "arrow-schema",
+ "arrow 54.1.0",
+ "arrow-array 54.1.0",
+ "arrow-ipc 54.1.0",
+ "arrow-schema 54.1.0",
  "async-trait",
  "bytes",
  "chrono",
- "datafusion-catalog",
- "datafusion-common",
- "datafusion-common-runtime",
- "datafusion-execution",
- "datafusion-expr",
- "datafusion-functions",
- "datafusion-functions-aggregate",
- "datafusion-functions-table",
- "datafusion-functions-window",
- "datafusion-optimizer",
- "datafusion-physical-expr",
- "datafusion-physical-expr-common",
- "datafusion-physical-optimizer",
- "datafusion-physical-plan",
- "datafusion-sql",
+ "datafusion-catalog 45.0.0",
+ "datafusion-common 45.0.0",
+ "datafusion-common-runtime 45.0.0",
+ "datafusion-execution 45.0.0",
+ "datafusion-expr 45.0.0",
+ "datafusion-functions 45.0.0",
+ "datafusion-functions-aggregate 45.0.0",
+ "datafusion-functions-table 45.0.0",
+ "datafusion-functions-window 45.0.0",
+ "datafusion-optimizer 45.0.0",
+ "datafusion-physical-expr 45.0.0",
+ "datafusion-physical-expr-common 45.0.0",
+ "datafusion-physical-optimizer 45.0.0",
+ "datafusion-physical-plan 45.0.0",
+ "datafusion-sql 45.0.0",
  "futures",
  "glob",
  "itertools 0.14.0",
@@ -3080,18 +3253,33 @@ dependencies = [
 
 [[package]]
 name = "datafusion-catalog"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ee60d33e210ef96070377ae667ece7caa0e959c8387496773d4a1a72f1a5012e"
+dependencies = [
+ "arrow-schema 53.4.0",
+ "async-trait",
+ "datafusion-common 44.0.0",
+ "datafusion-execution 44.0.0",
+ "datafusion-expr 44.0.0",
+ "datafusion-physical-plan 44.0.0",
+ "parking_lot",
+]
+
+[[package]]
+name = "datafusion-catalog"
 version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6f27987bc22b810939e8dfecc55571e9d50355d6ea8ec1c47af8383a76a6d0e1"
 dependencies = [
- "arrow",
+ "arrow 54.1.0",
  "async-trait",
  "dashmap",
- "datafusion-common",
- "datafusion-execution",
- "datafusion-expr",
- "datafusion-physical-plan",
- "datafusion-sql",
+ "datafusion-common 45.0.0",
+ "datafusion-execution 45.0.0",
+ "datafusion-expr 45.0.0",
+ "datafusion-physical-plan 45.0.0",
+ "datafusion-sql 45.0.0",
  "futures",
  "itertools 0.14.0",
  "log",
@@ -3101,16 +3289,39 @@ dependencies = [
 
 [[package]]
 name = "datafusion-common"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0b42b7d720fe21ed9cca2ebb635f3f13a12cfab786b41e0fba184fb2e620525b"
+dependencies = [
+ "ahash",
+ "arrow 53.4.0",
+ "arrow-array 53.4.0",
+ "arrow-buffer 53.4.0",
+ "arrow-schema 53.4.0",
+ "half",
+ "hashbrown 0.14.5",
+ "indexmap 2.7.1",
+ "libc",
+ "log",
+ "object_store",
+ "paste",
+ "sqlparser",
+ "tokio",
+ "web-time",
+]
+
+[[package]]
+name = "datafusion-common"
 version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3f6d5b8c9408cc692f7c194b8aa0c0f9b253e065a8d960ad9cdc2a13e697602"
 dependencies = [
  "ahash",
- "arrow",
- "arrow-array",
- "arrow-buffer",
- "arrow-ipc",
- "arrow-schema",
+ "arrow 54.1.0",
+ "arrow-array 54.1.0",
+ "arrow-buffer 54.1.0",
+ "arrow-ipc 54.1.0",
+ "arrow-schema 54.1.0",
  "base64 0.22.1",
  "half",
  "hashbrown 0.14.5",
@@ -3127,6 +3338,16 @@ dependencies = [
 
 [[package]]
 name = "datafusion-common-runtime"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "72fbf14d4079f7ce5306393084fe5057dddfdc2113577e0049310afa12e94281"
+dependencies = [
+ "log",
+ "tokio",
+]
+
+[[package]]
+name = "datafusion-common-runtime"
 version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0d4603c8e8a4baf77660ab7074cc66fc15cc8a18f2ce9dfadb755fc6ee294e48"
@@ -3134,6 +3355,12 @@ dependencies = [
  "log",
  "tokio",
 ]
+
+[[package]]
+name = "datafusion-doc"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c278dbd64860ed0bb5240fc1f4cb6aeea437153910aea69bcf7d5a8d6d0454f3"
 
 [[package]]
 name = "datafusion-doc"
@@ -3150,7 +3377,7 @@ dependencies = [
  "alloy",
  "async-stream",
  "async-trait",
- "datafusion",
+ "datafusion 45.0.0",
  "futures",
  "serde_json",
  "thiserror 2.0.11",
@@ -3160,14 +3387,33 @@ dependencies = [
 
 [[package]]
 name = "datafusion-execution"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e22cb02af47e756468b3cbfee7a83e3d4f2278d452deb4b033ba933c75169486"
+dependencies = [
+ "arrow 53.4.0",
+ "dashmap",
+ "datafusion-common 44.0.0",
+ "datafusion-expr 44.0.0",
+ "futures",
+ "log",
+ "object_store",
+ "parking_lot",
+ "rand",
+ "tempfile",
+ "url",
+]
+
+[[package]]
+name = "datafusion-execution"
 version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "88b491c012cdf8e051053426013429a76f74ee3c2db68496c79c323ca1084d27"
 dependencies = [
- "arrow",
+ "arrow 54.1.0",
  "dashmap",
- "datafusion-common",
- "datafusion-expr",
+ "datafusion-common 45.0.0",
+ "datafusion-expr 45.0.0",
  "futures",
  "log",
  "object_store",
@@ -3179,18 +3425,38 @@ dependencies = [
 
 [[package]]
 name = "datafusion-expr"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "62298eadb1d15b525df1315e61a71519ffc563d41d5c3b2a30fda2d70f77b93c"
+dependencies = [
+ "arrow 53.4.0",
+ "chrono",
+ "datafusion-common 44.0.0",
+ "datafusion-doc 44.0.0",
+ "datafusion-expr-common 44.0.0",
+ "datafusion-functions-aggregate-common 44.0.0",
+ "datafusion-functions-window-common 44.0.0",
+ "datafusion-physical-expr-common 44.0.0",
+ "indexmap 2.7.1",
+ "paste",
+ "serde_json",
+ "sqlparser",
+]
+
+[[package]]
+name = "datafusion-expr"
 version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e5a181408d4fc5dc22f9252781a8f39f2d0e5d1b33ec9bde242844980a2689c1"
 dependencies = [
- "arrow",
+ "arrow 54.1.0",
  "chrono",
- "datafusion-common",
- "datafusion-doc",
- "datafusion-expr-common",
- "datafusion-functions-aggregate-common",
- "datafusion-functions-window-common",
- "datafusion-physical-expr-common",
+ "datafusion-common 45.0.0",
+ "datafusion-doc 45.0.0",
+ "datafusion-expr-common 45.0.0",
+ "datafusion-functions-aggregate-common 45.0.0",
+ "datafusion-functions-window-common 45.0.0",
+ "datafusion-physical-expr-common 45.0.0",
  "indexmap 2.7.1",
  "paste",
  "serde_json",
@@ -3199,14 +3465,51 @@ dependencies = [
 
 [[package]]
 name = "datafusion-expr-common"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dda7f73c5fc349251cd3dcb05773c5bf55d2505a698ef9d38dfc712161ea2f55"
+dependencies = [
+ "arrow 53.4.0",
+ "datafusion-common 44.0.0",
+ "itertools 0.13.0",
+]
+
+[[package]]
+name = "datafusion-expr-common"
 version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d1129b48e8534d8c03c6543bcdccef0b55c8ac0c1272a15a56c67068b6eb1885"
 dependencies = [
- "arrow",
- "datafusion-common",
+ "arrow 54.1.0",
+ "datafusion-common 45.0.0",
  "itertools 0.14.0",
  "paste",
+]
+
+[[package]]
+name = "datafusion-functions"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fd197f3b2975424d3a4898ea46651be855a46721a56727515dbd5c9e2fb597da"
+dependencies = [
+ "arrow 53.4.0",
+ "arrow-buffer 53.4.0",
+ "base64 0.22.1",
+ "chrono",
+ "datafusion-common 44.0.0",
+ "datafusion-doc 44.0.0",
+ "datafusion-execution 44.0.0",
+ "datafusion-expr 44.0.0",
+ "datafusion-expr-common 44.0.0",
+ "datafusion-macros 44.0.0",
+ "hashbrown 0.14.5",
+ "hex",
+ "itertools 0.13.0",
+ "log",
+ "rand",
+ "regex",
+ "unicode-segmentation",
+ "uuid",
 ]
 
 [[package]]
@@ -3215,16 +3518,16 @@ version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6125874e4856dfb09b59886784fcb74cde5cfc5930b3a80a1a728ef7a010df6b"
 dependencies = [
- "arrow",
- "arrow-buffer",
+ "arrow 54.1.0",
+ "arrow-buffer 54.1.0",
  "base64 0.22.1",
  "chrono",
- "datafusion-common",
- "datafusion-doc",
- "datafusion-execution",
- "datafusion-expr",
- "datafusion-expr-common",
- "datafusion-macros",
+ "datafusion-common 45.0.0",
+ "datafusion-doc 45.0.0",
+ "datafusion-execution 45.0.0",
+ "datafusion-expr 45.0.0",
+ "datafusion-expr-common 45.0.0",
+ "datafusion-macros 45.0.0",
  "hashbrown 0.14.5",
  "hex",
  "itertools 0.14.0",
@@ -3237,25 +3540,60 @@ dependencies = [
 
 [[package]]
 name = "datafusion-functions-aggregate"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aabbe48fba18f9981b134124381bee9e46f93518b8ad2f9721ee296cef5affb9"
+dependencies = [
+ "ahash",
+ "arrow 53.4.0",
+ "arrow-schema 53.4.0",
+ "datafusion-common 44.0.0",
+ "datafusion-doc 44.0.0",
+ "datafusion-execution 44.0.0",
+ "datafusion-expr 44.0.0",
+ "datafusion-functions-aggregate-common 44.0.0",
+ "datafusion-macros 44.0.0",
+ "datafusion-physical-expr 44.0.0",
+ "datafusion-physical-expr-common 44.0.0",
+ "half",
+ "log",
+ "paste",
+]
+
+[[package]]
+name = "datafusion-functions-aggregate"
 version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f3add7b1d3888e05e7c95f2b281af900ca69ebdcb21069ba679b33bde8b3b9d6"
 dependencies = [
  "ahash",
- "arrow",
- "arrow-buffer",
- "arrow-schema",
- "datafusion-common",
- "datafusion-doc",
- "datafusion-execution",
- "datafusion-expr",
- "datafusion-functions-aggregate-common",
- "datafusion-macros",
- "datafusion-physical-expr",
- "datafusion-physical-expr-common",
+ "arrow 54.1.0",
+ "arrow-buffer 54.1.0",
+ "arrow-schema 54.1.0",
+ "datafusion-common 45.0.0",
+ "datafusion-doc 45.0.0",
+ "datafusion-execution 45.0.0",
+ "datafusion-expr 45.0.0",
+ "datafusion-functions-aggregate-common 45.0.0",
+ "datafusion-macros 45.0.0",
+ "datafusion-physical-expr 45.0.0",
+ "datafusion-physical-expr-common 45.0.0",
  "half",
  "log",
  "paste",
+]
+
+[[package]]
+name = "datafusion-functions-aggregate-common"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d7a3fefed9c8c11268d446d924baca8cabf52fe32f73fdaa20854bac6473590c"
+dependencies = [
+ "ahash",
+ "arrow 53.4.0",
+ "datafusion-common 44.0.0",
+ "datafusion-expr-common 44.0.0",
+ "datafusion-physical-expr-common 44.0.0",
 ]
 
 [[package]]
@@ -3265,10 +3603,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6e18baa4cfc3d2f144f74148ed68a1f92337f5072b6dde204a0dbbdf3324989c"
 dependencies = [
  "ahash",
- "arrow",
- "datafusion-common",
- "datafusion-expr-common",
- "datafusion-physical-expr-common",
+ "arrow 54.1.0",
+ "datafusion-common 45.0.0",
+ "datafusion-expr-common 45.0.0",
+ "datafusion-physical-expr-common 45.0.0",
 ]
 
 [[package]]
@@ -3277,9 +3615,25 @@ version = "0.45.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "297b8bf3c213cbf1a0c9d0c5f0bc43f6d181591aeade02a189790d28d79c87d0"
 dependencies = [
- "datafusion",
+ "datafusion 45.0.0",
  "jiter",
  "log",
+ "paste",
+]
+
+[[package]]
+name = "datafusion-functions-table"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5c35c070eb705c12795dab399c3809f4dfbc290678c624d3989490ca9b8449c1"
+dependencies = [
+ "arrow 53.4.0",
+ "async-trait",
+ "datafusion-catalog 44.0.0",
+ "datafusion-common 44.0.0",
+ "datafusion-expr 44.0.0",
+ "datafusion-physical-plan 44.0.0",
+ "parking_lot",
  "paste",
 ]
 
@@ -3289,13 +3643,30 @@ version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2c403ddd473bbb0952ba880008428b3c7febf0ed3ce1eec35a205db20efb2a36"
 dependencies = [
- "arrow",
+ "arrow 54.1.0",
  "async-trait",
- "datafusion-catalog",
- "datafusion-common",
- "datafusion-expr",
- "datafusion-physical-plan",
+ "datafusion-catalog 45.0.0",
+ "datafusion-common 45.0.0",
+ "datafusion-expr 45.0.0",
+ "datafusion-physical-plan 45.0.0",
  "parking_lot",
+ "paste",
+]
+
+[[package]]
+name = "datafusion-functions-window"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "52229bca26b590b140900752226c829f15fc1a99840e1ca3ce1a9534690b82a8"
+dependencies = [
+ "datafusion-common 44.0.0",
+ "datafusion-doc 44.0.0",
+ "datafusion-expr 44.0.0",
+ "datafusion-functions-window-common 44.0.0",
+ "datafusion-macros 44.0.0",
+ "datafusion-physical-expr 44.0.0",
+ "datafusion-physical-expr-common 44.0.0",
+ "log",
  "paste",
 ]
 
@@ -3305,15 +3676,25 @@ version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1ab18c2fb835614d06a75f24a9e09136d3a8c12a92d97c95a6af316a1787a9c5"
 dependencies = [
- "datafusion-common",
- "datafusion-doc",
- "datafusion-expr",
- "datafusion-functions-window-common",
- "datafusion-macros",
- "datafusion-physical-expr",
- "datafusion-physical-expr-common",
+ "datafusion-common 45.0.0",
+ "datafusion-doc 45.0.0",
+ "datafusion-expr 45.0.0",
+ "datafusion-functions-window-common 45.0.0",
+ "datafusion-macros 45.0.0",
+ "datafusion-physical-expr 45.0.0",
+ "datafusion-physical-expr-common 45.0.0",
  "log",
  "paste",
+]
+
+[[package]]
+name = "datafusion-functions-window-common"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "367befc303b64a668a10ae6988a064a9289e1999e71a7f8e526b6e14d6bdd9d6"
+dependencies = [
+ "datafusion-common 44.0.0",
+ "datafusion-physical-expr-common 44.0.0",
 ]
 
 [[package]]
@@ -3322,8 +3703,18 @@ version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a77b73bc15e7d1967121fdc7a55d819bfb9d6c03766a6c322247dce9094a53a4"
 dependencies = [
- "datafusion-common",
- "datafusion-physical-expr-common",
+ "datafusion-common 45.0.0",
+ "datafusion-physical-expr-common 45.0.0",
+]
+
+[[package]]
+name = "datafusion-macros"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f5de3c8f386ea991696553afe241a326ecbc3c98a12c562867e4be754d3a060c"
+dependencies = [
+ "quote",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -3332,7 +3723,7 @@ version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "09369b8d962291e808977cf94d495fd8b5b38647232d7ef562c27ac0f495b0af"
 dependencies = [
- "datafusion-expr",
+ "datafusion-expr 45.0.0",
  "quote",
  "syn 2.0.96",
 ]
@@ -3347,7 +3738,7 @@ dependencies = [
  "axum 0.8.1",
  "axum-extra",
  "chrono",
- "datafusion",
+ "datafusion 45.0.0",
  "http 1.2.0",
  "hyper 1.5.2",
  "odata-params",
@@ -3360,15 +3751,33 @@ dependencies = [
 
 [[package]]
 name = "datafusion-optimizer"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "53b520413906f755910422b016fb73884ae6e9e1b376de4f9584b6c0e031da75"
+dependencies = [
+ "arrow 53.4.0",
+ "chrono",
+ "datafusion-common 44.0.0",
+ "datafusion-expr 44.0.0",
+ "datafusion-physical-expr 44.0.0",
+ "indexmap 2.7.1",
+ "itertools 0.13.0",
+ "log",
+ "regex",
+ "regex-syntax 0.8.5",
+]
+
+[[package]]
+name = "datafusion-optimizer"
 version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2403a7e4a84637f3de7d8d4d7a9ccc0cc4be92d89b0161ba3ee5be82f0531c54"
 dependencies = [
- "arrow",
+ "arrow 54.1.0",
  "chrono",
- "datafusion-common",
- "datafusion-expr",
- "datafusion-physical-expr",
+ "datafusion-common 45.0.0",
+ "datafusion-expr 45.0.0",
+ "datafusion-physical-expr 45.0.0",
  "indexmap 2.7.1",
  "itertools 0.14.0",
  "log",
@@ -3378,20 +3787,45 @@ dependencies = [
 
 [[package]]
 name = "datafusion-physical-expr"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "acd6ddc378f6ad19af95ccd6790dec8f8e1264bc4c70e99ddc1830c1a1c78ccd"
+dependencies = [
+ "ahash",
+ "arrow 53.4.0",
+ "arrow-array 53.4.0",
+ "arrow-buffer 53.4.0",
+ "arrow-schema 53.4.0",
+ "datafusion-common 44.0.0",
+ "datafusion-expr 44.0.0",
+ "datafusion-expr-common 44.0.0",
+ "datafusion-functions-aggregate-common 44.0.0",
+ "datafusion-physical-expr-common 44.0.0",
+ "half",
+ "hashbrown 0.14.5",
+ "indexmap 2.7.1",
+ "itertools 0.13.0",
+ "log",
+ "paste",
+ "petgraph 0.6.5",
+]
+
+[[package]]
+name = "datafusion-physical-expr"
 version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "86ff72ac702b62dbf2650c4e1d715ebd3e4aab14e3885e72e8549e250307347c"
 dependencies = [
  "ahash",
- "arrow",
- "arrow-array",
- "arrow-buffer",
- "arrow-schema",
- "datafusion-common",
- "datafusion-expr",
- "datafusion-expr-common",
- "datafusion-functions-aggregate-common",
- "datafusion-physical-expr-common",
+ "arrow 54.1.0",
+ "arrow-array 54.1.0",
+ "arrow-buffer 54.1.0",
+ "arrow-schema 54.1.0",
+ "datafusion-common 45.0.0",
+ "datafusion-expr 45.0.0",
+ "datafusion-expr-common 45.0.0",
+ "datafusion-functions-aggregate-common 45.0.0",
+ "datafusion-physical-expr-common 45.0.0",
  "half",
  "hashbrown 0.14.5",
  "indexmap 2.7.1",
@@ -3403,17 +3837,47 @@ dependencies = [
 
 [[package]]
 name = "datafusion-physical-expr-common"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "06e6c05458eccd74b4c77ed6a1fe63d52434240711de7f6960034794dad1caf5"
+dependencies = [
+ "ahash",
+ "arrow 53.4.0",
+ "datafusion-common 44.0.0",
+ "datafusion-expr-common 44.0.0",
+ "hashbrown 0.14.5",
+ "itertools 0.13.0",
+]
+
+[[package]]
+name = "datafusion-physical-expr-common"
 version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "60982b7d684e25579ee29754b4333057ed62e2cc925383c5f0bd8cab7962f435"
 dependencies = [
  "ahash",
- "arrow",
- "arrow-buffer",
- "datafusion-common",
- "datafusion-expr-common",
+ "arrow 54.1.0",
+ "arrow-buffer 54.1.0",
+ "datafusion-common 45.0.0",
+ "datafusion-expr-common 45.0.0",
  "hashbrown 0.14.5",
  "itertools 0.14.0",
+]
+
+[[package]]
+name = "datafusion-physical-optimizer"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9dc3a82190f49c37d377f31317e07ab5d7588b837adadba8ac367baad5dc2351"
+dependencies = [
+ "arrow 53.4.0",
+ "datafusion-common 44.0.0",
+ "datafusion-execution 44.0.0",
+ "datafusion-expr-common 44.0.0",
+ "datafusion-physical-expr 44.0.0",
+ "datafusion-physical-plan 44.0.0",
+ "itertools 0.13.0",
+ "log",
 ]
 
 [[package]]
@@ -3422,19 +3886,51 @@ version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ac5e85c189d5238a5cf181a624e450c4cd4c66ac77ca551d6f3ff9080bac90bb"
 dependencies = [
- "arrow",
- "arrow-schema",
- "datafusion-common",
- "datafusion-execution",
- "datafusion-expr",
- "datafusion-expr-common",
- "datafusion-physical-expr",
- "datafusion-physical-expr-common",
- "datafusion-physical-plan",
+ "arrow 54.1.0",
+ "arrow-schema 54.1.0",
+ "datafusion-common 45.0.0",
+ "datafusion-execution 45.0.0",
+ "datafusion-expr 45.0.0",
+ "datafusion-expr-common 45.0.0",
+ "datafusion-physical-expr 45.0.0",
+ "datafusion-physical-expr-common 45.0.0",
+ "datafusion-physical-plan 45.0.0",
  "futures",
  "itertools 0.14.0",
  "log",
  "url",
+]
+
+[[package]]
+name = "datafusion-physical-plan"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6a6608bc9844b4ddb5ed4e687d173e6c88700b1d0482f43894617d18a1fe75da"
+dependencies = [
+ "ahash",
+ "arrow 53.4.0",
+ "arrow-array 53.4.0",
+ "arrow-buffer 53.4.0",
+ "arrow-ord 53.4.0",
+ "arrow-schema 53.4.0",
+ "async-trait",
+ "chrono",
+ "datafusion-common 44.0.0",
+ "datafusion-common-runtime 44.0.0",
+ "datafusion-execution 44.0.0",
+ "datafusion-expr 44.0.0",
+ "datafusion-functions-window-common 44.0.0",
+ "datafusion-physical-expr 44.0.0",
+ "datafusion-physical-expr-common 44.0.0",
+ "futures",
+ "half",
+ "hashbrown 0.14.5",
+ "indexmap 2.7.1",
+ "itertools 0.13.0",
+ "log",
+ "parking_lot",
+ "pin-project-lite",
+ "tokio",
 ]
 
 [[package]]
@@ -3444,20 +3940,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c36bf163956d7e2542657c78b3383fdc78f791317ef358a359feffcdb968106f"
 dependencies = [
  "ahash",
- "arrow",
- "arrow-array",
- "arrow-buffer",
- "arrow-ord",
- "arrow-schema",
+ "arrow 54.1.0",
+ "arrow-array 54.1.0",
+ "arrow-buffer 54.1.0",
+ "arrow-ord 54.1.0",
+ "arrow-schema 54.1.0",
  "async-trait",
  "chrono",
- "datafusion-common",
- "datafusion-common-runtime",
- "datafusion-execution",
- "datafusion-expr",
- "datafusion-functions-window-common",
- "datafusion-physical-expr",
- "datafusion-physical-expr-common",
+ "datafusion-common 45.0.0",
+ "datafusion-common-runtime 45.0.0",
+ "datafusion-execution 45.0.0",
+ "datafusion-expr 45.0.0",
+ "datafusion-functions-window-common 45.0.0",
+ "datafusion-physical-expr 45.0.0",
+ "datafusion-physical-expr-common 45.0.0",
  "futures",
  "half",
  "hashbrown 0.14.5",
@@ -3471,16 +3967,34 @@ dependencies = [
 
 [[package]]
 name = "datafusion-sql"
+version = "44.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6a884061c79b33d0c8e84a6f4f4be8bdc12c0f53f5af28ddf5d6d95ac0b15fdc"
+dependencies = [
+ "arrow 53.4.0",
+ "arrow-array 53.4.0",
+ "arrow-schema 53.4.0",
+ "bigdecimal",
+ "datafusion-common 44.0.0",
+ "datafusion-expr 44.0.0",
+ "indexmap 2.7.1",
+ "log",
+ "regex",
+ "sqlparser",
+]
+
+[[package]]
+name = "datafusion-sql"
 version = "45.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e13caa4daede211ecec53c78b13c503b592794d125f9a3cc3afe992edf9e7f43"
 dependencies = [
- "arrow",
- "arrow-array",
- "arrow-schema",
+ "arrow 54.1.0",
+ "arrow-array 54.1.0",
+ "arrow-schema 54.1.0",
  "bigdecimal",
- "datafusion-common",
- "datafusion-expr",
+ "datafusion-common 45.0.0",
+ "datafusion-expr 45.0.0",
  "indexmap 2.7.1",
  "log",
  "regex",
@@ -3813,24 +4327,14 @@ version = "0.54.1"
 dependencies = [
  "async-trait",
  "dill",
- "email-utils 0.222.0",
- "internal-error 0.222.0",
+ "email-utils",
+ "internal-error",
  "reqwest",
  "secrecy",
  "serde",
  "serde_json",
  "thiserror 2.0.11",
  "tracing",
-]
-
-[[package]]
-name = "email-utils"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "serde",
- "thiserror 2.0.11",
- "validator",
 ]
 
 [[package]]
@@ -3881,11 +4385,6 @@ dependencies = [
  "quote",
  "syn 2.0.96",
 ]
-
-[[package]]
-name = "enum-variants"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
 
 [[package]]
 name = "enum-variants"
@@ -3953,39 +4452,16 @@ dependencies = [
 
 [[package]]
 name = "event-sourcing"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-stream",
- "async-trait",
- "event-sourcing-macros 0.221.0",
- "internal-error 0.221.0",
- "thiserror 2.0.11",
- "tokio-stream",
- "tracing",
-]
-
-[[package]]
-name = "event-sourcing"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-stream",
  "async-trait",
- "event-sourcing-macros 0.222.0",
- "internal-error 0.222.0",
+ "event-sourcing-macros",
+ "internal-error",
  "thiserror 2.0.11",
  "tokio-stream",
  "tracing",
-]
-
-[[package]]
-name = "event-sourcing-macros"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "quote",
- "syn 2.0.96",
 ]
 
 [[package]]
@@ -4074,11 +4550,6 @@ dependencies = [
  "uncased",
  "version_check",
 ]
-
-[[package]]
-name = "file-utils"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
 
 [[package]]
 name = "file-utils"
@@ -4738,30 +5209,14 @@ dependencies = [
 
 [[package]]
 name = "http-common"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "axum",
- "http 1.2.0",
- "internal-error 0.221.0",
- "kamu-core 0.221.0",
- "opendatafabric 0.221.0",
- "serde",
- "thiserror 2.0.11",
- "tracing",
- "utoipa",
-]
-
-[[package]]
-name = "http-common"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "axum 0.8.1",
  "http 1.2.0",
- "internal-error 0.222.0",
- "kamu-core 0.222.0",
- "opendatafabric 0.222.0",
+ "internal-error",
+ "kamu-core",
+ "opendatafabric",
  "serde",
  "thiserror 2.0.11",
  "tracing",
@@ -5137,27 +5592,13 @@ checksum = "b248f5224d1d606005e02c97f5aa4e88eeb230488bcc03bc9ca4d7991399f2b5"
 
 [[package]]
 name = "init-on-startup"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "database-common 0.221.0",
- "dill",
- "internal-error 0.221.0",
- "petgraph 0.7.1",
- "thiserror 2.0.11",
- "tracing",
-]
-
-[[package]]
-name = "init-on-startup"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-trait",
- "database-common 0.222.0",
+ "database-common",
  "dill",
- "internal-error 0.222.0",
+ "internal-error",
  "petgraph 0.7.1",
  "thiserror 2.0.11",
  "tracing",
@@ -5183,14 +5624,6 @@ name = "integer-encoding"
 version = "3.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8bb03732005da905c88227371639bf1ad885cc712789c011c31c5fb3ab3ccf02"
-
-[[package]]
-name = "internal-error"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "thiserror 2.0.11",
-]
 
 [[package]]
 name = "internal-error"
@@ -5332,127 +5765,54 @@ dependencies = [
 
 [[package]]
 name = "kamu"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-recursion",
- "async-stream",
- "async-trait",
- "async-utils 0.221.0",
- "aws-config",
- "aws-credential-types",
- "aws-sdk-s3",
- "aws-smithy-types",
- "axum",
- "bytes",
- "cfg-if",
- "chrono",
- "container-runtime 0.221.0",
- "dashmap",
- "datafusion",
- "digest 0.10.7",
- "dill",
- "file-utils 0.221.0",
- "flatbuffers",
- "flate2",
- "futures",
- "glob",
- "hex",
- "hickory-resolver",
- "http 1.2.0",
- "init-on-startup 0.221.0",
- "internal-error 0.221.0",
- "itertools 0.14.0",
- "kamu-accounts 0.221.0",
- "kamu-core 0.221.0",
- "kamu-datasets 0.221.0",
- "kamu-ingest-datafusion 0.221.0",
- "lazy_static",
- "libc",
- "like",
- "messaging-outbox 0.221.0",
- "object_store",
- "opendatafabric 0.221.0",
- "pin-project",
- "rand",
- "random-names 0.221.0",
- "regex",
- "reqwest",
- "ringbuf",
- "s3-utils 0.221.0",
- "serde",
- "serde_json",
- "serde_with",
- "serde_yaml",
- "sha3",
- "tempfile",
- "thiserror 2.0.11",
- "time-source 0.221.0",
- "tokio",
- "tokio-stream",
- "tokio-util",
- "tower 0.5.2",
- "tower-http",
- "tracing",
- "url",
- "zip",
-]
-
-[[package]]
-name = "kamu"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
+ "alloy",
  "async-recursion",
  "async-stream",
  "async-trait",
- "async-utils 0.222.0",
- "aws-config",
  "aws-credential-types",
  "bon",
  "bytes",
  "cfg-if",
  "chrono",
- "container-runtime 0.222.0",
+ "container-runtime",
  "curl",
  "curl-sys",
  "dashmap",
- "datafusion",
+ "datafusion 45.0.0",
  "datafusion-ethers",
  "datafusion-functions-json",
  "dill",
- "file-utils 0.222.0",
+ "file-utils",
  "flatbuffers",
  "flate2",
  "futures",
  "glob",
  "hex",
  "http 1.2.0",
- "init-on-startup 0.222.0",
- "internal-error 0.222.0",
+ "init-on-startup",
+ "internal-error",
  "itertools 0.14.0",
- "kamu-accounts 0.222.0",
- "kamu-core 0.222.0",
- "kamu-datasets 0.222.0",
- "kamu-ingest-datafusion 0.222.0",
+ "kamu-accounts",
+ "kamu-core",
+ "kamu-datasets",
+ "kamu-ingest-datafusion",
  "lazy_static",
  "libc",
  "messaging-outbox",
- "like",
- "messaging-outbox 0.222.0",
  "mockall",
  "object_store",
  "oop",
  "opendatafabric",
- "opendatafabric 0.222.0",
- "pin-project",
  "rand",
- "random-names 0.222.0",
+ "random-names",
  "regex",
  "reqwest",
  "ringbuf",
  "rumqttc",
- "s3-utils 0.222.0",
+ "s3-utils",
  "serde",
  "serde_json",
  "serde_with",
@@ -5460,40 +5820,12 @@ dependencies = [
  "sha3",
  "tempfile",
  "thiserror 2.0.11",
- "time-source 0.222.0",
+ "time-source",
  "tokio",
  "tokio-stream",
  "tracing",
  "url",
  "zip",
-]
-
-[[package]]
-name = "kamu-accounts"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "base32",
- "chrono",
- "crc32fast",
- "database-common 0.221.0",
- "email-utils 0.221.0",
- "futures",
- "internal-error 0.221.0",
- "jsonwebtoken",
- "lazy_static",
- "merge",
- "messaging-outbox 0.221.0",
- "mockall",
- "opendatafabric 0.221.0",
- "rand",
- "random-names 0.221.0",
- "reusable",
- "serde",
- "serde_with",
- "thiserror 2.0.11",
- "uuid",
 ]
 
 [[package]]
@@ -5505,18 +5837,18 @@ dependencies = [
  "base32",
  "chrono",
  "crc32fast",
- "database-common 0.222.0",
- "email-utils 0.222.0",
+ "database-common",
+ "email-utils",
  "futures",
- "internal-error 0.222.0",
+ "internal-error",
  "jsonwebtoken",
  "lazy_static",
  "merge",
- "messaging-outbox 0.222.0",
+ "messaging-outbox",
  "mockall",
- "opendatafabric 0.222.0",
+ "opendatafabric",
  "rand",
- "random-names 0.222.0",
+ "random-names",
  "reusable",
  "serde",
  "serde_with",
@@ -5532,13 +5864,13 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7c
 dependencies = [
  "async-trait",
  "chrono",
- "database-common 0.222.0",
+ "database-common",
  "dill",
- "email-utils 0.222.0",
+ "email-utils",
  "futures",
- "internal-error 0.222.0",
- "kamu-accounts 0.222.0",
- "opendatafabric 0.222.0",
+ "internal-error",
+ "kamu-accounts",
+ "opendatafabric",
  "uuid",
 ]
 
@@ -5550,13 +5882,13 @@ dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
- "database-common 0.222.0",
+ "database-common",
  "dill",
- "email-utils 0.222.0",
+ "email-utils",
  "futures",
- "internal-error 0.222.0",
- "kamu-accounts 0.222.0",
- "opendatafabric 0.222.0",
+ "internal-error",
+ "kamu-accounts",
+ "opendatafabric",
  "sqlx",
  "tracing",
  "uuid",
@@ -5570,23 +5902,19 @@ dependencies = [
  "argon2",
  "async-trait",
  "chrono",
- "database-common 0.222.0",
+ "database-common",
  "dill",
  "init-on-startup",
  "internal-error",
- "futures",
- "init-on-startup 0.222.0",
- "internal-error 0.222.0",
  "jsonwebtoken",
- "kamu-accounts 0.222.0",
- "messaging-outbox 0.222.0",
- "opendatafabric 0.222.0",
+ "kamu-accounts",
+ "messaging-outbox",
+ "opendatafabric",
  "password-hash",
  "serde",
  "serde_json",
  "thiserror 2.0.11",
  "time-source",
- "time-source 0.222.0",
  "tokio",
  "tracing",
  "uuid",
@@ -5600,13 +5928,13 @@ dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
- "database-common 0.222.0",
+ "database-common",
  "dill",
- "email-utils 0.222.0",
+ "email-utils",
  "futures",
- "internal-error 0.222.0",
- "kamu-accounts 0.222.0",
- "opendatafabric 0.222.0",
+ "internal-error",
+ "kamu-accounts",
+ "opendatafabric",
  "sqlx",
  "tracing",
  "uuid",
@@ -5618,18 +5946,18 @@ version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-trait",
- "database-common 0.222.0",
+ "database-common",
  "dill",
  "futures",
- "init-on-startup 0.222.0",
- "internal-error 0.222.0",
- "kamu-accounts 0.222.0",
+ "init-on-startup",
+ "internal-error",
+ "kamu-accounts",
  "kamu-auth-rebac",
  "kamu-auth-rebac-services",
- "kamu-core 0.222.0",
- "kamu-datasets 0.222.0",
- "messaging-outbox 0.222.0",
- "opendatafabric 0.222.0",
+ "kamu-core",
+ "kamu-datasets",
+ "messaging-outbox",
+ "opendatafabric",
  "oso",
  "thiserror 2.0.11",
  "tokio",
@@ -5647,17 +5975,17 @@ dependencies = [
  "base64 0.22.1",
  "bytes",
  "chrono",
- "database-common 0.222.0",
- "datafusion",
+ "database-common",
+ "datafusion 45.0.0",
  "dill",
  "futures",
  "http 1.2.0",
- "kamu-accounts 0.222.0",
- "kamu-core 0.222.0",
+ "kamu-accounts",
+ "kamu-core",
  "like",
  "prost",
  "rand",
- "time-source 0.222.0",
+ "time-source",
  "tokio",
  "tonic",
  "tower 0.5.2",
@@ -5673,79 +6001,28 @@ dependencies = [
  "async-graphql",
  "async-trait",
  "chrono",
- "database-common 0.222.0",
- "datafusion",
+ "database-common",
+ "datafusion 45.0.0",
  "dill",
- "email-utils 0.222.0",
- "event-sourcing 0.222.0",
+ "email-utils",
+ "event-sourcing",
  "futures",
- "internal-error 0.222.0",
- "kamu 0.222.0",
- "kamu-accounts 0.222.0",
+ "internal-error",
+ "kamu",
+ "kamu-accounts",
  "kamu-auth-rebac",
- "kamu-core 0.222.0",
- "kamu-datasets 0.222.0",
- "kamu-flow-system 0.222.0",
+ "kamu-core",
+ "kamu-datasets",
+ "kamu-flow-system",
  "kamu-flow-system-services",
- "kamu-task-system 0.222.0",
- "opendatafabric 0.222.0",
+ "kamu-task-system",
+ "opendatafabric",
  "secrecy",
  "serde",
  "serde_json",
  "tokio",
  "tracing",
  "url",
- "uuid",
-]
-
-[[package]]
-name = "kamu-adapter-http"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "aws-sdk-s3",
- "axum",
- "axum-extra",
- "base64 0.22.1",
- "bytes",
- "canonical_json",
- "chrono",
- "database-common 0.221.0",
- "database-common-macros 0.221.0",
- "datafusion",
- "dill",
- "ed25519-dalek",
- "email-utils 0.221.0",
- "flate2",
- "futures",
- "headers",
- "http 1.2.0",
- "http-common 0.221.0",
- "indoc 2.0.5",
- "internal-error 0.221.0",
- "kamu 0.221.0",
- "kamu-accounts 0.221.0",
- "kamu-core 0.221.0",
- "opendatafabric 0.221.0",
- "reqwest",
- "s3-utils 0.221.0",
- "serde",
- "serde_json",
- "serde_with",
- "strum",
- "tar",
- "thiserror 2.0.11",
- "time-source 0.221.0",
- "tokio",
- "tokio-stream",
- "tokio-tungstenite 0.26.1",
- "tokio-util",
- "tower 0.5.2",
- "tracing",
- "url",
- "utoipa",
- "utoipa-axum",
  "uuid",
 ]
 
@@ -5762,40 +6039,35 @@ dependencies = [
  "bytes",
  "canonical_json",
  "chrono",
- "database-common 0.222.0",
- "database-common-macros 0.222.0",
- "datafusion",
+ "database-common",
+ "database-common-macros",
+ "datafusion 45.0.0",
  "dill",
  "ed25519-dalek",
- "email-utils 0.222.0",
+ "email-utils",
  "flate2",
  "futures",
  "headers",
  "http 1.2.0",
  "http-body-util",
- "http-common 0.222.0",
+ "http-common",
  "indoc 2.0.5",
  "internal-error",
  "kamu",
  "kamu-accounts",
  "kamu-core",
  "kamu-datasets",
+ "messaging-outbox",
  "opendatafabric",
- "internal-error 0.222.0",
- "kamu 0.222.0",
- "kamu-accounts 0.222.0",
- "kamu-core 0.222.0",
- "messaging-outbox 0.222.0",
- "opendatafabric 0.222.0",
  "reqwest",
- "s3-utils 0.222.0",
+ "s3-utils",
  "serde",
  "serde_json",
  "serde_with",
  "strum",
  "tar",
  "thiserror 2.0.11",
- "time-source 0.222.0",
+ "time-source",
  "tokio",
  "tokio-stream",
  "tokio-tungstenite 0.26.1",
@@ -5815,11 +6087,11 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7c
 dependencies = [
  "async-trait",
  "dill",
- "email-utils 0.222.0",
+ "email-utils",
  "http 1.2.0",
- "internal-error 0.222.0",
- "kamu-accounts 0.222.0",
- "opendatafabric 0.222.0",
+ "internal-error",
+ "kamu-accounts",
+ "opendatafabric",
  "reqwest",
  "serde",
  "serde_json",
@@ -5834,17 +6106,17 @@ dependencies = [
  "async-trait",
  "axum 0.8.1",
  "chrono",
- "database-common 0.222.0",
- "database-common-macros 0.222.0",
- "datafusion",
+ "database-common",
+ "database-common-macros",
+ "datafusion 45.0.0",
  "datafusion-odata",
  "dill",
  "futures",
  "http 1.2.0",
- "http-common 0.222.0",
- "internal-error 0.222.0",
- "kamu-core 0.222.0",
- "opendatafabric 0.222.0",
+ "http-common",
+ "internal-error",
+ "kamu-core",
+ "opendatafabric",
  "tracing",
  "utoipa",
  "utoipa-axum",
@@ -5862,23 +6134,23 @@ dependencies = [
  "axum 0.8.1",
  "chrono",
  "clap",
- "container-runtime 0.222.0",
- "database-common 0.222.0",
- "database-common-macros 0.222.0",
+ "container-runtime",
+ "database-common",
+ "database-common-macros",
  "dill",
  "duration-string",
  "email-gateway",
- "email-utils 0.222.0",
+ "email-utils",
  "figment",
  "futures",
  "graceful-shutdown",
  "http 1.2.0",
- "http-common 0.222.0",
+ "http-common",
  "indoc 2.0.5",
- "init-on-startup 0.222.0",
- "internal-error 0.222.0",
- "kamu 0.222.0",
- "kamu-accounts 0.222.0",
+ "init-on-startup",
+ "internal-error",
+ "kamu",
+ "kamu-accounts",
  "kamu-accounts-inmem",
  "kamu-accounts-postgres",
  "kamu-accounts-services",
@@ -5886,19 +6158,19 @@ dependencies = [
  "kamu-adapter-auth-oso-rebac",
  "kamu-adapter-flight-sql",
  "kamu-adapter-graphql",
- "kamu-adapter-http 0.222.0",
+ "kamu-adapter-http",
  "kamu-adapter-oauth",
  "kamu-adapter-odata",
  "kamu-auth-rebac-inmem",
  "kamu-auth-rebac-postgres",
  "kamu-auth-rebac-services",
  "kamu-auth-rebac-sqlite",
- "kamu-datasets 0.222.0",
+ "kamu-datasets",
  "kamu-datasets-inmem",
  "kamu-datasets-postgres",
  "kamu-datasets-services",
  "kamu-datasets-sqlite",
- "kamu-flow-system 0.222.0",
+ "kamu-flow-system",
  "kamu-flow-system-inmem",
  "kamu-flow-system-postgres",
  "kamu-flow-system-services",
@@ -5906,17 +6178,17 @@ dependencies = [
  "kamu-messaging-outbox-inmem",
  "kamu-messaging-outbox-postgres",
  "kamu-messaging-outbox-sqlite",
- "kamu-task-system 0.222.0",
+ "kamu-task-system",
  "kamu-task-system-inmem",
  "kamu-task-system-postgres",
  "kamu-task-system-services",
  "kamu-task-system-sqlite",
- "messaging-outbox 0.222.0",
- "observability 0.222.0",
- "opendatafabric 0.222.0",
+ "messaging-outbox",
+ "observability",
+ "opendatafabric",
  "prometheus",
  "reqwest",
- "s3-utils 0.222.0",
+ "s3-utils",
  "secrecy",
  "serde",
  "serde_json",
@@ -5924,7 +6196,7 @@ dependencies = [
  "test-group",
  "test-log",
  "test-utils",
- "time-source 0.222.0",
+ "time-source",
  "tokio",
  "tokio-stream",
  "tonic",
@@ -5942,8 +6214,8 @@ version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-trait",
- "internal-error 0.222.0",
- "opendatafabric 0.222.0",
+ "internal-error",
+ "opendatafabric",
  "sqlx",
  "strum",
  "thiserror 2.0.11",
@@ -5966,9 +6238,9 @@ version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-trait",
- "database-common 0.222.0",
+ "database-common",
  "dill",
- "internal-error 0.222.0",
+ "internal-error",
  "kamu-auth-rebac",
  "sqlx",
 ]
@@ -5979,18 +6251,18 @@ version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-trait",
- "database-common 0.222.0",
+ "database-common",
  "dill",
  "futures",
- "init-on-startup 0.222.0",
- "internal-error 0.222.0",
- "kamu-accounts 0.222.0",
+ "init-on-startup",
+ "internal-error",
+ "kamu-accounts",
  "kamu-auth-rebac",
- "kamu-core 0.222.0",
- "kamu-datasets 0.222.0",
+ "kamu-core",
+ "kamu-datasets",
  "kamu-datasets-services",
- "messaging-outbox 0.222.0",
- "opendatafabric 0.222.0",
+ "messaging-outbox",
+ "opendatafabric",
  "tracing",
 ]
 
@@ -6000,32 +6272,32 @@ version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-trait",
- "database-common 0.222.0",
+ "database-common",
  "dill",
- "internal-error 0.222.0",
+ "internal-error",
  "kamu-auth-rebac",
  "sqlx",
 ]
 
 [[package]]
 name = "kamu-cli-e2e-common"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.223.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-graphql",
  "async-trait",
  "chrono",
  "convert_case",
- "http-common 0.221.0",
+ "http-common",
  "indoc 2.0.5",
- "internal-error 0.221.0",
- "kamu-adapter-http 0.221.0",
+ "internal-error",
+ "kamu-adapter-http",
  "kamu-cli-e2e-common-macros",
  "kamu-cli-puppet",
- "kamu-core 0.221.0",
- "kamu-flow-system 0.221.0",
+ "kamu-core",
+ "kamu-flow-system",
  "lazy_static",
- "opendatafabric 0.221.0",
+ "opendatafabric",
  "pretty_assertions",
  "regex",
  "reqwest",
@@ -6041,8 +6313,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-cli-e2e-common-macros"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.223.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "quote",
  "syn 2.0.96",
@@ -6050,16 +6322,16 @@ dependencies = [
 
 [[package]]
 name = "kamu-cli-puppet"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
+version = "0.223.0"
+source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "assert_cmd",
  "async-trait",
  "bon",
  "chrono",
- "datafusion",
+ "datafusion 45.0.0",
  "indoc 2.0.5",
- "opendatafabric 0.221.0",
+ "opendatafabric",
  "pretty_assertions",
  "regex",
  "serde",
@@ -6071,37 +6343,6 @@ dependencies = [
 
 [[package]]
 name = "kamu-core"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-stream",
- "async-trait",
- "chrono",
- "container-runtime 0.221.0",
- "datafusion",
- "dill",
- "file-utils 0.221.0",
- "futures",
- "internal-error 0.221.0",
- "itertools 0.14.0",
- "kamu-datasets 0.221.0",
- "messaging-outbox 0.221.0",
- "object_store",
- "opendatafabric 0.221.0",
- "pathdiff",
- "serde",
- "serde_with",
- "strum",
- "thiserror 2.0.11",
- "tokio",
- "tokio-stream",
- "tracing",
- "url",
- "utoipa",
-]
-
-[[package]]
-name = "kamu-core"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
@@ -6109,19 +6350,17 @@ dependencies = [
  "async-trait",
  "bytes",
  "chrono",
- "container-runtime 0.222.0",
- "datafusion",
+ "container-runtime",
+ "datafusion 45.0.0",
  "dill",
- "file-utils 0.222.0",
+ "file-utils",
  "futures",
- "internal-error 0.222.0",
+ "internal-error",
  "itertools 0.14.0",
  "kamu-datasets",
- "kamu-datasets 0.222.0",
- "messaging-outbox 0.222.0",
  "mockall",
  "object_store",
- "opendatafabric 0.222.0",
+ "opendatafabric",
  "oso",
  "pathdiff",
  "serde",
@@ -6137,42 +6376,19 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "aes-gcm",
- "async-trait",
- "chrono",
- "database-common 0.221.0",
- "futures",
- "internal-error 0.221.0",
- "merge",
- "opendatafabric 0.221.0",
- "secrecy",
- "serde",
- "serde_with",
- "thiserror 2.0.11",
- "tokio-stream",
- "uuid",
-]
-
-[[package]]
-name = "kamu-datasets"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "aes-gcm",
  "async-trait",
  "chrono",
- "database-common 0.222.0",
+ "database-common",
  "futures",
  "internal-error",
  "itertools 0.14.0",
- "internal-error 0.222.0",
  "merge",
  "messaging-outbox",
  "opendatafabric",
- "opendatafabric 0.222.0",
  "secrecy",
  "serde",
  "serde_with",
@@ -6188,12 +6404,12 @@ version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-trait",
- "database-common 0.222.0",
+ "database-common",
  "dill",
  "futures",
- "internal-error 0.222.0",
- "kamu-datasets 0.222.0",
- "opendatafabric 0.222.0",
+ "internal-error",
+ "kamu-datasets",
+ "opendatafabric",
  "tokio",
  "tokio-stream",
  "uuid",
@@ -6206,12 +6422,12 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7c
 dependencies = [
  "async-stream",
  "async-trait",
- "database-common 0.222.0",
+ "database-common",
  "dill",
  "futures",
- "internal-error 0.222.0",
- "kamu-datasets 0.222.0",
- "opendatafabric 0.222.0",
+ "internal-error",
+ "kamu-datasets",
+ "opendatafabric",
  "sqlx",
  "uuid",
 ]
@@ -6225,21 +6441,21 @@ dependencies = [
  "async-trait",
  "bytes",
  "chrono",
- "database-common 0.222.0",
+ "database-common",
  "dill",
  "file-utils",
  "futures",
- "init-on-startup 0.222.0",
- "internal-error 0.222.0",
- "kamu-accounts 0.222.0",
- "kamu-core 0.222.0",
- "kamu-datasets 0.222.0",
- "messaging-outbox 0.222.0",
- "opendatafabric 0.222.0",
+ "init-on-startup",
+ "internal-error",
+ "kamu-accounts",
+ "kamu-core",
+ "kamu-datasets",
+ "messaging-outbox",
+ "opendatafabric",
  "petgraph 0.7.1",
  "secrecy",
  "thiserror 2.0.11",
- "time-source 0.222.0",
+ "time-source",
  "tokio",
  "tokio-stream",
  "tracing",
@@ -6254,40 +6470,14 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7c
 dependencies = [
  "async-stream",
  "async-trait",
- "database-common 0.222.0",
+ "database-common",
  "dill",
  "futures",
- "internal-error 0.222.0",
- "kamu-datasets 0.222.0",
- "opendatafabric 0.222.0",
+ "internal-error",
+ "kamu-datasets",
+ "opendatafabric",
  "sqlx",
  "uuid",
-]
-
-[[package]]
-name = "kamu-flow-system"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "chrono",
- "cron",
- "database-common 0.221.0",
- "dill",
- "enum-variants 0.221.0",
- "event-sourcing 0.221.0",
- "internal-error 0.221.0",
- "kamu-core 0.221.0",
- "kamu-task-system 0.221.0",
- "lazy_static",
- "messaging-outbox 0.221.0",
- "opendatafabric 0.221.0",
- "serde",
- "serde_with",
- "sqlx",
- "strum",
- "thiserror 2.0.11",
- "tokio-stream",
 ]
 
 [[package]]
@@ -6298,16 +6488,16 @@ dependencies = [
  "async-trait",
  "chrono",
  "cron",
- "database-common 0.222.0",
+ "database-common",
  "dill",
- "enum-variants 0.222.0",
- "event-sourcing 0.222.0",
- "internal-error 0.222.0",
- "kamu-core 0.222.0",
- "kamu-task-system 0.222.0",
+ "enum-variants",
+ "event-sourcing",
+ "internal-error",
+ "kamu-core",
+ "kamu-task-system",
  "lazy_static",
- "messaging-outbox 0.222.0",
- "opendatafabric 0.222.0",
+ "messaging-outbox",
+ "opendatafabric",
  "serde",
  "serde_with",
  "sqlx",
@@ -6324,11 +6514,11 @@ dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
- "database-common 0.222.0",
+ "database-common",
  "dill",
  "futures",
- "kamu-flow-system 0.222.0",
- "opendatafabric 0.222.0",
+ "kamu-flow-system",
+ "opendatafabric",
  "tokio",
  "tokio-stream",
  "tracing",
@@ -6342,11 +6532,11 @@ dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
- "database-common 0.222.0",
+ "database-common",
  "dill",
  "futures",
- "kamu-flow-system 0.222.0",
- "opendatafabric 0.222.0",
+ "kamu-flow-system",
+ "opendatafabric",
  "serde_json",
  "sqlx",
  "tracing",
@@ -6360,21 +6550,21 @@ dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
- "database-common 0.222.0",
- "database-common-macros 0.222.0",
+ "database-common",
+ "database-common-macros",
  "dill",
  "futures",
- "init-on-startup 0.222.0",
- "internal-error 0.222.0",
- "kamu-accounts 0.222.0",
- "kamu-core 0.222.0",
- "kamu-datasets 0.222.0",
- "kamu-flow-system 0.222.0",
- "kamu-task-system 0.222.0",
- "messaging-outbox 0.222.0",
- "observability 0.222.0",
- "opendatafabric 0.222.0",
- "time-source 0.222.0",
+ "init-on-startup",
+ "internal-error",
+ "kamu-accounts",
+ "kamu-core",
+ "kamu-datasets",
+ "kamu-flow-system",
+ "kamu-task-system",
+ "messaging-outbox",
+ "observability",
+ "opendatafabric",
+ "time-source",
  "tokio",
  "tracing",
 ]
@@ -6387,40 +6577,14 @@ dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
- "database-common 0.222.0",
+ "database-common",
  "dill",
  "futures",
- "kamu-flow-system 0.222.0",
- "opendatafabric 0.222.0",
+ "kamu-flow-system",
+ "opendatafabric",
  "serde_json",
  "sqlx",
  "tracing",
-]
-
-[[package]]
-name = "kamu-ingest-datafusion"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "chrono",
- "datafusion",
- "file-utils 0.221.0",
- "futures",
- "geo-types",
- "geojson",
- "glob",
- "internal-error 0.221.0",
- "kamu-core 0.221.0",
- "opendatafabric 0.221.0",
- "serde",
- "serde_json",
- "shapefile",
- "thiserror 2.0.11",
- "tokio",
- "tracing",
- "walkdir",
- "zip",
 ]
 
 [[package]]
@@ -6430,15 +6594,15 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7c
 dependencies = [
  "async-trait",
  "chrono",
- "datafusion",
- "file-utils 0.222.0",
+ "datafusion 45.0.0",
+ "file-utils",
  "futures",
  "geo-types",
  "geojson",
  "glob",
- "internal-error 0.222.0",
- "kamu-core 0.222.0",
- "opendatafabric 0.222.0",
+ "internal-error",
+ "kamu-core",
+ "opendatafabric",
  "serde",
  "serde_json",
  "shapefile",
@@ -6456,8 +6620,8 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7c
 dependencies = [
  "async-trait",
  "dill",
- "internal-error 0.222.0",
- "messaging-outbox 0.222.0",
+ "internal-error",
+ "messaging-outbox",
  "tokio",
  "tokio-stream",
 ]
@@ -6469,11 +6633,11 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7c
 dependencies = [
  "async-stream",
  "async-trait",
- "database-common 0.222.0",
+ "database-common",
  "dill",
  "futures",
- "internal-error 0.222.0",
- "messaging-outbox 0.222.0",
+ "internal-error",
+ "messaging-outbox",
  "sqlx",
 ]
 
@@ -6484,29 +6648,32 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7c
 dependencies = [
  "async-stream",
  "async-trait",
- "database-common 0.222.0",
+ "database-common",
  "dill",
  "futures",
  "indoc 2.0.5",
- "internal-error 0.222.0",
- "messaging-outbox 0.222.0",
+ "internal-error",
+ "messaging-outbox",
  "sqlx",
 ]
 
 [[package]]
 name = "kamu-node-e2e-common"
-version = "0.53.1"
+version = "0.54.1"
 dependencies = [
+ "arrow-flight",
  "async-trait",
  "chrono",
+ "datafusion 45.0.0",
+ "futures",
  "indoc 2.0.5",
- "internal-error 0.222.0",
- "kamu-adapter-http 0.222.0",
+ "internal-error",
+ "kamu-adapter-http",
  "kamu-cli-e2e-common",
  "kamu-node-e2e-common-macros",
  "kamu-node-puppet",
  "lazy_static",
- "opendatafabric 0.222.0",
+ "opendatafabric",
  "pretty_assertions",
  "regex",
  "reqwest",
@@ -6518,11 +6685,12 @@ dependencies = [
  "thiserror 2.0.11",
  "tokio",
  "tokio-retry",
+ "tonic",
 ]
 
 [[package]]
 name = "kamu-node-e2e-common-macros"
-version = "0.53.1"
+version = "0.54.1"
 dependencies = [
  "quote",
  "syn 2.0.96",
@@ -6530,9 +6698,9 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-postgres"
-version = "0.53.1"
+version = "0.54.1"
 dependencies = [
- "database-common 0.222.0",
+ "database-common",
  "indoc 2.0.5",
  "kamu-node-e2e-common",
  "kamu-node-e2e-repo-tests",
@@ -6544,15 +6712,16 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-repo-tests"
-version = "0.53.1"
+version = "0.54.1"
 dependencies = [
  "chrono",
- "datafusion",
+ "datafusion 44.0.0",
  "indoc 2.0.5",
- "kamu-accounts 0.222.0",
- "kamu-adapter-http 0.222.0",
+ "kamu-accounts",
+ "kamu-adapter-http",
  "kamu-cli-e2e-common",
- "opendatafabric 0.222.0",
+ "kamu-node-e2e-common",
+ "opendatafabric",
  "paste",
  "pretty_assertions",
  "reqwest",
@@ -6563,9 +6732,9 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-sqlite"
-version = "0.53.1"
+version = "0.54.1"
 dependencies = [
- "database-common 0.222.0",
+ "database-common",
  "indoc 2.0.5",
  "kamu-node-e2e-common",
  "kamu-node-e2e-repo-tests",
@@ -6577,7 +6746,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-puppet"
-version = "0.53.1"
+version = "0.54.1"
 dependencies = [
  "assert_cmd",
  "async-trait",
@@ -6603,9 +6772,9 @@ dependencies = [
  "graceful-shutdown",
  "hex",
  "http 1.2.0",
- "internal-error 0.222.0",
- "observability 0.222.0",
- "opendatafabric 0.222.0",
+ "internal-error",
+ "observability",
+ "opendatafabric",
  "prometheus",
  "reqwest",
  "serde",
@@ -6636,38 +6805,18 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "chrono",
- "database-common 0.221.0",
- "enum-variants 0.221.0",
- "event-sourcing 0.221.0",
- "internal-error 0.221.0",
- "kamu-core 0.221.0",
- "messaging-outbox 0.221.0",
- "opendatafabric 0.221.0",
- "serde",
- "sqlx",
- "thiserror 2.0.11",
- "tokio-stream",
-]
-
-[[package]]
-name = "kamu-task-system"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-trait",
  "chrono",
- "database-common 0.222.0",
- "enum-variants 0.222.0",
- "event-sourcing 0.222.0",
- "internal-error 0.222.0",
- "kamu-core 0.222.0",
- "messaging-outbox 0.222.0",
- "opendatafabric 0.222.0",
+ "database-common",
+ "enum-variants",
+ "event-sourcing",
+ "internal-error",
+ "kamu-core",
+ "messaging-outbox",
+ "opendatafabric",
  "serde",
  "sqlx",
  "thiserror 2.0.11",
@@ -6680,11 +6829,11 @@ version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-trait",
- "database-common 0.222.0",
+ "database-common",
  "dill",
  "futures",
- "kamu-task-system 0.222.0",
- "opendatafabric 0.222.0",
+ "kamu-task-system",
+ "opendatafabric",
 ]
 
 [[package]]
@@ -6694,11 +6843,11 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7c
 dependencies = [
  "async-stream",
  "async-trait",
- "database-common 0.222.0",
+ "database-common",
  "dill",
  "futures",
- "kamu-task-system 0.222.0",
- "opendatafabric 0.222.0",
+ "kamu-task-system",
+ "opendatafabric",
  "serde_json",
  "sqlx",
 ]
@@ -6709,20 +6858,20 @@ version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-trait",
- "database-common 0.222.0",
- "database-common-macros 0.222.0",
+ "database-common",
+ "database-common-macros",
  "dill",
  "futures",
- "init-on-startup 0.222.0",
- "internal-error 0.222.0",
- "kamu-core 0.222.0",
- "kamu-datasets 0.222.0",
- "kamu-task-system 0.222.0",
- "messaging-outbox 0.222.0",
- "observability 0.222.0",
- "opendatafabric 0.222.0",
+ "init-on-startup",
+ "internal-error",
+ "kamu-core",
+ "kamu-datasets",
+ "kamu-task-system",
+ "messaging-outbox",
+ "observability",
+ "opendatafabric",
  "serde_json",
- "time-source 0.222.0",
+ "time-source",
  "tokio",
  "tracing",
 ]
@@ -6735,11 +6884,11 @@ dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
- "database-common 0.222.0",
+ "database-common",
  "dill",
  "futures",
- "kamu-task-system 0.222.0",
- "opendatafabric 0.222.0",
+ "kamu-task-system",
+ "opendatafabric",
  "serde_json",
  "sqlx",
 ]
@@ -7136,51 +7285,25 @@ dependencies = [
 
 [[package]]
 name = "messaging-outbox"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "chrono",
- "database-common 0.221.0",
- "database-common-macros 0.221.0",
- "dill",
- "futures",
- "init-on-startup 0.221.0",
- "internal-error 0.221.0",
- "itertools 0.14.0",
- "mockall",
- "observability 0.221.0",
- "prometheus",
- "serde",
- "serde_json",
- "thiserror 2.0.11",
- "time-source 0.221.0",
- "tokio",
- "tokio-stream",
- "tracing",
-]
-
-[[package]]
-name = "messaging-outbox"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-trait",
  "chrono",
- "database-common 0.222.0",
- "database-common-macros 0.222.0",
+ "database-common",
+ "database-common-macros",
  "dill",
  "futures",
- "init-on-startup 0.222.0",
- "internal-error 0.222.0",
+ "init-on-startup",
+ "internal-error",
  "itertools 0.14.0",
  "mockall",
- "observability 0.222.0",
+ "observability",
  "prometheus",
  "serde",
  "serde_json",
  "thiserror 2.0.11",
- "time-source 0.222.0",
+ "time-source",
  "tokio",
  "tokio-stream",
  "tracing",
@@ -7269,25 +7392,6 @@ dependencies = [
  "mime",
  "spin",
  "version_check",
-]
-
-[[package]]
-name = "multiformats"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "base64 0.22.1",
- "bs58",
- "digest 0.10.7",
- "ed25519-dalek",
- "hex",
- "rand",
- "serde",
- "serde_json",
- "sha3",
- "thiserror 2.0.11",
- "unsigned-varint",
- "utoipa",
 ]
 
 [[package]]
@@ -7525,25 +7629,6 @@ dependencies = [
 
 [[package]]
 name = "observability"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "axum",
- "dill",
- "http 1.2.0",
- "prometheus",
- "serde",
- "serde_json",
- "thiserror 2.0.11",
- "tower-http",
- "tracing",
- "tracing-appender",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "observability"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
@@ -7614,56 +7699,18 @@ checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
 
 [[package]]
 name = "opendatafabric"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "opendatafabric-data-utils 0.221.0",
- "opendatafabric-dataset 0.221.0",
- "opendatafabric-dataset-impl 0.221.0",
- "opendatafabric-metadata 0.221.0",
- "opendatafabric-storage 0.221.0",
- "opendatafabric-storage-http 0.221.0",
- "opendatafabric-storage-inmem 0.221.0",
- "opendatafabric-storage-lfs 0.221.0",
- "opendatafabric-storage-s3 0.221.0",
-]
-
-[[package]]
-name = "opendatafabric"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
- "opendatafabric-data-utils 0.222.0",
- "opendatafabric-dataset 0.222.0",
- "opendatafabric-dataset-impl 0.222.0",
- "opendatafabric-metadata 0.222.0",
- "opendatafabric-storage 0.222.0",
- "opendatafabric-storage-http 0.222.0",
- "opendatafabric-storage-inmem 0.222.0",
- "opendatafabric-storage-lfs 0.222.0",
- "opendatafabric-storage-s3 0.222.0",
-]
-
-[[package]]
-name = "opendatafabric-data-utils"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "arrow",
- "arrow-digest",
- "arrow-json",
- "async-trait",
- "datafusion",
- "digest 0.10.7",
- "hex",
- "opendatafabric-metadata 0.221.0",
- "pretty_assertions",
- "serde",
- "serde_json",
- "sha3",
- "thiserror 2.0.11",
- "tracing",
- "url",
+ "opendatafabric-data-utils",
+ "opendatafabric-dataset",
+ "opendatafabric-dataset-impl",
+ "opendatafabric-metadata",
+ "opendatafabric-storage",
+ "opendatafabric-storage-http",
+ "opendatafabric-storage-inmem",
+ "opendatafabric-storage-lfs",
+ "opendatafabric-storage-s3",
 ]
 
 [[package]]
@@ -7671,43 +7718,20 @@ name = "opendatafabric-data-utils"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
- "arrow",
+ "arrow 54.1.0",
  "arrow-digest",
- "arrow-json",
+ "arrow-json 54.1.0",
  "async-trait",
- "datafusion",
+ "datafusion 45.0.0",
  "digest 0.10.7",
  "hex",
- "opendatafabric-metadata 0.222.0",
+ "opendatafabric-metadata",
  "pretty_assertions",
  "serde",
  "serde_json",
  "sha3",
  "thiserror 2.0.11",
  "tracing",
- "url",
-]
-
-[[package]]
-name = "opendatafabric-dataset"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "chrono",
- "dill",
- "file-utils 0.221.0",
- "futures",
- "internal-error 0.221.0",
- "mockall",
- "opendatafabric-metadata 0.221.0",
- "opendatafabric-storage 0.221.0",
- "pin-project",
- "serde",
- "serde_with",
- "strum",
- "thiserror 2.0.11",
- "tokio-stream",
  "url",
 ]
 
@@ -7721,50 +7745,18 @@ dependencies = [
  "bytes",
  "chrono",
  "dill",
- "file-utils 0.222.0",
+ "file-utils",
  "futures",
- "internal-error 0.222.0",
+ "internal-error",
  "mockall",
- "opendatafabric-metadata 0.222.0",
- "opendatafabric-storage 0.222.0",
+ "opendatafabric-metadata",
+ "opendatafabric-storage",
  "pin-project",
  "serde",
  "serde_with",
  "strum",
  "thiserror 2.0.11",
  "tokio-stream",
- "url",
-]
-
-[[package]]
-name = "opendatafabric-dataset-impl"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-stream",
- "async-trait",
- "chrono",
- "dill",
- "file-utils 0.221.0",
- "hickory-resolver",
- "http 1.2.0",
- "internal-error 0.221.0",
- "mockall",
- "opendatafabric-data-utils 0.221.0",
- "opendatafabric-dataset 0.221.0",
- "opendatafabric-metadata 0.221.0",
- "opendatafabric-storage 0.221.0",
- "opendatafabric-storage-http 0.221.0",
- "opendatafabric-storage-lfs 0.221.0",
- "opendatafabric-storage-s3 0.221.0",
- "regex",
- "reqwest",
- "s3-utils 0.221.0",
- "serde_yaml",
- "thiserror 2.0.11",
- "tokio",
- "tokio-stream",
- "tracing",
  "url",
 ]
 
@@ -7778,21 +7770,21 @@ dependencies = [
  "bytes",
  "chrono",
  "dill",
- "file-utils 0.222.0",
+ "file-utils",
  "hickory-resolver",
  "http 1.2.0",
- "internal-error 0.222.0",
+ "internal-error",
  "mockall",
- "opendatafabric-data-utils 0.222.0",
- "opendatafabric-dataset 0.222.0",
- "opendatafabric-metadata 0.222.0",
- "opendatafabric-storage 0.222.0",
- "opendatafabric-storage-http 0.222.0",
- "opendatafabric-storage-lfs 0.222.0",
- "opendatafabric-storage-s3 0.222.0",
+ "opendatafabric-data-utils",
+ "opendatafabric-dataset",
+ "opendatafabric-metadata",
+ "opendatafabric-storage",
+ "opendatafabric-storage-http",
+ "opendatafabric-storage-lfs",
+ "opendatafabric-storage-s3",
  "regex",
  "reqwest",
- "s3-utils 0.222.0",
+ "s3-utils",
  "serde_yaml",
  "thiserror 2.0.11",
  "tokio",
@@ -7803,51 +7795,21 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-metadata"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "arrow",
- "base64 0.22.1",
- "bitflags 2.7.0",
- "chrono",
- "datafusion",
- "digest 0.10.7",
- "ed25519-dalek",
- "enum-variants 0.221.0",
- "flatbuffers",
- "internal-error 0.221.0",
- "like",
- "multiformats 0.221.0",
- "prost",
- "rand",
- "serde",
- "serde_json",
- "serde_with",
- "serde_yaml",
- "sha3",
- "thiserror 2.0.11",
- "tonic",
- "url",
- "utoipa",
-]
-
-[[package]]
-name = "opendatafabric-metadata"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
- "arrow",
+ "arrow 54.1.0",
  "base64 0.22.1",
  "bitflags 2.7.0",
  "chrono",
- "datafusion",
+ "datafusion 45.0.0",
  "digest 0.10.7",
  "ed25519-dalek",
- "enum-variants 0.222.0",
+ "enum-variants",
  "flatbuffers",
- "internal-error 0.222.0",
+ "internal-error",
  "like",
- "multiformats 0.222.0",
+ "multiformats",
  "prost",
  "rand",
  "serde",
@@ -7864,58 +7826,20 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-storage"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "async-utils 0.221.0",
- "bytes",
- "chrono",
- "dashmap",
- "http 1.2.0",
- "internal-error 0.221.0",
- "opendatafabric-metadata 0.221.0",
- "pretty_assertions",
- "random-names 0.221.0",
- "thiserror 2.0.11",
- "url",
-]
-
-[[package]]
-name = "opendatafabric-storage"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-trait",
- "async-utils 0.222.0",
+ "async-utils",
  "bytes",
  "chrono",
  "dashmap",
  "http 1.2.0",
- "internal-error 0.222.0",
- "opendatafabric-metadata 0.222.0",
+ "internal-error",
+ "opendatafabric-metadata",
  "pretty_assertions",
- "random-names 0.222.0",
+ "random-names",
  "thiserror 2.0.11",
- "url",
-]
-
-[[package]]
-name = "opendatafabric-storage-http"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "async-utils 0.221.0",
- "bytes",
- "futures",
- "http 1.2.0",
- "internal-error 0.221.0",
- "opendatafabric-metadata 0.221.0",
- "opendatafabric-storage 0.221.0",
- "reqwest",
- "tokio-util",
- "tracing",
  "url",
 ]
 
@@ -7925,13 +7849,13 @@ version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-trait",
- "async-utils 0.222.0",
+ "async-utils",
  "bytes",
  "futures",
  "http 1.2.0",
- "internal-error 0.222.0",
- "opendatafabric-metadata 0.222.0",
- "opendatafabric-storage 0.222.0",
+ "internal-error",
+ "opendatafabric-metadata",
+ "opendatafabric-storage",
  "reqwest",
  "tokio-util",
  "tracing",
@@ -7940,51 +7864,16 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-storage-inmem"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "async-utils 0.221.0",
- "bytes",
- "internal-error 0.221.0",
- "opendatafabric-metadata 0.221.0",
- "opendatafabric-storage 0.221.0",
- "sha3",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "opendatafabric-storage-inmem"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-trait",
- "async-utils 0.222.0",
+ "async-utils",
  "bytes",
- "internal-error 0.222.0",
- "opendatafabric-metadata 0.222.0",
- "opendatafabric-storage 0.222.0",
+ "internal-error",
+ "opendatafabric-metadata",
+ "opendatafabric-storage",
  "sha3",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "opendatafabric-storage-lfs"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "async-utils 0.221.0",
- "bytes",
- "digest 0.10.7",
- "internal-error 0.221.0",
- "opendatafabric-data-utils 0.221.0",
- "opendatafabric-metadata 0.221.0",
- "opendatafabric-storage 0.221.0",
- "sha3",
- "tokio",
  "tracing",
  "url",
 ]
@@ -7995,35 +7884,13 @@ version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-trait",
- "async-utils 0.222.0",
+ "async-utils",
  "bytes",
  "digest 0.10.7",
- "internal-error 0.222.0",
- "opendatafabric-data-utils 0.222.0",
- "opendatafabric-metadata 0.222.0",
- "opendatafabric-storage 0.222.0",
- "sha3",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "opendatafabric-storage-s3"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "async-utils 0.221.0",
- "aws-sdk-s3",
- "bytes",
- "chrono",
- "digest 0.10.7",
- "http 1.2.0",
- "internal-error 0.221.0",
- "opendatafabric-metadata 0.221.0",
- "opendatafabric-storage 0.221.0",
- "s3-utils 0.221.0",
+ "internal-error",
+ "opendatafabric-data-utils",
+ "opendatafabric-metadata",
+ "opendatafabric-storage",
  "sha3",
  "tokio",
  "tracing",
@@ -8036,16 +7903,16 @@ version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
  "async-trait",
- "async-utils 0.222.0",
+ "async-utils",
  "aws-sdk-s3",
  "bytes",
  "chrono",
  "digest 0.10.7",
  "http 1.2.0",
- "internal-error 0.222.0",
- "opendatafabric-metadata 0.222.0",
- "opendatafabric-storage 0.222.0",
- "s3-utils 0.222.0",
+ "internal-error",
+ "opendatafabric-metadata",
+ "opendatafabric-storage",
+ "s3-utils",
  "sha3",
  "tokio",
  "tracing",
@@ -8268,13 +8135,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8a01a0efa30bbd601ae85b375c728efdb211ade54390281628a7b16708beb235"
 dependencies = [
  "ahash",
- "arrow-array",
- "arrow-buffer",
- "arrow-cast",
- "arrow-data",
- "arrow-ipc",
- "arrow-schema",
- "arrow-select",
+ "arrow-array 54.1.0",
+ "arrow-buffer 54.1.0",
+ "arrow-cast 54.1.0",
+ "arrow-data 54.1.0",
+ "arrow-ipc 54.1.0",
+ "arrow-schema 54.1.0",
+ "arrow-select 54.1.0",
  "base64 0.22.1",
  "brotli",
  "bytes",
@@ -8709,16 +8576,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "prettyplease"
-version = "0.2.29"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6924ced06e1f7dfe3fa48d57b9f74f55d8915f5036121bef647ef4b204895fac"
-dependencies = [
- "proc-macro2",
- "syn 2.0.96",
-]
-
-[[package]]
 name = "primitive-types"
 version = "0.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -9057,14 +8914,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d25bf25ec5ae4a3f1b92f929810509a2f53d7dca2f50b794ff57e3face536c8f"
 dependencies = [
  "rand_core",
-]
-
-[[package]]
-name = "random-names"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "rand",
 ]
 
 [[package]]
@@ -9540,30 +9389,14 @@ checksum = "f3cb5ba0dc43242ce17de99c180e96db90b235b8a9fdc9543c96d2209116bd9f"
 
 [[package]]
 name = "s3-utils"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-utils 0.221.0",
- "aws-config",
- "aws-sdk-s3",
- "aws-smithy-types",
- "internal-error 0.221.0",
- "reqwest",
- "tokio-util",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "s3-utils"
 version = "0.223.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7cf87fda9ea28104e5dcea1fc4e"
 dependencies = [
- "async-utils 0.222.0",
+ "async-utils",
  "aws-config",
  "aws-sdk-s3",
  "aws-smithy-types",
- "internal-error 0.222.0",
+ "internal-error",
  "reqwest",
  "tokio-util",
  "tracing",
@@ -9996,7 +9829,7 @@ version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "03c3c6b7927ffe7ecaa769ee0e3994da3b8cafc8f444578982c83ecb161af917"
 dependencies = [
- "heck 0.4.1",
+ "heck 0.5.0",
  "proc-macro2",
  "quote",
  "syn 2.0.96",
@@ -10515,8 +10348,6 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.223.0#a6060e1a0a8aa7c
 dependencies = [
  "axum 0.8.1",
  "container-runtime",
- "axum",
- "container-runtime 0.222.0",
  "rand",
  "tempfile",
  "tokio",
@@ -10624,17 +10455,6 @@ checksum = "2834e6017e3e5e4b9834939793b282bc03b37a3336245fa820e35e233e2a85de"
 dependencies = [
  "num-conv",
  "time-core",
-]
-
-[[package]]
-name = "time-source"
-version = "0.221.0"
-source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.221.0#eb07ada18d785fc5e1975ec0d915aa9878ea3a0c"
-dependencies = [
- "async-trait",
- "chrono",
- "dill",
- "tokio",
 ]
 
 [[package]]
@@ -11563,7 +11383,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.48.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]

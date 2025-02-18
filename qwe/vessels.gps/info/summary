@@ -1,0 +1,17 @@
+kind: DatasetSummary
+version: 1
+content:
+  id: did:odf:fed0136770e57c624a204695ea4a27ca8b77e32eb4d37d07454a99a0c8f6463f97da6
+  kind: Derivative
+  lastBlockHash: f16209a51c8d6c13d4bae78630cd464a88a030ae1013c7bbbc90ed76074ab54ede7be
+  dependencies:
+  - did:odf:fed0106cbe0dac880953054bbeda2eb74be31963c18051adc8af957a45e90ef352910
+  - did:odf:fed01a8a902a24592a09a8228eca408fb83d67d4f6e70ba85193cbcecc9c9ac78420a
+  - did:odf:fed01f6afed7385d8933161a7c57a6852ee1e1921668b2246aeea330fc9068ac678d1
+  - did:odf:fed01325c5b34ef7c0a82328d1c0a93f9e83c442fb2df28e2754e7a53b9dcfd145c7b
+  - did:odf:fed018e4d375c6653b9254b041ef78e2590136ed64a4c451391388d01ec5e3ce1212e
+  - did:odf:fed011c6512127901be9daf91151887a1c72a424c51a1f45a3203320a3e8d1429b6ac
+  lastPulled: 2024-01-17T22:56:23.716417240Z
+  numRecords: 4646
+  dataSize: 148978
+  checkpointsSize: 0

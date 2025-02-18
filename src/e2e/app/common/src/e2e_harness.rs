@@ -15,7 +15,7 @@ use kamu_node_puppet::{KamuNodePuppet, NewWorkspaceOptions};
 use regex::Regex;
 use sqlx::{PgPool, SqlitePool};
 
-use crate::api_server_e2e_test;
+use crate::{api_flight_sql_e2e_test, api_server_e2e_test, KamuFlightSQLClient};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -116,9 +116,24 @@ impl KamuNodeApiServerHarness {
         let kamu = self.into_kamu();
 
         let e2e_data_file_path = kamu.get_e2e_output_data_path();
+        let workspace_path = kamu.workspace_path().to_path_buf();
         let server_run_fut = kamu.start_api_server(e2e_data_file_path.clone());
 
-        api_server_e2e_test(e2e_data_file_path, server_run_fut, fixture).await;
+        api_server_e2e_test(e2e_data_file_path, workspace_path, server_run_fut, fixture).await;
+    }
+
+    pub async fn run_flight_sql_server<Fixture, FixtureResult>(self, fixture: Fixture)
+    where
+        Fixture: FnOnce(KamuFlightSQLClient) -> FixtureResult,
+        FixtureResult: Future<Output = ()> + Send + 'static,
+    {
+        let kamu = self.into_kamu();
+
+        let e2e_data_file_path = kamu.get_e2e_output_data_path();
+        let workspace_path = kamu.workspace_path().to_path_buf();
+        let server_run_fut = kamu.start_api_server(e2e_data_file_path.clone());
+
+        api_flight_sql_e2e_test(e2e_data_file_path, workspace_path, server_run_fut, fixture).await;
     }
 
     pub async fn execute_command<Fixture, FixtureResult>(self, fixture: Fixture)
