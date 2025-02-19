@@ -1,5 +1,5 @@
 repo:
-  repoUrl: qwe/
+  repoUrl: file:///opt/kamu/workspace/.kamu/datasets
 datasetEnvVars:
   enabled: true
   encryptionKey: i6boyWa8hYAuO5Fb2h64cOVy9eEusEkt

@@ -36,16 +36,16 @@ pub enum ExpectedResponseBody {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[async_trait]
-pub trait KamuApiServerClientExt {
+pub trait KamuFlightSQLClientExt {
     async fn flight_sql_client(&self, base_url: Url) -> KamuFlightSQLClient;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[async_trait]
-impl KamuApiServerClientExt for KamuApiServerClient {
+impl KamuFlightSQLClientExt for KamuApiServerClient {
     async fn flight_sql_client(&self, base_url: Url) -> KamuFlightSQLClient {
-        KamuFlightSQLClient::new(base_url).await
+        KamuFlightSQLClient::new(self.clone(), base_url).await
     }
 }
 
@@ -55,10 +55,11 @@ impl KamuApiServerClientExt for KamuApiServerClient {
 pub struct KamuFlightSQLClient {
     flight_sql_client: FlightSqlServiceClient<Channel>,
     server_base_url: Url,
+    kamu_api_client: KamuApiServerClient,
 }
 
 impl KamuFlightSQLClient {
-    pub async fn new(server_base_url: Url) -> Self {
+    pub async fn new(kamu_api_client: KamuApiServerClient, server_base_url: Url) -> Self {
         let channel_url = server_base_url.to_string();
         let channel = Channel::from_shared(channel_url)
             .unwrap()
@@ -70,6 +71,7 @@ impl KamuFlightSQLClient {
         Self {
             flight_sql_client,
             server_base_url,
+            kamu_api_client,
         }
     }
 
@@ -84,6 +86,10 @@ impl KamuFlightSQLClient {
             .unwrap();
     }
 
+    pub fn kamu_api_client(&mut self) -> &mut KamuApiServerClient {
+        &mut self.kamu_api_client
+    }
+
     pub fn get_base_url(&self) -> &Url {
         &self.server_base_url
     }
@@ -92,6 +98,7 @@ impl KamuFlightSQLClient {
         &mut self,
         query: &str,
         expected_schema_maybe: Option<&str>,
+        expected_data_maybe: Option<&str>,
     ) {
         let fi = self
             .flight_sql_client
@@ -113,6 +120,9 @@ impl KamuFlightSQLClient {
 
         if let Some(expected_schema) = expected_schema_maybe {
             odf::utils::testing::assert_schema_eq(df.schema(), expected_schema);
+        }
+        if let Some(expected_data) = expected_data_maybe {
+            odf::utils::testing::assert_data_eq(df, expected_data).await;
         }
     }
 }

@@ -17,7 +17,7 @@ use reqwest::Url;
 use tokio_retry::strategy::FixedInterval;
 use tokio_retry::Retry;
 
-use crate::{KamuApiServerClientExt, KamuFlightSQLClient};
+use crate::{KamuFlightSQLClient, KamuFlightSQLClientExt};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

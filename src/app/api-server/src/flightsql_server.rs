@@ -50,8 +50,6 @@ impl FlightSqlServer {
                 .expect("Failed to open file");
 
             writeln!(file, "\n{}", base_url).expect("Failed to write to file");
-            // std::fs::write(path, format!("\n{}",
-            // base_url.to_string())).unwrap();
         };
 
         Self { catalog, listener }
