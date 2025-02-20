@@ -449,6 +449,7 @@ pub async fn init_dependencies(
 
     kamu_adapter_auth_oso_rebac::register_dependencies(&mut b);
 
+    b.add::<kamu_auth_rebac_services::RebacDatasetLifecycleMessageConsumer>();
     b.add::<kamu_auth_rebac_services::RebacIndexer>();
 
     b.add::<odf::dataset::DummyOdfServerAccessTokenResolver>();
@@ -466,8 +467,6 @@ pub async fn init_dependencies(
             need_to_add_default_predefined_accounts_config = false;
         }
         TenancyConfig::MultiTenant => {
-            b.add::<kamu_auth_rebac_services::MultiTenantRebacDatasetLifecycleMessageConsumer>();
-
             for provider in config.auth.providers {
                 match provider {
                     AuthProviderConfig::Github(github_config) => {

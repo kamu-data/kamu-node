@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## Unreleased
+### Fixed
+- OData API: fixed crash when accessing private dataset ([kamu CLI `0.225.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.225.0))
+
 ## [0.54.2] - 2025-02-20
 ### Fixed
 - Restoring OData API tolerance to trailing slashes (kamu CLI `0.223.1`)
