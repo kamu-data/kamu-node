@@ -3693,7 +3693,7 @@ dependencies = [
 
 [[package]]
 name = "email-gateway"
-version = "0.54.2"
+version = "0.54.3"
 dependencies = [
  "async-trait",
  "dill",
@@ -4210,7 +4210,7 @@ checksum = "a8d1add55171497b4705a648c6b583acafb01d58050a51727785f0b2c8e0a2b2"
 
 [[package]]
 name = "graceful-shutdown"
-version = "0.54.2"
+version = "0.54.3"
 dependencies = [
  "tokio",
  "tracing",
@@ -5495,7 +5495,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-api-server"
-version = "0.54.2"
+version = "0.54.3"
 dependencies = [
  "arrow-flight",
  "askama",
@@ -5968,7 +5968,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-oracle-provider"
-version = "0.54.2"
+version = "0.54.3"
 dependencies = [
  "alloy",
  "async-trait",
@@ -6000,7 +6000,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-repo-tools"
-version = "0.54.2"
+version = "0.54.3"
 dependencies = [
  "chrono",
  "clap",
