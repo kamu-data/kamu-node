@@ -5996,6 +5996,7 @@ dependencies = [
  "grep-regex",
  "grep-searcher",
  "indoc 2.0.5",
+ "pretty_assertions",
  "regex",
  "semver 1.0.24",
  "toml",
