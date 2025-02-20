@@ -49,11 +49,10 @@ pub async fn test_flight_sql_anonymous(mut kamu_flight_sql_client: KamuFlightSQL
 
     kamu_flight_sql_client
         .flight_sql_assert_call(
-            "select offset, op, match_time, match_id, player_id, score from 'kamu/player-scores'",
+            "select op, match_time, match_id, player_id, score from 'kamu/player-scores'",
             Some(indoc!(
                 "
         message arrow_schema {
-          REQUIRED INT64 offset;
           REQUIRED INT32 op;
           OPTIONAL INT64 match_time (TIMESTAMP(MILLIS,true));
           OPTIONAL INT64 match_id;
@@ -64,12 +63,12 @@ pub async fn test_flight_sql_anonymous(mut kamu_flight_sql_client: KamuFlightSQL
             )),
             Some(indoc!(
                 "
-                +--------+----+----------------------+----------+-----------+-------+
-                | offset | op | match_time           | match_id | player_id | score |
-                +--------+----+----------------------+----------+-----------+-------+
-                | 0      | 0  | 2000-01-01T00:00:00Z | 1        | Alice     | 100   |
-                | 1      | 0  | 2000-01-01T00:00:00Z | 1        | Bob       | 80    |
-                +--------+----+----------------------+----------+-----------+-------+
+                +----+----------------------+----------+-----------+-------+
+                | op | match_time           | match_id | player_id | score |
+                +----+----------------------+----------+-----------+-------+
+                | 0  | 2000-01-01T00:00:00Z | 1        | Alice     | 100   |
+                | 0  | 2000-01-01T00:00:00Z | 1        | Bob       | 80    |
+                +----+----------------------+----------+-----------+-------+
                 "
             )),
         )
@@ -94,11 +93,10 @@ pub async fn test_flight_sql(mut kamu_flight_sql_client: KamuFlightSQLClient) {
 
     kamu_flight_sql_client
         .flight_sql_assert_call(
-            "select offset, op, match_time, match_id, player_id, score from 'kamu/player-scores'",
+            "select op, match_time, match_id, player_id, score from 'kamu/player-scores'",
             Some(indoc!(
                 "
         message arrow_schema {
-          REQUIRED INT64 offset;
           REQUIRED INT32 op;
           OPTIONAL INT64 match_time (TIMESTAMP(MILLIS,true));
           OPTIONAL INT64 match_id;
@@ -109,12 +107,12 @@ pub async fn test_flight_sql(mut kamu_flight_sql_client: KamuFlightSQLClient) {
             )),
             Some(indoc!(
                 "
-                +--------+----+----------------------+----------+-----------+-------+
-                | offset | op | match_time           | match_id | player_id | score |
-                +--------+----+----------------------+----------+-----------+-------+
-                | 0      | 0  | 2000-01-01T00:00:00Z | 1        | Alice     | 100   |
-                | 1      | 0  | 2000-01-01T00:00:00Z | 1        | Bob       | 80    |
-                +--------+----+----------------------+----------+-----------+-------+
+                +----+----------------------+----------+-----------+-------+
+                | op | match_time           | match_id | player_id | score |
+                +----+----------------------+----------+-----------+-------+
+                | 0  | 2000-01-01T00:00:00Z | 1        | Alice     | 100   |
+                | 0  | 2000-01-01T00:00:00Z | 1        | Bob       | 80    |
+                +----+----------------------+----------+-----------+-------+
                 "
             )),
         )

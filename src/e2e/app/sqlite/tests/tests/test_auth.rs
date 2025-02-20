@@ -13,35 +13,35 @@ use kamu_node_e2e_common::prelude::*;
 
 kamu_node_run_api_server_e2e_test!(
     storage = sqlite,
-    fixture = kamu_node_e2e_repo_tests::test_login_enabled_methods
+    fixture = kamu_cli_e2e_repo_tests::rest_api::test_login_enabled_methods,
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 kamu_node_run_api_server_e2e_test!(
     storage = sqlite,
-    fixture = kamu_node_e2e_repo_tests::test_kamu_access_token_middleware,
+    fixture = kamu_cli_e2e_repo_tests::rest_api::test_kamu_access_token_middleware,
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 kamu_node_run_api_server_e2e_test!(
     storage = sqlite,
-    fixture = kamu_node_e2e_repo_tests::test_token_validate,
+    fixture = kamu_cli_e2e_repo_tests::rest_api::test_token_validate,
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 kamu_node_run_api_server_e2e_test!(
     storage = sqlite,
-    fixture = kamu_node_e2e_repo_tests::test_login_via_rest_password,
+    fixture = kamu_cli_e2e_repo_tests::rest_api::test_login_via_rest_password,
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 kamu_node_run_api_server_e2e_test!(
     storage = sqlite,
-    fixture = kamu_node_e2e_repo_tests::test_login_via_rest_unauthorized,
+    fixture = kamu_cli_e2e_repo_tests::rest_api::test_login_via_rest_unauthorized,
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -22,6 +22,7 @@ doctest = false
 
 
 [features]
+default = []
 extensions = [
     # External
     "dep:async-trait",

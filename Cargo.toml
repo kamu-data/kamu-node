@@ -19,6 +19,10 @@ resolver = "2"
 
 
 [workspace.dependencies]
+
+# Apps
+kamu-api-server = { path = "src/app/api-server", version = "0.54.1", default-features = false }
+
 # Utils
 email-gateway = { path = "src/utils/email-gateway", version = "0.54.1", default-features = false, features = ["postmark"] }
 graceful-shutdown = { path = "src/utils/graceful-shutdown", version = "0.54.1", default-features = false }
@@ -80,6 +84,7 @@ kamu-task-system-sqlite = { git = "https://github.com/kamu-data/kamu-cli", tag =
 
 #E2E
 kamu-cli-e2e-common = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.223.0", version = "0.223.0", default-features = false }
+kamu-cli-e2e-repo-tests = { git = "https://github.com/kamu-data/kamu-cli", tag = "v0.223.0", version = "0.223.0", default-features = false }
 
 # Workspace E2E
 kamu-node-e2e-common = { path = "src/e2e/app/common", version = "0.54.1", default-features = false }

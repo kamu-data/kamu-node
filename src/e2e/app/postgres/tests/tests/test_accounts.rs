@@ -13,14 +13,14 @@ use kamu_node_e2e_common::prelude::*;
 
 kamu_node_run_api_server_e2e_test!(
     storage = postgres,
-    fixture = kamu_node_e2e_repo_tests::test_accounts_me_kamu_user,
+    fixture = kamu_cli_e2e_repo_tests::rest_api::test_accounts_me_kamu_user,
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 kamu_node_run_api_server_e2e_test!(
     storage = postgres,
-    fixture = kamu_node_e2e_repo_tests::test_accounts_me_unauthorized,
+    fixture = kamu_cli_e2e_repo_tests::rest_api::test_accounts_me_unauthorized,
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
