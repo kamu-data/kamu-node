@@ -16,9 +16,10 @@ path = "src/release.rs"
 
 
 [dependencies]
-clap = { version = "4", default-features = false, features = ["std"] }
 chrono = { version = "0.4", default-features = false, features = ["std", "clock"] }
+clap = { version = "4", default-features = false, features = ["std"] }
 glob = { version = "0.3", default-features = false }
+pretty_assertions = { version = "1" }
 regex = { version = "1", default-features = false, features = ["std", "unicode"] }
 semver = { version = "1", default-features = false }
 toml = { version = "0.8", default-features = false, features = ["parse"] }

@@ -113,7 +113,7 @@ fn update_license(
 ) {
     let text = std::fs::read_to_string(license_path).expect("Could not read the license file");
     let new_text = update_license_text(&text, current_version, new_version, current_date);
-    assert_ne!(text, new_text);
+    pretty_assertions::assert_ne!(text, new_text);
     std::fs::write(license_path, new_text).expect("Failed to write to license file");
 }
 
@@ -127,7 +127,7 @@ fn update_openapi_schema(path: &Path, new_version: &Version) {
         })
         .to_string();
 
-    assert_ne!(text, new_text);
+    pretty_assertions::assert_ne!(text, new_text);
     std::fs::write(path, new_text).expect("Failed to write to schema file");
 }
 
@@ -159,14 +159,16 @@ fn update_license_text(
 fn update_changelog(path: &Path, new_version: &Version, current_date: NaiveDate) {
     let text = std::fs::read_to_string(path).expect("Could not read the changelog file");
 
-    let re = regex::Regex::new(r#"## +\[?Unreleased\]? *"#).unwrap();
+    let re = regex::Regex::new(r#"(?m)^## +\[?Unreleased\]? *"#).unwrap();
     let new_text = re
         .replace(&text, |_: &Captures| {
             format!("## [{new_version}] - {current_date}")
         })
         .to_string();
 
-    assert_ne!(text, new_text, "Unreleased changes section not found");
+    // The usage of assert!() instead of assert_ne!() is intentional:
+    // we don't want to output both [large] files
+    assert!({ text != new_text }, "Unreleased changes section not found");
 
     std::fs::write(path, new_text).expect("Failed to write to changelog file");
 }
@@ -214,7 +216,7 @@ mod tests {
             NaiveDate::from_str("2021-09-01").unwrap(),
         );
 
-        assert_eq!(
+        pretty_assertions::assert_eq!(
             new_text,
             indoc::indoc!(
                 r#"
@@ -253,7 +255,7 @@ mod tests {
             NaiveDate::from_str("2021-09-01").unwrap(),
         );
 
-        assert_eq!(
+        pretty_assertions::assert_eq!(
             new_text,
             indoc::indoc!(
                 r#"
