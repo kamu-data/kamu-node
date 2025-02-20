@@ -32,7 +32,7 @@ pub async fn api_server_e2e_test<ServerRunFut, Fixture, FixtureFut>(
     FixtureFut: Future<Output = ()> + Send + 'static,
 {
     let test_fut = async move {
-        let base_url = get_server_api_base_url(e2e_data_file_path).await?;
+        let (base_url, _) = get_server_base_urls(e2e_data_file_path).await?;
         let kamu_api_server_client = KamuApiServerClient::new(base_url, workspace_path);
 
         kamu_api_server_client.e2e().ready().await?;
@@ -77,9 +77,9 @@ pub async fn api_flight_sql_e2e_test<ServerRunFut, Fixture, FixtureFut>(
     FixtureFut: Future<Output = ()> + Send + 'static,
 {
     let test_fut = async move {
-        let base_url = get_server_api_base_url(e2e_data_file_path.clone()).await?;
-        let kamu_api_server_client = KamuApiServerClient::new(base_url, workspace_path);
-        let flight_sql_base_url = get_server_flight_sql_base_url(e2e_data_file_path).await?;
+        let (api_server_base_url, flight_sql_base_url) =
+            get_server_base_urls(e2e_data_file_path.clone()).await?;
+        let kamu_api_server_client = KamuApiServerClient::new(api_server_base_url, workspace_path);
 
         let kamu_flight_sql_server_client = kamu_api_server_client
             .flight_sql_client(flight_sql_base_url)
@@ -116,34 +116,26 @@ pub async fn api_flight_sql_e2e_test<ServerRunFut, Fixture, FixtureFut>(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-async fn get_server_api_base_url(e2e_data_file_path: PathBuf) -> Result<Url, InternalError> {
+/// Function returns a tuple of API server base URL and Flight SQL server base
+/// URL which are stored in a file at `e2e-output-data-path`.
+/// First line is API server base URL, second line is Flight SQL server base
+/// URL.
+async fn get_server_base_urls(e2e_data_file_path: PathBuf) -> Result<(Url, Url), InternalError> {
     let retry_strategy = FixedInterval::from_millis(500).take(10);
-    let base_url = Retry::spawn(retry_strategy, || async {
+    let base_urls = Retry::spawn(retry_strategy, || async {
         let data = tokio::fs::read_to_string(e2e_data_file_path.clone())
             .await
             .int_err()?;
+        let (api_server_base_url, flight_sql_base_url) = data.as_str().split_once('\n').unwrap();
 
-        Url::parse(data.as_str().split_once('\n').unwrap().0).int_err()
+        Ok((
+            Url::parse(api_server_base_url).unwrap(),
+            Url::parse(flight_sql_base_url).unwrap(),
+        ))
     })
     .await?;
 
-    Ok(base_url)
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-async fn get_server_flight_sql_base_url(e2e_data_file_path: PathBuf) -> Result<Url, InternalError> {
-    let retry_strategy = FixedInterval::from_millis(500).take(10);
-    let base_url = Retry::spawn(retry_strategy, || async {
-        let data = tokio::fs::read_to_string(e2e_data_file_path.clone())
-            .await
-            .int_err()?;
-
-        Url::parse(data.as_str().split_once('\n').unwrap().1).int_err()
-    })
-    .await?;
-
-    Ok(base_url)
+    Ok(base_urls)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

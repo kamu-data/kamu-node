@@ -100,7 +100,7 @@ impl KamuFlightSQLClient {
         expected_schema_maybe: Option<&str>,
         expected_data_maybe: Option<&str>,
     ) {
-        let fi = self
+        let flight_info = self
             .flight_sql_client
             .execute(query.to_owned(), None)
             .await
@@ -108,7 +108,7 @@ impl KamuFlightSQLClient {
 
         let mut record_batches: Vec<_> = self
             .flight_sql_client
-            .do_get(fi.endpoint[0].ticket.clone().unwrap())
+            .do_get(flight_info.endpoint[0].ticket.clone().unwrap())
             .await
             .unwrap()
             .try_collect()

@@ -38,8 +38,8 @@ impl KamuNodePuppet {
     pub fn new_workspace_tmp_with(options: NewWorkspaceOptions) -> Self {
         let temp_dir = tempfile::tempdir().unwrap();
 
-        if let Some(mut config) = options.kamu_config {
-            let dataset_path = temp_dir.path().join("datasets");
+        if let Some(mut config) = options.kamu_api_server_config {
+            let repo_path = temp_dir.path().join("datasets");
             config.push_str(&indoc::formatdoc!(
                 r#"
                 repo:
@@ -51,9 +51,9 @@ impl KamuNodePuppet {
                             - accountName: kamu
                               email: kamu@example.com
                 "#,
-                path = dataset_path.display()
+                path = repo_path.display()
             ));
-            fs::create_dir(dataset_path).unwrap();
+            fs::create_dir(repo_path).unwrap();
             fs::write(temp_dir.path().join("config.yaml"), config).unwrap();
         }
 
@@ -85,41 +85,17 @@ impl KamuNodePuppet {
         I: IntoIterator<Item = S>,
         S: AsRef<ffi::OsStr>,
     {
-        self.execute_impl(cmd, None::<Vec<u8>>, None).await
+        self.execute_impl(cmd, None).await
     }
 
-    pub async fn execute_with_input<I, S, T>(&self, cmd: I, input: T) -> ExecuteCommandResult
-    where
-        I: IntoIterator<Item = S>,
-        S: AsRef<ffi::OsStr>,
-        T: Into<Vec<u8>>,
-    {
-        self.execute_impl(cmd, Some(input), None).await
-    }
-
-    pub async fn execute_with_env<I, S>(
+    async fn execute_impl<I, S>(
         &self,
         cmd: I,
-        env_vars: Vec<(&ffi::OsStr, &ffi::OsStr)>,
-    ) -> ExecuteCommandResult
-    where
-        I: IntoIterator<Item = S>,
-        S: AsRef<ffi::OsStr>,
-    {
-        self.execute_impl(cmd, None::<Vec<u8>>, Some(env_vars))
-            .await
-    }
-
-    async fn execute_impl<I, S, T>(
-        &self,
-        cmd: I,
-        maybe_input: Option<T>,
         maybe_env: Option<Vec<(&ffi::OsStr, &ffi::OsStr)>>,
     ) -> ExecuteCommandResult
     where
         I: IntoIterator<Item = S>,
         S: AsRef<ffi::OsStr>,
-        T: Into<Vec<u8>>,
     {
         let mut command = assert_cmd::Command::cargo_bin("kamu-api-server").unwrap();
 
@@ -133,10 +109,6 @@ impl KamuNodePuppet {
         command.current_dir(self.workspace_path.clone());
         command.args(cmd);
 
-        if let Some(input) = maybe_input {
-            command.write_stdin(input);
-        }
-
         tokio::task::spawn_blocking(move || command.assert())
             .await
             .unwrap()
@@ -147,8 +119,8 @@ impl KamuNodePuppet {
 
 #[derive(Default)]
 pub struct NewWorkspaceOptions {
-    pub dataset_path: Option<PathBuf>,
-    pub kamu_config: Option<String>,
+    pub repo_path: Option<PathBuf>,
+    pub kamu_api_server_config: Option<String>,
     pub env_vars: Vec<(String, String)>,
 }
 

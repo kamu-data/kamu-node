@@ -201,16 +201,17 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
 
             let server_run_fut: Pin<Box<dyn Future<Output = _>>> =
                 if let Some(shutdown_notify) = maybe_shutdown_notify {
-                    Box::pin(async move {
-                        let server_with_graceful_shutdown =
-                            http_server.with_graceful_shutdown(async move {
-                                tokio::select! {
-                                    _ = shutdown_requested => {}
-                                    _ = shutdown_notify.notified() => {}
-                                }
-                            });
+                    let server_with_graceful_shutdown = async move {
+                        tokio::select! {
+                            _ = shutdown_requested => {}
+                            _ = shutdown_notify.notified() => {}
+                        }
+                    };
 
-                        server_with_graceful_shutdown.await
+                    Box::pin(async move {
+                        http_server
+                            .with_graceful_shutdown(server_with_graceful_shutdown)
+                            .await
                     })
                 } else {
                     Box::pin(http_server.into_future())

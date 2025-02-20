@@ -22,12 +22,12 @@ use crate::{api_flight_sql_e2e_test, api_server_e2e_test, KamuFlightSQLClient};
 #[derive(Default)]
 pub struct KamuNodeApiServerHarnessOptions {
     env_vars: Vec<(String, String)>,
-    kamu_config: Option<String>,
+    kamu_api_server_config: Option<String>,
 }
 
 impl KamuNodeApiServerHarnessOptions {
     pub fn with_kamu_config(mut self, content: &str) -> Self {
-        self.kamu_config = Some(content.into());
+        self.kamu_api_server_config = Some(content.into());
 
         self
     }
@@ -99,10 +99,10 @@ impl KamuNodeApiServerHarness {
         let target_config =
             generated_kamu_config.map(|target| serde_yaml::from_str(&target).unwrap());
         let source_config = options
-            .kamu_config
+            .kamu_api_server_config
             .map(|source| serde_yaml::from_str(&source).unwrap());
 
-        options.kamu_config = merge_yaml(target_config, source_config)
+        options.kamu_api_server_config = merge_yaml(target_config, source_config)
             .map(|yaml| serde_yaml::to_string(&yaml).unwrap());
 
         Self { options }
@@ -113,11 +113,11 @@ impl KamuNodeApiServerHarness {
         Fixture: FnOnce(KamuApiServerClient) -> FixtureResult,
         FixtureResult: Future<Output = ()> + Send + 'static,
     {
-        let kamu = self.into_kamu();
+        let kamu_api_server = self.into_kamu_api_server();
 
-        let e2e_data_file_path = kamu.get_e2e_output_data_path();
-        let workspace_path = kamu.workspace_path().to_path_buf();
-        let server_run_fut = kamu.start_api_server(e2e_data_file_path.clone());
+        let e2e_data_file_path = kamu_api_server.get_e2e_output_data_path();
+        let workspace_path = kamu_api_server.workspace_path().to_path_buf();
+        let server_run_fut = kamu_api_server.start_api_server(e2e_data_file_path.clone());
 
         api_server_e2e_test(e2e_data_file_path, workspace_path, server_run_fut, fixture).await;
     }
@@ -127,11 +127,11 @@ impl KamuNodeApiServerHarness {
         Fixture: FnOnce(KamuFlightSQLClient) -> FixtureResult,
         FixtureResult: Future<Output = ()> + Send + 'static,
     {
-        let kamu = self.into_kamu();
+        let kamu_api_server = self.into_kamu_api_server();
 
-        let e2e_data_file_path = kamu.get_e2e_output_data_path();
-        let workspace_path = kamu.workspace_path().to_path_buf();
-        let server_run_fut = kamu.start_api_server(e2e_data_file_path.clone());
+        let e2e_data_file_path = kamu_api_server.get_e2e_output_data_path();
+        let workspace_path = kamu_api_server.workspace_path().to_path_buf();
+        let server_run_fut = kamu_api_server.start_api_server(e2e_data_file_path.clone());
 
         api_flight_sql_e2e_test(e2e_data_file_path, workspace_path, server_run_fut, fixture).await;
     }
@@ -141,22 +141,22 @@ impl KamuNodeApiServerHarness {
         Fixture: FnOnce(KamuNodePuppet) -> FixtureResult,
         FixtureResult: Future<Output = ()>,
     {
-        let kamu = self.into_kamu();
+        let kamu_api_server = self.into_kamu_api_server();
 
-        fixture(kamu).await;
+        fixture(kamu_api_server).await;
     }
 
-    fn into_kamu(self) -> KamuNodePuppet {
+    fn into_kamu_api_server(self) -> KamuNodePuppet {
         let KamuNodeApiServerHarnessOptions {
             env_vars,
-            kamu_config,
+            kamu_api_server_config,
             ..
         } = self.options;
 
         KamuNodePuppet::new_workspace_tmp_with(NewWorkspaceOptions {
-            kamu_config,
+            kamu_api_server_config,
             env_vars,
-            dataset_path: None,
+            repo_path: None,
         })
     }
 }

@@ -87,19 +87,19 @@ jobs:
           forge build
 
       - name: Run main set of tests
-        run: cargo nextest run ${{ env.NEXTEST_FLAGS }} -E '!(test(::database::) | test(::spark::)| test(::flink::))'
+        run: cargo nextest run ${{ env.NEXTEST_FLAGS }} -E '!(test(::database::) | test(::spark::) | test(::flink::))'
 
       - name: SQLite database tests
         env:
           SQLX_OFFLINE: false
           DATABASE_URL: sqlite://kamu.sqlite.db
-        run: cargo nextest run ${{ env.NEXTEST_FLAGS }} -E 'platform(target) & test(::sqlite::)'
+        run: cargo nextest run ${{ env.NEXTEST_FLAGS }} -E 'test(::sqlite::)'
 
       - name: Postgres database tests
         env:
           SQLX_OFFLINE: false
           DATABASE_URL: postgres://root:root@localhost:5432/kamu-test
-        run: cargo nextest run ${{ env.NEXTEST_FLAGS }} -E 'platform(target) & test(::postgres::)'
+        run: cargo nextest run ${{ env.NEXTEST_FLAGS }} -E 'test(::postgres::)'
 
       - name: Check git diff
         run: git diff && git diff-index --quiet HEAD

@@ -60,5 +60,3 @@ pub async fn test_datasets_by_id(mut kamu_api_server_client: KamuApiServerClient
                 && dataset_name == odf::DatasetName::new_unchecked("player-scores")
     );
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

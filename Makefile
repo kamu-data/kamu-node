@@ -49,6 +49,7 @@ sqlx-local-setup: sqlx-local-setup-postgres sqlx-local-setup-sqlite
 sqlx-local-setup-postgres:
 	$(KAMU_CONTAINER_RUNTIME_TYPE) pull postgres:latest
 	$(KAMU_CONTAINER_RUNTIME_TYPE) stop kamu-node-postgres || true && $(KAMU_CONTAINER_RUNTIME_TYPE) rm kamu-node-postgres || true
+	# Expose port 5433 to avoid conflicts with kamu-cli postgres container
 	$(KAMU_CONTAINER_RUNTIME_TYPE) run --name kamu-node-postgres -p 5433:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=root -d postgres:latest
 	$(foreach crate,$(POSTGRES_CRATES),$(call Setup_EnvFile,postgres,5433,$(crate)))
 	sleep 3  # Letting the container to start
@@ -88,6 +89,10 @@ test-full:
 .PHONY: test-e2e
 test-e2e:
 	$(TEST_LOG_PARAMS) cargo nextest run -E 'test(::e2e::)'
+
+.PHONY: test-oracle
+test-oracle:
+	$(TEST_LOG_PARAMS) cargo nextest run -E 'test(::oracle::)'
 
 .PHONY: test-database
 test-database:
