@@ -1,6 +1,5 @@
 IMAGE_REPO = ghcr.io/kamu-data
-KAMU_VERSION = 0.223.0
-# KAMU_VERSION = $(shell cargo metadata --format-version 1 | jq -r '.packages[] | select( .name == "kamu-core") | .version')
+KAMU_VERSION = $(shell cargo metadata --format-version 1 | jq -r '.packages[] | select( .name == "kamu-core") | .version')
 NODE_VERSION = $(shell cargo metadata --format-version 1 | jq -r '.packages[] | select( .name == "kamu-api-server") | .version')
 
 
