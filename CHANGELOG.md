@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.54.2] - 2025-02-20
+### Fixed
+- Restoring OData API tolerance to trailing slashes (kamu CLI `0.223.1`)
+
 ## [0.54.1] - 2025-02-14
 ### Fixed
 - Added access token notifier registration
