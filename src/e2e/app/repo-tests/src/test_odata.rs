@@ -28,7 +28,7 @@ pub async fn test_odata_service_handler(mut kamu_api_server_client: KamuApiServe
         indoc::indoc!(
             r#"
         <?xml version="1.0" encoding="utf-8"?>
-        <service xml:base="http://localhost:8080/odata"
+        <service xml:base="<base_url>odata"
          xmlns="http://www.w3.org/2007/app"
          xmlns:atom="http://www.w3.org/2005/Atom">
         <workspace>
@@ -40,8 +40,8 @@ pub async fn test_odata_service_handler(mut kamu_api_server_client: KamuApiServe
         </service>
         "#
         )
-        .replace('\n', "") /* .replace("<base_url>",
-                            * kamu_api_server_client.get_base_url().as_str()) */
+        .replace('\n', "")
+        .replace("<base_url>", kamu_api_server_client.get_base_url().as_str())
     );
 }
 

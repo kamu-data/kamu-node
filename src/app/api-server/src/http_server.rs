@@ -12,10 +12,11 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use database_common_macros::transactional_handler;
+use dill::CatalogBuilder;
 use http_common::ApiError;
 use indoc::indoc;
 use internal_error::{InternalError, ResultIntoInternal};
-use kamu::domain::TenancyConfig;
+use kamu::domain::{Protocols, ServerUrlConfig, TenancyConfig};
 use kamu_adapter_http::DatasetAuthorizationLayer;
 use tokio::sync::Notify;
 use utoipa_axum::router::OpenApiRouter;
@@ -45,6 +46,24 @@ pub async fn build_server(
     InternalError,
 > {
     let gql_schema = kamu_adapter_graphql::schema();
+
+    let addr = SocketAddr::from((address, http_port.unwrap_or(0)));
+    let listener = tokio::net::TcpListener::bind(addr).await.int_err()?;
+    let local_addr = listener.local_addr().unwrap();
+
+    let base_url_rest =
+        url::Url::parse(&format!("http://{local_addr}")).expect("URL failed to parse");
+
+    let default_protocols = Protocols::default();
+
+    let api_server_catalog = CatalogBuilder::new_chained(&catalog)
+        .add_value(ServerUrlConfig::new(Protocols {
+            base_url_rest: base_url_rest.clone(),
+            base_url_platform: default_protocols.base_url_platform,
+            // Note: this is not a valid endpoint in Web UI mode
+            base_url_flightsql: default_protocols.base_url_flightsql,
+        }))
+        .build();
 
     let (mut router, api) = OpenApiRouter::with_openapi(
         kamu_adapter_http::openapi::spec_builder(
@@ -134,7 +153,7 @@ pub async fn build_server(
     )
     .merge(kamu_adapter_http::openapi::router().into())
     .layer(axum::extract::Extension(gql_schema))
-    .layer(axum::extract::Extension(catalog))
+    .layer(axum::extract::Extension(api_server_catalog))
     .layer(axum::extract::Extension(ui_config))
     .split_for_parts();
 
@@ -152,13 +171,6 @@ pub async fn build_server(
     };
 
     let router = router.layer(axum::extract::Extension(std::sync::Arc::new(api)));
-
-    let addr = SocketAddr::from((address, http_port.unwrap_or(0)));
-    let listener = tokio::net::TcpListener::bind(addr).await.int_err()?;
-    let local_addr = listener.local_addr().unwrap();
-
-    let base_url_rest =
-        url::Url::parse(&format!("http://{local_addr}")).expect("URL failed to parse");
 
     if let Some(path) = e2e_output_data_path {
         std::fs::write(path, base_url_rest.to_string()).unwrap();

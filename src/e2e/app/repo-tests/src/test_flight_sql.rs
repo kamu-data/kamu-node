@@ -26,7 +26,15 @@ pub async fn test_flight_sql_self_test(mut kamu_flight_sql_client: KamuFlightSQL
         }
         "
             )),
-            None,
+            Some(indoc!(
+                "
+            +-------+
+            | value |
+            +-------+
+            | 1     |
+            +-------+
+            "
+            )),
         )
         .await;
 }

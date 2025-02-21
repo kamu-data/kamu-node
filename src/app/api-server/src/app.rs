@@ -506,14 +506,6 @@ pub async fn init_dependencies(
         b.add_value(kamu_accounts::PredefinedAccountsConfig::default());
     }
 
-    b.add_value(kamu::domain::ServerUrlConfig::new(
-        kamu::domain::Protocols {
-            base_url_platform: config.url.base_url_platform,
-            base_url_rest: config.url.base_url_rest,
-            base_url_flightsql: config.url.base_url_flightsql,
-        },
-    ));
-
     let maybe_jwt_secret = if !config.auth.jwt_secret.is_empty() {
         Some(config.auth.jwt_secret)
     } else {

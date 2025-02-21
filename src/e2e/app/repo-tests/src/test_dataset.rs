@@ -19,6 +19,7 @@ use kamu_cli_e2e_common::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// ToDo reuse this test from kamu-cli once bug in cli will be resolved
 pub async fn test_datasets_by_id(mut kamu_api_server_client: KamuApiServerClient) {
     let (_, nonexistent_dataset_id) = odf::DatasetID::new_generated_ed25519();
 
