@@ -11,12 +11,14 @@
 
 mod test_dataset;
 mod test_flight_sql;
+mod test_odata;
 mod test_openapi;
 mod test_selftest;
 mod test_swagger;
 
 pub use test_dataset::*;
 pub use test_flight_sql::*;
+pub use test_odata::*;
 pub use test_openapi::*;
 pub use test_selftest::*;
 pub use test_swagger::*;

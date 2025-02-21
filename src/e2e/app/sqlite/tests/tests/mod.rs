@@ -11,6 +11,7 @@ mod test_accounts;
 mod test_auth;
 mod test_dataset;
 mod test_flight_sql;
+mod test_odata;
 mod test_odf_core;
 mod test_openapi;
 mod test_selftest;

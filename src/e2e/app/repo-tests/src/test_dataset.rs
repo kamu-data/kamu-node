@@ -20,8 +20,6 @@ use kamu_cli_e2e_common::{
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub async fn test_datasets_by_id(mut kamu_api_server_client: KamuApiServerClient) {
-    // TODO: Remove login after fixing
-    //       https://github.com/kamu-data/kamu-cli/issues/730 -->
     let (_, nonexistent_dataset_id) = odf::DatasetID::new_generated_ed25519();
 
     assert_matches!(
