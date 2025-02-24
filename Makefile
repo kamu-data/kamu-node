@@ -62,6 +62,9 @@ sqlx-local-setup-sqlite:
 	sqlx database create --database-url sqlite://kamu.sqlite.db
 	$(foreach crate,$(SQLITE_CRATES),$(call Setup_EnvFile_Sqlite,$(shell pwd),$(crate)))
 
+.PHONY: sqlx-local-clean
+sqlx-local-clean: sqlx-local-clean-postgres sqlx-local-clean-sqlite
+
 .PHONY: sqlx-local-clean-postgres
 sqlx-local-clean-postgres:
 	$(KAMU_CONTAINER_RUNTIME_TYPE) stop kamu-node-postgres || true && $(KAMU_CONTAINER_RUNTIME_TYPE) rm kamu-node-postgres || true

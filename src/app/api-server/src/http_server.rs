@@ -60,7 +60,6 @@ pub async fn build_server(
         .add_value(ServerUrlConfig::new(Protocols {
             base_url_rest: base_url_rest.clone(),
             base_url_platform: default_protocols.base_url_platform,
-            // Note: this is not a valid endpoint in Web UI mode
             base_url_flightsql: default_protocols.base_url_flightsql,
         }))
         .build();

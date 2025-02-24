@@ -26,7 +26,7 @@ pub struct KamuNodeApiServerHarnessOptions {
 }
 
 impl KamuNodeApiServerHarnessOptions {
-    pub fn with_kamu_config(mut self, content: &str) -> Self {
+    pub fn with_kamu_api_config(mut self, content: &str) -> Self {
         self.kamu_api_server_config = Some(content.into());
 
         self
@@ -42,7 +42,7 @@ pub struct KamuNodeApiServerHarness {
 impl KamuNodeApiServerHarness {
     pub fn postgres(pg_pool: &PgPool, options: KamuNodeApiServerHarnessOptions) -> Self {
         let db = pg_pool.connect_options();
-        let kamu_config = indoc::formatdoc!(
+        let kamu_api_config = indoc::formatdoc!(
             r#"
             database:
                 provider: postgres
@@ -60,7 +60,7 @@ impl KamuNodeApiServerHarness {
             database = db.get_database().unwrap(),
         );
 
-        Self::new(options, Some(kamu_config))
+        Self::new(options, Some(kamu_api_config))
     }
 
     pub fn sqlite(sqlite_pool: &SqlitePool, options: KamuNodeApiServerHarnessOptions) -> Self {
@@ -80,7 +80,7 @@ impl KamuNodeApiServerHarness {
                 .to_string()
         };
 
-        let kamu_config = indoc::formatdoc!(
+        let kamu_api_config = indoc::formatdoc!(
             r#"
             database:
                 provider: sqlite
@@ -89,15 +89,15 @@ impl KamuNodeApiServerHarness {
             path = database_path
         );
 
-        Self::new(options, Some(kamu_config))
+        Self::new(options, Some(kamu_api_config))
     }
 
     fn new(
         mut options: KamuNodeApiServerHarnessOptions,
-        generated_kamu_config: Option<String>,
+        generated_kamu_api_config: Option<String>,
     ) -> Self {
         let target_config =
-            generated_kamu_config.map(|target| serde_yaml::from_str(&target).unwrap());
+            generated_kamu_api_config.map(|target| serde_yaml::from_str(&target).unwrap());
         let source_config = options
             .kamu_api_server_config
             .map(|source| serde_yaml::from_str(&source).unwrap());
@@ -179,7 +179,7 @@ fn merge_yaml(
             Some(target)
         }
         (target, None) => target,
-        (None, generated_kamu_config) => generated_kamu_config,
+        (None, generated_kamu_api_config) => generated_kamu_api_config,
     }
 }
 
