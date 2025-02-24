@@ -80,7 +80,7 @@ sqlx-local-clean-sqlite:
 # Run all tests excluding databases using nextest and configured concurrency limits
 .PHONY: test
 test:
-	$(TEST_LOG_PARAMS) cargo nextest run -E 'not (test(::database::))'
+	$(TEST_LOG_PARAMS) cargo nextest run -E 'not (test(::database::)) & not test(::oracle::)'
 
 .PHONY: test-full
 test-full:
