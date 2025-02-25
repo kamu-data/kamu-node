@@ -91,7 +91,7 @@ test-full:
 
 .PHONY: test-e2e
 test-e2e:
-	$(TEST_LOG_PARAMS) cargo nextest run -E 'test(::e2e::)'
+	$(TEST_LOG_PARAMS) cargo nextest run -E 'test(::e2e::) & not test(::oracle::)'
 
 .PHONY: test-oracle
 test-oracle:

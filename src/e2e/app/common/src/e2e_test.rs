@@ -78,7 +78,7 @@ pub async fn api_flight_sql_e2e_test<ServerRunFut, Fixture, FixtureFut>(
 {
     let test_fut = async move {
         let (api_server_base_url, flight_sql_base_url) =
-            get_server_base_urls(e2e_data_file_path.clone()).await?;
+            get_server_base_urls(e2e_data_file_path).await?;
         let kamu_api_server_client = KamuApiServerClient::new(api_server_base_url, workspace_path);
 
         let kamu_flight_sql_server_client = kamu_api_server_client

@@ -171,10 +171,6 @@ pub async fn build_server(
 
     let router = router.layer(axum::extract::Extension(std::sync::Arc::new(api)));
 
-    if let Some(path) = e2e_output_data_path {
-        std::fs::write(path, base_url_rest.to_string()).unwrap();
-    };
-
     let server = axum::serve(listener, router.into_make_service());
     Ok((server, local_addr, maybe_shutdown_notify))
 }

@@ -47,6 +47,7 @@ impl KamuNodeApiServerHarness {
             database:
                 provider: postgres
                 host: {host}
+                port: {port}
                 credentialsPolicy:
                     source:
                         kind: rawPassword
@@ -55,6 +56,7 @@ impl KamuNodeApiServerHarness {
                 databaseName: {database}
             "#,
             host = db.get_host(),
+            port = db.get_port(),
             user = db.get_username(),
             password = db.get_username(), // It's intended: password is same as user for tests
             database = db.get_database().unwrap(),

@@ -34,7 +34,7 @@ kamu-node-e2e-repo-tests = { workspace = true }
 indoc = "2"
 sqlx = { version = "0.8", default-features = false, features = [
     "macros",
-    "postgres",
+    "sqlite",
 ] }
 test-group = { version = "1" }
 test-log = { version = "0.2", features = ["trace"] }

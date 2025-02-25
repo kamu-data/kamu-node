@@ -166,9 +166,18 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
                 address,
                 c.flightsql_port,
                 final_catalog.clone(),
-                args.e2e_output_data_path.as_ref(),
             )
             .await;
+
+            if let Some(e2e_output_data_path) = args.e2e_output_data_path {
+                let e2e_file_content = format!(
+                    "http://{}\nhttp://{}",
+                    local_addr,
+                    flightsql_server.local_addr()
+                );
+
+                std::fs::write(e2e_output_data_path, e2e_file_content).unwrap();
+            }
 
             // System services are built from the special catalog that contains the admin
             // subject. Thus all services that require authorization are granted full access

@@ -40,7 +40,6 @@ pub async fn test_datasets_by_id(mut kamu_api_server_client: KamuApiServerClient
             .await,
         Err(DatasetByIdError::NotFound)
     );
-    // <--
 
     let CreateDatasetResponse { dataset_id, .. } = kamu_api_server_client
         .dataset()
