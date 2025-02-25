@@ -8,13 +8,17 @@
 // by the Apache License, Version 2.0.
 
 use std::net::SocketAddr;
+use std::path::PathBuf;
+use std::sync::Arc;
 
 use database_common_macros::transactional_handler;
+use dill::CatalogBuilder;
 use http_common::ApiError;
 use indoc::indoc;
 use internal_error::{InternalError, ResultIntoInternal};
-use kamu::domain::TenancyConfig;
+use kamu::domain::{Protocols, ServerUrlConfig, TenancyConfig};
 use kamu_adapter_http::DatasetAuthorizationLayer;
+use tokio::sync::Notify;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
@@ -28,6 +32,7 @@ pub async fn build_server(
     catalog: dill::Catalog,
     tenancy_config: TenancyConfig,
     ui_config: UIConfiguration,
+    e2e_output_data_path: Option<&PathBuf>,
 ) -> Result<
     (
         axum::serve::Serve<
@@ -36,12 +41,30 @@ pub async fn build_server(
             axum::Router,
         >,
         SocketAddr,
+        Option<Arc<Notify>>,
     ),
     InternalError,
 > {
     let gql_schema = kamu_adapter_graphql::schema();
 
-    let (router, api) = OpenApiRouter::with_openapi(
+    let addr = SocketAddr::from((address, http_port.unwrap_or(0)));
+    let listener = tokio::net::TcpListener::bind(addr).await.int_err()?;
+    let local_addr = listener.local_addr().unwrap();
+
+    let base_url_rest =
+        url::Url::parse(&format!("http://{local_addr}")).expect("URL failed to parse");
+
+    let default_protocols = Protocols::default();
+
+    let api_server_catalog = CatalogBuilder::new_chained(&catalog)
+        .add_value(ServerUrlConfig::new(Protocols {
+            base_url_rest: base_url_rest.clone(),
+            base_url_platform: default_protocols.base_url_platform,
+            base_url_flightsql: default_protocols.base_url_flightsql,
+        }))
+        .build();
+
+    let (mut router, api) = OpenApiRouter::with_openapi(
         kamu_adapter_http::openapi::spec_builder(
             crate::app::VERSION,
             indoc::indoc!(
@@ -129,18 +152,27 @@ pub async fn build_server(
     )
     .merge(kamu_adapter_http::openapi::router().into())
     .layer(axum::extract::Extension(gql_schema))
-    .layer(axum::extract::Extension(catalog))
+    .layer(axum::extract::Extension(api_server_catalog))
     .layer(axum::extract::Extension(ui_config))
     .split_for_parts();
 
+    let maybe_shutdown_notify = if e2e_output_data_path.is_some() {
+        let shutdown_notify = Arc::new(Notify::new());
+
+        router = router.nest(
+            "/e2e",
+            kamu_adapter_http::e2e::e2e_router(shutdown_notify.clone()),
+        );
+
+        Some(shutdown_notify)
+    } else {
+        None
+    };
+
     let router = router.layer(axum::extract::Extension(std::sync::Arc::new(api)));
 
-    let addr = SocketAddr::from((address, http_port.unwrap_or(0)));
-    let listener = tokio::net::TcpListener::bind(addr).await.int_err()?;
-    let local_addr = listener.local_addr().unwrap();
-
     let server = axum::serve(listener, router.into_make_service());
-    Ok((server, local_addr))
+    Ok((server, local_addr, maybe_shutdown_notify))
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

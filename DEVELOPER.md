@@ -21,4 +21,13 @@ nvm use
 npm ci
 ```
 
-You can now run `make test`.
+You can now run `make test` to run unit tests.
+
+To run e2e tests:
+```sh
+make sqlx-local-setup # Start database-related containers 
+
+make test-full # or `make test-e2e` for E2E only
+
+make sqlx-local-clean
+```
