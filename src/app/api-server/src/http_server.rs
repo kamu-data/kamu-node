@@ -18,6 +18,7 @@ use indoc::indoc;
 use internal_error::{InternalError, ResultIntoInternal};
 use kamu::domain::{Protocols, ServerUrlConfig, TenancyConfig};
 use kamu_adapter_http::DatasetAuthorizationLayer;
+use observability::axum::unknown_fallback_handler;
 use tokio::sync::Notify;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
@@ -151,6 +152,7 @@ pub async fn build_server(
         axum::routing::get(observability::metrics::metrics_handler),
     )
     .merge(kamu_adapter_http::openapi::router().into())
+    .fallback(unknown_fallback_handler)
     .layer(axum::extract::Extension(gql_schema))
     .layer(axum::extract::Extension(api_server_catalog))
     .layer(axum::extract::Extension(ui_config))

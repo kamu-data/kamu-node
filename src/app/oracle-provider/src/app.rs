@@ -16,6 +16,7 @@ use alloy::providers::{Provider, ProviderBuilder};
 use alloy::signers::local::PrivateKeySigner;
 use alloy::signers::Signer as _;
 use internal_error::*;
+use observability::axum::unknown_fallback_handler;
 
 use crate::api_client::{OdfApiClient, OdfApiClientRest};
 use crate::provider::*;
@@ -156,6 +157,7 @@ async fn build_http_server(
             "/system/metrics",
             axum::routing::get(observability::metrics::metrics_handler),
         )
+        .fallback(unknown_fallback_handler)
         .layer(axum::extract::Extension(catalog));
 
     let addr = std::net::SocketAddr::from((address, http_port));

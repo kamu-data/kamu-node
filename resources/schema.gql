@@ -1384,8 +1384,8 @@ type FlowConfigSnapshotModified implements FlowEvent {
 }
 
 type FlowConfiguration {
-	ingest: FlowConfigurationIngest
 	compaction: FlowConfigurationCompaction
+	ingest: FlowConfigurationIngest
 	reset: FlowConfigurationReset
 }
 
