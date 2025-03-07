@@ -12,7 +12,7 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## Unreleased
+## [0.55.1] - 2025-03-07
 ### Fixed
 - Fix regression with substitution of incorrect `ServerUrlConfig` component
 
