@@ -545,9 +545,11 @@ pub async fn init_dependencies(
         }
         UploadRepoStorageConfig::S3(s3_config) => {
             let s3_upload_direct_url = Url::parse(&s3_config.bucket_s3_url).unwrap();
-            let s3_context = S3Context::from_url(&s3_upload_direct_url)
-                .await
-                .with_metrics(s3_metrics);
+            // TODO: Activate back S3 metrics
+            // let s3_context = S3Context::from_url(&s3_upload_direct_url)
+            //     .await
+            //     .with_metrics(s3_metrics);
+            let s3_context = S3Context::from_url(&s3_upload_direct_url).await;
 
             b.add_builder(
                 kamu_adapter_http::UploadServiceS3::builder().with_s3_upload_context(s3_context),
@@ -617,7 +619,7 @@ async fn configure_repository(
     b: &mut CatalogBuilder,
     repo_url: &Url,
     config: &RepoConfig,
-    s3_metrics: &Arc<S3Metrics>,
+    _s3_metrics: &Arc<S3Metrics>,
 ) {
     match repo_url.scheme() {
         "file" => {
@@ -634,9 +636,11 @@ async fn configure_repository(
         "s3" | "s3+http" | "s3+https" => {
             use odf::dataset::DatasetStorageUnitS3;
 
-            let s3_context = S3Context::from_url(repo_url)
-                .await
-                .with_metrics(s3_metrics.clone());
+            // TODO: Activate back S3 metrics
+            // let s3_context = S3Context::from_url(repo_url)
+            //     .await
+            //     .with_metrics(s3_metrics.clone());
+            let s3_context = S3Context::from_url(repo_url).await;
 
             if config.caching.registry_cache_enabled {
                 b.add::<odf::dataset::S3RegistryCache>();
