@@ -12,11 +12,10 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use database_common_macros::transactional_handler;
-use dill::CatalogBuilder;
 use http_common::ApiError;
 use indoc::indoc;
 use internal_error::{InternalError, ResultIntoInternal};
-use kamu::domain::{Protocols, ServerUrlConfig, TenancyConfig};
+use kamu::domain::TenancyConfig;
 use kamu_adapter_http::DatasetAuthorizationLayer;
 use observability::axum::unknown_fallback_handler;
 use tokio::sync::Notify;
@@ -52,18 +51,11 @@ pub async fn build_server(
     let listener = tokio::net::TcpListener::bind(addr).await.int_err()?;
     let local_addr = listener.local_addr().unwrap();
 
-    let base_url_rest =
-        url::Url::parse(&format!("http://{local_addr}")).expect("URL failed to parse");
-
-    let default_protocols = Protocols::default();
-
-    let api_server_catalog = CatalogBuilder::new_chained(&catalog)
-        .add_value(ServerUrlConfig::new(Protocols {
-            base_url_rest: base_url_rest.clone(),
-            base_url_platform: default_protocols.base_url_platform,
-            base_url_flightsql: default_protocols.base_url_flightsql,
-        }))
-        .build();
+    // TODO: E2E: use the actual base_url instead of the preconfigured one
+    //       kamu-data/kamu-node https://github.com/kamu-data/kamu-node/issues/198
+    //
+    // let base_url_rest =
+    //     url::Url::parse(&format!("http://{local_addr}")).expect("URL failed to parse");
 
     let (mut router, api) = OpenApiRouter::with_openapi(
         kamu_adapter_http::openapi::spec_builder(
@@ -154,7 +146,7 @@ pub async fn build_server(
     .merge(kamu_adapter_http::openapi::router().into())
     .fallback(unknown_fallback_handler)
     .layer(axum::extract::Extension(gql_schema))
-    .layer(axum::extract::Extension(api_server_catalog))
+    .layer(axum::extract::Extension(catalog))
     .layer(axum::extract::Extension(ui_config))
     .split_for_parts();
 
