@@ -14,7 +14,6 @@ use database_common::NoOpDatabasePlugin;
 use dill::*;
 use email_gateway::FakeEmailSender;
 use kamu::domain::{DidGeneratorDefault, ServerUrlConfig, TenancyConfig};
-use kamu::DatasetStorageUnitLocalFs;
 use kamu_accounts::{
     CurrentAccountSubject,
     JwtAuthenticationConfig,
@@ -53,6 +52,7 @@ use kamu_flow_system_services::{
 };
 use kamu_task_system::{TaskError, TaskID, TaskOutcome, TaskResult};
 use messaging_outbox::{register_message_dispatcher, Outbox, OutboxExt, OutboxImmediateImpl};
+use odf::dataset::DatasetStorageUnitLocalFs;
 use odf::DatasetID;
 use tempfile::TempDir;
 use time_source::SystemTimeSourceDefault;

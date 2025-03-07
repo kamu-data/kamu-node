@@ -17,8 +17,8 @@ use chrono::Duration;
 use dill::{CatalogBuilder, Component};
 use internal_error::*;
 use kamu::domain::{DidGeneratorDefault, TenancyConfig};
-use kamu::{DatasetStorageUnitLocalFs, DatasetStorageUnitS3};
-use s3_utils::S3Context;
+use observability::metrics::MetricsProvider;
+use s3_utils::{S3Context, S3Metrics};
 use tracing::{error, info, warn};
 use url::Url;
 
@@ -285,7 +285,14 @@ pub async fn init_dependencies(
     tenancy_config: TenancyConfig,
     local_dir: &Path,
 ) -> Result<CatalogBuilder, InternalError> {
-    let mut b = CatalogBuilder::new();
+    // TODO: Revisit this ugly way to get metrics
+    let s3_metrics_catalog = CatalogBuilder::new()
+        .add_value(S3Metrics::new(""))
+        .bind::<dyn MetricsProvider, S3Metrics>()
+        .build();
+    let s3_metrics = s3_metrics_catalog.get_one::<S3Metrics>().unwrap();
+
+    let mut b = CatalogBuilder::new_chained(&s3_metrics_catalog);
 
     // TODO: Improve output multiplexing and cache interface
     let run_info_dir = local_dir.join("run");
@@ -458,11 +465,14 @@ pub async fn init_dependencies(
         config.outbox.batch_size.unwrap(),
     ));
 
+    // TODO: No way to configure options of `TaskAgent` and `FlowAgent`
+    //       kamu-data/kamu-node https://github.com/kamu-data/kamu-node/issues/165
+    b.add_value(kamu_task_system::TaskAgentConfig::new(Duration::seconds(1)));
     kamu_task_system_services::register_dependencies(&mut b);
 
     b.add_value(kamu_flow_system::FlowAgentConfig::new(
-        chrono::Duration::try_seconds(1).unwrap(),
-        chrono::Duration::try_minutes(1).unwrap(),
+        Duration::seconds(1),
+        Duration::minutes(1),
     ));
     kamu_flow_system_services::register_dependencies(&mut b);
 
@@ -477,7 +487,7 @@ pub async fn init_dependencies(
 
     b.add::<odf::dataset::DummyOdfServerAccessTokenResolver>();
 
-    configure_repository(&mut b, repo_url, &config.repo).await;
+    configure_repository(&mut b, repo_url, &config.repo, &s3_metrics).await;
 
     b.add::<kamu_accounts_services::LoginPasswordAuthProvider>();
     b.add::<kamu_accounts_services::AccountServiceImpl>();
@@ -535,9 +545,12 @@ pub async fn init_dependencies(
         }
         UploadRepoStorageConfig::S3(s3_config) => {
             let s3_upload_direct_url = Url::parse(&s3_config.bucket_s3_url).unwrap();
+            let s3_context = S3Context::from_url(&s3_upload_direct_url)
+                .await
+                .with_metrics(s3_metrics);
+
             b.add_builder(
-                kamu_adapter_http::UploadServiceS3::builder()
-                    .with_s3_upload_context(S3Context::from_url(&s3_upload_direct_url).await),
+                kamu_adapter_http::UploadServiceS3::builder().with_s3_upload_context(s3_context),
             );
             b.bind::<dyn kamu_adapter_http::UploadService, kamu_adapter_http::UploadServiceS3>();
         }
@@ -600,9 +613,16 @@ pub async fn init_dependencies(
     Ok(b)
 }
 
-async fn configure_repository(b: &mut CatalogBuilder, repo_url: &Url, config: &RepoConfig) {
+async fn configure_repository(
+    b: &mut CatalogBuilder,
+    repo_url: &Url,
+    config: &RepoConfig,
+    s3_metrics: &Arc<S3Metrics>,
+) {
     match repo_url.scheme() {
         "file" => {
+            use odf::dataset::DatasetStorageUnitLocalFs;
+
             let datasets_dir = repo_url.to_file_path().unwrap();
 
             b.add_builder(DatasetStorageUnitLocalFs::builder().with_root(datasets_dir.clone()));
@@ -612,10 +632,14 @@ async fn configure_repository(b: &mut CatalogBuilder, repo_url: &Url, config: &R
             b.add::<kamu::ObjectStoreBuilderLocalFs>();
         }
         "s3" | "s3+http" | "s3+https" => {
-            let s3_context = S3Context::from_url(repo_url).await;
+            use odf::dataset::DatasetStorageUnitS3;
+
+            let s3_context = S3Context::from_url(repo_url)
+                .await
+                .with_metrics(s3_metrics.clone());
 
             if config.caching.registry_cache_enabled {
-                b.add::<kamu::S3RegistryCache>();
+                b.add::<odf::dataset::S3RegistryCache>();
             }
 
             let metadata_cache_local_fs_path = config

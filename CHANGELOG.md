@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## Unreleased
+### Changed
+- Upgrade kamu-cli version to `0.226.4`
+
 ## [0.54.3] - 2025-02-20
 ### Fixed
 - OData API: fixed crash when accessing private dataset ([kamu CLI `0.225.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.225.0))
