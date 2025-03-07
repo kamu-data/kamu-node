@@ -12,7 +12,7 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## Unreleased
+## [0.55.0] - 2025-03-07
 ### Changed
 - Upgrade kamu-cli version to `0.226.4`
 
