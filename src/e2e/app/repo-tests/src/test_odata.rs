@@ -41,7 +41,11 @@ pub async fn test_odata_service_handler(mut kamu_api_server_client: KamuApiServe
         "#
         )
         .replace('\n', "")
-        .replace("<base_url>", kamu_api_server_client.get_base_url().as_str())
+        // TODO: E2E: use the actual base_url instead of the preconfigured one
+        //       kamu-data/kamu-node https://github.com/kamu-data/kamu-node/issues/198
+        //
+        // .replace("<base_url>", kamu_api_server_client.get_base_url().as_str())
+        .replace("<base_url>", "http://localhost:8080/")
     );
 }
 

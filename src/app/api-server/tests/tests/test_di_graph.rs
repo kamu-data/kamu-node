@@ -7,7 +7,7 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-use kamu::domain::{ServerUrlConfig, TenancyConfig};
+use kamu::domain::TenancyConfig;
 use test_utils::MinioServer;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,7 +28,6 @@ async fn test_di_graph_validates_local() {
     // CurrentAccountSubject is inserted by middlewares, but won't be present in
     // the default dependency graph, so we have to add it manually
     catalog_builder.add_value(kamu_accounts::CurrentAccountSubject::new_test());
-    catalog_builder.add_value(ServerUrlConfig::new_test(None));
 
     catalog_builder.add_value(kamu_adapter_http::AccessToken::new("some-token"));
 
@@ -83,7 +82,6 @@ async fn test_di_graph_validates_remote() {
     // CurrentAccountSubject is inserted by middlewares, but won't be present in
     // the default dependency graph, so we have to add it manually
     catalog_builder.add_value(kamu_accounts::CurrentAccountSubject::new_test());
-    catalog_builder.add_value(ServerUrlConfig::new_test(None));
 
     catalog_builder.add_value(kamu_adapter_http::AccessToken::new("some-token"));
 
