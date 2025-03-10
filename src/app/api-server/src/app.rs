@@ -124,7 +124,16 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
     };
 
     if command_needs_beforehand_startup_jobs(&args) {
-        initialize_components(&final_catalog, server_account_subject.clone()).await?;
+        let catalog_with_url_config = CatalogBuilder::new_chained(&final_catalog)
+            .add_value(kamu::domain::ServerUrlConfig::new(
+                kamu::domain::Protocols {
+                    base_url_platform: url_config.base_url_platform.clone(),
+                    base_url_rest: url_config.base_url_rest.clone(),
+                    base_url_flightsql: url_config.base_url_flightsql.clone(),
+                },
+            ))
+            .build();
+        initialize_components(&catalog_with_url_config, server_account_subject.clone()).await?;
     }
 
     match args.command {
