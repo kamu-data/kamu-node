@@ -22,6 +22,7 @@ use s3_utils::{S3Context, S3Metrics};
 use tracing::{error, info, warn};
 use url::Url;
 
+use crate::cli::command_needs_beforehand_startup_jobs;
 use crate::config::{
     ApiServerConfig,
     AuthProviderConfig,
@@ -100,6 +101,8 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
         },
     };
 
+    let url_config = config.url.clone();
+
     let catalog = init_dependencies(config, &repo_url, tenancy_config, local_dir.path())
         .await?
         .build();
@@ -120,7 +123,9 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
         catalog
     };
 
-    initialize_components(&final_catalog, server_account_subject.clone()).await?;
+    if command_needs_beforehand_startup_jobs(&args) {
+        initialize_components(&final_catalog, server_account_subject.clone()).await?;
+    }
 
     match args.command {
         cli::Command::Gql(c) => match c.subcommand {
@@ -151,13 +156,14 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
             // that does not contain any auth subject, thus they will rely on
             // their own middlewares to authenticate per request / session and execute
             // all processing in the user context.
-            let (http_server, local_addr, maybe_shutdown_notify) =
+            let (http_server, local_addr, api_server_catalog, maybe_shutdown_notify) =
                 crate::http_server::build_server(
                     address,
                     c.http_port,
                     final_catalog.clone(),
                     tenancy_config,
                     ui_config,
+                    url_config,
                     args.e2e_output_data_path.as_ref(),
                 )
                 .await?;
@@ -178,6 +184,9 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
 
                 std::fs::write(e2e_output_data_path, e2e_file_content).unwrap();
             }
+
+            // Initialize components here to include api server configurations
+            initialize_components(&api_server_catalog, server_account_subject.clone()).await?;
 
             // System services are built from the special catalog that contains the admin
             // subject. Thus all services that require authorization are granted full access
@@ -527,14 +536,6 @@ pub async fn init_dependencies(
     if need_to_add_default_predefined_accounts_config {
         b.add_value(kamu_accounts::PredefinedAccountsConfig::default());
     }
-
-    b.add_value(kamu::domain::ServerUrlConfig::new(
-        kamu::domain::Protocols {
-            base_url_platform: config.url.base_url_platform,
-            base_url_rest: config.url.base_url_rest,
-            base_url_flightsql: config.url.base_url_flightsql,
-        },
-    ));
 
     let maybe_jwt_secret = if !config.auth.jwt_secret.is_empty() {
         Some(config.auth.jwt_secret)
