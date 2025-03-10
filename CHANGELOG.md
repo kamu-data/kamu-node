@@ -16,7 +16,9 @@ Recommendation: for ease of reading, use the following order:
 ### Added
 - Prometheus metrics: S3 ([kamu CLI `0.226.5`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.226.5))
 - New `FlowSystemConfig` structure in `CLIConfig` which allows to configure `flow_agent` and `task_agent` services with next options `awaiting_step_secs` and `mandatory_throttling_period_secs`
-
+### Fixed
+- Use actual `base_url` in catalog configuration instead default one 
+s
 ## [0.55.1] - 2025-03-07
 ### Fixed
 - Fix regression with substitution of incorrect `ServerUrlConfig` component
