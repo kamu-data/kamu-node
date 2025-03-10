@@ -465,15 +465,18 @@ pub async fn init_dependencies(
         config.outbox.batch_size.unwrap(),
     ));
 
-    // TODO: No way to configure options of `TaskAgent` and `FlowAgent`
-    //       kamu-data/kamu-node https://github.com/kamu-data/kamu-node/issues/165
-    b.add_value(kamu_task_system::TaskAgentConfig::new(Duration::seconds(1)));
+    let task_agent_config = config.flow_system.task_agent.unwrap();
+    b.add_value(kamu_task_system::TaskAgentConfig::new(Duration::seconds(
+        task_agent_config.task_checking_interval_secs.unwrap(),
+    )));
     kamu_task_system_services::register_dependencies(&mut b);
 
+    let flow_agent_config = config.flow_system.flow_agent.unwrap();
     b.add_value(kamu_flow_system::FlowAgentConfig::new(
-        Duration::seconds(1),
-        Duration::minutes(1),
+        Duration::seconds(flow_agent_config.awaiting_step_secs.unwrap()),
+        Duration::minutes(flow_agent_config.mandatory_throttling_period_secs.unwrap()),
     ));
+
     kamu_flow_system_services::register_dependencies(&mut b);
 
     b.add::<kamu_accounts_services::AuthenticationServiceImpl>();
