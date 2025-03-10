@@ -14,7 +14,7 @@ Recommendation: for ease of reading, use the following order:
 
 ## Unreleased
 ### Added
-- Prometheus metrics: S3
+- Prometheus metrics: S3 ([kamu CLI `0.226.5`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.226.5))
 
 ## [0.55.1] - 2025-03-07
 ### Fixed
