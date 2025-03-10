@@ -45,6 +45,8 @@ pub struct ApiServerConfig {
     pub upload_repo: UploadRepoConfig,
     /// External URLs
     pub url: UrlConfig,
+    /// Configuration for flow system
+    pub flow_system: FlowSystemConfig,
     /// Ingestions sources
     pub source: SourceConfig,
     /// Outbox configuration
@@ -728,6 +730,90 @@ impl Default for EmailConfigGateway {
 #[serde(rename_all = "camelCase")]
 pub struct EmailConfigPostmarkGateway {
     pub api_key: String,
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct FlowSystemConfig {
+    pub flow_agent: Option<FlowAgentConfig>,
+
+    pub task_agent: Option<TaskAgentConfig>,
+}
+
+impl FlowSystemConfig {
+    pub fn sample() -> Self {
+        Self {
+            flow_agent: Some(FlowAgentConfig::sample()),
+            task_agent: Some(TaskAgentConfig::sample()),
+        }
+    }
+}
+
+impl Default for FlowSystemConfig {
+    fn default() -> Self {
+        Self {
+            flow_agent: Some(FlowAgentConfig::default()),
+            task_agent: Some(TaskAgentConfig::default()),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, rename_all = "camelCase")]
+pub struct FlowAgentConfig {
+    pub awaiting_step_secs: Option<i64>,
+    pub mandatory_throttling_period_secs: Option<i64>,
+}
+
+impl FlowAgentConfig {
+    pub fn new() -> Self {
+        Self {
+            awaiting_step_secs: None,
+            mandatory_throttling_period_secs: None,
+        }
+    }
+
+    fn sample() -> Self {
+        Self::default()
+    }
+}
+
+impl Default for FlowAgentConfig {
+    fn default() -> Self {
+        Self {
+            awaiting_step_secs: Some(1),
+            mandatory_throttling_period_secs: Some(60),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, rename_all = "camelCase")]
+pub struct TaskAgentConfig {
+    pub task_checking_interval_secs: Option<i64>,
+}
+
+impl TaskAgentConfig {
+    pub fn new() -> Self {
+        Self {
+            task_checking_interval_secs: None,
+        }
+    }
+
+    fn sample() -> Self {
+        Self::default()
+    }
+}
+
+impl Default for TaskAgentConfig {
+    fn default() -> Self {
+        Self {
+            task_checking_interval_secs: Some(1),
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
