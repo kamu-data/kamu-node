@@ -12,6 +12,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use database_common_macros::transactional_handler;
+use dill::CatalogBuilder;
 use http_common::ApiError;
 use indoc::indoc;
 use internal_error::{InternalError, ResultIntoInternal};
@@ -22,6 +23,7 @@ use tokio::sync::Notify;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
+use crate::config::UrlConfig;
 use crate::ui_configuration::UIConfiguration;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32,6 +34,7 @@ pub async fn build_server(
     catalog: dill::Catalog,
     tenancy_config: TenancyConfig,
     ui_config: UIConfiguration,
+    url_config: UrlConfig,
     e2e_output_data_path: Option<&PathBuf>,
 ) -> Result<
     (
@@ -41,6 +44,7 @@ pub async fn build_server(
             axum::Router,
         >,
         SocketAddr,
+        dill::Catalog,
         Option<Arc<Notify>>,
     ),
     InternalError,
@@ -51,11 +55,18 @@ pub async fn build_server(
     let listener = tokio::net::TcpListener::bind(addr).await.int_err()?;
     let local_addr = listener.local_addr().unwrap();
 
-    // TODO: E2E: use the actual base_url instead of the preconfigured one
-    //       kamu-data/kamu-node https://github.com/kamu-data/kamu-node/issues/198
-    //
-    // let base_url_rest =
-    //     url::Url::parse(&format!("http://{local_addr}")).expect("URL failed to parse");
+    let base_url_rest =
+        url::Url::parse(&format!("http://{local_addr}")).expect("URL failed to parse");
+
+    let api_server_catalog = CatalogBuilder::new_chained(&catalog)
+        .add_value(kamu::domain::ServerUrlConfig::new(
+            kamu::domain::Protocols {
+                base_url_rest: base_url_rest.clone(),
+                base_url_platform: url_config.base_url_platform,
+                base_url_flightsql: url_config.base_url_flightsql,
+            },
+        ))
+        .build();
 
     let (mut router, api) = OpenApiRouter::with_openapi(
         kamu_adapter_http::openapi::spec_builder(
@@ -146,7 +157,7 @@ pub async fn build_server(
     .merge(kamu_adapter_http::openapi::router().into())
     .fallback(unknown_fallback_handler)
     .layer(axum::extract::Extension(gql_schema))
-    .layer(axum::extract::Extension(catalog))
+    .layer(axum::extract::Extension(api_server_catalog.clone()))
     .layer(axum::extract::Extension(ui_config))
     .split_for_parts();
 
@@ -166,7 +177,12 @@ pub async fn build_server(
     let router = router.layer(axum::extract::Extension(std::sync::Arc::new(api)));
 
     let server = axum::serve(listener, router.into_make_service());
-    Ok((server, local_addr, maybe_shutdown_notify))
+    Ok((
+        server,
+        local_addr,
+        api_server_catalog,
+        maybe_shutdown_notify,
+    ))
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
