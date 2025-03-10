@@ -2,6 +2,10 @@
 
 Please see [Kamu CLI's Developer Guide](https://github.com/kamu-data/kamu-cli/blob/master/DEVELOPER.md) for general setup instructions as this repo follows the same conventions.
 
+## Local testing (S3 repo)
+
+Check [examples/local-minio](examples/local-minio/README.md).
+
 ## Oracle Provider Tests
 Testing Oracle Provider requires a few more dependencies to work with smart contracts.
 

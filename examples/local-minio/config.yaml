@@ -1,0 +1,33 @@
+repo:
+  repoUrl: s3+http://127.0.0.1:9000/datasets
+  caching:
+    registryCacheEnabled: true
+    metadataLocalFsCachePath: /tmp/kamu-metadata-cache
+uploadRepo:
+  maxFileSizeMb: 50
+  storage:
+    kind: s3
+    bucketS3Url: s3+http://127.0.0.1:9000/upload
+database:
+  provider: sqlite
+  databasePath: kamu-api-server.sqlite
+auth:
+  providers:
+    - kind: github
+      clientId: 361a3b4fda86d0234d2f
+      clientSecret: 465849325236ed49253993744069e1bec6808554
+    - kind: password
+      accounts:
+        - accountName: admin
+          isAdmin: true
+          email: admin@example.com
+        - accountName: alice
+          avatarUrl: https://cdn-icons-png.flaticon.com/512/3665/3665909.png
+          email: alice@example.com
+        - accountName: bob
+          avatarUrl: https://cdn-icons-png.flaticon.com/512/3665/3665917.png
+          email: bob@example.com
+url:
+  baseUrlPlatform: http://127.0.0.1:4200
+  baseUrlRest: http://127.0.0.1:8080
+  baseUrlFlightsql: grpc+tls://127.0.0.1:50050

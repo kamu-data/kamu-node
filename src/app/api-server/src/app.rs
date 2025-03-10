@@ -287,7 +287,7 @@ pub async fn init_dependencies(
 ) -> Result<CatalogBuilder, InternalError> {
     // TODO: Revisit this ugly way to get metrics
     let s3_metrics_catalog = CatalogBuilder::new()
-        .add_value(S3Metrics::new(""))
+        .add_value(S3Metrics::new())
         .bind::<dyn MetricsProvider, S3Metrics>()
         .build();
     let s3_metrics = s3_metrics_catalog.get_one::<S3Metrics>().unwrap();
@@ -553,11 +553,9 @@ pub async fn init_dependencies(
         }
         UploadRepoStorageConfig::S3(s3_config) => {
             let s3_upload_direct_url = Url::parse(&s3_config.bucket_s3_url).unwrap();
-            // TODO: Activate back S3 metrics
-            // let s3_context = S3Context::from_url(&s3_upload_direct_url)
-            //     .await
-            //     .with_metrics(s3_metrics);
-            let s3_context = S3Context::from_url(&s3_upload_direct_url).await;
+            let s3_context = S3Context::from_url(&s3_upload_direct_url)
+                .await
+                .with_metrics(s3_metrics);
 
             b.add_builder(
                 kamu_adapter_http::UploadServiceS3::builder().with_s3_upload_context(s3_context),
@@ -627,7 +625,7 @@ async fn configure_repository(
     b: &mut CatalogBuilder,
     repo_url: &Url,
     config: &RepoConfig,
-    _s3_metrics: &Arc<S3Metrics>,
+    s3_metrics: &Arc<S3Metrics>,
 ) {
     match repo_url.scheme() {
         "file" => {
@@ -644,11 +642,9 @@ async fn configure_repository(
         "s3" | "s3+http" | "s3+https" => {
             use odf::dataset::DatasetStorageUnitS3;
 
-            // TODO: Activate back S3 metrics
-            // let s3_context = S3Context::from_url(repo_url)
-            //     .await
-            //     .with_metrics(s3_metrics.clone());
-            let s3_context = S3Context::from_url(repo_url).await;
+            let s3_context = S3Context::from_url(repo_url)
+                .await
+                .with_metrics(s3_metrics.clone());
 
             if config.caching.registry_cache_enabled {
                 b.add::<odf::dataset::S3RegistryCache>();
