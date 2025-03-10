@@ -31,6 +31,12 @@ async fn test_di_graph_validates_local() {
 
     catalog_builder.add_value(kamu_adapter_http::AccessToken::new("some-token"));
 
+    // ServerUrlConfig is inserted right before start_up_jobs, so we have to add it
+    // manually
+    catalog_builder.add_value(kamu::domain::ServerUrlConfig::new(
+        kamu::domain::Protocols::default(),
+    ));
+
     // SessionId is assigned by FlightSQL auth middleware
     catalog_builder.add_value(kamu_adapter_flight_sql::SessionId(
         "some-session-id".to_string(),
@@ -88,6 +94,12 @@ async fn test_di_graph_validates_remote() {
     // SessionId is assigned by FlightSQL auth middleware
     catalog_builder.add_value(kamu_adapter_flight_sql::SessionId(
         "some-session-id".to_string(),
+    ));
+
+    // ServerUrlConfig is inserted right before start_up_jobs, so we have to add it
+    // manually
+    catalog_builder.add_value(kamu::domain::ServerUrlConfig::new(
+        kamu::domain::Protocols::default(),
     ));
 
     // TODO: We should ensure this test covers parameters requested by commands and
