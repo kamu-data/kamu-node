@@ -22,7 +22,6 @@ use s3_utils::{S3Context, S3Metrics};
 use tracing::{error, info, warn};
 use url::Url;
 
-use crate::cli::command_needs_beforehand_startup_jobs;
 use crate::config::{
     ApiServerConfig,
     AuthProviderConfig,
@@ -101,11 +100,40 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
         },
     };
 
-    let url_config = config.url.clone();
+    let (tcp_listener, predefined_protocols_config) = if args.e2e_output_data_path.is_some() {
+        let addr = std::net::SocketAddr::from((std::net::Ipv4Addr::new(127, 0, 0, 1), 0));
+        let listener = tokio::net::TcpListener::bind(addr).await.int_err()?;
+        let base_url_rest = url::Url::parse(&format!("http://{}", listener.local_addr().unwrap()))
+            .expect("URL failed to parse");
 
-    let catalog = init_dependencies(config, &repo_url, tenancy_config, local_dir.path())
-        .await?
-        .build();
+        (
+            Some(listener),
+            kamu::domain::Protocols {
+                base_url_platform: config.url.base_url_platform.clone(),
+                base_url_rest,
+                base_url_flightsql: config.url.base_url_flightsql.clone(),
+            },
+        )
+    } else {
+        (
+            None,
+            kamu::domain::Protocols {
+                base_url_platform: config.url.base_url_platform.clone(),
+                base_url_rest: config.url.base_url_rest.clone(),
+                base_url_flightsql: config.url.base_url_flightsql.clone(),
+            },
+        )
+    };
+
+    let catalog = init_dependencies(
+        config,
+        &repo_url,
+        tenancy_config,
+        local_dir.path(),
+        predefined_protocols_config,
+    )
+    .await?
+    .build();
 
     // Register metrics
     let metrics_registry = observability::metrics::register_all(&catalog);
@@ -123,18 +151,7 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
         catalog
     };
 
-    if command_needs_beforehand_startup_jobs(&args) {
-        let catalog_with_url_config = CatalogBuilder::new_chained(&final_catalog)
-            .add_value(kamu::domain::ServerUrlConfig::new(
-                kamu::domain::Protocols {
-                    base_url_platform: url_config.base_url_platform.clone(),
-                    base_url_rest: url_config.base_url_rest.clone(),
-                    base_url_flightsql: url_config.base_url_flightsql.clone(),
-                },
-            ))
-            .build();
-        initialize_components(&catalog_with_url_config, server_account_subject.clone()).await?;
-    }
+    initialize_components(&final_catalog, server_account_subject.clone()).await?;
 
     match args.command {
         cli::Command::Gql(c) => match c.subcommand {
@@ -165,14 +182,14 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
             // that does not contain any auth subject, thus they will rely on
             // their own middlewares to authenticate per request / session and execute
             // all processing in the user context.
-            let (http_server, local_addr, api_server_catalog, maybe_shutdown_notify) =
+            let (http_server, local_addr, maybe_shutdown_notify) =
                 crate::http_server::build_server(
                     address,
                     c.http_port,
                     final_catalog.clone(),
                     tenancy_config,
                     ui_config,
-                    url_config,
+                    tcp_listener,
                     args.e2e_output_data_path.as_ref(),
                 )
                 .await?;
@@ -193,9 +210,6 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
 
                 std::fs::write(e2e_output_data_path, e2e_file_content).unwrap();
             }
-
-            // Initialize components here to include api server configurations
-            initialize_components(&api_server_catalog, server_account_subject.clone()).await?;
 
             // System services are built from the special catalog that contains the admin
             // subject. Thus all services that require authorization are granted full access
@@ -302,6 +316,7 @@ pub async fn init_dependencies(
     repo_url: &Url,
     tenancy_config: TenancyConfig,
     local_dir: &Path,
+    predefined_protocols_config: kamu::domain::Protocols,
 ) -> Result<CatalogBuilder, InternalError> {
     // TODO: Revisit this ugly way to get metrics
     let s3_metrics_catalog = CatalogBuilder::new()
@@ -545,6 +560,10 @@ pub async fn init_dependencies(
     if need_to_add_default_predefined_accounts_config {
         b.add_value(kamu_accounts::PredefinedAccountsConfig::default());
     }
+
+    b.add_value(kamu::domain::ServerUrlConfig::new(
+        predefined_protocols_config,
+    ));
 
     let maybe_jwt_secret = if !config.auth.jwt_secret.is_empty() {
         Some(config.auth.jwt_secret)
