@@ -21,7 +21,6 @@ kamu_node_run_api_server_e2e_test!(
 kamu_node_run_api_server_e2e_test!(
     storage = sqlite,
     fixture = kamu_node_e2e_repo_tests::test_swagger_page_mt,
-    options = Options::default()
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +28,6 @@ kamu_node_run_api_server_e2e_test!(
 kamu_node_run_api_server_e2e_test!(
     storage = sqlite,
     fixture = kamu_node_e2e_repo_tests::test_swagger_schema_mt,
-    options = Options::default()
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

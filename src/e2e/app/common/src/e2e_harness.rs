@@ -11,7 +11,7 @@ use std::future::Future;
 
 use kamu_cli_e2e_common::KamuApiServerClient;
 use kamu_node_puppet::extensions::KamuNodePuppetExt;
-use kamu_node_puppet::{KamuNodePuppet, NewWorkspaceOptions};
+use kamu_node_puppet::{KamuNodePuppet, NewWorkspaceOptions, RepositoryType};
 use regex::Regex;
 use sqlx::{PgPool, SqlitePool};
 
@@ -23,11 +23,18 @@ use crate::{api_flight_sql_e2e_test, api_server_e2e_test, KamuFlightSQLClient};
 pub struct KamuNodeApiServerHarnessOptions {
     env_vars: Vec<(String, String)>,
     kamu_api_server_config: Option<String>,
+    repo_type: RepositoryType,
 }
 
 impl KamuNodeApiServerHarnessOptions {
     pub fn with_kamu_api_config(mut self, content: &str) -> Self {
         self.kamu_api_server_config = Some(content.into());
+
+        self
+    }
+
+    pub fn with_s3_repo(mut self) -> Self {
+        self.repo_type = RepositoryType::S3;
 
         self
     }
@@ -40,7 +47,14 @@ pub struct KamuNodeApiServerHarness {
 }
 
 impl KamuNodeApiServerHarness {
-    pub fn postgres(pg_pool: &PgPool, options: KamuNodeApiServerHarnessOptions) -> Self {
+    pub fn postgres(
+        pg_pool: &PgPool,
+        mut options: KamuNodeApiServerHarnessOptions,
+        repo_type: &RepositoryType,
+    ) -> Self {
+        if repo_type == &RepositoryType::S3 {
+            options = options.with_s3_repo();
+        }
         let db = pg_pool.connect_options();
         let kamu_api_config = indoc::formatdoc!(
             r#"
@@ -65,7 +79,14 @@ impl KamuNodeApiServerHarness {
         Self::new(options, Some(kamu_api_config))
     }
 
-    pub fn sqlite(sqlite_pool: &SqlitePool, options: KamuNodeApiServerHarnessOptions) -> Self {
+    pub fn sqlite(
+        sqlite_pool: &SqlitePool,
+        mut options: KamuNodeApiServerHarnessOptions,
+        repo_type: &RepositoryType,
+    ) -> Self {
+        if repo_type == &RepositoryType::S3 {
+            options = options.with_s3_repo();
+        }
         // Ugly way to get the path as the settings have a not-so-good signature:
         // SqliteConnectOptions::get_filename(self) -> Cow<'static, Path>
         //                                    ^^^^
@@ -115,7 +136,7 @@ impl KamuNodeApiServerHarness {
         Fixture: FnOnce(KamuApiServerClient) -> FixtureResult,
         FixtureResult: Future<Output = ()> + Send + 'static,
     {
-        let kamu_api_server = self.into_kamu_api_server();
+        let kamu_api_server = self.into_kamu_api_server().await;
 
         let e2e_data_file_path = kamu_api_server.get_e2e_output_data_path();
         let workspace_path = kamu_api_server.workspace_path().to_path_buf();
@@ -129,7 +150,7 @@ impl KamuNodeApiServerHarness {
         Fixture: FnOnce(KamuFlightSQLClient) -> FixtureResult,
         FixtureResult: Future<Output = ()> + Send + 'static,
     {
-        let kamu_api_server = self.into_kamu_api_server();
+        let kamu_api_server = self.into_kamu_api_server().await;
 
         let e2e_data_file_path = kamu_api_server.get_e2e_output_data_path();
         let workspace_path = kamu_api_server.workspace_path().to_path_buf();
@@ -143,12 +164,12 @@ impl KamuNodeApiServerHarness {
         Fixture: FnOnce(KamuNodePuppet) -> FixtureResult,
         FixtureResult: Future<Output = ()>,
     {
-        let kamu_api_server = self.into_kamu_api_server();
+        let kamu_api_server = self.into_kamu_api_server().await;
 
         fixture(kamu_api_server).await;
     }
 
-    fn into_kamu_api_server(self) -> KamuNodePuppet {
+    async fn into_kamu_api_server(self) -> KamuNodePuppet {
         let KamuNodeApiServerHarnessOptions {
             env_vars,
             kamu_api_server_config,
@@ -158,8 +179,9 @@ impl KamuNodeApiServerHarness {
         KamuNodePuppet::new_workspace_tmp_with(NewWorkspaceOptions {
             kamu_api_server_config,
             env_vars,
-            repo_path: None,
+            repo_type: self.options.repo_type,
         })
+        .await
     }
 }
 
