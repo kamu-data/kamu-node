@@ -25,8 +25,11 @@ pub fn kamu_node_run_api_server_e2e_test_with_repo(input: TokenStream) -> TokenS
     } = parse_macro_input!(input as InputArgs);
 
     let options = options.unwrap_or_else(|| syn::parse_str("Options::default()").unwrap());
-    let extra_test_groups =
-        extra_test_groups.unwrap_or_else(|| syn::LitStr::new("", proc_macro2::Span::call_site()));
+    let default_local_fs_test_groups = extra_test_groups
+        .clone()
+        .unwrap_or_else(|| syn::LitStr::new("", proc_macro2::Span::call_site()));
+    let default_s3_test_groups = extra_test_groups
+        .unwrap_or_else(|| syn::LitStr::new("containerized", proc_macro2::Span::call_site()));
 
     let expanded = quote! {
         kamu_node_run_api_server_e2e_test!(
@@ -34,7 +37,7 @@ pub fn kamu_node_run_api_server_e2e_test_with_repo(input: TokenStream) -> TokenS
             fixture = #fixture,
             repo_type = local_fs,
             options = #options,
-            extra_test_groups = #extra_test_groups,
+            extra_test_groups = #default_local_fs_test_groups,
         );
 
         kamu_node_run_api_server_e2e_test!(
@@ -42,7 +45,7 @@ pub fn kamu_node_run_api_server_e2e_test_with_repo(input: TokenStream) -> TokenS
             fixture = #fixture,
             repo_type = s3,
             options = #options,
-            extra_test_groups = #extra_test_groups,
+            extra_test_groups = #default_s3_test_groups,
         );
     };
 
