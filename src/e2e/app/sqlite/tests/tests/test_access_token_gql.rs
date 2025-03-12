@@ -7,20 +7,11 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-#![feature(assert_matches)]
+use kamu_node_e2e_common::prelude::*;
 
-mod test_access_token_gql;
-mod test_dataset;
-mod test_flight_sql;
-mod test_odata;
-mod test_openapi;
-mod test_selftest;
-mod test_swagger;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pub use test_access_token_gql::*;
-pub use test_dataset::*;
-pub use test_flight_sql::*;
-pub use test_odata::*;
-pub use test_openapi::*;
-pub use test_selftest::*;
-pub use test_swagger::*;
+kamu_node_run_api_server_e2e_test!(
+    storage = sqlite,
+    fixture = kamu_node_e2e_repo_tests::test_access_token_gql,
+);
