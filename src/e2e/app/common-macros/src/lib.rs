@@ -15,6 +15,41 @@ use syn::{parse_macro_input, parse_str, Expr, Ident, LitStr, Path, Token};
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[proc_macro]
+pub fn kamu_node_run_api_server_e2e_test_with_repo(input: TokenStream) -> TokenStream {
+    let InputArgs {
+        storage,
+        fixture,
+        options,
+        extra_test_groups,
+        ..
+    } = parse_macro_input!(input as InputArgs);
+
+    let options = options.unwrap_or_else(|| syn::parse_str("Options::default()").unwrap());
+    let extra_test_groups =
+        extra_test_groups.unwrap_or_else(|| syn::LitStr::new("", proc_macro2::Span::call_site()));
+
+    let expanded = quote! {
+        kamu_node_run_api_server_e2e_test!(
+            storage = #storage,
+            fixture = #fixture,
+            repo_type = local_fs,
+            options = #options,
+            extra_test_groups = #extra_test_groups,
+        );
+
+        kamu_node_run_api_server_e2e_test!(
+            storage = #storage,
+            fixture = #fixture,
+            repo_type = s3,
+            options = #options,
+            extra_test_groups = #extra_test_groups,
+        );
+    };
+
+    TokenStream::from(expanded)
+}
+
+#[proc_macro]
 pub fn kamu_node_run_api_server_e2e_test(input: TokenStream) -> TokenStream {
     let harness_method = parse_str("run_api_server").unwrap();
 
@@ -40,11 +75,17 @@ fn kamu_node_e2e_test_impl(harness_method: &Ident, input: TokenStream) -> TokenS
         fixture,
         options,
         extra_test_groups,
+        repo_type,
     } = parse_macro_input!(input as InputArgs);
 
-    let test_function_name = fixture.segments.last().unwrap().ident.clone();
+    let mut test_function_name = fixture.segments.last().unwrap().ident.clone();
 
     let options = options.unwrap_or_else(|| parse_str("Options::default()").unwrap());
+    let repo_type = repo_type.unwrap_or_else(|| parse_str("local_fs").unwrap());
+    test_function_name = syn::Ident::new(
+        &format!("{test_function_name}_{repo_type}"),
+        test_function_name.span(),
+    );
 
     let extra_test_groups = if let Some(extra_test_groups) = extra_test_groups {
         parse_str(extra_test_groups.value().as_str()).unwrap()
@@ -57,7 +98,7 @@ fn kamu_node_e2e_test_impl(harness_method: &Ident, input: TokenStream) -> TokenS
             #[test_group::group(e2e, database, postgres, #extra_test_groups)]
             #[test_log::test(sqlx::test(migrator = "database_common::POSTGRES_MIGRATOR"))]
             async fn #test_function_name (pg_pool: sqlx::PgPool) {
-                KamuNodeApiServerHarness::postgres(&pg_pool, #options )
+                KamuNodeApiServerHarness::postgres(&pg_pool, #options, &#repo_type)
                     . #harness_method ( #fixture )
                     .await;
             }
@@ -66,7 +107,7 @@ fn kamu_node_e2e_test_impl(harness_method: &Ident, input: TokenStream) -> TokenS
             #[test_group::group(e2e, database, sqlite, #extra_test_groups)]
             #[test_log::test(sqlx::test(migrator = "database_common::SQLITE_MIGRATOR"))]
             async fn #test_function_name (sqlite_pool: sqlx::SqlitePool) {
-                KamuNodeApiServerHarness::sqlite(&sqlite_pool, #options )
+                KamuNodeApiServerHarness::sqlite(&sqlite_pool, #options, &#repo_type)
                     . #harness_method ( #fixture )
                     .await;
             }
@@ -90,6 +131,7 @@ struct InputArgs {
     pub storage: Ident,
     pub fixture: Path,
     pub options: Option<Expr>,
+    pub repo_type: Option<Ident>,
     pub extra_test_groups: Option<LitStr>,
 }
 
@@ -98,6 +140,7 @@ impl Parse for InputArgs {
         let mut storage = None;
         let mut fixture = None;
         let mut options = None;
+        let mut repo_type = None;
         let mut extra_test_groups = None;
 
         while !input.is_empty() {
@@ -121,6 +164,11 @@ impl Parse for InputArgs {
 
                     options = Some(value);
                 }
+                "repo_type" => {
+                    let value: Ident = input.parse()?;
+
+                    repo_type = Some(value);
+                }
                 "extra_test_groups" => {
                     let value: LitStr = input.parse()?;
 
@@ -128,7 +176,7 @@ impl Parse for InputArgs {
                 }
                 unexpected_key => panic!(
                     "Unexpected key: {unexpected_key}\nAllowable values: \"storage\", \
-                     \"fixture\", \"options\", and \"extra_test_groups\"."
+                     \"fixture\", \"options\", \"repo_type\" and \"extra_test_groups\"."
                 ),
             };
 
@@ -149,6 +197,7 @@ impl Parse for InputArgs {
             storage,
             fixture,
             options,
+            repo_type,
             extra_test_groups,
         })
     }
