@@ -100,9 +100,40 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
         },
     };
 
-    let catalog = init_dependencies(config, &repo_url, tenancy_config, local_dir.path())
-        .await?
-        .build();
+    let (tcp_listener, predefined_protocols_config) = if args.e2e_output_data_path.is_some() {
+        let addr = std::net::SocketAddr::from((std::net::Ipv4Addr::new(127, 0, 0, 1), 0));
+        let listener = tokio::net::TcpListener::bind(addr).await.int_err()?;
+        let base_url_rest = url::Url::parse(&format!("http://{}", listener.local_addr().unwrap()))
+            .expect("URL failed to parse");
+
+        (
+            Some(listener),
+            kamu::domain::Protocols {
+                base_url_platform: config.url.base_url_platform.clone(),
+                base_url_rest,
+                base_url_flightsql: config.url.base_url_flightsql.clone(),
+            },
+        )
+    } else {
+        (
+            None,
+            kamu::domain::Protocols {
+                base_url_platform: config.url.base_url_platform.clone(),
+                base_url_rest: config.url.base_url_rest.clone(),
+                base_url_flightsql: config.url.base_url_flightsql.clone(),
+            },
+        )
+    };
+
+    let catalog = init_dependencies(
+        config,
+        &repo_url,
+        tenancy_config,
+        local_dir.path(),
+        predefined_protocols_config,
+    )
+    .await?
+    .build();
 
     // Register metrics
     let metrics_registry = observability::metrics::register_all(&catalog);
@@ -158,6 +189,7 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
                     final_catalog.clone(),
                     tenancy_config,
                     ui_config,
+                    tcp_listener,
                     args.e2e_output_data_path.as_ref(),
                 )
                 .await?;
@@ -284,6 +316,7 @@ pub async fn init_dependencies(
     repo_url: &Url,
     tenancy_config: TenancyConfig,
     local_dir: &Path,
+    predefined_protocols_config: kamu::domain::Protocols,
 ) -> Result<CatalogBuilder, InternalError> {
     // TODO: Revisit this ugly way to get metrics
     let s3_metrics_catalog = CatalogBuilder::new()
@@ -529,11 +562,7 @@ pub async fn init_dependencies(
     }
 
     b.add_value(kamu::domain::ServerUrlConfig::new(
-        kamu::domain::Protocols {
-            base_url_platform: config.url.base_url_platform,
-            base_url_rest: config.url.base_url_rest,
-            base_url_flightsql: config.url.base_url_flightsql,
-        },
+        predefined_protocols_config,
     ));
 
     let maybe_jwt_secret = if !config.auth.jwt_secret.is_empty() {
