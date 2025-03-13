@@ -12,7 +12,7 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## [Unreleased]
+## [0.56.0] - 2025-03-13
 ### Added
 - Prometheus metrics: S3 ([kamu CLI `0.226.5`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.226.5))
 - New `FlowSystemConfig` structure in `CLIConfig` which allows to configure `flow_agent` and `task_agent` services with next options `awaiting_step_secs` and `mandatory_throttling_period_secs`
