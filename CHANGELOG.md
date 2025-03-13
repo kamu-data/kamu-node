@@ -16,6 +16,7 @@ Recommendation: for ease of reading, use the following order:
 ### Added
 - Prometheus metrics: S3 ([kamu CLI `0.226.5`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.226.5))
 - New `FlowSystemConfig` structure in `CLIConfig` which allows to configure `flow_agent` and `task_agent` services with next options `awaiting_step_secs` and `mandatory_throttling_period_secs`
+- GQL: New natural language search API - to use this feature you'll need to configure the OpenAI API key and a [Qdrant](https://qdrant.tech/) vector database connection
 
 ## [0.55.1] - 2025-03-07
 ### Fixed

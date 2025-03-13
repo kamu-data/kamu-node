@@ -11,10 +11,6 @@ KAMU_CONTAINER_RUNTIME_TYPE ?= podman
 
 .PHONY: lint
 lint: lint-rustfmt lint-repo lint-deps clippy
-	cargo fmt --check
-	cargo test -p kamu-repo-tools
-	cargo deny check --hide-inclusion-graph
-	cargo clippy --workspace --all-targets -- -D warnings
 
 
 .PHONY: lint-rustfmt
