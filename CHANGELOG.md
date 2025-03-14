@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.56.1] - 2025-03-14
+### Fixed
+- Value of flow agent throttling now presented in seconds
+
 ## [0.56.0] - 2025-03-13
 ### Added
 - Prometheus metrics: S3 ([kamu CLI `0.226.5`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.226.5))

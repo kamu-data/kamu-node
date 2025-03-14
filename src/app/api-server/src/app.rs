@@ -466,7 +466,7 @@ pub async fn init_dependencies(
     let flow_agent_config = config.flow_system.flow_agent.unwrap();
     b.add_value(kamu_flow_system::FlowAgentConfig::new(
         Duration::seconds(flow_agent_config.awaiting_step_secs.unwrap()),
-        Duration::minutes(flow_agent_config.mandatory_throttling_period_secs.unwrap()),
+        Duration::seconds(flow_agent_config.mandatory_throttling_period_secs.unwrap()),
     ));
 
     kamu_flow_system_services::register_dependencies(&mut b);
