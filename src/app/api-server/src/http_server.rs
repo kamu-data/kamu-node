@@ -13,7 +13,6 @@ use std::sync::Arc;
 
 use database_common_macros::transactional_handler;
 use http_common::ApiError;
-use indoc::indoc;
 use internal_error::{InternalError, ResultIntoInternal};
 use kamu::domain::TenancyConfig;
 use kamu_adapter_http::DatasetAuthorizationLayer;
@@ -85,15 +84,15 @@ pub async fn build_server(
         )
         .build(),
     )
-    .route("/", axum::routing::get(root_handler))
     .route(
         "/ui-config",
         axum::routing::get(ui_configuration_handler),
     )
     .route(
         "/graphql",
-        axum::routing::get(graphql_playground_handler).post(graphql_handler),
+        axum::routing::post(graphql_handler),
     )
+    .merge(server_console::router("Kamu API Server".to_string(), format!("v{}", crate::app::VERSION)).into())
     .routes(routes!(kamu_adapter_http::platform_login_handler))
     .routes(routes!(kamu_adapter_http::platform_token_validate_handler))
     .routes(routes!(
@@ -173,20 +172,6 @@ pub async fn build_server(
 // Routes
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-async fn root_handler() -> impl axum::response::IntoResponse {
-    axum::response::Html(indoc!(
-        r#"
-        <h1>Kamu API Server</h1>
-        <ul>
-            <li><a href="/graphql">GraphQL Playground</li>
-            <li><a href="/openapi">OpenAPI Playground</li>
-        </ul>
-        "#
-    ))
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 async fn ui_configuration_handler(
     axum::extract::Extension(ui_config): axum::extract::Extension<UIConfiguration>,
 ) -> axum::Json<UIConfiguration> {
@@ -205,14 +190,6 @@ async fn graphql_handler(
     let graphql_response = schema.execute(graphql_request).await.into();
 
     Ok(graphql_response)
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-async fn graphql_playground_handler() -> impl axum::response::IntoResponse {
-    axum::response::Html(async_graphql::http::playground_source(
-        async_graphql::http::GraphQLPlaygroundConfig::new("/graphql"),
-    ))
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
