@@ -15,6 +15,7 @@ Recommendation: for ease of reading, use the following order:
 ## [Unreleased]
 ### Fixed
 - Flow progress notifier is now more resilient to deleted datasets
+- Use actual `base_url` in catalog configuration instead default one
 
 ## [0.56.1] - 2025-03-14
 ### Fixed
