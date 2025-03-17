@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [Unreleased]
+### Fixed
+- Flow progress notifier is now more resilient to deleted datasets
+
 ## [0.56.1] - 2025-03-14
 ### Fixed
 - Value of flow agent throttling now presented in seconds
