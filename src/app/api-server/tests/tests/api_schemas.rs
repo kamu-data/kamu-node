@@ -43,6 +43,7 @@ async fn get_openapi_schema(tenancy_config: TenancyConfig) -> String {
         UIConfiguration::default(),
         UrlConfig::default(),
         None,
+        None,
     )
     .await
     .unwrap();

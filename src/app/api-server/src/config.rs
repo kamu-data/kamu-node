@@ -55,6 +55,8 @@ pub struct ApiServerConfig {
     pub email: EmailConfig,
     /// UNSTABLE: Identity configuration
     pub identity: Option<IdentityConfig>,
+    /// Seach configuration
+    pub search: Option<SearchConfig>,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -645,12 +647,6 @@ pub struct OutboxConfig {
     pub batch_size: Option<i64>,
 }
 
-impl OutboxConfig {
-    pub fn sample() -> Self {
-        Default::default()
-    }
-}
-
 impl Default for OutboxConfig {
     fn default() -> Self {
         Self {
@@ -743,15 +739,6 @@ pub struct FlowSystemConfig {
     pub task_agent: Option<TaskAgentConfig>,
 }
 
-impl FlowSystemConfig {
-    pub fn sample() -> Self {
-        Self {
-            flow_agent: Some(FlowAgentConfig::sample()),
-            task_agent: Some(TaskAgentConfig::sample()),
-        }
-    }
-}
-
 impl Default for FlowSystemConfig {
     fn default() -> Self {
         Self {
@@ -774,10 +761,6 @@ impl FlowAgentConfig {
             awaiting_step_secs: None,
             mandatory_throttling_period_secs: None,
         }
-    }
-
-    fn sample() -> Self {
-        Self::default()
     }
 }
 
@@ -802,16 +785,165 @@ impl TaskAgentConfig {
             task_checking_interval_secs: None,
         }
     }
-
-    fn sample() -> Self {
-        Self::default()
-    }
 }
 
 impl Default for TaskAgentConfig {
     fn default() -> Self {
         Self {
             task_checking_interval_secs: Some(1),
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Search
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct SearchConfig {
+    pub indexer: Option<SearchIndexerConfig>,
+    pub embeddings_chunker: Option<EmbeddingsChunkerConfig>,
+    pub embeddings_encoder: EmbeddingsEncoderConfig,
+    pub vector_repo: VectorRepoConfig,
+}
+
+impl SearchConfig {
+    pub const DEFAULT_MODEL: &str = "text-embedding-ada-002";
+    pub const DEFAULT_DIMENSIONS: usize = 1536;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct SearchIndexerConfig {
+    // Whether to clear and re-index on start or use existing vectors if any
+    pub clear_on_start: bool,
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+#[serde(tag = "kind")]
+pub enum EmbeddingsChunkerConfig {
+    Simple(EmbeddingsChunkerConfigSimple),
+}
+
+impl Default for EmbeddingsChunkerConfig {
+    fn default() -> Self {
+        Self::Simple(EmbeddingsChunkerConfigSimple::default())
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct EmbeddingsChunkerConfigSimple {
+    // Whether to chunk separately major dataset sections like name, schema, readme, or to combine
+    // them all into one chunk
+    pub split_sections: Option<bool>,
+
+    // Whether to split section content by paragraph
+    pub split_paragraphs: Option<bool>,
+}
+
+impl Default for EmbeddingsChunkerConfigSimple {
+    fn default() -> Self {
+        Self {
+            split_sections: Some(false),
+            split_paragraphs: Some(false),
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+#[serde(tag = "kind")]
+pub enum EmbeddingsEncoderConfig {
+    OpenAi(EmbeddingsEncoderConfigOpenAi),
+}
+
+impl Default for EmbeddingsEncoderConfig {
+    fn default() -> Self {
+        Self::OpenAi(EmbeddingsEncoderConfigOpenAi::default())
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct EmbeddingsEncoderConfigOpenAi {
+    pub url: Option<String>,
+    pub api_key: String,
+    pub model_name: Option<String>,
+    pub dimensions: Option<usize>,
+}
+
+impl Default for EmbeddingsEncoderConfigOpenAi {
+    fn default() -> Self {
+        Self {
+            url: None,
+            api_key: String::new(),
+            model_name: Some(SearchConfig::DEFAULT_MODEL.to_string()),
+            dimensions: Some(SearchConfig::DEFAULT_DIMENSIONS),
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+#[serde(tag = "kind")]
+pub enum VectorRepoConfig {
+    Qdrant(VectorRepoConfigQdrant),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct VectorRepoConfigQdrant {
+    pub url: String,
+    pub api_key: Option<String>,
+    pub collection_name: Option<String>,
+    pub dimensions: Option<usize>,
+}
+
+impl Default for VectorRepoConfigQdrant {
+    fn default() -> Self {
+        Self {
+            url: String::new(),
+            api_key: None,
+            collection_name: Some("kamu-datasets".to_string()),
+            dimensions: Some(SearchConfig::DEFAULT_DIMENSIONS),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct VectorRepoConfigQdrantContainer {
+    pub image: Option<String>,
+    pub dimensions: Option<usize>,
+    pub start_timeout: Option<DurationString>,
+}
+
+impl Default for VectorRepoConfigQdrantContainer {
+    fn default() -> Self {
+        Self {
+            image: Some(kamu::utils::docker_images::QDRANT.to_string()),
+            dimensions: Some(SearchConfig::DEFAULT_DIMENSIONS),
+            start_timeout: Some(DurationString::from_string("30s".to_owned()).unwrap()),
         }
     }
 }
