@@ -15,7 +15,7 @@ use syn::{parse_macro_input, parse_str, Expr, Ident, LitStr, Path, Token};
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[proc_macro]
-pub fn kamu_node_run_api_server_e2e_test_with_repo(input: TokenStream) -> TokenStream {
+pub fn kamu_node_run_api_server_e2e_test_matrix(input: TokenStream) -> TokenStream {
     let InputArgs {
         storage,
         fixture,

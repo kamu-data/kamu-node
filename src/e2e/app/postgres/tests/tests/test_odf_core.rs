@@ -11,7 +11,7 @@ use kamu_node_e2e_common::prelude::*;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-kamu_node_run_api_server_e2e_test_with_repo!(
+kamu_node_run_api_server_e2e_test_matrix!(
     storage = postgres,
     fixture = kamu_cli_e2e_repo_tests::rest_api::test_odf_info_mt,
 );

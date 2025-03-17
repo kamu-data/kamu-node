@@ -11,21 +11,21 @@ use kamu_node_e2e_common::prelude::*;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-kamu_node_run_api_server_e2e_test_with_repo!(
+kamu_node_run_api_server_e2e_test_matrix!(
     storage = sqlite,
     fixture = kamu_node_e2e_repo_tests::test_odata_service_handler,
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-kamu_node_run_api_server_e2e_test_with_repo!(
+kamu_node_run_api_server_e2e_test_matrix!(
     storage = sqlite,
     fixture = kamu_node_e2e_repo_tests::test_odata_metadata_handler,
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-kamu_node_run_api_server_e2e_test_with_repo!(
+kamu_node_run_api_server_e2e_test_matrix!(
     storage = sqlite,
     fixture = kamu_node_e2e_repo_tests::test_odata_collection_handler,
 );
