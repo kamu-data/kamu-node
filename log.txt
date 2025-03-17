@@ -1,8 +1,0 @@
-   Compiling kamu-node-e2e-repo-tests v0.55.1 (/home/roman-boiko/projects/kamu-node/src/e2e/app/repo-tests)
-   Compiling kamu-node-e2e-sqlite v0.55.1 (/home/roman-boiko/projects/kamu-node/src/e2e/app/sqlite)
-   Compiling kamu-node-e2e-postgres v0.55.1 (/home/roman-boiko/projects/kamu-node/src/e2e/app/postgres)
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.06s
-    Starting 1 test across 18 binaries (48 skipped; run ID: 4be5b09e-bf05-40c1-9330-79439add4ae3, nextest profile: default)
-        PASS [   1.325s] kamu-node-e2e-sqlite::mod tests::test_access_token_gql::g8f35::e2e::database::sqlite::test_access_token_gql
-------------
-     Summary [   1.326s] 1 test run: 1 passed, 48 skipped

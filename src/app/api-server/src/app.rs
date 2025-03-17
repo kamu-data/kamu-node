@@ -22,18 +22,10 @@ use s3_utils::{S3Context, S3Metrics};
 use tracing::{error, info, warn};
 use url::Url;
 
-use crate::config::{
-    ApiServerConfig,
-    AuthProviderConfig,
-    EmailConfig,
-    EmailConfigGateway,
-    RepoConfig,
-    UploadRepoStorageConfig,
-    ACCOUNT_KAMU,
-};
 use crate::ui_configuration::{UIConfiguration, UIFeatureFlags};
 use crate::{
     cli,
+    config,
     configure_database_components,
     configure_in_memory_components,
     connect_database_initially,
@@ -52,7 +44,7 @@ const DEFAULT_RUST_LOG: &str = "debug,";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), InternalError> {
+pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), InternalError> {
     let repo_url = if let Some(repo_url) = config.repo.repo_url.as_ref().cloned() {
         repo_url
     } else {
@@ -83,7 +75,7 @@ pub async fn run(args: cli::Cli, config: ApiServerConfig) -> Result<(), Internal
         "Initializing Kamu API Server",
     );
 
-    let kamu_account_name = odf::AccountName::new_unchecked(ACCOUNT_KAMU);
+    let kamu_account_name = odf::AccountName::new_unchecked(config::ACCOUNT_KAMU);
     let server_account_subject = kamu_accounts::CurrentAccountSubject::logged(
         odf::AccountID::new_seeded_ed25519(kamu_account_name.as_bytes()),
         kamu_account_name,
@@ -268,11 +260,11 @@ pub fn init_observability() -> observability::init::Guard {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pub fn load_config(path: Option<&PathBuf>) -> Result<ApiServerConfig, InternalError> {
+pub fn load_config(path: Option<&PathBuf>) -> Result<config::ApiServerConfig, InternalError> {
     use figment::providers::Format;
 
     let mut figment = figment::Figment::from(figment::providers::Serialized::defaults(
-        ApiServerConfig::default(),
+        config::ApiServerConfig::default(),
     ));
 
     if let Some(path) = path {
@@ -296,7 +288,7 @@ pub fn load_config(path: Option<&PathBuf>) -> Result<ApiServerConfig, InternalEr
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub async fn init_dependencies(
-    config: ApiServerConfig,
+    config: config::ApiServerConfig,
     repo_url: &Url,
     tenancy_config: TenancyConfig,
     local_dir: &Path,
@@ -491,7 +483,7 @@ pub async fn init_dependencies(
     let flow_agent_config = config.flow_system.flow_agent.unwrap();
     b.add_value(kamu_flow_system::FlowAgentConfig::new(
         Duration::seconds(flow_agent_config.awaiting_step_secs.unwrap()),
-        Duration::minutes(flow_agent_config.mandatory_throttling_period_secs.unwrap()),
+        Duration::seconds(flow_agent_config.mandatory_throttling_period_secs.unwrap()),
     ));
 
     kamu_flow_system_services::register_dependencies(&mut b);
@@ -522,7 +514,7 @@ pub async fn init_dependencies(
         TenancyConfig::MultiTenant => {
             for provider in config.auth.providers {
                 match provider {
-                    AuthProviderConfig::Github(github_config) => {
+                    config::AuthProviderConfig::Github(github_config) => {
                         b.add::<kamu_adapter_oauth::OAuthGithub>();
 
                         b.add_value(kamu_adapter_oauth::GithubAuthenticationConfig::new(
@@ -530,7 +522,7 @@ pub async fn init_dependencies(
                             github_config.client_secret,
                         ));
                     }
-                    AuthProviderConfig::Password(prov) => {
+                    config::AuthProviderConfig::Password(prov) => {
                         b.add_value(kamu_accounts::PredefinedAccountsConfig {
                             predefined: prov.accounts,
                         });
@@ -578,10 +570,10 @@ pub async fn init_dependencies(
     ));
 
     match config.upload_repo.storage {
-        UploadRepoStorageConfig::Local => {
+        config::UploadRepoStorageConfig::Local => {
             b.add::<kamu_adapter_http::UploadServiceLocal>();
         }
-        UploadRepoStorageConfig::S3(s3_config) => {
+        config::UploadRepoStorageConfig::S3(s3_config) => {
             let s3_upload_direct_url = Url::parse(&s3_config.bucket_s3_url).unwrap();
             let s3_context = S3Context::from_url(&s3_upload_direct_url)
                 .await
@@ -648,13 +640,66 @@ pub async fn init_dependencies(
         configure_in_memory_components(&mut b);
     };
 
+    // Search configuration
+    b.add::<kamu_search_services::SearchServiceLocalImpl>();
+
+    if let Some(config::SearchConfig {
+        indexer,
+        embeddings_chunker,
+        embeddings_encoder,
+        vector_repo,
+    }) = config.search
+    {
+        b.add::<kamu_search_services::SearchServiceLocalIndexer>();
+        b.add_value(kamu_search_services::SearchServiceLocalIndexerConfig {
+            clear_on_start: indexer.unwrap_or_default().clear_on_start,
+        });
+
+        match embeddings_chunker.unwrap_or_default() {
+            config::EmbeddingsChunkerConfig::Simple(cfg) => {
+                let d = config::EmbeddingsChunkerConfigSimple::default();
+                b.add::<kamu_search_services::EmbeddingsChunkerSimple>();
+                b.add_value(kamu_search_services::EmbeddingsChunkerConfigSimple {
+                    split_sections: cfg.split_sections.or(d.split_sections).unwrap(),
+                    split_paragraphs: cfg.split_paragraphs.or(d.split_paragraphs).unwrap(),
+                });
+            }
+        }
+
+        match embeddings_encoder {
+            config::EmbeddingsEncoderConfig::OpenAi(cfg) => {
+                let d = config::EmbeddingsEncoderConfigOpenAi::default();
+                b.add::<kamu_search_openai::EmbeddingsEncoderOpenAi>();
+                b.add_value(kamu_search_openai::EmbeddingsEncoderConfigOpenAI {
+                    url: cfg.url,
+                    api_key: Some(cfg.api_key.into()),
+                    model_name: cfg.model_name.or(d.model_name).unwrap(),
+                    dimensions: cfg.dimensions.or(d.dimensions).unwrap(),
+                });
+            }
+        }
+
+        match vector_repo {
+            config::VectorRepoConfig::Qdrant(cfg) => {
+                let d = config::VectorRepoConfigQdrant::default();
+                b.add::<kamu_search_qdrant::VectorRepositoryQdrant>();
+                b.add_value(kamu_search_qdrant::VectorRepositoryConfigQdrant {
+                    url: cfg.url,
+                    collection_name: cfg.collection_name.or(d.collection_name).unwrap(),
+                    dimensions: cfg.dimensions.or(d.dimensions).unwrap(),
+                });
+            }
+        }
+    }
+    //
+
     Ok(b)
 }
 
 async fn configure_repository(
     b: &mut CatalogBuilder,
     repo_url: &Url,
-    config: &RepoConfig,
+    config: &config::RepoConfig,
     s3_metrics: &Arc<S3Metrics>,
 ) {
     match repo_url.scheme() {
@@ -708,11 +753,11 @@ async fn configure_repository(
 
 fn configure_email_gateway(
     catalog_builder: &mut dill::CatalogBuilder,
-    email_config: &EmailConfig,
+    email_config: &config::EmailConfig,
 ) -> Result<(), InternalError> {
     let email_config = match &email_config.gateway {
-        EmailConfigGateway::Dummy => email_gateway::EmailConfig::Dummy,
-        EmailConfigGateway::Postmark(postmark_config) => {
+        config::EmailConfigGateway::Dummy => email_gateway::EmailConfig::Dummy,
+        config::EmailConfigGateway::Postmark(postmark_config) => {
             email_gateway::EmailConfig::Postmark(email_gateway::PostmarkGatewaySettings {
                 sender_address: email_utils::Email::parse(email_config.sender_address.as_str())
                     .int_err()?,
