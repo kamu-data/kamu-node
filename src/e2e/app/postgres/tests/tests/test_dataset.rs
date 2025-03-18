@@ -14,7 +14,6 @@ use kamu_node_e2e_common::prelude::*;
 kamu_node_run_api_server_e2e_test_matrix!(
     storage = postgres,
     fixture = kamu_node_e2e_repo_tests::test_datasets_by_id,
-    extra_test_groups = "containerized, engine, datafusion"
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

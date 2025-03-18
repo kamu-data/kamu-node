@@ -1,6 +1,5 @@
 [profile.default]
 fail-fast = false
-slow-timeout = { period = "30s", terminate-after = 1, grace-period = "10s" }
 
 [test-groups]
 setup = { max-threads = 1 }         # Serialize the setup steps
