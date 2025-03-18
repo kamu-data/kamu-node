@@ -13,6 +13,8 @@ Recommendation: for ease of reading, use the following order:
 -->
 
 ## [Unreleased]
+### Added
+- E2E: running tests also for S3 repositories
 ### Fixed
 - Flow progress notifier is now more resilient to deleted datasets
 - Use actual `base_url` in catalog configuration instead default one

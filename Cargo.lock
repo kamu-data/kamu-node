@@ -6231,6 +6231,7 @@ dependencies = [
 name = "kamu-node-e2e-common-macros"
 version = "0.56.1"
 dependencies = [
+ "proc-macro2",
  "quote",
  "syn 2.0.96",
 ]
@@ -6295,7 +6296,9 @@ dependencies = [
  "indoc 2.0.5",
  "serde",
  "tempfile",
+ "test-utils",
  "tokio",
+ "url",
 ]
 
 [[package]]
