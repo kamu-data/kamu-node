@@ -12,15 +12,25 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## [Unreleased]
+## [0.57.0] - 2025-03-19
 ### Added
 - E2E: running tests also for S3 repositories
+- DB-backed dataset references: they are now stored in the database, supporting transactional updates
+- Ensured short transaction length in ingest & transform updates and compaction tasks.  
+- Dataset Reference indexing to build the initial state of the dataset references.  
+- Implemented in-memory caching for dataset references that works within the current 
 ### Changed
 - Replaced default GraphQL playground with better maintained `graphiql` (old playground is still available)
 - Improved API server web console looks
+- Upgraded to `datafusion v46` (#1146)
+- Dependency graph updates are improved for transactional correctness.  
+- Extracted ODF dataset builders for LFS and S3 to allow for custom implementations.  
 ### Fixed
 - Flow progress notifier is now more resilient to deleted datasets
 - Use actual `base_url` in catalog configuration instead default one
+- REST API: `GET /datasets/{id}` returns account data as it should 
+- If dataset creation is interrupted before a dataset entry is written, 
+   such a dataset is ignored and may be overwritten
 
 ## [0.56.1] - 2025-03-14
 ### Fixed

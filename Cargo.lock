@@ -3894,7 +3894,7 @@ dependencies = [
 
 [[package]]
 name = "email-gateway"
-version = "0.56.1"
+version = "0.57.0"
 dependencies = [
  "async-trait",
  "dill",
@@ -4427,7 +4427,7 @@ checksum = "a8d1add55171497b4705a648c6b583acafb01d58050a51727785f0b2c8e0a2b2"
 
 [[package]]
 name = "graceful-shutdown"
-version = "0.56.1"
+version = "0.57.0"
 dependencies = [
  "tokio",
  "tracing",
@@ -5724,7 +5724,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-api-server"
-version = "0.56.1"
+version = "0.57.0"
 dependencies = [
  "arrow-flight",
  "askama",
@@ -6288,7 +6288,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-common"
-version = "0.56.1"
+version = "0.57.0"
 dependencies = [
  "arrow-flight",
  "async-trait",
@@ -6319,7 +6319,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-common-macros"
-version = "0.56.1"
+version = "0.57.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -6328,7 +6328,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-postgres"
-version = "0.56.1"
+version = "0.57.0"
 dependencies = [
  "database-common",
  "indoc 2.0.6",
@@ -6343,7 +6343,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-repo-tests"
-version = "0.56.1"
+version = "0.57.0"
 dependencies = [
  "chrono",
  "datafusion",
@@ -6364,7 +6364,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-sqlite"
-version = "0.56.1"
+version = "0.57.0"
 dependencies = [
  "database-common",
  "indoc 2.0.6",
@@ -6379,7 +6379,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-puppet"
-version = "0.56.1"
+version = "0.57.0"
 dependencies = [
  "assert_cmd",
  "async-trait",
@@ -6393,7 +6393,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-oracle-provider"
-version = "0.56.1"
+version = "0.57.0"
 dependencies = [
  "alloy",
  "async-trait",
@@ -6425,7 +6425,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-repo-tools"
-version = "0.56.1"
+version = "0.57.0"
 dependencies = [
  "chrono",
  "clap",
@@ -9767,8 +9767,8 @@ dependencies = [
  "serde_json",
  "sha2",
  "smallvec",
- "thiserror 2.0.12",
  "sqlformat",
+ "thiserror 1.0.69",
  "tokio",
  "tokio-stream",
  "tracing",
@@ -9837,7 +9837,7 @@ dependencies = [
  "hex",
  "hkdf",
  "hmac",
- "indoc 2.0.5",
+ "indoc 2.0.6",
  "itoa",
  "log",
  "md-5",
@@ -9852,7 +9852,7 @@ dependencies = [
  "smallvec",
  "sqlx-core",
  "stringprep",
- "thiserror 2.0.12",
+ "thiserror 1.0.69",
  "tracing",
  "uuid",
  "whoami",
@@ -9890,7 +9890,7 @@ dependencies = [
  "smallvec",
  "sqlx-core",
  "stringprep",
- "thiserror 2.0.12",
+ "thiserror 1.0.69",
  "tracing",
  "uuid",
  "whoami",
