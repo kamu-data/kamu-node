@@ -101,9 +101,8 @@ impl FlowProgressNotifier {
                 // Owner account is needed for proper links as a minimum
                 let owner_account = self
                     .account_service
-                    .account_by_id(&dataset_entry.owner_id)
+                    .get_account_by_id(&dataset_entry.owner_id)
                     .await
-                    .int_err()?
                     .unwrap();
 
                 // Select recipient: manual different launched person or owner
@@ -164,8 +163,8 @@ impl FlowProgressNotifier {
         {
             let initiator_account = self
                 .account_service
-                .account_by_id(&m.initiator_account_id)
-                .await?
+                .get_account_by_id(&m.initiator_account_id)
+                .await
                 .expect("Account must be resolved");
             return Ok(Cow::Owned(initiator_account));
         }

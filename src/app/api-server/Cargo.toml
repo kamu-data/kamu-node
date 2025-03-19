@@ -45,6 +45,7 @@ observability = { workspace = true, default-features = false, features = [
 ] }
 odf = { workspace = true, default-features = false }
 s3-utils = { workspace = true }
+server-console = { workspace = true }
 time-source = { workspace = true }
 
 kamu = { workspace = true }
@@ -91,11 +92,7 @@ kamu-task-system-sqlite = { workspace = true }
 http = "1"
 arrow-flight = { version = "54", features = ["flight-sql-experimental"] }
 axum = { version = "0.8", features = ["ws"] }
-async-graphql = { version = "7", features = [
-    "chrono",
-    "url",
-    "apollo_tracing",
-] }
+async-graphql = { version = "7", default-features = false }
 async-graphql-axum = "7"
 tonic = { version = "0.12", default-features = false }
 tower = { version = "0.5" }

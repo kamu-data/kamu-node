@@ -74,13 +74,11 @@ impl AccessTokenLifecycleNotifier {
         };
         let rendered_access_token_body = access_token_email.render().unwrap();
 
-        let owner_account_res = self
+        let owner_account = self
             .account_service
-            .account_by_id(&created_token.owner_id)
+            .get_account_by_id(&created_token.owner_id)
             .await
             .int_err()?;
-
-        let owner_account = owner_account_res.unwrap();
 
         self.email_sender
             .send_email(
