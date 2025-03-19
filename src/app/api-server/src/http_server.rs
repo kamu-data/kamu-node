@@ -17,6 +17,7 @@ use internal_error::{InternalError, ResultIntoInternal};
 use kamu::domain::TenancyConfig;
 use kamu_adapter_http::DatasetAuthorizationLayer;
 use observability::axum::unknown_fallback_handler;
+use tokio::net::TcpListener;
 use tokio::sync::Notify;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
@@ -31,6 +32,7 @@ pub async fn build_server(
     catalog: dill::Catalog,
     tenancy_config: TenancyConfig,
     ui_config: UIConfiguration,
+    maybe_e2e_http_server_listener: Option<TcpListener>,
     e2e_output_data_path: Option<&PathBuf>,
 ) -> Result<
     (
@@ -46,15 +48,13 @@ pub async fn build_server(
 > {
     let gql_schema = kamu_adapter_graphql::schema();
 
-    let addr = SocketAddr::from((address, http_port.unwrap_or(0)));
-    let listener = tokio::net::TcpListener::bind(addr).await.int_err()?;
+    let listener = if let Some(listener) = maybe_e2e_http_server_listener {
+        listener
+    } else {
+        let addr = SocketAddr::from((address, http_port.unwrap_or(0)));
+        TcpListener::bind(addr).await.int_err()?
+    };
     let local_addr = listener.local_addr().unwrap();
-
-    // TODO: E2E: use the actual base_url instead of the preconfigured one
-    //       kamu-data/kamu-node https://github.com/kamu-data/kamu-node/issues/198
-    //
-    // let base_url_rest =
-    //     url::Url::parse(&format!("http://{local_addr}")).expect("URL failed to parse");
 
     let (mut router, api) = OpenApiRouter::with_openapi(
         kamu_adapter_http::openapi::spec_builder(

@@ -15,6 +15,7 @@ use chrono::{DateTime, Utc};
 use dill::{component, interface, meta, Catalog};
 use email_gateway::EmailSender;
 use internal_error::{InternalError, ResultIntoInternal};
+use kamu_datasets::GetDatasetEntryError;
 use kamu_flow_system as kamu_fs;
 use messaging_outbox::{
     MessageConsumer,
@@ -81,11 +82,21 @@ impl FlowProgressNotifier {
             // Dataset flow => notify owner or initiator
             kamu_fs::FlowKey::Dataset(fk_dataset) => {
                 // Load related dataset entry
-                let dataset_entry = self
+                let dataset_entry = match self
                     .dataset_entry_service
                     .get_entry(&fk_dataset.dataset_id)
                     .await
-                    .int_err()?;
+                {
+                    Ok(entry) => entry,
+                    Err(GetDatasetEntryError::NotFound(_)) => {
+                        tracing::error!(
+                            %flow_id, dataset_id = %fk_dataset.dataset_id,
+                            "Dataset not found within flow progress email handler"
+                        );
+                        return Ok(());
+                    }
+                    Err(GetDatasetEntryError::Internal(e)) => return Err(e),
+                };
 
                 // Owner account is needed for proper links as a minimum
                 let owner_account = self

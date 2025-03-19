@@ -9,6 +9,7 @@
 
 #![feature(assert_matches)]
 
+mod test_access_token_gql;
 mod test_dataset;
 mod test_flight_sql;
 mod test_odata;
@@ -16,6 +17,7 @@ mod test_openapi;
 mod test_selftest;
 mod test_swagger;
 
+pub use test_access_token_gql::*;
 pub use test_dataset::*;
 pub use test_flight_sql::*;
 pub use test_odata::*;

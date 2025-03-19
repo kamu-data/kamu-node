@@ -92,9 +92,24 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
         },
     };
 
-    let catalog = init_dependencies(config, &repo_url, tenancy_config, local_dir.path())
-        .await?
-        .build();
+    let maybe_e2e_http_server_listener = if args.e2e_output_data_path.is_some() {
+        let addr = std::net::SocketAddr::from((std::net::Ipv4Addr::new(127, 0, 0, 1), 0));
+        let socket = tokio::net::TcpListener::bind(addr).await.int_err()?;
+
+        Some(socket)
+    } else {
+        None
+    };
+
+    let catalog = init_dependencies(
+        config,
+        &repo_url,
+        tenancy_config,
+        local_dir.path(),
+        maybe_e2e_http_server_listener.as_ref(),
+    )
+    .await?
+    .build();
 
     // Register metrics
     let metrics_registry = observability::metrics::register_all(&catalog);
@@ -150,6 +165,7 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
                     final_catalog.clone(),
                     tenancy_config,
                     ui_config,
+                    maybe_e2e_http_server_listener,
                     args.e2e_output_data_path.as_ref(),
                 )
                 .await?;
@@ -276,6 +292,7 @@ pub async fn init_dependencies(
     repo_url: &Url,
     tenancy_config: TenancyConfig,
     local_dir: &Path,
+    maybe_e2e_http_server_listener: Option<&tokio::net::TcpListener>,
 ) -> Result<CatalogBuilder, InternalError> {
     // TODO: Revisit this ugly way to get metrics
     let s3_metrics_catalog = CatalogBuilder::new()
@@ -511,13 +528,23 @@ pub async fn init_dependencies(
         b.add_value(kamu_accounts::PredefinedAccountsConfig::default());
     }
 
-    b.add_value(kamu::domain::ServerUrlConfig::new(
-        kamu::domain::Protocols {
+    {
+        let mut protocols = kamu::domain::Protocols {
             base_url_platform: config.url.base_url_platform,
             base_url_rest: config.url.base_url_rest,
             base_url_flightsql: config.url.base_url_flightsql,
-        },
-    ));
+        };
+
+        if let Some(listener) = maybe_e2e_http_server_listener {
+            let local_address = listener.local_addr().unwrap();
+            let base_url_rest =
+                Url::parse(&format!("http://{local_address}")).expect("URL failed to parse");
+
+            protocols.base_url_rest = base_url_rest;
+        }
+
+        b.add_value(kamu::domain::ServerUrlConfig::new(protocols));
+    }
 
     let maybe_jwt_secret = if !config.auth.jwt_secret.is_empty() {
         Some(config.auth.jwt_secret)

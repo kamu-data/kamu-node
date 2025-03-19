@@ -10,15 +10,27 @@
 use std::path::{Path, PathBuf};
 use std::{ffi, fs};
 
+use test_utils::LocalS3Server;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub type ExecuteCommandResult = assert_cmd::assert::Assert;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#[derive(Default, PartialEq)]
+pub enum RepositoryType {
+    #[default]
+    LocalFs,
+    S3,
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 pub struct KamuNodePuppet {
     workspace_path: PathBuf,
     temp_dir: Option<tempfile::TempDir>,
+    _s3_server: Option<LocalS3Server>,
 }
 
 impl KamuNodePuppet {
@@ -28,18 +40,28 @@ impl KamuNodePuppet {
         Self {
             workspace_path,
             temp_dir: None,
+            _s3_server: None,
         }
     }
 
-    pub fn new_workspace_tmp() -> Self {
-        Self::new_workspace_tmp_with(NewWorkspaceOptions::default())
-    }
-
-    pub fn new_workspace_tmp_with(options: NewWorkspaceOptions) -> Self {
+    pub async fn new_workspace_tmp_with(options: NewWorkspaceOptions) -> Self {
         let temp_dir = tempfile::tempdir().unwrap();
 
+        let s3_server = if options.repo_type == RepositoryType::S3 {
+            Some(LocalS3Server::new().await)
+        } else {
+            None
+        };
+
         if let Some(mut config) = options.kamu_api_server_config {
-            let repo_path = temp_dir.path().join("datasets");
+            let repo_path = match options.repo_type {
+                RepositoryType::LocalFs => {
+                    let repo = temp_dir.path().join("datasets");
+                    fs::create_dir(repo.as_path()).unwrap();
+                    repo.display().to_string()
+                }
+                RepositoryType::S3 => s3_server.as_ref().unwrap().url.to_string(),
+            };
             config.push_str(&indoc::formatdoc!(
                 r#"
                 repo:
@@ -51,15 +73,15 @@ impl KamuNodePuppet {
                             - accountName: kamu
                               email: kamu@example.com
                 "#,
-                path = repo_path.display()
+                path = repo_path,
             ));
-            fs::create_dir(repo_path).unwrap();
             fs::write(temp_dir.path().join("config.yaml"), config).unwrap();
         }
 
         let inst = Self::new(temp_dir.path());
         let inst = Self {
             temp_dir: Some(temp_dir),
+            _s3_server: s3_server,
             ..inst
         };
 
@@ -119,7 +141,7 @@ impl KamuNodePuppet {
 
 #[derive(Default)]
 pub struct NewWorkspaceOptions {
-    pub repo_path: Option<PathBuf>,
+    pub repo_type: RepositoryType,
     pub kamu_api_server_config: Option<String>,
     pub env_vars: Vec<(String, String)>,
 }
