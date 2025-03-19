@@ -193,6 +193,8 @@ debug = 1
 # See: https://doc.rust-lang.org/cargo/reference/overriding-dependencies.html
 [patch.crates-io]
 # datafusion-odata = { git = 'https://github.com/kamu-data/datafusion-odata.git', branch = '42.0.0-axum-0.6' }
+# TODO: Delete this workaround when new version of sqlx will be released
+sqlx = { git = 'https://github.com/kamu-data/sqlx', branch = 'nextest-race-condition' }
 
 # Use this section to build against local versions of the core crates
 [patch.'https://github.com/kamu-data/kamu-cli']

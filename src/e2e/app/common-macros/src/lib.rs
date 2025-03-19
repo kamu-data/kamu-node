@@ -31,7 +31,6 @@ pub fn kamu_node_run_api_server_e2e_test_matrix(input: TokenStream) -> TokenStre
     let default_s3_test_groups = extra_test_groups
         .unwrap_or_else(|| syn::LitStr::new("containerized", proc_macro2::Span::call_site()));
 
-    println!("extra_test_groups");
     let expanded = quote! {
         kamu_node_run_api_server_e2e_test!(
             storage = #storage,
