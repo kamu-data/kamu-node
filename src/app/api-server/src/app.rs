@@ -7,9 +7,7 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-use std::future::{Future, IntoFuture};
 use std::path::{Path, PathBuf};
-use std::pin::Pin;
 use std::sync::Arc;
 
 use arrow_flight::sql::SqlInfo;
@@ -22,9 +20,11 @@ use s3_utils::{S3Context, S3Metrics};
 use tracing::{error, info, warn};
 use url::Url;
 
+use crate::commands::Command;
 use crate::ui_configuration::{UIConfiguration, UIFeatureFlags};
 use crate::{
     cli,
+    commands,
     config,
     configure_database_components,
     configure_in_memory_components,
@@ -127,123 +127,52 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
         catalog
     };
 
-    initialize_components(&final_catalog, server_account_subject.clone()).await?;
-
+    // TODO: Automatically setup authorized catalog and DB transaction for commands
+    // that need them. One approach here could be to map CLI command to a
+    // `Builder<dyn Command>` that via metadata specifies whether transaction and
+    // auth is needed, allowing us setup the right `Catalog` to construct the
+    // command instance from.
     match args.command {
         cli::Command::Gql(c) => match c.subcommand {
-            cli::Gql::Schema(_) => {
-                println!("{}", kamu_adapter_graphql::schema().sdl());
-                Ok(())
-            }
+            cli::Gql::Schema(_) => commands::GqlSchemaCommand::new().run().await,
             cli::Gql::Query(sc) => {
-                let result = crate::gql_server::gql_query(&sc.query, sc.full, final_catalog).await;
-                print!("{}", result);
-                Ok(())
+                commands::GqlQueryCommand::new(
+                    final_catalog,
+                    server_account_subject,
+                    sc.query,
+                    sc.full,
+                )
+                .run()
+                .await
             }
         },
         cli::Command::Metrics(_) => {
-            // TODO: Proper implementation is blocked by https://github.com/tikv/rust-prometheus/issues/526
-            let metric_families = metrics_registry.gather();
-            println!("{metric_families:#?}");
-            Ok(())
+            commands::ListMetricsCommand::new(metrics_registry)
+                .run()
+                .await
         }
         cli::Command::Run(c) => {
-            let shutdown_requested = graceful_shutdown::trap_signals();
-
-            let address = c
-                .address
-                .unwrap_or(std::net::Ipv4Addr::new(127, 0, 0, 1).into());
-
-            // API servers are built from the regular catalog
-            // that does not contain any auth subject, thus they will rely on
-            // their own middlewares to authenticate per request / session and execute
-            // all processing in the user context.
-            let (http_server, local_addr, maybe_shutdown_notify) =
-                crate::http_server::build_server(
-                    address,
-                    c.http_port,
-                    final_catalog.clone(),
-                    tenancy_config,
-                    ui_config,
-                    maybe_e2e_http_server_listener,
-                    args.e2e_output_data_path.as_ref(),
-                )
-                .await?;
-
-            let flightsql_server = crate::flightsql_server::FlightSqlServer::new(
-                address,
+            commands::RunCommand::new(
+                final_catalog,
+                tenancy_config,
+                ui_config,
+                server_account_subject,
+                c.address,
+                c.http_port,
                 c.flightsql_port,
-                final_catalog.clone(),
+                args.e2e_output_data_path,
+                maybe_e2e_http_server_listener,
             )
-            .await;
-
-            if let Some(e2e_output_data_path) = args.e2e_output_data_path {
-                let e2e_file_content = format!(
-                    "http://{}\nhttp://{}",
-                    local_addr,
-                    flightsql_server.local_addr()
-                );
-
-                std::fs::write(e2e_output_data_path, e2e_file_content).unwrap();
-            }
-
-            // System services are built from the special catalog that contains the admin
-            // subject. Thus all services that require authorization are granted full access
-            // to all resources.
-            //
-            // TODO: Granting admin access to all system services is a security threat. We
-            // should consider to instead propagate the auth info of the user who triggered
-            // some system flow alongside all actions to enforce proper authorization.
-            let system_catalog = CatalogBuilder::new_chained(&final_catalog)
-                .add_value(server_account_subject)
-                .build();
-
-            let task_agent = system_catalog
-                .get_one::<dyn kamu_task_system::TaskAgent>()
-                .unwrap();
-
-            let flow_agent = system_catalog
-                .get_one::<dyn kamu_flow_system::FlowAgent>()
-                .unwrap();
-
-            let outbox_agent = system_catalog
-                .get_one::<messaging_outbox::OutboxAgent>()
-                .unwrap();
-
-            info!(
-                http_endpoint = format!("http://{}", local_addr),
-                flightsql_endpoint = format!("flightsql://{}", flightsql_server.local_addr()),
-                "Serving traffic"
-            );
-
-            let server_run_fut: Pin<Box<dyn Future<Output = _>>> =
-                if let Some(shutdown_notify) = maybe_shutdown_notify {
-                    let server_with_graceful_shutdown = async move {
-                        tokio::select! {
-                            _ = shutdown_requested => {}
-                            _ = shutdown_notify.notified() => {}
-                        }
-                    };
-
-                    Box::pin(async move {
-                        http_server
-                            .with_graceful_shutdown(server_with_graceful_shutdown)
-                            .await
-                    })
-                } else {
-                    Box::pin(http_server.into_future())
-                };
-
-            // Run phase
-            // TODO: PERF: Do we need to spawn these into separate tasks?
-            tokio::select! {
-                res = server_run_fut => { res.int_err() },
-                res = flightsql_server.run() => { res.int_err() },
-                res = task_agent.run() => { res.int_err() },
-                res = flow_agent.run() => { res.int_err() },
-                res = outbox_agent.run() => { res.int_err() },
-            }
+            .run()
+            .await
         }
+        cli::Command::Debug(c) => match c.subcommand {
+            cli::Debug::SemsearchReindex(_) => {
+                commands::DebugSemsearchReindexCommand::new(final_catalog, server_account_subject)
+                    .run()
+                    .await
+            }
+        },
     }
 }
 
@@ -780,21 +709,6 @@ fn find_workspace_rec(p: &Path) -> Option<PathBuf> {
     } else {
         None
     }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-async fn initialize_components(
-    catalog: &dill::Catalog,
-    server_account_subject: kamu_accounts::CurrentAccountSubject,
-) -> Result<(), InternalError> {
-    let logged_catalog = dill::CatalogBuilder::new_chained(catalog)
-        .add_value(server_account_subject)
-        .build();
-
-    init_on_startup::run_startup_jobs(&logged_catalog)
-        .await
-        .int_err()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

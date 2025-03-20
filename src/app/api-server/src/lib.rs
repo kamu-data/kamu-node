@@ -12,8 +12,10 @@
 
 pub mod app;
 pub mod cli;
+pub mod commands;
 pub mod config;
 pub(crate) mod database;
+mod emails;
 pub(crate) mod flightsql_server;
 pub(crate) mod gql_server;
 pub mod http_server;
@@ -21,6 +23,4 @@ pub mod ui_configuration;
 
 pub use app::*;
 pub(crate) use database::*;
-
-mod emails;
 pub use emails::*;
