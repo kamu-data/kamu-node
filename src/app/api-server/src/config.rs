@@ -803,15 +803,42 @@ impl Default for TaskAgentConfig {
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct SearchConfig {
+    /// Indexer configuration
     pub indexer: Option<SearchIndexerConfig>,
+
+    /// Embeddings chunker configuration
     pub embeddings_chunker: Option<EmbeddingsChunkerConfig>,
+
+    /// Embeddings encoder configuration
     pub embeddings_encoder: EmbeddingsEncoderConfig,
+
+    /// Vector repository configuration
     pub vector_repo: VectorRepoConfig,
+
+    /// The multiplication factor that determines how many more points will be
+    /// requested from vector store to compensate for filtering out results that
+    /// may be inaccessible to user.
+    #[serde(default = "SearchConfig::default_overfetch_factor")]
+    pub overfetch_factor: f32,
+
+    /// The additive value that determines how many more points will be
+    /// requested from vector store to compensate for filtering out results that
+    /// may be inaccessible to user.
+    #[serde(default = "SearchConfig::default_overfetch_amount")]
+    pub overfetch_amount: usize,
 }
 
 impl SearchConfig {
     pub const DEFAULT_MODEL: &str = "text-embedding-ada-002";
     pub const DEFAULT_DIMENSIONS: usize = 1536;
+
+    pub fn default_overfetch_factor() -> f32 {
+        2.0
+    }
+
+    pub fn default_overfetch_amount() -> usize {
+        10
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -821,7 +848,22 @@ impl SearchConfig {
 #[serde(rename_all = "camelCase")]
 pub struct SearchIndexerConfig {
     // Whether to clear and re-index on start or use existing vectors if any
+    #[serde(default)]
     pub clear_on_start: bool,
+
+    /// Whether to skip indexing datasets that have no readme or description
+    #[serde(default)]
+    pub skip_datasets_with_no_description: bool,
+
+    /// Whether to skip indexing datasets that have no data
+    #[serde(default)]
+    pub skip_datasets_with_no_data: bool,
+
+    /// Whether to include the original text as payload of the vectors when
+    /// storing them. It is not needed for normal service operations but can
+    /// help debug issues.
+    #[serde(default)]
+    pub payload_include_content: bool,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

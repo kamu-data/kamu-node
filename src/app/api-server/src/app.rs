@@ -561,11 +561,23 @@ pub async fn init_dependencies(
         embeddings_chunker,
         embeddings_encoder,
         vector_repo,
+        overfetch_factor,
+        overfetch_amount,
     }) = config.search
     {
+        b.add_value(kamu_search_services::SearchServiceLocalConfig {
+            overfetch_factor,
+            overfetch_amount,
+        });
+
         b.add::<kamu_search_services::SearchServiceLocalIndexer>();
+
+        let indexer = indexer.unwrap_or_default();
         b.add_value(kamu_search_services::SearchServiceLocalIndexerConfig {
-            clear_on_start: indexer.unwrap_or_default().clear_on_start,
+            clear_on_start: indexer.clear_on_start,
+            skip_datasets_with_no_description: indexer.skip_datasets_with_no_description,
+            skip_datasets_with_no_data: indexer.skip_datasets_with_no_data,
+            payload_include_content: indexer.payload_include_content,
         });
 
         match embeddings_chunker.unwrap_or_default() {
@@ -603,6 +615,11 @@ pub async fn init_dependencies(
                 });
             }
         }
+    } else {
+        b.add_value(kamu_search_services::SearchServiceLocalConfig {
+            overfetch_factor: config::SearchConfig::default_overfetch_factor(),
+            overfetch_amount: config::SearchConfig::default_overfetch_amount(),
+        });
     }
     //
 
