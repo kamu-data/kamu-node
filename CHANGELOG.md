@@ -12,7 +12,7 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## [Unreleased]
+## [0.58.0] - 2025-03-23
 ### Added
 - Introduced `debug` CLI command group for operational helpers
 - New `debug semsearch-reindex` CLI command that allows to recreate the embeddings in the vector repository
