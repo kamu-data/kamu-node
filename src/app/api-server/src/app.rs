@@ -7,12 +7,13 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
+use std::future::Future;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use arrow_flight::sql::SqlInfo;
 use chrono::Duration;
-use dill::{CatalogBuilder, Component};
+use dill::*;
 use internal_error::*;
 use kamu::domain::{DidGeneratorDefault, TenancyConfig};
 use observability::metrics::MetricsProvider;
@@ -20,7 +21,7 @@ use s3_utils::{S3Context, S3Metrics};
 use tracing::{error, info, warn};
 use url::Url;
 
-use crate::commands::Command;
+use crate::commands::{Command, CommandDesc};
 use crate::ui_configuration::{UIConfiguration, UIFeatureFlags};
 use crate::{
     cli,
@@ -84,29 +85,19 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
 
     let db_config = config.database.clone();
 
-    let ui_config = UIConfiguration {
-        ingest_upload_file_limit_mb: config.upload_repo.max_file_size_mb,
-        feature_flags: UIFeatureFlags {
-            enable_dataset_env_vars_management: config.dataset_env_vars.is_enabled(),
-            ..UIFeatureFlags::default()
-        },
-    };
-
-    let maybe_e2e_http_server_listener = if args.e2e_output_data_path.is_some() {
-        let addr = std::net::SocketAddr::from((std::net::Ipv4Addr::new(127, 0, 0, 1), 0));
-        let socket = tokio::net::TcpListener::bind(addr).await.int_err()?;
-
-        Some(socket)
-    } else {
-        None
-    };
+    let e2e_http_port = args
+        .e2e_output_data_path
+        .as_ref()
+        .map(|_| container_runtime::ContainerRuntime::default().get_random_free_port())
+        .transpose()
+        .int_err()?;
 
     let catalog = init_dependencies(
         config,
         &repo_url,
         tenancy_config,
         local_dir.path(),
-        maybe_e2e_http_server_listener.as_ref(),
+        e2e_http_port,
     )
     .await?
     .build();
@@ -127,52 +118,81 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
         catalog
     };
 
-    // TODO: Automatically setup authorized catalog and DB transaction for commands
-    // that need them. One approach here could be to map CLI command to a
-    // `Builder<dyn Command>` that via metadata specifies whether transaction and
-    // auth is needed, allowing us setup the right `Catalog` to construct the
-    // command instance from.
-    match args.command {
+    let command_builder: Box<dyn TypedBuilder<dyn Command>> = match args.command {
         cli::Command::Gql(c) => match c.subcommand {
-            cli::Gql::Schema(_) => commands::GqlSchemaCommand::new().run().await,
+            cli::Gql::Schema(_) => Box::new(commands::GqlSchemaCommand::builder().cast()),
             cli::Gql::Query(sc) => {
-                commands::GqlQueryCommand::new(
-                    final_catalog,
-                    server_account_subject,
-                    sc.query,
-                    sc.full,
-                )
-                .run()
-                .await
+                Box::new(commands::GqlQueryCommand::builder(sc.query, sc.full).cast())
             }
         },
         cli::Command::Metrics(_) => {
-            commands::ListMetricsCommand::new(metrics_registry)
-                .run()
-                .await
+            Box::new(commands::ListMetricsCommand::builder(metrics_registry).cast())
         }
-        cli::Command::Run(c) => {
-            commands::RunCommand::new(
-                final_catalog,
-                tenancy_config,
-                ui_config,
-                server_account_subject,
+        cli::Command::Run(c) => Box::new(
+            commands::RunCommand::builder(
+                server_account_subject.clone(),
                 c.address,
                 c.http_port,
                 c.flightsql_port,
                 args.e2e_output_data_path,
-                maybe_e2e_http_server_listener,
+                e2e_http_port,
             )
-            .run()
-            .await
-        }
+            .cast(),
+        ),
         cli::Command::Debug(c) => match c.subcommand {
             cli::Debug::SemsearchReindex(_) => {
-                commands::DebugSemsearchReindexCommand::new(final_catalog, server_account_subject)
-                    .run()
-                    .await
+                Box::new(commands::DebugSemsearchReindexCommand::builder().cast())
             }
         },
+    };
+
+    let command_desc = command_builder
+        .metadata_get_first::<CommandDesc>()
+        .copied()
+        .unwrap_or_default();
+
+    let catalog = if command_desc.needs_admin_auth {
+        final_catalog
+            .builder_chained()
+            .add_value(server_account_subject)
+            .build()
+    } else {
+        final_catalog
+    };
+
+    maybe_transactional(
+        command_desc.needs_transaction,
+        catalog,
+        |catalog| async move {
+            let command = command_builder.get(&catalog).int_err()?;
+            command.run().await
+        },
+    )
+    .await?;
+
+    Ok(())
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+async fn maybe_transactional<F, RF, RT, RE>(
+    transactional: bool,
+    catalog: dill::Catalog,
+    f: F,
+) -> Result<RT, RE>
+where
+    F: FnOnce(dill::Catalog) -> RF,
+    RF: Future<Output = Result<RT, RE>>,
+    RE: From<InternalError>,
+{
+    if !transactional {
+        f(catalog).await
+    } else {
+        let transaction_runner = database_common::DatabaseTransactionRunner::new(catalog);
+
+        transaction_runner
+            .transactional(|transactional_catalog| async move { f(transactional_catalog).await })
+            .await
     }
 }
 
@@ -221,7 +241,7 @@ pub async fn init_dependencies(
     repo_url: &Url,
     tenancy_config: TenancyConfig,
     local_dir: &Path,
-    maybe_e2e_http_server_listener: Option<&tokio::net::TcpListener>,
+    e2e_http_port: Option<u16>,
 ) -> Result<CatalogBuilder, InternalError> {
     // TODO: Revisit this ugly way to get metrics
     let s3_metrics_catalog = CatalogBuilder::new()
@@ -464,10 +484,9 @@ pub async fn init_dependencies(
             base_url_flightsql: config.url.base_url_flightsql,
         };
 
-        if let Some(listener) = maybe_e2e_http_server_listener {
-            let local_address = listener.local_addr().unwrap();
-            let base_url_rest =
-                Url::parse(&format!("http://{local_address}")).expect("URL failed to parse");
+        if let Some(e2e_http_port) = e2e_http_port {
+            let base_url_rest = Url::parse(&format!("http://127.0.0.1:{e2e_http_port}"))
+                .expect("URL failed to parse");
 
             protocols.base_url_rest = base_url_rest;
         }
@@ -537,7 +556,7 @@ pub async fn init_dependencies(
             }
         }
     }
-    b.add_value(config.dataset_env_vars);
+    b.add_value(config.dataset_env_vars.clone());
 
     b.add::<database_common::DatabaseTransactionRunner>();
 
@@ -621,6 +640,16 @@ pub async fn init_dependencies(
             overfetch_amount: config::SearchConfig::default_overfetch_amount(),
         });
     }
+    //
+
+    // UI
+    b.add_value(UIConfiguration {
+        ingest_upload_file_limit_mb: config.upload_repo.max_file_size_mb,
+        feature_flags: UIFeatureFlags {
+            enable_dataset_env_vars_management: config.dataset_env_vars.is_enabled(),
+            ..UIFeatureFlags::default()
+        },
+    });
     //
 
     Ok(b)

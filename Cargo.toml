@@ -196,6 +196,9 @@ debug = 1
 # datafusion-odata = { git = 'https://github.com/kamu-data/datafusion-odata.git', branch = '42.0.0-axum-0.6' }
 # TODO: Delete this workaround when new version of sqlx will be released
 sqlx = { git = 'https://github.com/kamu-data/sqlx', branch = 'nextest-race-condition' }
+dill = { path = "../dill-rs/dill" }
+dill-impl = { path = "../dill-rs/dill-impl" }
+
 
 # Use this section to build against local versions of the core crates
 [patch.'https://github.com/kamu-data/kamu-cli']

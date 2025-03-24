@@ -11,19 +11,22 @@ use std::sync::Arc;
 
 use internal_error::*;
 
+use super::{Command, CommandDesc};
+
+#[dill::component]
+#[dill::interface(dyn Command)]
+#[dill::meta(CommandDesc {
+    needs_admin_auth: false,
+    needs_transaction: false,
+})]
 pub struct ListMetricsCommand {
+    #[dill::component(explicit)]
     metrics_registry: Arc<prometheus::Registry>,
 }
 
-impl ListMetricsCommand {
-    pub fn new(metrics_registry: Arc<prometheus::Registry>) -> Self {
-        Self { metrics_registry }
-    }
-}
-
-#[async_trait::async_trait(?Send)]
-impl super::Command for ListMetricsCommand {
-    async fn run(&mut self) -> Result<(), InternalError> {
+#[async_trait::async_trait]
+impl Command for ListMetricsCommand {
+    async fn run(&self) -> Result<(), InternalError> {
         // TODO: Proper implementation is blocked by https://github.com/tikv/rust-prometheus/issues/526
         let metric_families = self.metrics_registry.gather();
         println!("{metric_families:#?}");

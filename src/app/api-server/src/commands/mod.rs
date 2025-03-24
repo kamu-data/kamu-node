@@ -21,9 +21,15 @@ pub use run_command::*;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#[async_trait::async_trait(?Send)]
-pub trait Command {
-    async fn run(&mut self) -> Result<(), internal_error::InternalError>;
+#[async_trait::async_trait]
+pub trait Command: Send + Sync {
+    async fn run(&self) -> Result<(), internal_error::InternalError>;
+}
+
+#[derive(Debug, Default, Clone, Copy)]
+pub struct CommandDesc {
+    pub needs_admin_auth: bool,
+    pub needs_transaction: bool,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

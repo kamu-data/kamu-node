@@ -7,51 +7,36 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
+use std::sync::Arc;
+
 use init_on_startup::InitOnStartup as _;
 use internal_error::*;
-use kamu_accounts::CurrentAccountSubject;
+use kamu_search_services::SearchServiceLocalIndexer;
+
+use super::{Command, CommandDesc};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#[dill::component]
+#[dill::interface(dyn Command)]
+#[dill::meta(CommandDesc {
+    needs_admin_auth: true,
+    needs_transaction: true,
+})]
 pub struct DebugSemsearchReindexCommand {
-    catalog: dill::Catalog,
-    server_account_subject: CurrentAccountSubject,
-}
-
-impl DebugSemsearchReindexCommand {
-    pub fn new(catalog: dill::Catalog, server_account_subject: CurrentAccountSubject) -> Self {
-        Self {
-            catalog,
-            server_account_subject,
-        }
-    }
+    indexer: Option<Arc<SearchServiceLocalIndexer>>,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#[async_trait::async_trait(?Send)]
-impl super::Command for DebugSemsearchReindexCommand {
-    async fn run(&mut self) -> Result<(), InternalError> {
-        // TODO: Extract auth and TX handling outside of commands
-        let catalog_with_auth = self
-            .catalog
-            .builder_chained()
-            .add_value(self.server_account_subject.clone())
-            .build();
+#[async_trait::async_trait]
+impl Command for DebugSemsearchReindexCommand {
+    async fn run(&self) -> Result<(), InternalError> {
+        let Some(indexer) = &self.indexer else {
+            return Err(InternalError::new("Semantic search is not configured"));
+        };
 
-        let txr = database_common::DatabaseTransactionRunner::new(catalog_with_auth);
-
-        txr.transactional(|catalog| async move {
-            let indexer = catalog
-                .get_one::<kamu_search_services::SearchServiceLocalIndexer>()
-                .int_err()?;
-
-            indexer.run_initialization().await?;
-
-            Ok(())
-        })
-        .await?;
-
+        indexer.run_initialization().await?;
         Ok(())
     }
 }

@@ -9,20 +9,21 @@
 
 use internal_error::*;
 
+use super::{Command, CommandDesc};
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Default)]
+#[dill::component]
+#[dill::interface(dyn Command)]
+#[dill::meta(CommandDesc {
+    needs_admin_auth: false,
+    needs_transaction: false,
+})]
 pub struct GqlSchemaCommand {}
 
-impl GqlSchemaCommand {
-    pub fn new() -> Self {
-        Self {}
-    }
-}
-
-#[async_trait::async_trait(?Send)]
-impl super::Command for GqlSchemaCommand {
-    async fn run(&mut self) -> Result<(), InternalError> {
+#[async_trait::async_trait]
+impl Command for GqlSchemaCommand {
+    async fn run(&self) -> Result<(), InternalError> {
         println!("{}", kamu_adapter_graphql::schema().sdl());
         Ok(())
     }

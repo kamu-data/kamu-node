@@ -32,7 +32,7 @@ pub async fn build_server(
     catalog: dill::Catalog,
     tenancy_config: TenancyConfig,
     ui_config: UIConfiguration,
-    maybe_e2e_http_server_listener: Option<TcpListener>,
+    e2e_http_port: Option<u16>,
     e2e_output_data_path: Option<&PathBuf>,
 ) -> Result<
     (
@@ -48,12 +48,8 @@ pub async fn build_server(
 > {
     let gql_schema = kamu_adapter_graphql::schema();
 
-    let listener = if let Some(listener) = maybe_e2e_http_server_listener {
-        listener
-    } else {
-        let addr = SocketAddr::from((address, http_port.unwrap_or(0)));
-        TcpListener::bind(addr).await.int_err()?
-    };
+    let addr = SocketAddr::from((address, e2e_http_port.or(http_port).unwrap_or(0)));
+    let listener = TcpListener::bind(addr).await.int_err()?;
     let local_addr = listener.local_addr().unwrap();
 
     let (mut router, api) = OpenApiRouter::with_openapi(

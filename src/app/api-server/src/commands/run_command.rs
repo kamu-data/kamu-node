@@ -15,58 +15,44 @@ use internal_error::*;
 use kamu::domain::TenancyConfig;
 use kamu_accounts::CurrentAccountSubject;
 
+use super::{Command, CommandDesc};
 use crate::ui_configuration::UIConfiguration;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#[dill::component]
+#[dill::interface(dyn Command)]
+#[dill::meta(CommandDesc {
+    needs_admin_auth: false,
+    needs_transaction: false,
+})]
 pub struct RunCommand {
     catalog: dill::Catalog,
 
-    // TODO: Inject from catalog?
     tenancy_config: TenancyConfig,
     ui_config: UIConfiguration,
+
+    #[dill::component(explicit)]
     server_account_subject: CurrentAccountSubject,
 
+    #[dill::component(explicit)]
     address: Option<std::net::IpAddr>,
+    #[dill::component(explicit)]
     http_port: Option<u16>,
+    #[dill::component(explicit)]
     flightsql_port: Option<u16>,
+    #[dill::component(explicit)]
     e2e_output_data_path: Option<PathBuf>,
 
-    maybe_e2e_http_server_listener: Option<tokio::net::TcpListener>,
-}
-
-impl RunCommand {
-    #[allow(clippy::too_many_arguments)]
-    pub fn new(
-        catalog: dill::Catalog,
-        tenancy_config: TenancyConfig,
-        ui_config: UIConfiguration,
-        server_account_subject: CurrentAccountSubject,
-        address: Option<std::net::IpAddr>,
-        http_port: Option<u16>,
-        flightsql_port: Option<u16>,
-        e2e_output_data_path: Option<PathBuf>,
-        maybe_e2e_http_server_listener: Option<tokio::net::TcpListener>,
-    ) -> Self {
-        Self {
-            catalog,
-            tenancy_config,
-            ui_config,
-            server_account_subject,
-            address,
-            http_port,
-            flightsql_port,
-            e2e_output_data_path,
-            maybe_e2e_http_server_listener,
-        }
-    }
+    #[dill::component(explicit)]
+    e2e_http_port: Option<u16>,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#[async_trait::async_trait(?Send)]
-impl super::Command for RunCommand {
-    async fn run(&mut self) -> Result<(), InternalError> {
+#[async_trait::async_trait]
+impl Command for RunCommand {
+    async fn run(&self) -> Result<(), InternalError> {
         let shutdown_requested = graceful_shutdown::trap_signals();
 
         // System services are built from the special catalog that contains the admin
@@ -100,7 +86,7 @@ impl super::Command for RunCommand {
             self.catalog.clone(),
             self.tenancy_config,
             self.ui_config.clone(),
-            self.maybe_e2e_http_server_listener.take(),
+            self.e2e_http_port,
             self.e2e_output_data_path.as_ref(),
         )
         .await?;
@@ -140,28 +126,27 @@ impl super::Command for RunCommand {
             "Serving traffic"
         );
 
-        let server_run_fut: Pin<Box<dyn Future<Output = _>>> =
+        // TODO: Avoid using shutdown_notify in e2e and use signals instead
+        let shutdown_future: Pin<Box<dyn Future<Output = ()> + Send>> =
             if let Some(shutdown_notify) = maybe_shutdown_notify {
-                let server_with_graceful_shutdown = async move {
+                let combined = async move {
                     tokio::select! {
                         _ = shutdown_requested => {}
                         _ = shutdown_notify.notified() => {}
                     }
                 };
-
-                Box::pin(async move {
-                    http_server
-                        .with_graceful_shutdown(server_with_graceful_shutdown)
-                        .await
-                })
+                Box::pin(combined)
             } else {
-                Box::pin(http_server.into_future())
+                Box::pin(shutdown_requested)
             };
 
-        // Run phase
+        let http_server = http_server
+            .with_graceful_shutdown(shutdown_future)
+            .into_future();
+
         // TODO: PERF: Do we need to spawn these into separate tasks?
         tokio::select! {
-            res = server_run_fut => { res.int_err() },
+            res = http_server => { res.int_err() },
             res = flightsql_server.run() => { res.int_err() },
             res = task_agent.run() => { res.int_err() },
             res = flow_agent.run() => { res.int_err() },
