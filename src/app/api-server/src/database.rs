@@ -143,29 +143,22 @@ fn init_database_password_provider(b: &mut CatalogBuilder, raw_db_config: &Datab
         }
         DatabaseConfig::Postgres(config) => match &config.credentials_policy.source {
             DatabaseCredentialSourceConfig::RawPassword(raw_password_config) => {
-                b.add_builder(
-                    DatabaseFixedPasswordProvider::builder()
-                        .with_db_user_name(SecretString::from(
-                            raw_password_config.user_name.clone(),
-                        ))
-                        .with_fixed_password(SecretString::from(
-                            raw_password_config.raw_password.clone(),
-                        )),
-                );
+                b.add_builder(DatabaseFixedPasswordProvider::builder(
+                    SecretString::from(raw_password_config.user_name.clone()),
+                    SecretString::from(raw_password_config.raw_password.clone()),
+                ));
                 b.bind::<dyn DatabasePasswordProvider, DatabaseFixedPasswordProvider>();
             }
             DatabaseCredentialSourceConfig::AwsSecret(aws_secret_config) => {
-                b.add_builder(
-                    DatabaseAwsSecretPasswordProvider::builder()
-                        .with_secret_name(aws_secret_config.secret_name.clone()),
-                );
+                b.add_builder(DatabaseAwsSecretPasswordProvider::builder(
+                    aws_secret_config.secret_name.clone(),
+                ));
                 b.bind::<dyn DatabasePasswordProvider, DatabaseAwsSecretPasswordProvider>();
             }
             DatabaseCredentialSourceConfig::AwsIamToken(aws_iam_config) => {
-                b.add_builder(
-                    DatabaseAwsIamTokenProvider::builder()
-                        .with_db_user_name(SecretString::from(aws_iam_config.user_name.clone())),
-                );
+                b.add_builder(DatabaseAwsIamTokenProvider::builder(SecretString::from(
+                    aws_iam_config.user_name.clone(),
+                )));
                 b.bind::<dyn DatabasePasswordProvider, DatabaseAwsIamTokenProvider>();
             }
         },

@@ -106,7 +106,7 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
     let metrics_registry = observability::metrics::register_all(&catalog);
 
     // Database requires extra actions:
-    let final_catalog = if db_config.needs_database() {
+    let catalog = if db_config.needs_database() {
         // Connect database and obtain a connection pool
         let catalog_with_pool = connect_database_initially(&catalog).await?;
 
@@ -152,12 +152,12 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
         .unwrap_or_default();
 
     let catalog = if command_desc.needs_admin_auth {
-        final_catalog
+        catalog
             .builder_chained()
             .add_value(server_account_subject)
             .build()
     } else {
-        final_catalog
+        catalog
     };
 
     maybe_transactional(
@@ -518,9 +518,7 @@ pub async fn init_dependencies(
                 .await
                 .with_metrics(s3_metrics);
 
-            b.add_builder(
-                kamu_adapter_http::UploadServiceS3::builder().with_s3_upload_context(s3_context),
-            );
+            b.add_builder(kamu_adapter_http::UploadServiceS3::builder(s3_context));
             b.bind::<dyn kamu_adapter_http::UploadService, kamu_adapter_http::UploadServiceS3>();
         }
     }
