@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## Unreleased
+### Added
+- Private Datasets: sharing access ([kamu CLI `0.230.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.230.0))
+
 ## [0.58.0] - 2025-03-23
 ### Added
 - Introduced `debug` CLI command group for operational helpers
