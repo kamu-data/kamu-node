@@ -2690,7 +2690,7 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.230.0#2311f2e87f08012
 dependencies = [
  "async-trait",
  "cfg-if",
- "dill 0.12.1",
+ "dill",
  "libc",
  "once_cell",
  "random-names",
@@ -3008,7 +3008,7 @@ dependencies = [
  "aws-credential-types",
  "aws-sdk-secretsmanager",
  "chrono",
- "dill 0.12.1",
+ "dill",
  "futures",
  "hex",
  "hmac",
@@ -3708,35 +3708,13 @@ dependencies = [
 
 [[package]]
 name = "dill"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "17606b2a14fd52c970adc13424a71f38085aa4e2239cb61c325d0c680e2d6fcd"
-dependencies = [
- "dill-impl 0.11.0",
- "multimap",
- "thiserror 2.0.12",
-]
-
-[[package]]
-name = "dill"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "db0d185eda24cc29e6159c310b91384760e48e51540618681fbd4d9f55957d7a"
 dependencies = [
- "dill-impl 0.12.1",
+ "dill-impl",
  "multimap",
  "thiserror 2.0.12",
-]
-
-[[package]]
-name = "dill-impl"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9ebf9c86e98c8f7dc16ccb0985767600212afa0a007e1e45daa15124dac05a01"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.100",
 ]
 
 [[package]]
@@ -3919,7 +3897,7 @@ name = "email-gateway"
 version = "0.58.0"
 dependencies = [
  "async-trait",
- "dill 0.11.0",
+ "dill",
  "email-utils",
  "internal-error",
  "reqwest",
@@ -5206,7 +5184,7 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.230.0#2311f2e87f08012
 dependencies = [
  "async-trait",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "internal-error",
  "petgraph 0.7.1",
  "thiserror 2.0.12",
@@ -5403,7 +5381,7 @@ dependencies = [
  "datafusion",
  "datafusion-ethers",
  "datafusion-functions-json",
- "dill 0.12.1",
+ "dill",
  "file-utils",
  "flatbuffers",
  "flate2",
@@ -5486,7 +5464,7 @@ dependencies = [
  "async-trait",
  "chrono",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "email-utils",
  "futures",
  "internal-error",
@@ -5504,7 +5482,7 @@ dependencies = [
  "async-trait",
  "chrono",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "email-utils",
  "futures",
  "internal-error",
@@ -5524,7 +5502,7 @@ dependencies = [
  "async-trait",
  "chrono",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "init-on-startup",
  "internal-error",
  "jsonwebtoken",
@@ -5550,7 +5528,7 @@ dependencies = [
  "async-trait",
  "chrono",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "email-utils",
  "futures",
  "internal-error",
@@ -5568,7 +5546,7 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.230.0#2311f2e87f08012
 dependencies = [
  "async-trait",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "futures",
  "init-on-startup",
  "internal-error",
@@ -5598,7 +5576,7 @@ dependencies = [
  "chrono",
  "database-common",
  "datafusion",
- "dill 0.12.1",
+ "dill",
  "futures",
  "http 1.3.1",
  "kamu-accounts",
@@ -5625,7 +5603,7 @@ dependencies = [
  "common-macros",
  "database-common",
  "datafusion",
- "dill 0.12.1",
+ "dill",
  "email-utils",
  "event-sourcing",
  "futures",
@@ -5665,7 +5643,7 @@ dependencies = [
  "database-common",
  "database-common-macros",
  "datafusion",
- "dill 0.12.1",
+ "dill",
  "ed25519-dalek",
  "email-utils",
  "flate2",
@@ -5710,7 +5688,7 @@ version = "0.230.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.230.0#2311f2e87f08012713f5b8f1a58bac6015474e4a"
 dependencies = [
  "async-trait",
- "dill 0.12.1",
+ "dill",
  "email-utils",
  "http 1.3.1",
  "internal-error",
@@ -5734,7 +5712,7 @@ dependencies = [
  "database-common-macros",
  "datafusion",
  "datafusion-odata",
- "dill 0.12.1",
+ "dill",
  "futures",
  "http 1.3.1",
  "http-common",
@@ -5763,7 +5741,7 @@ dependencies = [
  "container-runtime",
  "database-common",
  "database-common-macros",
- "dill 0.11.0",
+ "dill",
  "duration-string",
  "email-gateway",
  "email-utils",
@@ -5859,7 +5837,7 @@ version = "0.230.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.230.0#2311f2e87f08012713f5b8f1a58bac6015474e4a"
 dependencies = [
  "async-trait",
- "dill 0.12.1",
+ "dill",
  "kamu-auth-rebac",
  "tokio",
 ]
@@ -5871,7 +5849,7 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.230.0#2311f2e87f08012
 dependencies = [
  "async-trait",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "internal-error",
  "kamu-auth-rebac",
  "sqlx",
@@ -5883,7 +5861,7 @@ version = "0.230.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.230.0#2311f2e87f08012713f5b8f1a58bac6015474e4a"
 dependencies = [
  "async-trait",
- "dill 0.12.1",
+ "dill",
  "futures",
  "init-on-startup",
  "internal-error",
@@ -5904,7 +5882,7 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.230.0#2311f2e87f08012
 dependencies = [
  "async-trait",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "internal-error",
  "kamu-auth-rebac",
  "sqlx",
@@ -6011,7 +5989,7 @@ dependencies = [
  "chrono",
  "container-runtime",
  "datafusion",
- "dill 0.12.1",
+ "dill",
  "file-utils",
  "futures",
  "internal-error",
@@ -6064,7 +6042,7 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.230.0#2311f2e87f08012
 dependencies = [
  "async-trait",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "futures",
  "internal-error",
  "kamu-datasets",
@@ -6082,7 +6060,7 @@ dependencies = [
  "async-stream",
  "async-trait",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "futures",
  "internal-error",
  "kamu-datasets",
@@ -6101,7 +6079,7 @@ dependencies = [
  "chrono",
  "common-macros",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "futures",
  "init-on-startup",
  "internal-error",
@@ -6131,7 +6109,7 @@ dependencies = [
  "async-stream",
  "async-trait",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "futures",
  "internal-error",
  "kamu-datasets",
@@ -6150,7 +6128,7 @@ dependencies = [
  "chrono",
  "cron",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "enum-variants",
  "event-sourcing",
  "internal-error",
@@ -6176,7 +6154,7 @@ dependencies = [
  "async-trait",
  "chrono",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "futures",
  "kamu-flow-system",
  "opendatafabric",
@@ -6194,7 +6172,7 @@ dependencies = [
  "async-trait",
  "chrono",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "futures",
  "kamu-flow-system",
  "opendatafabric",
@@ -6213,7 +6191,7 @@ dependencies = [
  "chrono",
  "database-common",
  "database-common-macros",
- "dill 0.12.1",
+ "dill",
  "futures",
  "init-on-startup",
  "internal-error",
@@ -6239,7 +6217,7 @@ dependencies = [
  "async-trait",
  "chrono",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "futures",
  "kamu-flow-system",
  "opendatafabric",
@@ -6280,7 +6258,7 @@ version = "0.230.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.230.0#2311f2e87f08012713f5b8f1a58bac6015474e4a"
 dependencies = [
  "async-trait",
- "dill 0.12.1",
+ "dill",
  "internal-error",
  "messaging-outbox",
  "tokio",
@@ -6295,7 +6273,7 @@ dependencies = [
  "async-stream",
  "async-trait",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "futures",
  "internal-error",
  "messaging-outbox",
@@ -6310,7 +6288,7 @@ dependencies = [
  "async-stream",
  "async-trait",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "futures",
  "indoc 2.0.6",
  "internal-error",
@@ -6434,7 +6412,7 @@ dependencies = [
  "ciborium",
  "clap",
  "confique",
- "dill 0.11.0",
+ "dill",
  "duration-string",
  "graceful-shutdown",
  "hex",
@@ -6491,7 +6469,7 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.230.0#2311f2e87f08012
 dependencies = [
  "async-openai",
  "async-trait",
- "dill 0.12.1",
+ "dill",
  "futures",
  "internal-error",
  "kamu-search",
@@ -6508,7 +6486,7 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.230.0#2311f2e87f08012
 dependencies = [
  "async-trait",
  "container-runtime",
- "dill 0.12.1",
+ "dill",
  "futures",
  "internal-error",
  "kamu-search",
@@ -6527,7 +6505,7 @@ version = "0.230.0"
 source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.230.0#2311f2e87f08012713f5b8f1a58bac6015474e4a"
 dependencies = [
  "async-trait",
- "dill 0.12.1",
+ "dill",
  "futures",
  "init-on-startup",
  "internal-error",
@@ -6569,7 +6547,7 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.230.0#2311f2e87f08012
 dependencies = [
  "async-trait",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "futures",
  "kamu-task-system",
  "opendatafabric",
@@ -6583,7 +6561,7 @@ dependencies = [
  "async-stream",
  "async-trait",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "futures",
  "kamu-task-system",
  "opendatafabric",
@@ -6599,7 +6577,7 @@ dependencies = [
  "async-trait",
  "database-common",
  "database-common-macros",
- "dill 0.12.1",
+ "dill",
  "futures",
  "init-on-startup",
  "internal-error",
@@ -6624,7 +6602,7 @@ dependencies = [
  "async-trait",
  "chrono",
  "database-common",
- "dill 0.12.1",
+ "dill",
  "futures",
  "kamu-task-system",
  "opendatafabric",
@@ -7017,7 +6995,7 @@ dependencies = [
  "chrono",
  "database-common",
  "database-common-macros",
- "dill 0.12.1",
+ "dill",
  "futures",
  "init-on-startup",
  "internal-error",
@@ -7359,7 +7337,7 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.230.0#2311f2e87f08012
 dependencies = [
  "async-trait",
  "axum 0.8.1",
- "dill 0.12.1",
+ "dill",
  "http 1.3.1",
  "opentelemetry",
  "opentelemetry-otlp",
@@ -7470,7 +7448,7 @@ dependencies = [
  "async-trait",
  "bytes",
  "chrono",
- "dill 0.12.1",
+ "dill",
  "file-utils",
  "futures",
  "internal-error",
@@ -7497,7 +7475,7 @@ dependencies = [
  "bytes",
  "chrono",
  "common-macros",
- "dill 0.12.1",
+ "dill",
  "file-utils",
  "hickory-resolver",
  "http 1.3.1",
@@ -9235,7 +9213,7 @@ dependencies = [
  "aws-smithy-types",
  "bon",
  "common-macros",
- "dill 0.12.1",
+ "dill",
  "internal-error",
  "observability",
  "prometheus",
@@ -10350,7 +10328,7 @@ source = "git+https://github.com/kamu-data/kamu-cli?tag=v0.230.0#2311f2e87f08012
 dependencies = [
  "async-trait",
  "chrono",
- "dill 0.12.1",
+ "dill",
  "tokio",
 ]
 
