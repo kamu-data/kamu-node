@@ -52,7 +52,7 @@ type Account {
 	"""
 	Access to the flow configurations of this account
 	"""
-	flows: AccountFlows
+	flows: AccountFlows!
 }
 
 type AccountConnection {
@@ -118,6 +118,10 @@ type AccountFlowsMut {
 
 scalar AccountID
 
+input AccountLookupFilter {
+	excludeAccountsByIds: [AccountID!]!
+}
+
 type AccountMut {
 	"""
 	Update account email
@@ -134,6 +138,31 @@ scalar AccountName
 enum AccountType {
 	USER
 	ORGANIZATION
+}
+
+type AccountWithRole {
+	account: Account!
+	role: DatasetAccessRole!
+}
+
+type AccountWithRoleConnection {
+	"""
+	A shorthand for `edges { node { ... } }`
+	"""
+	nodes: [AccountWithRole!]!
+	"""
+	Approximate number of total nodes
+	"""
+	totalCount: Int!
+	"""
+	Page information
+	"""
+	pageInfo: PageBasedInfo!
+	edges: [AccountWithRoleEdge!]!
+}
+
+type AccountWithRoleEdge {
+	node: AccountWithRole!
 }
 
 type Accounts {
@@ -598,12 +627,54 @@ type Dataset {
 	"""
 	permissions: DatasetPermissions!
 	"""
+	Access to the dataset collaboration data
+	"""
+	collaboration: DatasetCollaboration!
+	"""
 	Various endpoints for interacting with data
 	"""
 	endpoints: DatasetEndpoints!
 }
 
+enum DatasetAccessRole {
+	"""
+	Role opening the possibility for read-only access
+	"""
+	READER
+	"""
+	Role opening to modify dataset data
+	"""
+	EDITOR
+	"""
+	Role to maintain the dataset
+	"""
+	MAINTAINER
+}
+
 scalar DatasetAlias
+
+type DatasetCollaboration {
+	"""
+	Accounts (and their roles) that have access to the dataset
+	"""
+	accountRoles(page: Int, perPage: Int): AccountWithRoleConnection!
+}
+
+type DatasetCollaborationMut {
+	"""
+	Grant account access as the specified role for the dataset
+	"""
+	setRole(accountId: AccountID!, role: DatasetAccessRole!): SetRoleResult!
+	"""
+	Revoking account accesses for the dataset
+	"""
+	unsetRoles(accountIds: [AccountID!]!): UnsetRoleResult!
+}
+
+type DatasetCollaborationPermissions {
+	canView: Boolean!
+	canUpdate: Boolean!
+}
 
 type DatasetConnection {
 	"""
@@ -678,6 +749,11 @@ type DatasetEnvVarsMut {
 	deleteEnvVariable(id: DatasetEnvVarID!): DeleteDatasetEnvVarResult!
 }
 
+type DatasetEnvVarsPermissions {
+	canView: Boolean!
+	canUpdate: Boolean!
+}
+
 type DatasetFlowConfigs {
 	"""
 	Returns defined configuration for a flow of specified type
@@ -749,6 +825,17 @@ type DatasetFlowsMut {
 	configs: DatasetFlowConfigsMut!
 	runs: DatasetFlowRunsMut!
 	triggers: DatasetFlowTriggersMut!
+}
+
+type DatasetFlowsPermissions {
+	canView: Boolean!
+	canRun: Boolean!
+}
+
+type DatasetGeneralPermissions {
+	canRename: Boolean!
+	canSetVisibility: Boolean!
+	canDelete: Boolean!
 }
 
 scalar DatasetID
@@ -830,6 +917,10 @@ type DatasetMetadataMut {
 	updateReadme(content: String): UpdateReadmeResult!
 }
 
+type DatasetMetadataPermissions {
+	canCommit: Boolean!
+}
+
 type DatasetMut {
 	"""
 	Access to the mutable metadata of the dataset
@@ -843,6 +934,10 @@ type DatasetMut {
 	Access to the mutable flow configurations of this dataset
 	"""
 	envVars: DatasetEnvVarsMut!
+	"""
+	Access to collaboration management methods
+	"""
+	collaboration: DatasetCollaborationMut!
 	"""
 	Rename the dataset
 	"""
@@ -864,11 +959,11 @@ type DatasetMut {
 scalar DatasetName
 
 type DatasetPermissions {
-	canView: Boolean!
-	canDelete: Boolean!
-	canRename: Boolean!
-	canCommit: Boolean!
-	canSchedule: Boolean!
+	collaboration: DatasetCollaborationPermissions!
+	envVars: DatasetEnvVarsPermissions!
+	flows: DatasetFlowsPermissions!
+	general: DatasetGeneralPermissions!
+	metadata: DatasetMetadataPermissions!
 }
 
 type DatasetPushStatus {
@@ -1486,12 +1581,16 @@ type FlowDescriptionSystemGC {
 	dummy: Boolean!
 }
 
-union FlowDescriptionUpdateResult = FlowDescriptionUpdateResultUpToDate | FlowDescriptionUpdateResultSuccess
+union FlowDescriptionUpdateResult = FlowDescriptionUpdateResultUpToDate | FlowDescriptionUpdateResultSuccess | FlowDescriptionUpdateResultUnknown
 
 type FlowDescriptionUpdateResultSuccess {
 	numBlocks: Int!
 	numRecords: Int!
 	updatedWatermark: DateTime
+}
+
+type FlowDescriptionUpdateResultUnknown {
+	message: String!
 }
 
 type FlowDescriptionUpdateResultUpToDate {
@@ -1734,13 +1833,17 @@ type LoginResponse {
 	account: Account!
 }
 
+input LookupFilters {
+	byAccount: AccountLookupFilter
+}
+
 """
 Merge strategy determines how newly ingested data should be combined with
 the data that already exists in the dataset.
 
 See: https://github.com/kamu-data/open-data-fabric/blob/master/open-data-fabric.md#mergestrategy-schema
 """
-union MergeStrategy = MergeStrategyAppend | MergeStrategyLedger | MergeStrategySnapshot
+union MergeStrategy = MergeStrategyAppend | MergeStrategyLedger | MergeStrategySnapshot | MergeStrategyChangelogStream | MergeStrategyUpsertStream
 
 """
 Append merge strategy.
@@ -1752,6 +1855,24 @@ See: https://github.com/kamu-data/open-data-fabric/blob/master/open-data-fabric.
 """
 type MergeStrategyAppend {
 	dummy: String
+}
+
+"""
+Changelog stream merge strategy.
+
+This is the native stream format for ODF that accurately describes the
+evolution of all event records including appends, retractions, and
+corrections as per RFC-015. No pre-processing except for format validation
+is done.
+
+See: https://github.com/kamu-data/open-data-fabric/blob/master/open-data-fabric.md#mergestrategychangelogstream-schema
+"""
+type MergeStrategyChangelogStream {
+	"""
+	Names of the columns that uniquely identify the record throughout its
+	lifetime
+	"""
+	primaryKey: [String!]!
 }
 
 """
@@ -1814,6 +1935,25 @@ type MergeStrategySnapshot {
 	between two snapshots.
 	"""
 	compareColumns: [String!]
+}
+
+"""
+Upsert stream merge strategy.
+
+This strategy should be used for data sources containing ledgers of
+insert-or-update and delete events. Unlike ChangelogStream the
+insert-or-update events only carry the new values, so this strategy will use
+primary key to re-classify the events into an append or a correction from/to
+pair, looking up the previous values.
+
+See: https://github.com/kamu-data/open-data-fabric/blob/master/open-data-fabric.md#mergestrategyupsertstream-schema
+"""
+type MergeStrategyUpsertStream {
+	"""
+	Names of the columns that uniquely identify the record throughout its
+	lifetime
+	"""
+	primaryKey: [String!]!
 }
 
 type MetadataBlockConnection {
@@ -1941,6 +2081,28 @@ type Mutation {
 	system. This groups deals with their identities and permissions.
 	"""
 	accounts: AccountsMut!
+}
+
+union NameLookupResult = Account
+
+type NameLookupResultConnection {
+	"""
+	A shorthand for `edges { node { ... } }`
+	"""
+	nodes: [NameLookupResult!]!
+	"""
+	Approximate number of total nodes
+	"""
+	totalCount: Int!
+	"""
+	Page information
+	"""
+	pageInfo: PageBasedInfo!
+	edges: [NameLookupResultEdge!]!
+}
+
+type NameLookupResultEdge {
+	node: NameLookupResult!
 }
 
 type NoChanges implements CommitResult & UpdateReadmeResult {
@@ -2397,6 +2559,11 @@ type Search {
 	current node using a prompt in natural language
 	"""
 	queryNaturalLanguage(prompt: String!, perPage: Int): SearchResultExConnection!
+	"""
+	Perform lightweight search among resource names.
+	Useful for autocomplete.
+	"""
+	nameLookup(query: String!, filters: LookupFilters!, page: Int, perPage: Int): NameLookupResultConnection!
 }
 
 union SearchResult = Dataset
@@ -2579,6 +2746,14 @@ type SetPollingSource {
 	history.
 	"""
 	merge: MergeStrategy!
+}
+
+interface SetRoleResult {
+	message: String!
+}
+
+type SetRoleResultSuccess implements SetRoleResult {
+	message: String!
 }
 
 """
@@ -2872,6 +3047,14 @@ interface TriggerFlowResult {
 
 type TriggerFlowSuccess implements TriggerFlowResult {
 	flow: Flow!
+	message: String!
+}
+
+interface UnsetRoleResult {
+	message: String!
+}
+
+type UnsetRoleResultSuccess implements UnsetRoleResult {
 	message: String!
 }
 
