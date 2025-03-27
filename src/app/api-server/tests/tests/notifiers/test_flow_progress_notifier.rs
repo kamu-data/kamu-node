@@ -187,6 +187,7 @@ impl FlowProgressNotifierHarness {
                 owner_id: odf::AccountID::new_seeded_ed25519(DEFAULT_ACCOUNT_NAME_STR.as_bytes()),
                 name: dataset_name.clone(),
                 created_at: Utc::now(),
+                kind: odf::DatasetKind::Root,
             })
             .await
             .unwrap();

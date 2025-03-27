@@ -61,6 +61,7 @@ pub(crate) fn configure_database_components(
             b.add::<kamu_datasets_postgres::PostgresDatasetEntryRepository>();
             b.add::<kamu_datasets_postgres::PostgresDatasetDependencyRepository>();
             b.add::<kamu_datasets_postgres::PostgresDatasetReferenceRepository>();
+            b.add::<kamu_datasets_postgres::PostgresDatasetStatisticsRepository>();
 
             b.add::<kamu_flow_system_postgres::PostgresFlowConfigurationEventStore>();
             b.add::<kamu_flow_system_postgres::PostgresFlowTriggerEventStore>();
@@ -83,6 +84,7 @@ pub(crate) fn configure_database_components(
             b.add::<kamu_datasets_sqlite::SqliteDatasetEntryRepository>();
             b.add::<kamu_datasets_sqlite::SqliteDatasetDependencyRepository>();
             b.add::<kamu_datasets_sqlite::SqliteDatasetReferenceRepository>();
+            b.add::<kamu_datasets_sqlite::SqliteDatasetStatisticsRepository>();
 
             b.add::<kamu_flow_system_sqlite::SqliteFlowConfigurationEventStore>();
             b.add::<kamu_flow_system_sqlite::SqliteFlowTriggerEventStore>();
@@ -127,6 +129,7 @@ pub(crate) fn configure_in_memory_components(b: &mut CatalogBuilder) {
     b.add::<kamu_datasets_inmem::InMemoryDatasetEntryRepository>();
     b.add::<kamu_datasets_inmem::InMemoryDatasetDependencyRepository>();
     b.add::<kamu_datasets_inmem::InMemoryDatasetReferenceRepository>();
+    b.add::<kamu_datasets_inmem::InMemoryDatasetStatisticsRepository>();
 
     b.add::<kamu_auth_rebac_inmem::InMemoryRebacRepository>();
 
