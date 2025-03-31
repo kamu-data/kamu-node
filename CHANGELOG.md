@@ -12,7 +12,11 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## [0.60.0] - 2025-03-31
+## [0.60.1] - 2025-03-31
+### Fixed 
+- Correct api version
+
+## [0.60.0] - 2025-03-31- 2025-03-31
 ### Changed
 - Trigger dependent dataset flows on Http `/ingest` and on smart transfer protocol dataset push
 - `DatasetSummary` files replaced with `DatasetStatistics` stored in the database 
