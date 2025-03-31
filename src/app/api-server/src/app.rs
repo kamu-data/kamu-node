@@ -410,10 +410,6 @@ pub async fn init_dependencies(
         &mut b,
         kamu_accounts::MESSAGE_PRODUCER_KAMU_ACCOUNTS_SERVICE,
     );
-    messaging_outbox::register_message_dispatcher::<kamu_accounts::AccountLifecycleMessage>(
-        &mut b,
-        kamu_accounts::MESSAGE_PRODUCER_KAMU_ACCOUNTS_SERVICE,
-    );
     messaging_outbox::register_message_dispatcher::<kamu_datasets::DatasetExternallyChangedMessage>(
         &mut b,
         kamu_datasets::MESSAGE_PRODUCER_KAMU_HTTP_ADAPTER,

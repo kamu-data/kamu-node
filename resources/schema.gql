@@ -525,8 +525,6 @@ type DataQueryResultError {
 
 enum DataQueryResultErrorKind {
 	INVALID_SQL
-	UNAUTHORIZED
-	INTERNAL_ERROR
 }
 
 type DataQueryResultSuccess {
@@ -1555,6 +1553,7 @@ type FlowDescriptionDatasetPushIngest {
 	sourceName: String
 	inputRecordsCount: Int!
 	ingestResult: FlowDescriptionUpdateResult
+	message: String!
 }
 
 type FlowDescriptionDatasetReset {
