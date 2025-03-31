@@ -12,8 +12,9 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## [Unreleased]
+## [0.60.0] - 2025-03-31
 ### Changed
+- Trigger dependent dataset flows on Http `/ingest` and on smart transfer protocol dataset push
 - `DatasetSummary` files replaced with `DatasetStatistics` stored in the database 
     and updated synchronously with the HEAD reference updates
 - Statistics is automatically pre-computed for all existing datasets on first use
