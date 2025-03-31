@@ -122,7 +122,7 @@ impl KamuFlightSQLClient {
             odf::utils::testing::assert_schema_eq(df.schema(), expected_schema);
         }
         if let Some(expected_data) = expected_data_maybe {
-            odf::utils::testing::assert_data_eq(df, expected_data).await;
+            odf::utils::testing::assert_data_eq(df.into(), expected_data).await;
         }
     }
 }

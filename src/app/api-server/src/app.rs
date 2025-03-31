@@ -410,6 +410,10 @@ pub async fn init_dependencies(
         &mut b,
         kamu_accounts::MESSAGE_PRODUCER_KAMU_ACCOUNTS_SERVICE,
     );
+    messaging_outbox::register_message_dispatcher::<kamu_datasets::DatasetExternallyChangedMessage>(
+        &mut b,
+        kamu_datasets::MESSAGE_PRODUCER_KAMU_HTTP_ADAPTER,
+    );
 
     b.add_value(messaging_outbox::OutboxConfig::new(
         Duration::seconds(config.outbox.awaiting_step_secs.unwrap()),
