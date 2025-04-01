@@ -1,0 +1,50 @@
+services:
+  otel-collector:
+    image: "otel/opentelemetry-collector:latest"
+    command: ["--config=/etc/otel-collector.yaml"]
+    volumes:
+      - "./configs/otel-collector.yaml:/etc/otel-collector.yaml"
+    depends_on:
+      - tempo
+      - loki
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - "./configs/promtail.yaml:/etc/promtail/config.yml:ro"
+      - "/run/docker.sock:/run/docker.sock:ro"
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+
+  tempo:
+    image: "grafana/tempo:latest"
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - "./configs/tempo.yaml:/etc/tempo.yaml"
+    ports:
+      - "4317:4317" # otlp grpc
+      - "4318:4318" # otlp http
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./configs/loki.yaml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+
+  grafana:
+    image: "grafana/grafana:latest"
+    volumes:
+      - ./configs/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+    ports:
+      - "3000:3000"
+    depends_on:
+      - tempo
+      - loki
