@@ -7,10 +7,17 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
+use std::collections::BTreeMap;
 use std::path::PathBuf;
 
 use container_runtime::{ContainerRuntimeType, NetworkNamespaceType};
 use duration_string::DurationString;
+use internal_error::*;
+use kamu::{
+    EngineConfigDatafusionEmbeddedBatchQuery,
+    EngineConfigDatafusionEmbeddedCompaction,
+    EngineConfigDatafusionEmbeddedIngest,
+};
 use kamu_accounts::AccountConfig;
 use kamu_datasets::DatasetEnvVarsConfig;
 use odf::dataset::IpfsGateway;
@@ -93,6 +100,9 @@ pub struct EngineConfig {
     pub shutdown_timeout: DurationString,
     /// UNSTABLE: Default engine images
     pub images: EngineImagesConfig,
+
+    /// Embedded Datafusion engine configuration
+    pub datafusion_embedded: EngineConfigDatafution,
 }
 
 impl Default for EngineConfig {
@@ -106,6 +116,7 @@ impl Default for EngineConfig {
             start_timeout: defaults.start_timeout.into(),
             shutdown_timeout: defaults.shutdown_timeout.into(),
             images: Default::default(),
+            datafusion_embedded: EngineConfigDatafution::default(),
         }
     }
 }
@@ -134,6 +145,96 @@ impl Default for EngineImagesConfig {
             datafusion: defaults.datafusion_image,
             risingwave: defaults.risingwave_image,
         }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineConfigDatafution {
+    /// Base configuration options
+    /// See: https://datafusion.apache.org/user-guide/configs.html
+    pub base: BTreeMap<String, String>,
+
+    /// Ingest-specific overrides to the base config
+    pub ingest: BTreeMap<String, String>,
+
+    /// Batch query-specific overrides to the base config
+    pub batch_query: BTreeMap<String, String>,
+
+    /// Compaction-specific overrides to the base config
+    pub compaction: BTreeMap<String, String>,
+}
+
+impl Default for EngineConfigDatafution {
+    fn default() -> Self {
+        Self {
+            base: kamu::EngineConfigDatafusionEmbeddedBase::DEFAULT_SETTINGS
+                .iter()
+                .map(|(k, v)| ((*k).to_string(), (*v).to_string()))
+                .collect(),
+            ingest: kamu::EngineConfigDatafusionEmbeddedIngest::DEFAULT_OVERRIDES
+                .iter()
+                .map(|(k, v)| ((*k).to_string(), (*v).to_string()))
+                .collect(),
+            batch_query: kamu::EngineConfigDatafusionEmbeddedBatchQuery::DEFAULT_OVERRIDES
+                .iter()
+                .map(|(k, v)| ((*k).to_string(), (*v).to_string()))
+                .collect(),
+            compaction: kamu::EngineConfigDatafusionEmbeddedCompaction::DEFAULT_OVERRIDES
+                .iter()
+                .map(|(k, v)| ((*k).to_string(), (*v).to_string()))
+                .collect(),
+        }
+    }
+}
+
+impl EngineConfigDatafution {
+    pub fn into_system(
+        self,
+    ) -> Result<
+        (
+            kamu::EngineConfigDatafusionEmbeddedIngest,
+            kamu::EngineConfigDatafusionEmbeddedBatchQuery,
+            kamu::EngineConfigDatafusionEmbeddedCompaction,
+        ),
+        InternalError,
+    > {
+        let from_merged_with_base_and_defaults =
+            |defaults: &[(&str, &str)], overrides: BTreeMap<String, String>| {
+                kamu::EngineConfigDatafusionEmbeddedBase::new_session_config(
+                    self.base
+                        .clone()
+                        .into_iter()
+                        .chain(
+                            defaults
+                                .iter()
+                                .map(|(k, v)| ((*k).to_string(), (*v).to_string())),
+                        )
+                        .chain(overrides),
+                )
+            };
+
+        let ingest_config = from_merged_with_base_and_defaults(
+            EngineConfigDatafusionEmbeddedIngest::DEFAULT_OVERRIDES,
+            self.ingest,
+        )?;
+        let batch_query_config = from_merged_with_base_and_defaults(
+            EngineConfigDatafusionEmbeddedBatchQuery::DEFAULT_OVERRIDES,
+            self.batch_query,
+        )?;
+        let compaction_config = from_merged_with_base_and_defaults(
+            EngineConfigDatafusionEmbeddedCompaction::DEFAULT_OVERRIDES,
+            self.compaction,
+        )?;
+
+        Ok((
+            kamu::EngineConfigDatafusionEmbeddedIngest(ingest_config),
+            kamu::EngineConfigDatafusionEmbeddedBatchQuery(batch_query_config),
+            kamu::EngineConfigDatafusionEmbeddedCompaction(compaction_config),
+        ))
     }
 }
 

@@ -278,16 +278,27 @@ pub async fn init_dependencies(
         network_ns: config.engine.network_ns,
     });
 
-    b.add::<kamu::EngineProvisionerLocal>();
-    b.add_value(kamu::EngineProvisionerLocalConfig {
-        max_concurrency: config.engine.max_concurrency,
-        start_timeout: config.engine.start_timeout.into(),
-        shutdown_timeout: config.engine.shutdown_timeout.into(),
-        spark_image: config.engine.images.spark,
-        flink_image: config.engine.images.flink,
-        datafusion_image: config.engine.images.datafusion,
-        risingwave_image: config.engine.images.risingwave,
-    });
+    // Engine config
+    {
+        b.add::<kamu::EngineProvisionerLocal>();
+        b.add_value(kamu::EngineProvisionerLocalConfig {
+            max_concurrency: config.engine.max_concurrency,
+            start_timeout: config.engine.start_timeout.into(),
+            shutdown_timeout: config.engine.shutdown_timeout.into(),
+            spark_image: config.engine.images.spark,
+            flink_image: config.engine.images.flink,
+            datafusion_image: config.engine.images.datafusion,
+            risingwave_image: config.engine.images.risingwave,
+        });
+
+        let (ingest_config, batch_config, compact_config) =
+            config.engine.datafusion_embedded.into_system()?;
+
+        b.add_value(ingest_config);
+        b.add_value(batch_config);
+        b.add_value(compact_config);
+    }
+    //
 
     b.add_value(config.protocol.ipfs.into_gateway_config());
     b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
