@@ -46,6 +46,9 @@ pub struct RunCommand {
 
     #[dill::component(explicit)]
     e2e_http_port: Option<u16>,
+
+    #[dill::component(explicit)]
+    read_only: bool,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -68,9 +71,11 @@ impl Command for RunCommand {
             .add_value(self.server_account_subject.clone())
             .build();
 
-        init_on_startup::run_startup_jobs(&system_catalog)
-            .await
-            .int_err()?;
+        if !self.read_only {
+            init_on_startup::run_startup_jobs(&system_catalog)
+                .await
+                .int_err()?;
+        }
 
         let address = self
             .address
@@ -145,12 +150,19 @@ impl Command for RunCommand {
             .into_future();
 
         // TODO: PERF: Do we need to spawn these into separate tasks?
-        tokio::select! {
-            res = http_server => { res.int_err() },
-            res = flightsql_server.run() => { res.int_err() },
-            res = task_agent.run() => { res.int_err() },
-            res = flow_agent.run() => { res.int_err() },
-            res = outbox_agent.run() => { res.int_err() },
+        if !self.read_only {
+            tokio::select! {
+                res = http_server => { res.int_err() },
+                res = flightsql_server.run() => { res.int_err() },
+                res = task_agent.run() => { res.int_err() },
+                res = flow_agent.run() => { res.int_err() },
+                res = outbox_agent.run() => { res.int_err() },
+            }
+        } else {
+            tokio::select! {
+                res = http_server => { res.int_err() },
+                res = flightsql_server.run() => { res.int_err() },
+            }
         }
     }
 }

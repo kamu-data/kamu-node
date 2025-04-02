@@ -136,6 +136,7 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
                 c.flightsql_port,
                 args.e2e_output_data_path,
                 e2e_http_port,
+                c.read_only,
             )
             .cast(),
         ),

@@ -65,6 +65,10 @@ pub struct Run {
     /// Expose Flight SQL server on specific port
     #[arg(long)]
     pub flightsql_port: Option<u16>,
+
+    /// Run server in read-only mode where it will not write to a database
+    #[arg(long)]
+    pub read_only: bool,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
