@@ -373,6 +373,7 @@ pub async fn init_dependencies(
     b.add::<kamu::ResetDatasetUseCaseImpl>();
     b.add::<kamu::SetWatermarkUseCaseImpl>();
     b.add::<kamu::VerifyDatasetUseCaseImpl>();
+    b.add::<kamu::PushIngestDataUseCaseImpl>();
 
     b.add_builder(
         messaging_outbox::OutboxImmediateImpl::builder()
