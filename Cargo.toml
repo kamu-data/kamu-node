@@ -193,7 +193,7 @@ debug = 1
 # Use this section to test or apply emergency overrides to dependencies
 # See: https://doc.rust-lang.org/cargo/reference/overriding-dependencies.html
 [patch.crates-io]
-# datafusion-odata = { git = 'https://github.com/kamu-data/datafusion-odata.git', branch = '42.0.0-axum-0.6' }
+datafusion = { git = 'https://github.com/kamu-data/datafusion.git', branch = '46.0.1-meta-fetch-parallelism' }
 # TODO: Delete this workaround when new version of sqlx will be released
 sqlx = { git = 'https://github.com/kamu-data/sqlx', branch = 'nextest-race-condition' }
 
