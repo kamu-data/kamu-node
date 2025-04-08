@@ -16,6 +16,7 @@ use serde::Serialize;
 pub struct UIConfiguration {
     pub ingest_upload_file_limit_mb: usize,
     pub feature_flags: UIFeatureFlags,
+    pub semantic_search_threshold_score: f32,
 }
 
 impl Default for UIConfiguration {
@@ -23,6 +24,7 @@ impl Default for UIConfiguration {
         Self {
             ingest_upload_file_limit_mb: 50,
             feature_flags: UIFeatureFlags::default(),
+            semantic_search_threshold_score: 0.0,
         }
     }
 }
