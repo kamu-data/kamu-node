@@ -927,6 +927,9 @@ pub struct SearchConfig {
     /// may be inaccessible to user.
     #[serde(default = "SearchConfig::default_overfetch_amount")]
     pub overfetch_amount: usize,
+
+    #[serde(default = "SearchConfig::default_semantic_search_threshold_score")]
+    pub semantic_search_threshold_score: f32,
 }
 
 impl SearchConfig {
@@ -939,6 +942,10 @@ impl SearchConfig {
 
     pub fn default_overfetch_amount() -> usize {
         10
+    }
+
+    pub fn default_semantic_search_threshold_score() -> f32 {
+        0.0
     }
 }
 

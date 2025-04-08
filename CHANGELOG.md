@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.61.1] - 2025-04-08
+### Added
+- New value `semantic_search_threshold_score` in search configuration which used in `UiConfiguration`
+
 ## [0.61.0] - 2025-04-08
 ### Added
 - New `engine.datafusionEmbedded` config section allows to pass custom DataFusion settings when engine is used in igest, batch query, and compaction contexts.

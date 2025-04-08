@@ -590,6 +590,12 @@ pub async fn init_dependencies(
     // Search configuration
     b.add::<kamu_search_services::SearchServiceLocalImpl>();
 
+    let semantic_search_threshold_score = config
+        .search
+        .as_ref()
+        .map(|s| s.semantic_search_threshold_score)
+        .unwrap_or(config::SearchConfig::default_semantic_search_threshold_score());
+
     if let Some(config::SearchConfig {
         indexer,
         embeddings_chunker,
@@ -597,6 +603,7 @@ pub async fn init_dependencies(
         vector_repo,
         overfetch_factor,
         overfetch_amount,
+        ..
     }) = config.search
     {
         b.add_value(kamu_search_services::SearchServiceLocalConfig {
@@ -660,6 +667,7 @@ pub async fn init_dependencies(
     // UI
     b.add_value(UIConfiguration {
         ingest_upload_file_limit_mb: config.upload_repo.max_file_size_mb,
+        semantic_search_threshold_score,
         feature_flags: UIFeatureFlags {
             enable_dataset_env_vars_management: config.dataset_env_vars.is_enabled(),
             ..UIFeatureFlags::default()
