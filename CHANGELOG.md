@@ -12,6 +12,14 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [Unreleased]
+### Added
+- Automatically indexing key dataset blocks in the database for quicker navigation:
+   - indexing all previously stored datasets at startup
+   - indexing new changes to datasets incrementally, whenever HEAD advances
+- Metadata chain visiting algorithm can now use the key blocks cached in the database
+   to efficiently implement iteration over key blocks, when data events are not needed
+
 ## [0.61.1] - 2025-04-08
 ### Added
 - New value `semantic_search_threshold_score` in search configuration which used in `UiConfiguration`
