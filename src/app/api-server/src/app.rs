@@ -693,7 +693,7 @@ async fn configure_repository(
             b.add_builder(DatasetStorageUnitLocalFs::builder().with_root(datasets_dir.clone()));
             b.bind::<dyn odf::DatasetStorageUnit, DatasetStorageUnitLocalFs>();
             b.bind::<dyn odf::DatasetStorageUnitWriter, DatasetStorageUnitLocalFs>();
-            b.add::<kamu_datasets_services::DatabaseBackedOdfDatasetLfsBuilderImpl>();
+            b.add::<kamu_datasets_services::DatasetLfsBuilderDatabaseBackedImpl>();
 
             b.add::<kamu::ObjectStoreBuilderLocalFs>();
         }
@@ -718,10 +718,10 @@ async fn configure_repository(
             b.bind::<dyn odf::DatasetStorageUnit, DatasetStorageUnitS3>();
             b.bind::<dyn odf::DatasetStorageUnitWriter, DatasetStorageUnitS3>();
             b.add_builder(
-                kamu_datasets_services::DatabaseBackedOdfDatasetS3BuilderImpl::builder()
+                kamu_datasets_services::DatasetS3BuilderDatabaseBackedImpl::builder()
                     .with_metadata_cache_local_fs_path(metadata_cache_local_fs_path),
             );
-            b.bind::<dyn odf::dataset::DatasetS3Builder, kamu_datasets_services::DatabaseBackedOdfDatasetS3BuilderImpl>();
+            b.bind::<dyn odf::dataset::DatasetS3Builder, kamu_datasets_services::DatasetS3BuilderDatabaseBackedImpl>();
 
             let allow_http = repo_url.scheme() == "s3+http";
             b.add_value(kamu::ObjectStoreBuilderS3::new(s3_context, allow_http))

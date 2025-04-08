@@ -136,8 +136,8 @@ impl FlowProgressNotifierHarness {
             .add::<SystemTimeSourceDefault>()
             .add_builder(DatasetStorageUnitLocalFs::builder().with_root(datasets_dir))
             .bind::<dyn odf::DatasetStorageUnit, DatasetStorageUnitLocalFs>()
-            .add::<odf::dataset::DatasetDefaultLfsBuilder>()
-            .bind::<dyn odf::dataset::DatasetLfsBuilder, odf::dataset::DatasetDefaultLfsBuilder>()
+            .add::<odf::dataset::DatasetLfsBuilderDefault>()
+            .bind::<dyn odf::dataset::DatasetLfsBuilder, odf::dataset::DatasetLfsBuilderDefault>()
             .add_value(CurrentAccountSubject::new_test())
             .add_value(FlowAgentConfig::new(
                 TimeDelta::seconds(1),
