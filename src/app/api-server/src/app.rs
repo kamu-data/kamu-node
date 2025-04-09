@@ -368,12 +368,12 @@ pub async fn init_dependencies(
     b.add::<kamu::RemoteStatusServiceImpl>();
 
     b.add::<kamu::CompactDatasetUseCaseImpl>();
+    b.add::<kamu::PushIngestDataUseCaseImpl>();
     b.add::<kamu::PullDatasetUseCaseImpl>();
     b.add::<kamu::PushDatasetUseCaseImpl>();
     b.add::<kamu::ResetDatasetUseCaseImpl>();
     b.add::<kamu::SetWatermarkUseCaseImpl>();
     b.add::<kamu::VerifyDatasetUseCaseImpl>();
-    b.add::<kamu::PushIngestDataUseCaseImpl>();
 
     b.add_builder(
         messaging_outbox::OutboxImmediateImpl::builder()
@@ -536,7 +536,6 @@ pub async fn init_dependencies(
                 .with_metrics(s3_metrics);
 
             b.add_builder(kamu_adapter_http::UploadServiceS3::builder(s3_context));
-            b.bind::<dyn kamu_adapter_http::UploadService, kamu_adapter_http::UploadServiceS3>();
         }
     }
 
@@ -690,9 +689,7 @@ async fn configure_repository(
 
             let datasets_dir = repo_url.to_file_path().unwrap();
 
-            b.add_builder(DatasetStorageUnitLocalFs::builder().with_root(datasets_dir.clone()));
-            b.bind::<dyn odf::DatasetStorageUnit, DatasetStorageUnitLocalFs>();
-            b.bind::<dyn odf::DatasetStorageUnitWriter, DatasetStorageUnitLocalFs>();
+            b.add_builder(DatasetStorageUnitLocalFs::builder(datasets_dir.clone()));
             b.add::<kamu_datasets_services::DatasetLfsBuilderDatabaseBackedImpl>();
 
             b.add::<kamu::ObjectStoreBuilderLocalFs>();
@@ -714,18 +711,14 @@ async fn configure_repository(
                 .clone()
                 .map(Arc::new);
 
-            b.add_builder(DatasetStorageUnitS3::builder().with_s3_context(s3_context.clone()));
-            b.bind::<dyn odf::DatasetStorageUnit, DatasetStorageUnitS3>();
-            b.bind::<dyn odf::DatasetStorageUnitWriter, DatasetStorageUnitS3>();
+            b.add_builder(DatasetStorageUnitS3::builder(s3_context.clone()));
             b.add_builder(
                 kamu_datasets_services::DatasetS3BuilderDatabaseBackedImpl::builder()
                     .with_metadata_cache_local_fs_path(metadata_cache_local_fs_path),
             );
-            b.bind::<dyn odf::dataset::DatasetS3Builder, kamu_datasets_services::DatasetS3BuilderDatabaseBackedImpl>();
 
             let allow_http = repo_url.scheme() == "s3+http";
-            b.add_value(kamu::ObjectStoreBuilderS3::new(s3_context, allow_http))
-                .bind::<dyn kamu::domain::ObjectStoreBuilder, kamu::ObjectStoreBuilderS3>();
+            b.add_builder(kamu::ObjectStoreBuilderS3::builder(s3_context, allow_http));
 
             // LFS object store is still needed for Datafusion operations that create
             // temporary file, such as push ingest

@@ -69,7 +69,7 @@ kamu-auth-rebac-sqlite = { workspace = true }
 kamu-datasets = { workspace = true }
 kamu-datasets-inmem = { workspace = true }
 kamu-datasets-postgres = { workspace = true }
-kamu-datasets-services = { workspace = true }
+kamu-datasets-services = { workspace = true, default-features = false, features = ["lfs", "s3"] }
 kamu-datasets-sqlite = { workspace = true }
 kamu-flow-system = { workspace = true }
 kamu-flow-system-inmem = { workspace = true }
