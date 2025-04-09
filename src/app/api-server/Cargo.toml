@@ -27,7 +27,7 @@ query-extensions-json = ["kamu/query-extensions-json"]
 
 
 [dependencies]
-dill = { version = "0.12", default-features = false }
+dill = { version = "0.13", default-features = false }
 
 container-runtime = { workspace = true }
 database-common = { workspace = true }
@@ -43,7 +43,15 @@ observability = { workspace = true, default-features = false, features = [
     "opentelemetry",
     "prometheus",
 ] }
-odf = { workspace = true, default-features = false }
+odf = { workspace = true, default-features = false, features = [
+    "arrow",
+    "http",
+    "lfs",
+    "s3",
+    "sqlx-postgres",
+    "sqlx-sqlite",
+    "utoipa",
+] }
 s3-utils = { workspace = true }
 server-console = { workspace = true }
 time-source = { workspace = true }
@@ -69,7 +77,7 @@ kamu-auth-rebac-sqlite = { workspace = true }
 kamu-datasets = { workspace = true }
 kamu-datasets-inmem = { workspace = true }
 kamu-datasets-postgres = { workspace = true }
-kamu-datasets-services = { workspace = true }
+kamu-datasets-services = { workspace = true, default-features = false, features = ["lfs", "s3"] }
 kamu-datasets-sqlite = { workspace = true }
 kamu-flow-system = { workspace = true }
 kamu-flow-system-inmem = { workspace = true }

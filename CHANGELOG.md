@@ -12,13 +12,17 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## [Unreleased]
+## [0.62.0] - 2025-04-09
 ### Added
 - Automatically indexing key dataset blocks in the database for quicker navigation:
    - indexing all previously stored datasets at startup
    - indexing new changes to datasets incrementally, whenever HEAD advances
 - Metadata chain visiting algorithm can now use the key blocks cached in the database
    to efficiently implement iteration over key blocks, when data events are not needed
+### Changed
+- E2E, `kamu-node-e2e-repo-tests`: remove a `kamu-api-server` dependency 
+    that did not cause the `kamu-api-server` binary to be rebuilt.
+- Upgraded to latest version of `dill=0.13`.
 
 ## [0.61.1] - 2025-04-08
 ### Added
@@ -26,7 +30,8 @@ Recommendation: for ease of reading, use the following order:
 
 ## [0.61.0] - 2025-04-08
 ### Added
-- New `engine.datafusionEmbedded` config section allows to pass custom DataFusion settings when engine is used in igest, batch query, and compaction contexts.
+- New `engine.datafusionEmbedded` config section allows to pass custom DataFusion settings 
+    when engine is used in ingest, batch query, and compaction contexts.
 - GQL: 
   - `Datasets::role()`: returns the current user's role in relation to the dataset
   - GQL: `DatasetsMut::create_empty()` & `DatasetsMut::create_from_snapshot()`: alias validation in multi-tenant mode.
@@ -40,7 +45,7 @@ Recommendation: for ease of reading, use the following order:
 ### Fixed 
 - Correct api version
 
-## [0.60.0] - 2025-03-31- 2025-03-31
+## [0.60.0] - 2025-03-31
 ### Changed
 - Trigger dependent dataset flows on Http `/ingest` and on smart transfer protocol dataset push
 - `DatasetSummary` files replaced with `DatasetStatistics` stored in the database 
