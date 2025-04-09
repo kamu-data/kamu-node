@@ -36,8 +36,8 @@ Recommendation: for ease of reading, use the following order:
   - `Datasets::role()`: returns the current user's role in relation to the dataset
   - GQL: `DatasetsMut::create_empty()` & `DatasetsMut::create_from_snapshot()`: alias validation in multi-tenant mode.
 ### Changed
-- E2E, `kamu-node-e2e-repo-tests`: remove a `kamu-api-server` dependency 
-    that did not cause the `kamu-api-server` binary to be rebuilt.
+- GQL: `DatasetsMut::create_empty()` & `DatasetsMut::create_from_snapshot()`: `dataset_visibility` is now mandatory.
+- `kamu push/pull` command with `--force` flag now does not allow overwriting of seed block
 ### Fixed
 - Multiple performance improvements in batch queries to avoid unnecessary metadata scanning.
 
