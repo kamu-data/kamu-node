@@ -22,6 +22,7 @@ Recommendation: for ease of reading, use the following order:
 ### Changed
 - E2E, `kamu-node-e2e-repo-tests`: remove a `kamu-api-server` dependency 
     that did not cause the `kamu-api-server` binary to be rebuilt.
+- Upgraded to latest version of `dill=0.13`.
 
 ## [0.61.1] - 2025-04-08
 ### Added
@@ -35,8 +36,8 @@ Recommendation: for ease of reading, use the following order:
   - `Datasets::role()`: returns the current user's role in relation to the dataset
   - GQL: `DatasetsMut::create_empty()` & `DatasetsMut::create_from_snapshot()`: alias validation in multi-tenant mode.
 ### Changed
-- GQL: `DatasetsMut::create_empty()` & `DatasetsMut::create_from_snapshot()`: `dataset_visibility` is now mandatory.
-- `kamu push/pull` command with `--force` flag now does not allow overwriting of seed block
+- E2E, `kamu-node-e2e-repo-tests`: remove a `kamu-api-server` dependency 
+    that did not cause the `kamu-api-server` binary to be rebuilt.
 ### Fixed
 - Multiple performance improvements in batch queries to avoid unnecessary metadata scanning.
 
