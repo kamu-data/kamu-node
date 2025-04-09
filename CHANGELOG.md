@@ -19,6 +19,9 @@ Recommendation: for ease of reading, use the following order:
    - indexing new changes to datasets incrementally, whenever HEAD advances
 - Metadata chain visiting algorithm can now use the key blocks cached in the database
    to efficiently implement iteration over key blocks, when data events are not needed
+### Changed
+- E2E, `kamu-node-e2e-repo-tests`: remove a `kamu-api-server` dependency 
+    that did not cause the `kamu-api-server` binary to be rebuilt.
 
 ## [0.61.1] - 2025-04-08
 ### Added
@@ -26,7 +29,8 @@ Recommendation: for ease of reading, use the following order:
 
 ## [0.61.0] - 2025-04-08
 ### Added
-- New `engine.datafusionEmbedded` config section allows to pass custom DataFusion settings when engine is used in igest, batch query, and compaction contexts.
+- New `engine.datafusionEmbedded` config section allows to pass custom DataFusion settings 
+    when engine is used in ingest, batch query, and compaction contexts.
 - GQL: 
   - `Datasets::role()`: returns the current user's role in relation to the dataset
   - GQL: `DatasetsMut::create_empty()` & `DatasetsMut::create_from_snapshot()`: alias validation in multi-tenant mode.
