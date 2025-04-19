@@ -19,6 +19,7 @@ use kamu_accounts::{
     MESSAGE_PRODUCER_KAMU_ACCOUNTS_SERVICE,
 };
 use messaging_outbox::{
+    InitialConsumerBoundary,
     MessageConsumer,
     MessageConsumerMeta,
     MessageConsumerT,
@@ -47,6 +48,7 @@ pub struct AccountLifecycleNotifier {
         MESSAGE_PRODUCER_KAMU_ACCOUNTS_SERVICE,
     ],
     delivery: MessageDeliveryMechanism::Transactional,
+    initial_consumer_boundary: InitialConsumerBoundary::Latest,
 })]
 impl AccountLifecycleNotifier {
     pub fn new(email_sender: Arc<dyn EmailSender>) -> Self {

@@ -12,6 +12,12 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.62.1] - 2025-04-19
+### Changed
+- Outbox: Added new param in consumer metadata `initial_consumer_boundary` which allow new consumer to not process all messages, but start from latest one
+### Fixed
+- S3 get_stored_dataset_by_id operation takes advantage of in-memory datasets listing cache
+
 ## [0.62.0] - 2025-04-09
 ### Added
 - Automatically indexing key dataset blocks in the database for quicker navigation:

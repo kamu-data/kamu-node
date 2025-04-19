@@ -19,6 +19,7 @@ use kamu_accounts::{
     MESSAGE_PRODUCER_KAMU_ACCESS_TOKEN_SERVICE,
 };
 use messaging_outbox::{
+    InitialConsumerBoundary,
     MessageConsumer,
     MessageConsumerMeta,
     MessageConsumerT,
@@ -49,6 +50,7 @@ pub struct AccessTokenLifecycleNotifier {
         MESSAGE_PRODUCER_KAMU_ACCESS_TOKEN_SERVICE,
     ],
     delivery: MessageDeliveryMechanism::Transactional,
+    initial_consumer_boundary: InitialConsumerBoundary::Latest,
 })]
 impl AccessTokenLifecycleNotifier {
     pub fn new(

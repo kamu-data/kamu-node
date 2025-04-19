@@ -18,6 +18,7 @@ use internal_error::{InternalError, ResultIntoInternal};
 use kamu_datasets::GetDatasetEntryError;
 use kamu_flow_system as kamu_fs;
 use messaging_outbox::{
+    InitialConsumerBoundary,
     MessageConsumer,
     MessageConsumerMeta,
     MessageConsumerT,
@@ -51,6 +52,7 @@ pub struct FlowProgressNotifier {
         kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
     ],
     delivery: MessageDeliveryMechanism::Transactional,
+    initial_consumer_boundary: InitialConsumerBoundary::Latest,
 })]
 impl FlowProgressNotifier {
     pub fn new(
