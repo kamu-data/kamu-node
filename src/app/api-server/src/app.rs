@@ -252,6 +252,22 @@ pub async fn init_dependencies(
 
     let mut b = CatalogBuilder::new_chained(&s3_metrics_catalog);
 
+    b.add_value(observability::build_info::BuildInfo {
+        app_version: env!("CARGO_PKG_VERSION"),
+        build_timestamp: option_env!("VERGEN_BUILD_TIMESTAMP"),
+        git_describe: option_env!("VERGEN_GIT_DESCRIBE"),
+        git_sha: option_env!("VERGEN_GIT_SHA"),
+        git_commit_date: option_env!("VERGEN_GIT_COMMIT_DATE"),
+        git_branch: option_env!("VERGEN_GIT_BRANCH"),
+        rustc_semver: option_env!("VERGEN_RUSTC_SEMVER"),
+        rustc_channel: option_env!("VERGEN_RUSTC_CHANNEL"),
+        rustc_host_triple: option_env!("VERGEN_RUSTC_HOST_TRIPLE"),
+        rustc_commit_sha: option_env!("VERGEN_RUSTC_COMMIT_HASH"),
+        cargo_target_triple: option_env!("VERGEN_CARGO_TARGET_TRIPLE"),
+        cargo_features: option_env!("VERGEN_CARGO_FEATURES"),
+        cargo_opt_level: option_env!("VERGEN_CARGO_OPT_LEVEL"),
+    });
+
     // TODO: Improve output multiplexing and cache interface
     let run_info_dir = local_dir.join("run");
     let cache_dir = local_dir.join("cache");

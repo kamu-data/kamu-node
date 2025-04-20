@@ -13,6 +13,8 @@ Recommendation: for ease of reading, use the following order:
 -->
 
 ## [Unreleased]
+### Added
+- New REST endpoint `/system/info` and GQL endpoint `buildInfo` that return application version and build details
 ### Changed
 - Upgraded to `datafusion v47.0.0` and latest `arrow`, `object-store`, and `flatbuffers` versions
 

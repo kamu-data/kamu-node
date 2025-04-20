@@ -12,6 +12,10 @@ include = { workspace = true }
 edition = { workspace = true }
 publish = { workspace = true }
 
+# Disabling examples discovery as we need them very rarely, but they significantly slow down build times
+autoexamples = false
+build = "build.rs"
+
 
 [lib]
 doctest = false
@@ -158,3 +162,13 @@ paste = { version = "1", default-features = false }
 reqwest = { version = "0.12", default-features = false, features = [] }
 test-group = { version = "1" }
 test-log = { version = "0.2", features = ["trace"] }
+
+
+[build-dependencies]
+vergen = { version = "8", features = [
+    "build",
+    "cargo",
+    "git",
+    "gitcl",
+    "rustc",
+] }
