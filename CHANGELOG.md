@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.62.2] - 2025-04-21
+### Fixed
+- Reverted `sqlx` upgrade that breaking image build
+
 ## [0.62.1] - 2025-04-19
 ### Changed
 - Outbox: Added new param in consumer metadata `initial_consumer_boundary` which allow new consumer to not process all messages, but start from latest one
