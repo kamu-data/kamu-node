@@ -18,6 +18,7 @@ use kamu_accounts::{
     CurrentAccountSubject,
     JwtAuthenticationConfig,
     PredefinedAccountsConfig,
+    DEFAULT_ACCOUNT_NAME,
     DEFAULT_ACCOUNT_NAME_STR,
     DUMMY_EMAIL_ADDRESS,
 };
@@ -183,6 +184,7 @@ impl FlowProgressNotifierHarness {
             .save_dataset_entry(&DatasetEntry {
                 id: dataset_id.clone(),
                 owner_id: odf::AccountID::new_seeded_ed25519(DEFAULT_ACCOUNT_NAME_STR.as_bytes()),
+                owner_name: DEFAULT_ACCOUNT_NAME.clone(),
                 name: dataset_name.clone(),
                 created_at: Utc::now(),
                 kind: odf::DatasetKind::Root,

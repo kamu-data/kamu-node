@@ -12,6 +12,13 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.63.0] - 2025-04-23
+### Changed
+- Pinned version for `aws-sdk-s3` crate version before breaking changes
+- Update all minor versions of other crates
+- Denormalization: DatasetEntry now contains a copy of owner's account name for faster dataset handle resolutions without extra round trip to database
+- Speedup of account flow runs listing
+
 ## [0.62.3] - 2025-04-22
 ### Changed
 - Forcing warmup of dataset ids listing cache on startup
