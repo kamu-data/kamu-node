@@ -455,11 +455,7 @@ pub async fn init_dependencies(
 
     configure_repository(&mut b, repo_url, &config.repo, &s3_metrics).await;
 
-    b.add::<kamu_accounts_services::AuthenticationServiceImpl>();
-    b.add::<kamu_accounts_services::AccessTokenServiceImpl>();
-    b.add::<kamu_accounts_services::PredefinedAccountsRegistrator>();
-    b.add::<kamu_accounts_services::LoginPasswordAuthProvider>();
-    b.add::<kamu_accounts_services::AccountServiceImpl>();
+    kamu_accounts_services::register_dependencies(&mut b, true, true);
 
     let mut need_to_add_default_predefined_accounts_config = true;
 
@@ -521,13 +517,15 @@ pub async fn init_dependencies(
         maybe_jwt_secret,
     ));
 
-    b.add_value(kamu_adapter_http::FileUploadLimitConfig::new_in_mb(
-        config.upload_repo.max_file_size_mb,
-    ));
+    b.add_value(
+        kamu_adapter_http::platform::FileUploadLimitConfig::new_in_mb(
+            config.upload_repo.max_file_size_mb,
+        ),
+    );
 
     match config.upload_repo.storage {
         config::UploadRepoStorageConfig::Local => {
-            b.add::<kamu_adapter_http::UploadServiceLocal>();
+            b.add::<kamu_adapter_http::platform::UploadServiceLocal>();
         }
         config::UploadRepoStorageConfig::S3(s3_config) => {
             let s3_upload_direct_url = Url::parse(&s3_config.bucket_s3_url).unwrap();
@@ -535,7 +533,9 @@ pub async fn init_dependencies(
                 .await
                 .with_metrics(s3_metrics);
 
-            b.add_builder(kamu_adapter_http::UploadServiceS3::builder(s3_context));
+            b.add_builder(kamu_adapter_http::platform::UploadServiceS3::builder(
+                s3_context,
+            ));
         }
     }
 

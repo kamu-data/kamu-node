@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.64.0] - 2025-04-24
+### Added
+- Device Flow Authentication ([kamu CLI `0.235.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.235.0))
+
 ## [0.63.0] - 2025-04-23
 ### Changed
 - Pinned version for `aws-sdk-s3` crate version before breaking changes

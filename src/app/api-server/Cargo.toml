@@ -151,6 +151,12 @@ email-gateway = { workspace = true, features = ["testing"] }
 kamu = { workspace = true, features = ["testing"] }
 test-utils = { workspace = true }
 
+# TODO: Delete when database-common re-exports PgPoolOptions
+#
+#       `database-common`: re-export `PgPoolOptions
+#       https://github.com/kamu-data/kamu-cli/pull/1219
+sqlx = { version = "0.8", default-features = false, features = ["postgres"] }
+paste = { version = "1", default-features = false }
 reqwest = { version = "0.12", default-features = false, features = [] }
 test-group = { version = "1" }
 test-log = { version = "0.2", features = ["trace"] }
