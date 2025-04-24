@@ -69,7 +69,7 @@ test_di_permutations!(test_di_graph_validates_remote, test_groups: containerized
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[derive(Debug, Copy, Clone)]
-pub enum RepositoriesConfig {
+enum RepositoriesConfig {
     InMemory,
     Sqlite,
     Postgres,
@@ -89,7 +89,7 @@ async fn test_di_graph_validates_local(
             .await
             .unwrap();
 
-    register_repositories(&mut catalog_builder, repositories_config);
+    add_database_components(&mut catalog_builder, repositories_config);
 
     // CurrentAccountSubject is inserted by middlewares, but won't be present in
     // the default dependency graph, so we have to add it manually
@@ -150,7 +150,7 @@ async fn test_di_graph_validates_remote(
     .await
     .unwrap();
 
-    register_repositories(&mut catalog_builder, repositories_config);
+    add_database_components(&mut catalog_builder, repositories_config);
 
     // CurrentAccountSubject is inserted by middlewares, but won't be present in
     // the default dependency graph, so we have to add it manually
@@ -218,7 +218,7 @@ fn get_api_server_config(
     config
 }
 
-fn register_repositories(b: &mut dill::CatalogBuilder, repositories_config: RepositoriesConfig) {
+fn add_database_components(b: &mut dill::CatalogBuilder, repositories_config: RepositoriesConfig) {
     match repositories_config {
         RepositoriesConfig::InMemory => {
             // Nothing to do

@@ -300,7 +300,7 @@ type Auth {
 }
 
 type AuthMut {
-	login(loginMethod: String!, loginCredentialsJson: String!): LoginResponse!
+	login(loginMethod: String!, loginCredentialsJson: String!, deviceCode: DeviceCode): LoginResponse!
 	accountDetails(accessToken: String!): Account!
 	createAccessToken(accountId: AccountID!, tokenName: String!): CreateTokenResult!
 	revokeAccessToken(tokenId: AccessTokenID!): RevokeResult!
@@ -1092,6 +1092,8 @@ type DependencyDatasetResultNotAccessible implements DependencyDatasetResult {
 	id: DatasetID!
 	message: String!
 }
+
+scalar DeviceCode
 
 """
 Disables the previously defined polling source.

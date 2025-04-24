@@ -56,6 +56,7 @@ pub(crate) fn configure_database_components(
 
             b.add::<kamu_accounts_postgres::PostgresAccountRepository>();
             b.add::<kamu_accounts_postgres::PostgresAccessTokenRepository>();
+            b.add::<kamu_accounts_postgres::PostgresOAuthDeviceCodeRepository>();
 
             b.add::<kamu_datasets_postgres::PostgresDatasetEnvVarRepository>();
             b.add::<kamu_datasets_postgres::PostgresDatasetEntryRepository>();
@@ -80,6 +81,7 @@ pub(crate) fn configure_database_components(
 
             b.add::<kamu_accounts_sqlite::SqliteAccountRepository>();
             b.add::<kamu_accounts_sqlite::SqliteAccessTokenRepository>();
+            b.add::<kamu_accounts_sqlite::SqliteOAuthDeviceCodeRepository>();
 
             b.add::<kamu_datasets_sqlite::SqliteDatasetEnvVarRepository>();
             b.add::<kamu_datasets_sqlite::SqliteDatasetEntryRepository>();
@@ -120,6 +122,7 @@ pub(crate) fn configure_in_memory_components(b: &mut CatalogBuilder) {
 
     b.add::<kamu_accounts_inmem::InMemoryAccountRepository>();
     b.add::<kamu_accounts_inmem::InMemoryAccessTokenRepository>();
+    b.add::<kamu_accounts_inmem::InMemoryOAuthDeviceCodeRepository>();
 
     b.add::<kamu_flow_system_inmem::InMemoryFlowConfigurationEventStore>();
     b.add::<kamu_flow_system_inmem::InMemoryFlowTriggerEventStore>();
