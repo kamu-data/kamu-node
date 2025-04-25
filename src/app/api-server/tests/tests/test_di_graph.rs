@@ -233,12 +233,7 @@ fn add_database_components(b: &mut dill::CatalogBuilder, repositories_config: Re
             b.add_value(transaction_ref);
         }
         RepositoriesConfig::Postgres => {
-            // TODO: Use database-common::PgPoolOptions when it is
-            //       re-exported
-            //
-            //       `database-common`: re-export `PgPoolOptions
-            //       https://github.com/kamu-data/kamu-cli/pull/1219
-            let pool = sqlx::postgres::PgPoolOptions::default()
+            let pool = database_common::PgPoolOptions::default()
                 .connect_lazy("http://example.com")
                 .unwrap();
             b.add_value(pool.clone());
