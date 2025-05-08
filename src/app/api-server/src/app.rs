@@ -80,7 +80,6 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
     let server_account_subject = kamu_accounts::CurrentAccountSubject::logged(
         odf::AccountID::new_seeded_ed25519(kamu_account_name.as_bytes()),
         kamu_account_name,
-        true,
     );
 
     let db_config = config.database.clone();

@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [Unreleased]
+### Changed
+- Upgraded to `datafusion v47.0.0` and latest `arrow`, `object-store`, and `flatbuffers` versions
+
 ## [0.64.0] - 2025-04-24
 ### Added
 - Device Flow Authentication ([kamu CLI `0.235.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.235.0))

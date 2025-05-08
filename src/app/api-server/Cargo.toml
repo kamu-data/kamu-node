@@ -77,7 +77,10 @@ kamu-auth-rebac-sqlite = { workspace = true }
 kamu-datasets = { workspace = true }
 kamu-datasets-inmem = { workspace = true }
 kamu-datasets-postgres = { workspace = true }
-kamu-datasets-services = { workspace = true, default-features = false, features = ["lfs", "s3"] }
+kamu-datasets-services = { workspace = true, default-features = false, features = [
+    "lfs",
+    "s3",
+] }
 kamu-datasets-sqlite = { workspace = true }
 kamu-flow-system = { workspace = true }
 kamu-flow-system-inmem = { workspace = true }
@@ -98,7 +101,7 @@ kamu-task-system-sqlite = { workspace = true }
 
 # APIs
 http = "1"
-arrow-flight = { version = "54", features = ["flight-sql-experimental"] }
+arrow-flight = { version = "55", features = ["flight-sql-experimental"] }
 axum = { version = "0.8", features = ["ws"] }
 async-graphql = { version = "7", default-features = false }
 async-graphql-axum = "7"
