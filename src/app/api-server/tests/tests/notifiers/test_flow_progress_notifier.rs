@@ -30,6 +30,12 @@ use kamu_accounts_services::{
     PredefinedAccountsRegistrator,
 };
 use kamu_api_server::{FlowProgressNotifier, FLOW_FAILED_SUBJECT};
+use kamu_auth_rebac_inmem::InMemoryRebacRepository;
+use kamu_auth_rebac_services::{
+    DefaultAccountProperties,
+    DefaultDatasetProperties,
+    RebacServiceImpl,
+};
 use kamu_datasets::{DatasetEntry, DatasetEntryRepository};
 use kamu_datasets_inmem::InMemoryDatasetEntryRepository;
 use kamu_datasets_services::DatasetEntryServiceImpl;
@@ -148,6 +154,10 @@ impl FlowProgressNotifierHarness {
             .add::<InMemoryAccessTokenRepository>()
             .add::<PredefinedAccountsRegistrator>()
             .add::<LoginPasswordAuthProvider>()
+            .add::<RebacServiceImpl>()
+            .add::<InMemoryRebacRepository>()
+            .add_value(DefaultAccountProperties::default())
+            .add_value(DefaultDatasetProperties::default())
             .add_value(PredefinedAccountsConfig::single_tenant())
             .add_value(JwtAuthenticationConfig::default())
             .add_value(ServerUrlConfig::new_test(None));

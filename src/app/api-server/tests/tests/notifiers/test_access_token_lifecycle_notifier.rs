@@ -29,6 +29,12 @@ use kamu_accounts_services::{
     PredefinedAccountsRegistrator,
 };
 use kamu_api_server::{AccessTokenLifecycleNotifier, ACCESS_TOKEN_CREATED_SUBJECT};
+use kamu_auth_rebac_inmem::InMemoryRebacRepository;
+use kamu_auth_rebac_services::{
+    DefaultAccountProperties,
+    DefaultDatasetProperties,
+    RebacServiceImpl,
+};
 use messaging_outbox::{register_message_dispatcher, Outbox, OutboxExt, OutboxImmediateImpl};
 use time_source::SystemTimeSourceDefault;
 
@@ -85,6 +91,10 @@ impl AccessTokenLifecycleNotifierHarness {
             .add::<InMemoryAccessTokenRepository>()
             .add::<PredefinedAccountsRegistrator>()
             .add::<LoginPasswordAuthProvider>()
+            .add::<RebacServiceImpl>()
+            .add::<InMemoryRebacRepository>()
+            .add_value(DefaultAccountProperties::default())
+            .add_value(DefaultDatasetProperties::default())
             .add_value(PredefinedAccountsConfig::single_tenant())
             .add_value(JwtAuthenticationConfig::default())
             .add_value(ServerUrlConfig::new_test(None))
