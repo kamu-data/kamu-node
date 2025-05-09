@@ -532,11 +532,9 @@ pub async fn init_dependencies(
         maybe_jwt_secret,
     ));
 
-    b.add_value(
-        kamu_adapter_http::platform::FileUploadLimitConfig::new_in_mb(
-            config.upload_repo.max_file_size_mb,
-        ),
-    );
+    b.add_value(kamu::domain::FileUploadLimitConfig::new_in_mb(
+        config.upload_repo.max_file_size_mb,
+    ));
 
     match config.upload_repo.storage {
         config::UploadRepoStorageConfig::Local => {

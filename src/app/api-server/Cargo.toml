@@ -26,7 +26,7 @@ default = ["ingest-evm", "ingest-mqtt", "query-extensions-json"]
 
 ingest-evm = ["kamu/ingest-evm"]
 ingest-ftp = ["kamu/ingest-ftp"]
-ingest-mqtt = ["kamu/ingest-mqtt"]
+ingest-mqtt = ["kamu/ingest-mqtt", "dep:rumqttc"]
 query-extensions-json = ["kamu/query-extensions-json"]
 
 
@@ -103,6 +103,25 @@ kamu-task-system-postgres = { workspace = true }
 kamu-task-system-services = { workspace = true }
 kamu-task-system-sqlite = { workspace = true }
 
+# Top-level TLS and runtime configurations
+# TODO: Include alloy, aws-smithy
+# TODO: Unify deps around either ring or aws-lc-rs
+# TODO: Unify deps around either using webpki or native certs
+reqwest = { version = "0.12", default-features = false, features = [
+    "rustls-tls-webpki-roots",
+] }
+rustls = { version = "0.23", default-features = false, features = [
+    "aws-lc-rs",
+] }
+rumqttc = { optional = true, version = "0.24", default-features = false, features = [
+    "use-rustls",
+] }
+sqlx = { version = "0.8", default-features = false, features = [
+    "runtime-tokio",
+    "tls-rustls-aws-lc-rs",
+] }
+tokio-tungstenite = { version = "0.26", features = ["rustls-tls-webpki-roots"] }
+
 # APIs
 http = "1"
 arrow-flight = { version = "55", features = ["flight-sql-experimental"] }
@@ -159,7 +178,6 @@ kamu = { workspace = true, features = ["testing"] }
 test-utils = { workspace = true }
 
 paste = { version = "1", default-features = false }
-reqwest = { version = "0.12", default-features = false, features = [] }
 test-group = { version = "1" }
 test-log = { version = "0.2", features = ["trace"] }
 
