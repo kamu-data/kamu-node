@@ -660,7 +660,19 @@ type CreateAccessTokenResultSuccess implements CreateTokenResult {
 	message: String!
 }
 
-<<<<<<< HEAD
+type CreateAccountEmailInvalid implements CreateAccountResult {
+	message: String!
+}
+
+interface CreateAccountResult {
+	message: String!
+}
+
+type CreateAccountSuccess implements CreateAccountResult {
+	account: Account!
+	message: String!
+}
+
 type CreateAnnouncementErrorInvalidAttachment implements CreateAnnouncementResult {
 	message: String!
 	isSuccess: Boolean!
@@ -677,46 +689,40 @@ type CreateAnnouncementSuccess implements CreateAnnouncementResult {
 	"""
 	announcementId: String!
 	isSuccess: Boolean!
-}
-
-type CreateAccountEmailInvalid implements CreateAccountResult {
-	message: String!
-}
-
-interface CreateAccountResult {
-	message: String!
-}
-
-type CreateAccountSuccess implements CreateAccountResult {
-	account: Account!
 	message: String!
 }
 
 interface CreateDatasetFromSnapshotResult {
+	isSuccess: Boolean!
 	message: String!
 }
 
 interface CreateDatasetResult {
+	isSuccess: Boolean!
 	message: String!
 }
 
 type CreateDatasetResultInvalidSnapshot implements CreateDatasetFromSnapshotResult {
 	message: String!
+	isSuccess: Boolean!
 }
 
 type CreateDatasetResultMissingInputs implements CreateDatasetFromSnapshotResult {
 	missingInputs: [String!]!
+	isSuccess: Boolean!
 	message: String!
 }
 
 type CreateDatasetResultNameCollision implements CreateDatasetResult & CreateDatasetFromSnapshotResult {
 	accountName: AccountName
 	datasetName: DatasetName!
+	isSuccess: Boolean!
 	message: String!
 }
 
 type CreateDatasetResultSuccess implements CreateDatasetResult & CreateDatasetFromSnapshotResult {
 	dataset: Dataset!
+	isSuccess: Boolean!
 	message: String!
 }
 
@@ -2406,9 +2412,28 @@ enum MetadataManifestFormat {
 
 type MetadataManifestMalformed implements CommitResult & CreateDatasetFromSnapshotResult {
 	message: String!
+	isSuccess: Boolean!
 }
 
 type MetadataManifestUnsupportedVersion implements CommitResult & CreateDatasetFromSnapshotResult {
+	isSuccess: Boolean!
+	message: String!
+}
+
+type ModifyPasswordAccountNotFound implements ModifyPasswordResult {
+	message: String!
+}
+
+type ModifyPasswordInvalidPassword implements ModifyPasswordResult {
+	reason: String!
+	message: String!
+}
+
+interface ModifyPasswordResult {
+	message: String!
+}
+
+type ModifyPasswordSuccess implements ModifyPasswordResult {
 	message: String!
 }
 
@@ -2424,7 +2449,7 @@ type Molecule {
 }
 
 type MoleculeMut {
-	createProject(ipnftAddress: String!, ipnftTokenId: Int!, ipnftUid: String!, iptSymbol: String!, iptAddress: String!): CreateProjectResult!
+	createProject(ipnftSymbol: String!, ipnftUid: String!, ipnftAddress: String!, ipnftTokenId: Int!): CreateProjectResult!
 	"""
 	Looks up the project
 	"""
@@ -2441,6 +2466,14 @@ type MoleculeProject {
 	"""
 	eventTime: DateTime!
 	"""
+	Symbolic name of the project
+	"""
+	ipnftSymbol: String!
+	"""
+	Unique ID of the IPNFT as `{ipnftAddress}_{ipnftTokenId}`
+	"""
+	ipnftUid: String!
+	"""
 	Address of the IPNFT contract
 	"""
 	ipnftAddress: String!
@@ -2448,18 +2481,6 @@ type MoleculeProject {
 	Token ID withing the IPNFT contract
 	"""
 	ipnftTokenId: Int!
-	"""
-	Unique ID of the IPNFT as `{ipnftAddress}_{ipnftTokenId}`
-	"""
-	ipnftUid: String!
-	"""
-	Address of the associated IPT contract
-	"""
-	iptAddress: String!
-	"""
-	Symbolic name of the IPT token
-	"""
-	iptSymbol: String!
 	"""
 	Project's organizational account
 	"""
@@ -2504,23 +2525,6 @@ type MoleculeProjectMut {
 		"""
 		attachments: [String!],		moleculeAccessLevel: String!,		moleculeChangeBy: String!
 	): CreateAnnouncementResult!
-}
-
-type ModifyPasswordAccountNotFound implements ModifyPasswordResult {
-	message: String!
-}
-
-type ModifyPasswordInvalidPassword implements ModifyPasswordResult {
-	reason: String!
-	message: String!
-}
-
-interface ModifyPasswordResult {
-	message: String!
-}
-
-type ModifyPasswordSuccess implements ModifyPasswordResult {
-	message: String!
 }
 
 """
