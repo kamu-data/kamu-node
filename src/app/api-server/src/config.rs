@@ -18,7 +18,7 @@ use kamu::{
     EngineConfigDatafusionEmbeddedCompaction,
     EngineConfigDatafusionEmbeddedIngest,
 };
-use kamu_accounts::AccountConfig;
+use kamu_accounts::{AccountConfig, DidSecretEncryptionConfig};
 use kamu_datasets::DatasetEnvVarsConfig;
 use odf::dataset::IpfsGateway;
 use serde::{Deserialize, Deserializer, Serialize};
@@ -248,6 +248,7 @@ impl EngineConfigDatafution {
 pub struct AuthConfig {
     pub jwt_secret: String,
     pub providers: Vec<AuthProviderConfig>,
+    pub did_encryption: DidSecretEncryptionConfig,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

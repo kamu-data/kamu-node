@@ -16,13 +16,18 @@ use email_gateway::FakeEmailSender;
 use kamu::domain::{DidGeneratorDefault, ServerUrlConfig, TenancyConfig};
 use kamu_accounts::{
     CurrentAccountSubject,
+    DidSecretEncryptionConfig,
     JwtAuthenticationConfig,
     PredefinedAccountsConfig,
     DEFAULT_ACCOUNT_NAME,
     DEFAULT_ACCOUNT_NAME_STR,
     DUMMY_EMAIL_ADDRESS,
 };
-use kamu_accounts_inmem::{InMemoryAccessTokenRepository, InMemoryAccountRepository};
+use kamu_accounts_inmem::{
+    InMemoryAccessTokenRepository,
+    InMemoryAccountRepository,
+    InMemoryDidSecretKeyRepository,
+};
 use kamu_accounts_services::{
     AccessTokenServiceImpl,
     AccountServiceImpl,
@@ -152,10 +157,12 @@ impl FlowProgressNotifierHarness {
             .add::<AccountServiceImpl>()
             .add::<AccessTokenServiceImpl>()
             .add::<InMemoryAccessTokenRepository>()
+            .add::<InMemoryDidSecretKeyRepository>()
             .add::<PredefinedAccountsRegistrator>()
             .add::<LoginPasswordAuthProvider>()
             .add::<RebacServiceImpl>()
             .add::<InMemoryRebacRepository>()
+            .add_value(DidSecretEncryptionConfig::sample())
             .add_value(DefaultAccountProperties::default())
             .add_value(DefaultDatasetProperties::default())
             .add_value(PredefinedAccountsConfig::single_tenant())
