@@ -9,49 +9,49 @@ auth:
     - kind: password
       accounts:
         - accountName: kamu
-          email: kamu@example.com
+          email: support+kamu@kamu.dev
           avatarUrl: https://avatars.githubusercontent.com/u/50896974?s=200&v=4
         - accountName: sh101-bowen
-          email: sh101-bowen@example.com
+          email: support+sh101-bowen@kamu.dev
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
         - accountName: sh102-gambier
-          email: sh102-gambier@example.com
+          email: support+sh102-gambier@kamu.dev
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
         - accountName: sh103-howe
-          email: sh103-howe@example.com
+          email: support+sh103-howe@kamu.dev
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
         - accountName: sh104-granville
-          email: sh104-granville@example.com
+          email: support+sh104-granville@kamu.dev
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
         - accountName: sh105-keats
-          email: sh105-keats@example.com
+          email: support+sh105-keats@kamu.dev
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
         - accountName: sh106-seymour
-          email: sh106-seymour@example.com
+          email: support+sh106-seymour@kamu.dev
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
         - accountName: mim.dk
-          email: mim.dk@example.com
+          email: support+mim.dk@kamu.dev
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
         - accountName: mmo.gov.uk
-          email: mmo.gov.uk@example.com
+          email: support+mmo.gov.uk@kamu.dev
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
         - accountName: moa.gov.nl
-          email: moa.gov.nl@example.com
+          email: support+moa.gov.nl@kamu.dev
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
         - accountName: ofb.gouv.fr
-          email: ofb.gouv.fr@example.com
+          email: support+ofb.gouv.fr@kamu.dev
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
         - accountName: protectedseas.net
-          email: protectedseas.net@example.com
+          email: support+protectedseas.net@kamu.dev
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
         - accountName: acme.fishing.co
-          email: acme.fishing.co@example.com
+          email: support+acme.fishing.co@kamu.dev
           avatarUrl: https://cdn-icons-png.flaticon.com/512/1090/1090630.png
         - accountName: globalfishingwatch.org
-          email: globalfishingwatch.org@example.com
+          email: support+globalfishingwatch.org@kamu.dev
           avatarUrl: https://cdn-icons-png.flaticon.com/512/744/744480.png
         - accountName: bmis-bycatch.org
-          email: bmis-bycatch.org@example.com
+          email: support+bmis-bycatch.org@kamu.dev
           avatarUrl: https://cdn-icons-png.flaticon.com/128/10197/10197245.png
     - kind: github
 datasetEnvVars:
