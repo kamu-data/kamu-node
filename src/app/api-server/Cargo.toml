@@ -34,6 +34,7 @@ query-extensions-json = ["kamu/query-extensions-json"]
 dill = { version = "0.13", default-features = false }
 
 container-runtime = { workspace = true }
+crypto-utils = { workspace = true }
 database-common = { workspace = true }
 database-common-macros = { workspace = true }
 email-utils = { workspace = true }

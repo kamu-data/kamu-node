@@ -12,7 +12,7 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## [Unreleased]
+## [0.65.0] - 2025-05-14
 ### Added
 - New REST endpoint `/system/info` and GQL endpoint `buildInfo` that return application version and build details
 ### Changed

@@ -12,6 +12,9 @@ database:
   provider: sqlite
   databasePath: kamu-api-server.sqlite
 auth:
+  did_encryption:
+    - enabled: true
+      encryptionKey: hUuFbsNDOr9Gq6iRpCpilCueBaBWwbzM
   providers:
     - kind: github
       clientId: 361a3b4fda86d0234d2f
@@ -19,7 +22,7 @@ auth:
     - kind: password
       accounts:
         - accountName: admin
-          isAdmin: true
+          properties: [admin]
           email: admin@example.com
         - accountName: alice
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3665/3665909.png
