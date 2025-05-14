@@ -587,10 +587,10 @@ pub async fn init_dependencies(
     b.add_value(config.dataset_env_vars.clone());
 
     // Did secret key encryption configuration
-    b.add_value(config.auth.did_encryption.clone().unwrap());
+    b.add_value(config.auth.did_encryption.clone());
 
-    if let Some(did_encryption_config) = config.auth.did_encryption.as_ref()
-        && let Some(encryption_key) = &did_encryption_config.encryption_key
+    let did_encryption_config = config.auth.did_encryption;
+    if let Some(encryption_key) = &did_encryption_config.encryption_key
         && did_encryption_config.is_enabled()
     {
         assert!(

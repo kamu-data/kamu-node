@@ -248,7 +248,7 @@ impl EngineConfigDatafution {
 pub struct AuthConfig {
     pub jwt_secret: String,
     pub providers: Vec<AuthProviderConfig>,
-    pub did_encryption: Option<DidSecretEncryptionConfig>,
+    pub did_encryption: DidSecretEncryptionConfig,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

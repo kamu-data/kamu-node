@@ -1,9 +1,9 @@
 repo:
   repoUrl: file:///opt/kamu/workspace/.kamu/datasets
 auth:
-  did_encryption:
-    - enabled: true
-      encryptionKey: hUuFbsNDOr9Gq6iRpCpilCueBaBWwbzM
+  didEncryption:
+    enabled: true
+    encryptionKey: hUuFbsNDOr9Gq6iRpCpilCueBaBWwbzM
   providers:
     # Dummy accounts for owners of example datasets
     - kind: password
