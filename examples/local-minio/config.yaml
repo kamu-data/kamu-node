@@ -19,7 +19,7 @@ auth:
     - kind: password
       accounts:
         - accountName: admin
-          isAdmin: true
+          properties: [admin]
           email: admin@example.com
         - accountName: alice
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3665/3665909.png
