@@ -1,39 +1,57 @@
 repo:
   repoUrl: file:///opt/kamu/workspace/.kamu/datasets
 auth:
+  did_encryption:
+    - enabled: true
+      encryptionKey: hUuFbsNDOr9Gq6iRpCpilCueBaBWwbzM
   providers:
     # Dummy accounts for owners of example datasets
     - kind: password
       accounts:
         - accountName: kamu
+          email: kamu@example.com
           avatarUrl: https://avatars.githubusercontent.com/u/50896974?s=200&v=4
         - accountName: sh101-bowen
+          email: sh101-bowen@example.com
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
         - accountName: sh102-gambier
+          email: sh102-gambier@example.com
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
         - accountName: sh103-howe
+          email: sh103-howe@example.com
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
         - accountName: sh104-granville
+          email: sh104-granville@example.com
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
         - accountName: sh105-keats
+          email: sh105-keats@example.com
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
         - accountName: sh106-seymour
+          email: sh106-seymour@example.com
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3118/3118054.png
         - accountName: mim.dk
+          email: mim.dk@example.com
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
         - accountName: mmo.gov.uk
+          email: mmo.gov.uk@example.com
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
         - accountName: moa.gov.nl
+          email: moa.gov.nl@example.com
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
         - accountName: ofb.gouv.fr
+          email: ofb.gouv.fr@example.com
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
         - accountName: protectedseas.net
+          email: protectedseas.net@example.com
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3530/3530558.png
         - accountName: acme.fishing.co
+          email: acme.fishing.co@example.com
           avatarUrl: https://cdn-icons-png.flaticon.com/512/1090/1090630.png
         - accountName: globalfishingwatch.org
+          email: globalfishingwatch.org@example.com
           avatarUrl: https://cdn-icons-png.flaticon.com/512/744/744480.png
         - accountName: bmis-bycatch.org
+          email: bmis-bycatch.org@example.com
           avatarUrl: https://cdn-icons-png.flaticon.com/128/10197/10197245.png
     - kind: github
 datasetEnvVars:
