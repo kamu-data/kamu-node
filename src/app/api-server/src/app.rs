@@ -466,6 +466,7 @@ pub async fn init_dependencies(
     kamu_adapter_auth_oso_rebac::register_dependencies(&mut b);
     kamu_datasets_services::register_dependencies(&mut b, true);
     kamu_auth_rebac_services::register_dependencies(&mut b, true);
+    kamu_webhooks_services::register_dependencies(&mut b);
 
     b.add::<odf::dataset::DummyOdfServerAccessTokenResolver>();
 

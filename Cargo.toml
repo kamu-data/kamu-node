@@ -57,6 +57,8 @@ kamu-accounts = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/m
 kamu-datasets = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.237.0", default-features = false }
 kamu-search = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.237.0", default-features = false }
 kamu-search-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.237.0", default-features = false }
+kamu-webhooks = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.237.0", default-features = false }
+kamu-webhooks-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.237.0", default-features = false }
 
 # Infra
 kamu = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.237.0", default-features = false }
@@ -89,6 +91,9 @@ kamu-search-qdrant = { git = "https://github.com/kamu-data/kamu-cli", branch = "
 kamu-task-system-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.237.0", default-features = false }
 kamu-task-system-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.237.0", default-features = false }
 kamu-task-system-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.237.0", default-features = false }
+kamu-webhooks-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.237.0", default-features = false }
+kamu-webhooks-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.237.0", default-features = false }
+kamu-webhooks-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.237.0", default-features = false }
 
 # E2E: kamu-cli
 kamu-cli-e2e-common = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.237.0", default-features = false }
