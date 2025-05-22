@@ -16,6 +16,7 @@ use internal_error::{InternalError, ResultIntoInternal};
 use kamu_accounts::{
     AccountLifecycleMessage,
     AccountLifecycleMessageCreated,
+    AccountLifecycleMessageDeleted,
     MESSAGE_PRODUCER_KAMU_ACCOUNTS_SERVICE,
 };
 use messaging_outbox::{
@@ -28,7 +29,13 @@ use messaging_outbox::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pub const ACCOUNT_REGISTERED_SUBJECT: &str = "Welcome to Kamu!";
+#[derive(strum_macros::AsRefStr)]
+pub enum EmailSubjectAccountLifecycle {
+    #[strum(serialize = "Welcome to Kamu!")]
+    Created,
+    #[strum(serialize = "⚠️ Your account is deleted!")]
+    Deleted,
+}
 
 pub const MESSAGE_CONSUMER_KAMU_API_SERVER_ACCOUNT_LIFECYCLE_NOTIFIER: &str =
     "dev.kamu.api-server.AccountLifecycleNotifier";
@@ -67,7 +74,26 @@ impl AccountLifecycleNotifier {
         self.email_sender
             .send_email(
                 &created.email,
-                ACCOUNT_REGISTERED_SUBJECT,
+                EmailSubjectAccountLifecycle::Created.as_ref(),
+                &rendered_registration_body,
+            )
+            .await
+            .int_err()
+    }
+
+    async fn notify_account_deleted(
+        &self,
+        message: &AccountLifecycleMessageDeleted,
+    ) -> Result<(), InternalError> {
+        let registration_email = AccountDeletedEmail {
+            username: &message.display_name,
+        };
+        let rendered_registration_body = registration_email.render().unwrap();
+
+        self.email_sender
+            .send_email(
+                &message.email,
+                EmailSubjectAccountLifecycle::Deleted.as_ref(),
                 &rendered_registration_body,
             )
             .await
@@ -96,6 +122,7 @@ impl MessageConsumerT<AccountLifecycleMessage> for AccountLifecycleNotifier {
         tracing::debug!(received_message = ?message, "Received account lifecycle message");
         match message {
             AccountLifecycleMessage::Created(created) => self.notify_account_created(created).await,
+            AccountLifecycleMessage::Deleted(deleted) => self.notify_account_deleted(deleted).await,
         }
     }
 }
@@ -105,6 +132,14 @@ impl MessageConsumerT<AccountLifecycleMessage> for AccountLifecycleNotifier {
 #[derive(Template)]
 #[template(path = "account-registered.html")]
 struct RegistrationEmail<'a> {
+    username: &'a str,
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Template)]
+#[template(path = "account-deleted.html")]
+struct AccountDeletedEmail<'a> {
     username: &'a str,
 }
 
