@@ -23,7 +23,7 @@ podman run --rm \
 ```
 2) After running `kamu-api-server` via the script:
 ```shell
-./start-kamu-api-server.sh
+RUST_LOG=info ./start-kamu-api-server.sh
 ```
 
-To view S3 metrics open http://127.0.0.1:8080/system/metrics.
+To view S3 metrics, open http://127.0.0.1:8080/system/metrics.
