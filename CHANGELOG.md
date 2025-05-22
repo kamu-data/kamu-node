@@ -12,7 +12,7 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## Unreleased
+## [0.66.0] - 2025-05-22
 ### Added
 - Account Deletion API ([kamu CLI `0.238.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.238.0))
 
