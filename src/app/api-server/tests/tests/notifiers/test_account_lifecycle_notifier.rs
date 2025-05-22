@@ -9,15 +9,15 @@
 
 use std::sync::Arc;
 
-use dill::*;
 use email_gateway::FakeEmailSender;
 use email_utils::Email;
 use kamu_accounts::{
     AccountDisplayName,
     AccountLifecycleMessage,
+    AccountLifecycleMessageDeleted,
     MESSAGE_PRODUCER_KAMU_ACCOUNTS_SERVICE,
 };
-use kamu_api_server::{AccountLifecycleNotifier, ACCOUNT_REGISTERED_SUBJECT};
+use kamu_api_server::{AccountLifecycleNotifier, EmailSubjectAccountLifecycle};
 use messaging_outbox::{register_message_dispatcher, Outbox, OutboxExt, OutboxImmediateImpl};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,24 +34,61 @@ async fn test_account_created_sends_registration_email() {
         .await;
 
     let emails = harness.fake_email_sender.get_recorded_emails();
-    assert_eq!(emails.len(), 1);
+    pretty_assertions::assert_eq!(1, emails.len());
 
     let registration_email = emails.first().unwrap();
-    assert_eq!(registration_email.recipient.as_ref(), "wasya@example.com");
-    assert_eq!(registration_email.subject, ACCOUNT_REGISTERED_SUBJECT);
-    assert!(registration_email.body.contains("Wasya Pupkin"));
+    pretty_assertions::assert_eq!("wasya@example.com", registration_email.recipient.as_ref());
+    pretty_assertions::assert_eq!(
+        EmailSubjectAccountLifecycle::Created.as_ref(),
+        registration_email.subject,
+    );
+    assert!(
+        registration_email.body.contains("Wasya Pupkin"),
+        "{}",
+        registration_email.body
+    );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[test_log::test(tokio::test)]
+async fn test_account_deleted_sends_registration_email() {
+    let harness = AccountLifecycleNotifierHarness::new();
+    harness
+        .send_account_deleted(AccountLifecycleMessageDeleted {
+            account_id: odf::AccountID::new_generated_ed25519().1,
+            email: Email::parse("wasya@example.com").unwrap(),
+            display_name: "Wasya Pupkin".to_string(),
+        })
+        .await;
+
+    let emails = harness.fake_email_sender.get_recorded_emails();
+    pretty_assertions::assert_eq!(1, emails.len());
+
+    let registration_email = emails.first().unwrap();
+    pretty_assertions::assert_eq!("wasya@example.com", registration_email.recipient.as_ref());
+    pretty_assertions::assert_eq!(
+        EmailSubjectAccountLifecycle::Deleted.as_ref(),
+        registration_email.subject,
+    );
+    assert!(
+        registration_email.body.contains("Wasya Pupkin"),
+        "{}",
+        registration_email.body
+    );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct AccountLifecycleNotifierHarness {
-    _catalog: Catalog,
     outbox: Arc<dyn Outbox>,
     fake_email_sender: Arc<FakeEmailSender>,
 }
 
 impl AccountLifecycleNotifierHarness {
     fn new() -> Self {
+        use dill::Component;
+
         let mut b = dill::CatalogBuilder::new();
 
         b.add::<AccountLifecycleNotifier>()
@@ -72,7 +109,6 @@ impl AccountLifecycleNotifierHarness {
         let fake_email_sender = catalog.get_one().unwrap();
 
         Self {
-            _catalog: catalog,
             outbox,
             fake_email_sender,
         }
@@ -92,6 +128,16 @@ impl AccountLifecycleNotifierHarness {
                     email,
                     display_name,
                 ),
+            )
+            .await
+            .unwrap();
+    }
+
+    async fn send_account_deleted(&self, message: AccountLifecycleMessageDeleted) {
+        self.outbox
+            .post_message(
+                MESSAGE_PRODUCER_KAMU_ACCOUNTS_SERVICE,
+                AccountLifecycleMessage::Deleted(message),
             )
             .await
             .unwrap();
