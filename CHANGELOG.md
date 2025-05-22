@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## Unreleased
+### Added
+- Account Deletion API ([kamu CLI `0.238.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.238.0))
+
 ## [0.65.0] - 2025-05-14
 ### Added
 - New REST endpoint `/system/info` and GQL endpoint `buildInfo` that return application version and build details
