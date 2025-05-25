@@ -25,7 +25,7 @@ observability = { workspace = true, default-features = false, features = [
 ] }
 odf = { workspace = true, default-features = false }
 
-alloy = { version = "0.9", default-features = false, features = [
+alloy = { version = "1", default-features = false, features = [
     "std",
     "contract",
     "network",

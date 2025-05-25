@@ -12,11 +12,9 @@ use std::time::Duration;
 
 use alloy::eips::BlockNumberOrTag;
 use alloy::primitives::U256;
-use alloy::providers::Provider;
+use alloy::providers::{DynProvider, Provider};
 use alloy::rpc::types::eth::{Filter, Log};
-use alloy::rpc::types::BlockTransactionsKind;
 use alloy::sol_types::{SolEvent, SolEventInterface};
-use alloy::transports::BoxTransport;
 use chrono::{DateTime, Utc};
 use internal_error::*;
 use tracing::Instrument;
@@ -185,18 +183,18 @@ impl OdfOracleProviderMetrics {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pub struct OdfOracleProvider<P: Provider> {
+pub struct OdfOracleProvider {
     config: Config,
-    rpc_client: P,
-    oracle_contract: IOdfProvider::IOdfProviderInstance<BoxTransport, P>,
+    rpc_client: DynProvider,
+    oracle_contract: IOdfProvider::IOdfProviderInstance<DynProvider>,
     api_client: Arc<dyn OdfApiClient>,
     metrics: OdfOracleProviderMetrics,
 }
 
-impl<P: Provider + Clone> OdfOracleProvider<P> {
+impl OdfOracleProvider {
     pub fn new(
         config: Config,
-        rpc_client: P,
+        rpc_client: DynProvider,
         api_client: Arc<dyn OdfApiClient>,
         metrics: OdfOracleProviderMetrics,
     ) -> Self {
@@ -220,7 +218,7 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
             .call()
             .await
         {
-            Ok(v) => Ok(v._0),
+            Ok(v) => Ok(v),
             Err(err) => Err(err.int_err()),
         }
     }
@@ -262,7 +260,7 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
     ) -> Result<u64, InternalError> {
         let latest_block = self
             .rpc_client
-            .get_block_by_number(BlockNumberOrTag::Latest, BlockTransactionsKind::Hashes)
+            .get_block_by_number(BlockNumberOrTag::Latest)
             .await
             .int_err()?
             .ok_or("Could not read latest block".int_err())?;
@@ -280,10 +278,7 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
         }
         let jump_block = self
             .rpc_client
-            .get_block_by_number(
-                BlockNumberOrTag::Number(latest_block_number - jump_back),
-                BlockTransactionsKind::Hashes,
-            )
+            .get_block_by_number(BlockNumberOrTag::Number(latest_block_number - jump_back))
             .await
             .int_err()?
             .ok_or("Could not read block".int_err())?;
@@ -308,10 +303,7 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
 
         let target_block = self
             .rpc_client
-            .get_block_by_number(
-                BlockNumberOrTag::Number(approx_block_number),
-                BlockTransactionsKind::Hashes,
-            )
+            .get_block_by_number(BlockNumberOrTag::Number(approx_block_number))
             .await
             .int_err()?
             .ok_or("Could not read block".int_err())?;
@@ -489,7 +481,7 @@ impl<P: Provider + Clone> OdfOracleProvider<P> {
                 assert!(!log.removed, "Encountered removed log: {log:#?}");
 
                 let log_decoded =
-                    IOdfProvider::IOdfProviderEvents::decode_log(&log.inner, true).int_err()?;
+                    IOdfProvider::IOdfProviderEvents::decode_log(&log.inner).int_err()?;
 
                 tracing::trace!(?log, "Observed log");
 
