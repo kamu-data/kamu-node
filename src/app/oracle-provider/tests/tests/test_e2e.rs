@@ -11,6 +11,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use alloy::primitives::Address;
+use alloy::providers::Provider;
 use alloy::sol;
 use kamu_oracle_provider::api_client::*;
 use kamu_oracle_provider::{self as provider};
@@ -121,10 +122,12 @@ async fn test_oracle_e2e() {
 
     // Authorize provider and generate a request
     let admin_rpc_client = alloy::providers::ProviderBuilder::new()
-        .with_recommended_fillers()
-        .on_builtin(&rpc_endpoint)
+        .with_gas_estimation()
+        .with_cached_nonce_management()
+        .connect(&rpc_endpoint)
         .await
-        .unwrap();
+        .unwrap()
+        .erased();
 
     let oracle_admin = IOdfAdmin::new(oracle_contract_address, admin_rpc_client.clone());
     let consumer = Consumer::new(consumer_contract_address, admin_rpc_client.clone());
@@ -167,11 +170,8 @@ async fn test_oracle_e2e() {
 
     provider.run_once(Some(0), None).await.unwrap();
 
-    assert_eq!(consumer.province().call().await.unwrap().province, "ON");
-    assert_eq!(
-        consumer.totalCases().call().await.unwrap().totalCases,
-        100500
-    );
+    assert_eq!(consumer.province().call().await.unwrap(), "ON");
+    assert_eq!(consumer.totalCases().call().await.unwrap(), 100500);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
