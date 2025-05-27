@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [Unreleased]
+### Changed
+- GQL: `molecule` area: use `BigInt` for `ipnft_token_id`
+
 ## [0.67.0] - 2025-05-26
 ### Added
 - Webhooks prototype ([kamu CLI `0.239.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.239.0))
