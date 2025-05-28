@@ -9,20 +9,28 @@ uploadRepo:
     kind: s3
     bucketS3Url: s3+http://127.0.0.1:9000/upload
 database:
-  provider: sqlite
-  databasePath: kamu-api-server.sqlite
+  provider: postgres
+  host: localhost
+  port: 5433
+  credentialsPolicy:
+    source:
+      kind: rawPassword
+      userName: root
+      rawPassword: root
+  databaseName: kamu
 auth:
-  did_encryption:
-    - enabled: true
-      encryptionKey: hUuFbsNDOr9Gq6iRpCpilCueBaBWwbzM
+  didEncryption:
+    enabled: true
+    encryptionKey: hUuFbsNDOr9Gq6iRpCpilCueBaBWwbzM
   providers:
+    # Localhost GitHub OAuth application credentials
     - kind: github
       clientId: 361a3b4fda86d0234d2f
       clientSecret: 465849325236ed49253993744069e1bec6808554
     - kind: password
       accounts:
         - accountName: admin
-          properties: [admin]
+          properties: [ admin ]
           email: admin@example.com
         - accountName: alice
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3665/3665909.png
@@ -30,6 +38,11 @@ auth:
         - accountName: bob
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3665/3665917.png
           email: bob@example.com
+        - accountName: molecule
+          properties:
+            - canProvisionAccounts
+          avatarUrl: https://avatars.githubusercontent.com/u/37688345?s=200&v=4
+          email: support+molecule@example.com
 url:
   baseUrlPlatform: http://127.0.0.1:4200
   baseUrlRest: http://127.0.0.1:8080
