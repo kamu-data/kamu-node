@@ -16,6 +16,7 @@ auth:
     enabled: true
     encryptionKey: hUuFbsNDOr9Gq6iRpCpilCueBaBWwbzM
   providers:
+    # Demo GitHub OAuth application credentials
     - kind: github
       clientId: 361a3b4fda86d0234d2f
       clientSecret: 465849325236ed49253993744069e1bec6808554
