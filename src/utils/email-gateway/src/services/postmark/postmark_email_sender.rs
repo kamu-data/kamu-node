@@ -9,7 +9,7 @@
 
 use std::sync::Arc;
 
-use dill::{component, interface, scope, Singleton};
+use dill::{Singleton, component, interface, scope};
 use email_utils::Email;
 use internal_error::ResultIntoInternal;
 use secrecy::ExposeSecret;

@@ -31,7 +31,7 @@ query-extensions-json = ["kamu/query-extensions-json"]
 
 
 [dependencies]
-dill = { version = "0.13", default-features = false }
+dill = { version = "0.14", default-features = false }
 
 container-runtime = { workspace = true }
 crypto-utils = { workspace = true }

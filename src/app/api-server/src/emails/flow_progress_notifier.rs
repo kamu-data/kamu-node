@@ -12,7 +12,7 @@ use std::sync::Arc;
 
 use askama::Template;
 use chrono::{DateTime, Utc};
-use dill::{component, interface, meta, Catalog};
+use dill::{Catalog, component, interface, meta};
 use email_gateway::EmailSender;
 use internal_error::{InternalError, ResultIntoInternal};
 use kamu_datasets::GetDatasetEntryError;

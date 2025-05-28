@@ -111,7 +111,7 @@ aws-sdk-s3 = "=1.68.0"
 
 [workspace.package]
 version = "0.67.0"
-edition = "2021"
+edition = "2024"
 homepage = "https://github.com/kamu-data/kamu-platform"
 repository = "https://github.com/kamu-data/kamu-platform"
 authors = ["Kamu Data Inc. <dev@kamu.dev>"]

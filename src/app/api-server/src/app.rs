@@ -25,6 +25,9 @@ use url::Url;
 use crate::commands::{Command, CommandDesc};
 use crate::ui_configuration::{UIConfiguration, UIFeatureFlags};
 use crate::{
+    AccessTokenLifecycleNotifier,
+    AccountLifecycleNotifier,
+    FlowProgressNotifier,
     cli,
     commands,
     config,
@@ -33,9 +36,6 @@ use crate::{
     connect_database_initially,
     spawn_password_refreshing_job,
     try_build_db_connection_settings,
-    AccessTokenLifecycleNotifier,
-    AccountLifecycleNotifier,
-    FlowProgressNotifier,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

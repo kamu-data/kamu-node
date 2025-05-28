@@ -15,7 +15,7 @@ use kamu_node_puppet::{KamuNodePuppet, NewWorkspaceOptions, RepositoryType};
 use regex::Regex;
 use sqlx::{PgPool, SqlitePool};
 
-use crate::{api_flight_sql_e2e_test, api_server_e2e_test, KamuFlightSQLClient};
+use crate::{KamuFlightSQLClient, api_flight_sql_e2e_test, api_server_e2e_test};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
