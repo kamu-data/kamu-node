@@ -482,10 +482,13 @@ pub async fn init_dependencies(
             need_to_add_default_predefined_accounts_config = false;
         }
         TenancyConfig::MultiTenant => {
+            kamu_auth_web3_services::register_dependencies(&mut b);
+            kamu_adapter_auth_web3::register_dependencies(&mut b);
+
             for provider in config.auth.providers {
                 match provider {
                     config::AuthProviderConfig::Github(github_config) => {
-                        b.add::<kamu_adapter_oauth::OAuthGithub>();
+                        kamu_adapter_oauth::register_dependencies(&mut b, true);
 
                         b.add_value(kamu_adapter_oauth::GithubAuthenticationConfig::new(
                             github_config.client_id,

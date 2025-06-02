@@ -68,8 +68,12 @@ kamu-accounts-postgres = { workspace = true }
 kamu-accounts-services = { workspace = true }
 kamu-accounts-sqlite = { workspace = true }
 kamu-adapter-auth-oso-rebac = { workspace = true }
+kamu-adapter-auth-web3 = { workspace = true, default-features = false, features = ["did-pkh"] }
 kamu-adapter-flight-sql = { workspace = true }
 kamu-adapter-graphql = { workspace = true }
+kamu-auth-web3-inmem = { workspace = true }
+kamu-auth-web3-postgres = { workspace = true }
+kamu-auth-web3-sqlite = { workspace = true }
 kamu-adapter-http = { workspace = true, features = [
     "e2e",
 ], default-features = false }
@@ -79,6 +83,7 @@ kamu-auth-rebac-inmem = { workspace = true }
 kamu-auth-rebac-postgres = { workspace = true }
 kamu-auth-rebac-services = { workspace = true }
 kamu-auth-rebac-sqlite = { workspace = true }
+kamu-auth-web3-services = { workspace = true }
 kamu-datasets = { workspace = true }
 kamu-datasets-inmem = { workspace = true }
 kamu-datasets-postgres = { workspace = true }
