@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [Unreleased]
+### Fixed
+- Wallet-based authentication: interactive login use case support (Device Flow) ([kamu CLI `0.240.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.240.1)).
+
 ## [0.68.0] - 2025-06-02
 ### Added
 - Wallet-based authentication, Phase 1 ([kamu CLI `0.240.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.240.0)).
