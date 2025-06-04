@@ -15,12 +15,12 @@ use email_gateway::FakeEmailSender;
 use kamu::domain::{ServerUrlConfig, TenancyConfig};
 use kamu_accounts::{
     AccessTokenLifecycleMessage,
-    DidSecretEncryptionConfig,
-    JwtAuthenticationConfig,
-    PredefinedAccountsConfig,
     DEFAULT_ACCOUNT_ID,
     DUMMY_EMAIL_ADDRESS,
+    DidSecretEncryptionConfig,
+    JwtAuthenticationConfig,
     MESSAGE_PRODUCER_KAMU_ACCESS_TOKEN_SERVICE,
+    PredefinedAccountsConfig,
 };
 use kamu_accounts_inmem::{
     InMemoryAccessTokenRepository,
@@ -33,14 +33,14 @@ use kamu_accounts_services::{
     LoginPasswordAuthProvider,
     PredefinedAccountsRegistrator,
 };
-use kamu_api_server::{AccessTokenLifecycleNotifier, ACCESS_TOKEN_CREATED_SUBJECT};
+use kamu_api_server::{ACCESS_TOKEN_CREATED_SUBJECT, AccessTokenLifecycleNotifier};
 use kamu_auth_rebac_inmem::InMemoryRebacRepository;
 use kamu_auth_rebac_services::{
     DefaultAccountProperties,
     DefaultDatasetProperties,
     RebacServiceImpl,
 };
-use messaging_outbox::{register_message_dispatcher, Outbox, OutboxExt, OutboxImmediateImpl};
+use messaging_outbox::{Outbox, OutboxExt, OutboxImmediateImpl, register_message_dispatcher};
 use time_source::SystemTimeSourceDefault;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,9 +65,11 @@ async fn test_access_token_created_email() {
         format!("{ACCESS_TOKEN_CREATED_SUBJECT}")
     );
     assert!(access_token_created_email.body.contains("foo"));
-    assert!(access_token_created_email
-        .body
-        .contains("href=\"http://platform.example.com/v/settings/access-tokens\""));
+    assert!(
+        access_token_created_email
+            .body
+            .contains("href=\"http://platform.example.com/v/settings/access-tokens\"")
+    );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

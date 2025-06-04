@@ -38,6 +38,10 @@ type Account {
 	"""
 	accountType: AccountType!
 	"""
+	Account provider
+	"""
+	accountProvider: AccountProvider!
+	"""
 	Email address
 	"""
 	email: String!
@@ -149,6 +153,12 @@ type AccountMut {
 scalar AccountName
 
 scalar AccountPassword
+
+enum AccountProvider {
+	PASSWORD
+	OAUTH_GITHUB
+	WEB3_WALLET
+}
 
 enum AccountType {
 	USER
@@ -314,15 +324,23 @@ type AttachmentsEmbedded {
 }
 
 type Auth {
-	enabledLoginMethods: [String!]!
+	enabledProviders: [AccountProvider!]!
 	listAccessTokens(accountId: AccountID!, page: Int, perPage: Int): AccessTokenConnection!
 }
 
 type AuthMut {
-	login(loginMethod: String!, loginCredentialsJson: String!, deviceCode: DeviceCode): LoginResponse!
+	"""
+	Web3-related functionality group
+	"""
+	web3: AuthWeb3Mut!
+	login(loginMethod: AccountProvider!, loginCredentialsJson: String!, deviceCode: DeviceCode): LoginResponse!
 	accountDetails(accessToken: String!): Account!
 	createAccessToken(accountId: AccountID!, tokenName: String!): CreateTokenResult!
 	revokeAccessToken(tokenId: AccessTokenID!): RevokeResult!
+}
+
+type AuthWeb3Mut {
+	eip4361AuthNonce(account: EvmWalletAddress!): Eip4361AuthNonceResponse!
 }
 
 """
@@ -344,7 +362,6 @@ type BlockRef {
 	name: String!
 	blockHash: Multihash!
 }
-
 
 type BuildInfo {
 	appVersion: String!
@@ -1540,6 +1557,12 @@ type DisablePushSource {
 	sourceName: String!
 }
 
+scalar Eip4361AuthNonce
+
+type Eip4361AuthNonceResponse {
+	value: Eip4361AuthNonce!
+}
+
 scalar Email
 
 type EngineDesc {
@@ -1618,6 +1641,8 @@ See: https://github.com/kamu-data/open-data-fabric/blob/master/open-data-fabric.
 type EventTimeSourceFromSystemTime {
 	dummy: String
 }
+
+scalar EvmWalletAddress
 
 """
 Indicates that derivative transformation has been performed.
@@ -1851,7 +1876,6 @@ type FetchStepUrl {
 type FlightSqlDesc {
 	url: String!
 }
-
 
 type Flow {
 	"""
@@ -2235,7 +2259,6 @@ type GetFlowSuccess implements GetFlowResult {
 	message: String!
 }
 
-
 input IngestConditionInput {
 	"""
 	Flag indicates to ignore cache during ingest step for API calls
@@ -2247,7 +2270,6 @@ input InitiatorFilterInput @oneOf {
 	system: Boolean
 	accounts: [AccountID!]
 }
-
 
 """
 A scalar that can represent any JSON value.
@@ -3580,7 +3602,6 @@ type StartUploadVersionSuccess implements StartUploadVersionResult {
 	message: String!
 }
 
-
 type Task {
 	"""
 	Unique and stable identifier of this task
@@ -4135,9 +4156,21 @@ type Webhooks {
 	eventTypes: [String!]!
 }
 
+"""
+Directs the executor to include this field or fragment only when the `if` argument is true.
+"""
 directive @include(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+"""
+Indicates that an Input Object is a OneOf Input Object (and thus requires exactly one of its field be provided)
+"""
 directive @oneOf on INPUT_OBJECT
+"""
+Directs the executor to skip this field or fragment when the `if` argument is true.
+"""
 directive @skip(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+"""
+Provides a scalar specification URL for specifying the behavior of custom scalar types.
+"""
 directive @specifiedBy(url: String!) on SCALAR
 schema {
 	query: Query

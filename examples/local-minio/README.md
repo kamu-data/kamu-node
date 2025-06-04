@@ -2,7 +2,7 @@
 
 This example shows how to run `kamu-api-server` locally with the S3 repository located in minio.
 
-## Preparation
+### Preparation
 
 ```shell
 cd ./examples/minio
@@ -21,9 +21,34 @@ podman run --rm \
   -e "MINIO_ROOT_PASSWORD=minio123" \
   quay.io/minio/minio server /data --console-address ":9001"
 ```
-2) After running `kamu-api-server` via the script:
+2) (Optional) Create a dump of the bucket data from the test environment of interest:
 ```shell
-./start-kamu-api-server.sh
+aws-sso exec
+aws s3 sync s3://TEST_ENV_HOST ./aws-datasets-bucket
 ```
+During a later startup, the saved data will be synchronized into minio.
 
-To view S3 metrics open http://127.0.0.1:8080/system/metrics.
+3) After running `kamu-api-server` via the script:
+
+- 3.1) (Simpler) SQLite database startup option:
+  ```shell
+  ./start-kamu-api-server.sh sqlite
+  ```
+- 3.2) (More complex) PostgreSQL database startup option:
+  - Start the Database. As an option, you can use the script from the repo root directory:
+    ```shell
+    make sqlx-local-setup-postgres
+    ```
+  - Download the database dump using the [provided instructions](https://github.com/kamu-data/kamu-deploy/blob/master/DEVELOPER.md#make-a-database-backup).
+  - Apply the dump to the local database:
+    ```shell
+    psql -U root -h 127.0.0.1 -p 5433 -d kamu -f DUMP.sql
+    ```
+  - Run the server:
+  ```shell
+  ./start-kamu-api-server.sh postgres
+  ```
+
+### Useful extras
+
+- To view S3 metrics, open http://127.0.0.1:8080/system/metrics.

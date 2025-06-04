@@ -18,7 +18,7 @@ use kamu_accounts::{
     MESSAGE_PRODUCER_KAMU_ACCOUNTS_SERVICE,
 };
 use kamu_api_server::{AccountLifecycleNotifier, EmailSubjectAccountLifecycle};
-use messaging_outbox::{register_message_dispatcher, Outbox, OutboxExt, OutboxImmediateImpl};
+use messaging_outbox::{Outbox, OutboxExt, OutboxImmediateImpl, register_message_dispatcher};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

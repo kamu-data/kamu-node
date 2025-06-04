@@ -45,6 +45,8 @@ impl KamuNodePuppet {
     }
 
     pub async fn new_workspace_tmp_with(options: NewWorkspaceOptions) -> Self {
+        use std::fmt::Write;
+
         let temp_dir = tempfile::tempdir().unwrap();
 
         let s3_server = if options.repo_type == RepositoryType::S3 {
@@ -62,19 +64,28 @@ impl KamuNodePuppet {
                 }
                 RepositoryType::S3 => s3_server.as_ref().unwrap().url.to_string(),
             };
-            config.push_str(&indoc::formatdoc!(
-                r#"
-                repo:
-                    repoUrl: {path}
-                auth:
-                    providers:
+
+            write!(
+                &mut config,
+                "{}",
+                indoc::formatdoc!(
+                    r#"
+                    repo:
+                      repoUrl: {repo_path}
+                    auth:
+                      providers:
                         - kind: password
                           accounts:
                             - accountName: kamu
                               email: kamu@example.com
-                "#,
-                path = repo_path,
-            ));
+                        - kind: github
+                          clientId: FOO
+                          clientSecret: BAR
+                    "#
+                )
+            )
+            .unwrap();
+
             fs::write(temp_dir.path().join("config.yaml"), config).unwrap();
         }
 
@@ -85,8 +96,11 @@ impl KamuNodePuppet {
             ..inst
         };
 
-        for (env_name, env_value) in options.env_vars {
-            std::env::set_var(env_name, env_value);
+        // TODO: Reconsider, perhaps use dotenv as a way to propagate vars per run
+        unsafe {
+            for (env_name, env_value) in options.env_vars {
+                std::env::set_var(env_name, env_value);
+            }
         }
 
         inst
@@ -125,7 +139,7 @@ impl KamuNodePuppet {
             for (name, value) in env_vars {
                 command.env(name, value);
             }
-        };
+        }
 
         command.env("RUST_LOG", "info,sqlx=debug");
         command.current_dir(self.workspace_path.clone());
