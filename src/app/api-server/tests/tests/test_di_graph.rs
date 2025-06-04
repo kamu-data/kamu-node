@@ -122,8 +122,12 @@ async fn test_di_graph_validates_remote(
 ) {
     let access_key = "AKIAIOSFODNN7EXAMPLE";
     let secret_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
-    std::env::set_var("AWS_ACCESS_KEY_ID", access_key);
-    std::env::set_var("AWS_SECRET_ACCESS_KEY", secret_key);
+
+    // TODO: Reconsider setting env vars in test runs
+    unsafe {
+        std::env::set_var("AWS_ACCESS_KEY_ID", access_key);
+        std::env::set_var("AWS_SECRET_ACCESS_KEY", secret_key);
+    }
 
     let tmp_repo_dir = tempfile::tempdir().unwrap();
     let bucket = "test-bucket";

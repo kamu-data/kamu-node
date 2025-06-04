@@ -1,1 +1,4 @@
 /minio-data
+/aws-datasets-bucket
+
+kamu-api-server.sqlite*

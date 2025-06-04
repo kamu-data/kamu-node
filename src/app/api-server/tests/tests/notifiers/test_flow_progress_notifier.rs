@@ -16,12 +16,12 @@ use email_gateway::FakeEmailSender;
 use kamu::domain::{DidGeneratorDefault, ServerUrlConfig, TenancyConfig};
 use kamu_accounts::{
     CurrentAccountSubject,
-    DidSecretEncryptionConfig,
-    JwtAuthenticationConfig,
-    PredefinedAccountsConfig,
     DEFAULT_ACCOUNT_NAME,
     DEFAULT_ACCOUNT_NAME_STR,
     DUMMY_EMAIL_ADDRESS,
+    DidSecretEncryptionConfig,
+    JwtAuthenticationConfig,
+    PredefinedAccountsConfig,
 };
 use kamu_accounts_inmem::{
     InMemoryAccessTokenRepository,
@@ -34,7 +34,7 @@ use kamu_accounts_services::{
     LoginPasswordAuthProvider,
     PredefinedAccountsRegistrator,
 };
-use kamu_api_server::{FlowProgressNotifier, FLOW_FAILED_SUBJECT};
+use kamu_api_server::{FLOW_FAILED_SUBJECT, FlowProgressNotifier};
 use kamu_auth_rebac_inmem::InMemoryRebacRepository;
 use kamu_auth_rebac_services::{
     DefaultAccountProperties,
@@ -63,9 +63,9 @@ use kamu_flow_system_services::{
     MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
 };
 use kamu_task_system::{TaskError, TaskID, TaskOutcome, TaskResult};
-use messaging_outbox::{register_message_dispatcher, Outbox, OutboxExt, OutboxImmediateImpl};
-use odf::dataset::DatasetStorageUnitLocalFs;
+use messaging_outbox::{Outbox, OutboxExt, OutboxImmediateImpl, register_message_dispatcher};
 use odf::DatasetID;
+use odf::dataset::DatasetStorageUnitLocalFs;
 use tempfile::TempDir;
 use time_source::SystemTimeSourceDefault;
 
@@ -93,9 +93,11 @@ async fn test_failed_flow_sends_email() {
         flow_failed_email.subject,
         format!("{FLOW_FAILED_SUBJECT}: test-dataset")
     );
-    assert!(flow_failed_email
-        .body
-        .contains("href=\"http://platform.example.com/test-dataset/flow-details/0/history\""));
+    assert!(
+        flow_failed_email
+            .body
+            .contains("href=\"http://platform.example.com/test-dataset/flow-details/0/history\"")
+    );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -13,8 +13,8 @@ use std::sync::Arc;
 
 use alloy::network::EthereumWallet;
 use alloy::providers::{DynProvider, Provider, ProviderBuilder};
-use alloy::signers::local::PrivateKeySigner;
 use alloy::signers::Signer as _;
+use alloy::signers::local::PrivateKeySigner;
 use internal_error::*;
 use observability::axum::unknown_fallback_handler;
 
