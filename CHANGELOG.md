@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.69.1] - 2025-06-06
+### Added
+- GQL: Account Renaming API ([kamu CLI `0.241.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.241.1)).
+
 ## [0.69.0] - 2025-06-06
 ### Added
 - Support renaming accounts via GraphQL API ([kamu CLI `0.241.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.241.0)):
@@ -21,7 +25,6 @@ Recommendation: for ease of reading, use the following order:
 ### Fixed
 - Missing length validation for webhook subscription labels.
 - Unexpected webhook label duplication for empty labels.
-
 
 ## [0.68.1] - 2025-06-04
 ### Fixed
