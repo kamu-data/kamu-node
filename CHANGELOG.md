@@ -16,6 +16,10 @@ Recommendation: for ease of reading, use the following order:
 ### Changed
 - GQL: `molecule` area: use `BigInt` for `ipnft_token_id`
 
+## [0.69.1] - 2025-06-06
+### Added
+- GQL: Account Renaming API ([kamu CLI `0.241.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.241.1)).
+
 ## [0.69.0] - 2025-06-06
 ### Added
 - Support renaming accounts via GraphQL API ([kamu CLI `0.241.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.241.0)):
