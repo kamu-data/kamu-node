@@ -123,6 +123,10 @@ impl MessageConsumerT<AccountLifecycleMessage> for AccountLifecycleNotifier {
         match message {
             AccountLifecycleMessage::Created(created) => self.notify_account_created(created).await,
             AccountLifecycleMessage::Deleted(deleted) => self.notify_account_deleted(deleted).await,
+            AccountLifecycleMessage::Renamed(_) => {
+                /* ignore */
+                Ok(())
+            }
         }
     }
 }
