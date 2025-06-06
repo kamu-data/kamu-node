@@ -12,7 +12,7 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## Unreleased
+## [0.69.1] - 2025-06-06
 ### Added
 - GQL: Account Renaming API ([kamu CLI `0.241.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.241.1)).
 
