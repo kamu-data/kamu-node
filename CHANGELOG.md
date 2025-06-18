@@ -14,7 +14,9 @@ Recommendation: for ease of reading, use the following order:
 
 ## [Unreleased]
 ### Added
-- GQL: `AccountMut::modifyPasswordWithConfirmation()`.
+- GQL: `AccountMut::modifyPasswordWithConfirmation()` ([kamu CLI `0.242.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.242.0)).
+### Changed
+- Upgraded to `datafusion v48`.
 
 ## [0.69.1] - 2025-06-06
 ### Added
