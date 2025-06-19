@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## Unreleased
+### Fixed
+- `PredefinedAccountsRegistrator`: during account synchronization, update password hash as well ([kamu CLI `0.241.3`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.241.3)).
+
 ## [0.69.3] - 2025-06-19
 ### Added
 - Config: `AuthConfig` section extended with `password_policy` parameter group.
