@@ -12,7 +12,7 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## [Unreleased]
+## [0.69.3] - 2025-06-19
 ### Changed
 - Config: `AuthConfig` section extended with `password_policy` parameter group.
 
