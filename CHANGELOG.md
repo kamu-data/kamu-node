@@ -13,7 +13,7 @@ Recommendation: for ease of reading, use the following order:
 -->
 
 ## [0.69.3] - 2025-06-19
-### Changed
+### Added
 - Config: `AuthConfig` section extended with `password_policy` parameter group.
 
 ## [0.69.2] - 2025-06-19
