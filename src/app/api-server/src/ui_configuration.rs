@@ -7,6 +7,7 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
+use kamu_accounts_services::PasswordPolicyConfig;
 use serde::Serialize;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -17,6 +18,7 @@ pub struct UIConfiguration {
     pub ingest_upload_file_limit_mb: usize,
     pub feature_flags: UIFeatureFlags,
     pub semantic_search_threshold_score: f32,
+    pub min_new_password_length: usize,
 }
 
 impl Default for UIConfiguration {
@@ -25,6 +27,7 @@ impl Default for UIConfiguration {
             ingest_upload_file_limit_mb: 50,
             feature_flags: UIFeatureFlags::default(),
             semantic_search_threshold_score: 0.0,
+            min_new_password_length: PasswordPolicyConfig::default().min_new_password_length,
         }
     }
 }

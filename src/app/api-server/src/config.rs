@@ -19,6 +19,7 @@ use kamu::{
     EngineConfigDatafusionEmbeddedIngest,
 };
 use kamu_accounts::{AccountConfig, DidSecretEncryptionConfig};
+use kamu_accounts_services::PasswordPolicyConfig;
 use kamu_datasets::DatasetEnvVarsConfig;
 use odf::dataset::IpfsGateway;
 use serde::{Deserialize, Deserializer, Serialize};
@@ -249,6 +250,7 @@ pub struct AuthConfig {
     pub jwt_secret: String,
     pub providers: Vec<AuthProviderConfig>,
     pub did_encryption: DidSecretEncryptionConfig,
+    pub password_policy: PasswordPolicyConfig,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -23,15 +23,19 @@ auth:
     - kind: password
       accounts:
         - accountName: admin
+          password: minio#admin
           properties: [ admin ]
           email: admin@example.com
         - accountName: alice
+          password: minio#alice
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3665/3665909.png
           email: alice@example.com
         - accountName: bob
+          password: minio#alice
           avatarUrl: https://cdn-icons-png.flaticon.com/512/3665/3665917.png
           email: bob@example.com
         - accountName: molecule
+          password: minio#molecule
           properties:
             - canProvisionAccounts
           avatarUrl: https://avatars.githubusercontent.com/u/37688345?s=200&v=4

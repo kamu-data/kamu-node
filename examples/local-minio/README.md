@@ -32,7 +32,7 @@ During a later startup, the saved data will be synchronized into minio.
 
 - 3.1) (Simpler) SQLite database startup option:
   ```shell
-  ./start-kamu-api-server.sh sqlite
+  RUST_LOG=info ./start-kamu-api-server.sh sqlite
   ```
 - 3.2) (More complex) PostgreSQL database startup option:
   - Start the Database. As an option, you can use the script from the repo root directory:
@@ -46,7 +46,7 @@ During a later startup, the saved data will be synchronized into minio.
     ```
   - Run the server:
   ```shell
-  ./start-kamu-api-server.sh postgres
+  RUST_LOG=info ./start-kamu-api-server.sh postgres
   ```
 
 ### Useful extras
