@@ -1,48 +1,51 @@
 {% extends "base.html" %}
 
 {% block extrastyles %}
-    <style>
-        .flow-details {
-            background-color: #f9f9f9;
-            border-left: 4px solid #d32f2f;
-            padding: 18px 15px;
-            margin: 0;
-            border-radius: 4px;
-            text-align: left;
-        }
+<style>
+    .flow-details {
+        background-color: #f9f9f9;
+        border-left: 4px solid #d32f2f;
+        padding: 18px 15px;
+        margin: 0;
+        border-radius: 4px;
+        text-align: left;
+    }
 
-        strong {
-            font-weight: 700 !important;
-        }        
+    strong {
+        font-weight: 700 !important;
+    }
 
-        .details-button {
-            display: inline-block;
-            background-color: #d32f2f;
-            color: #ffffff !important;
-            text-decoration: none;
-            padding: 8px 20px;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-        
-        .details-button:hover {
-            background-color: #b71c1c;
-        }
-    </style>
+    .details-button {
+        display: inline-block;
+        background-color: #d32f2f;
+        color: #ffffff !important;
+        text-decoration: none;
+        padding: 8px 20px;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+
+    .details-button:hover {
+        background-color: #b71c1c;
+    }
+</style>
 {% endblock %}
 
 {% block title %}Kamu Flow Failed: {{ flow_type }} - {{ dataset_alias }}{% endblock %}
 
-{% block header %}[<a href="{{ dataset_url }}"><span class="code">{{ dataset_alias }}</span></a>] Kamu {{ flow_type }} Flow{% endblock %}
+{% block header %}[<a href="{{ dataset_url }}"><span
+        class="code">{{ dataset_alias }}</span></a>] Kamu {{ flow_type }} Flow{% endblock %}
 
 {% block content %}
 
 <table align="center" border="0" cellpadding="0" cellspacing="0" style="min-width: 510px; max-width: 700px">
     <tr align="center">
         <td style="border: 1px solid #e1e4e8; border-radius: 6px">
-            <img style="width: 45px; margin-top: 20px" src="https://docs.kamu.dev/images/email/tree-structure.png" alt="" />
+            <img style="width: 45px; margin-top: 20px" src="https://docs.kamu.dev/images/email/tree-structure.png"
+                 alt=""/>
             <p class="header">
-                <img style="width: 22px; vertical-align: sub" src="https://docs.kamu.dev/images/email/error.png" alt="error" />
+                <img style="width: 22px; vertical-align: sub" src="https://docs.kamu.dev/images/email/error.png"
+                     alt="error"/>
                 {{ flow_type }}: Flow has failed
             </p>
             <p style="margin-bottom: 25px">
@@ -50,11 +53,11 @@
             </p>
 
             <div class="flow-details" style="border-top: 1px solid #e1e4e8; margin: 0">
-                <strong>Flow Type:</strong> {{ flow_type }}<br />
-                <strong>Dataset:</strong> <span class="code">{{ dataset_alias }}</span><br />
-                <strong>Trigger:</strong> {{ trigger_type }}<br />
-                <strong>Start Time:</strong> {{ start_time }} UTC<br />
-                <strong>Failure Time:</strong> {{ failure_time }} UTC<br />
+                <strong>Flow Type:</strong> {{ flow_type }}<br/>
+                <strong>Dataset:</strong> <span class="code">{{ dataset_alias }}</span><br/>
+                <strong>Trigger:</strong> {{ trigger_type }}<br/>
+                <strong>Start Time:</strong> {{ start_time }} UTC<br/>
+                <strong>Failure Time:</strong> {{ failure_time }} UTC<br/>
                 <strong>Reason:</strong> {{ failure_reason }}
             </div>
         </td>

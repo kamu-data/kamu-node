@@ -17,6 +17,7 @@ use kamu_accounts::{
     AccountLifecycleMessage,
     AccountLifecycleMessageCreated,
     AccountLifecycleMessageDeleted,
+    AccountLifecycleMessagePasswordChanged,
     MESSAGE_PRODUCER_KAMU_ACCOUNTS_SERVICE,
 };
 use messaging_outbox::{
@@ -81,6 +82,25 @@ impl AccountLifecycleNotifier {
             .int_err()
     }
 
+    async fn notify_account_password_changed(
+        &self,
+        message: &AccountLifecycleMessagePasswordChanged,
+    ) -> Result<(), InternalError> {
+        let email = AccountPasswordChangedEmail {
+            username: &message.display_name,
+        };
+        let rendered_registration_body = email.render().unwrap();
+
+        self.email_sender
+            .send_email(
+                &message.email,
+                EmailSubjectAccountLifecycle::Deleted.as_ref(),
+                &rendered_registration_body,
+            )
+            .await
+            .int_err()
+    }
+
     async fn notify_account_deleted(
         &self,
         message: &AccountLifecycleMessageDeleted,
@@ -121,8 +141,11 @@ impl MessageConsumerT<AccountLifecycleMessage> for AccountLifecycleNotifier {
     ) -> Result<(), InternalError> {
         tracing::debug!(received_message = ?message, "Received account lifecycle message");
         match message {
-            AccountLifecycleMessage::Created(created) => self.notify_account_created(created).await,
-            AccountLifecycleMessage::Deleted(deleted) => self.notify_account_deleted(deleted).await,
+            AccountLifecycleMessage::Created(m) => self.notify_account_created(m).await,
+            AccountLifecycleMessage::PasswordChanged(m) => {
+                self.notify_account_password_changed(m).await
+            }
+            AccountLifecycleMessage::Deleted(m) => self.notify_account_deleted(m).await,
             AccountLifecycleMessage::Renamed(_) => {
                 /* ignore */
                 Ok(())
@@ -144,6 +167,14 @@ struct RegistrationEmail<'a> {
 #[derive(Template)]
 #[template(path = "account-deleted.html")]
 struct AccountDeletedEmail<'a> {
+    username: &'a str,
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Template)]
+#[template(path = "account-password-changed.html")]
+struct AccountPasswordChangedEmail<'a> {
     username: &'a str,
 }
 

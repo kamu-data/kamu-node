@@ -12,6 +12,12 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.69.2] - 2025-06-19
+### Added
+- GQL: `AccountMut::modifyPasswordWithConfirmation()` ([kamu CLI `0.242.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.242.0)).
+### Changed
+- Upgraded to `datafusion v48`.
+
 ## [0.69.1] - 2025-06-06
 ### Added
 - GQL: Account Renaming API ([kamu CLI `0.241.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.241.1)).
