@@ -77,6 +77,7 @@ impl KamuNodePuppet {
                         - kind: password
                           accounts:
                             - accountName: kamu
+                              password: kamu.dev
                               email: kamu@example.com
                         - kind: github
                           clientId: FOO
