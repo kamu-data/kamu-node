@@ -701,6 +701,7 @@ pub async fn init_dependencies(
     b.add_value(UIConfiguration {
         ingest_upload_file_limit_mb: config.upload_repo.max_file_size_mb,
         semantic_search_threshold_score,
+        min_new_password_length: config.auth.password_policy.min_new_password_length,
         feature_flags: UIFeatureFlags {
             enable_dataset_env_vars_management: config.dataset_env_vars.is_enabled(),
             ..UIFeatureFlags::default()

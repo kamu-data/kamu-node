@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.69.3] - 2025-06-19
+### Added
+- Config: `AuthConfig` section extended with `password_policy` parameter group.
+
 ## [0.69.2] - 2025-06-19
 ### Added
 - GQL: `AccountMut::modifyPasswordWithConfirmation()` ([kamu CLI `0.242.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.242.0)).
