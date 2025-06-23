@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [Unreleased]
+### Fixed
+- Fixed the subject in the password change notification email.
+
 ## [0.69.4] - 2025-06-20
 ### Fixed
 - `PredefinedAccountsRegistrator`: during account synchronization, update password hash as well ([kamu CLI `0.241.3`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.241.3)).

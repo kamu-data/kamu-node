@@ -36,6 +36,8 @@ pub enum EmailSubjectAccountLifecycle {
     Created,
     #[strum(serialize = "⚠️ Your account is deleted!")]
     Deleted,
+    #[strum(serialize = "⚠️ Your password has been changed!")]
+    PasswordChanged,
 }
 
 pub const MESSAGE_CONSUMER_KAMU_API_SERVER_ACCOUNT_LIFECYCLE_NOTIFIER: &str =
@@ -89,13 +91,13 @@ impl AccountLifecycleNotifier {
         let email = AccountPasswordChangedEmail {
             username: &message.display_name,
         };
-        let rendered_registration_body = email.render().unwrap();
+        let email_body = email.render().unwrap();
 
         self.email_sender
             .send_email(
                 &message.email,
-                EmailSubjectAccountLifecycle::Deleted.as_ref(),
-                &rendered_registration_body,
+                EmailSubjectAccountLifecycle::PasswordChanged.as_ref(),
+                &email_body,
             )
             .await
             .int_err()
