@@ -40,6 +40,7 @@ async fn get_openapi_schema(tenancy_config: TenancyConfig) -> String {
         dill::Catalog::builder().build(),
         tenancy_config,
         UIConfiguration::default(),
+        true,
         None,
         None,
     )

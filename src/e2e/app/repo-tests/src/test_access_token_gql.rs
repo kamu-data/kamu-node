@@ -21,8 +21,10 @@ pub async fn test_access_token_gql(mut kamu_api_server_client: KamuApiServerClie
             indoc::indoc!(
                 r#"
                 mutation {
-                    auth {
-                        createAccessToken (accountId: "<account_id>", tokenName: "foo") {
+                  accounts {
+                    byId(accountId: "<account_id>") {
+                      accessTokens {
+                        createAccessToken (tokenName: "foo") {
                             __typename
                             message
                             ... on CreateAccessTokenResultSuccess {
@@ -31,7 +33,9 @@ pub async fn test_access_token_gql(mut kamu_api_server_client: KamuApiServerClie
                                 }
                             }
                         }
+                      }
                     }
+                  }
                 }
                 "#,
             )
@@ -40,12 +44,16 @@ pub async fn test_access_token_gql(mut kamu_api_server_client: KamuApiServerClie
             Ok(indoc::indoc!(
                 r#"
                 {
-                  "auth": {
-                    "createAccessToken": {
-                      "__typename": "CreateAccessTokenResultSuccess",
-                      "message": "Success",
-                      "token": {
-                        "name": "foo"
+                  "accounts": {
+                    "byId": {
+                      "accessTokens": {
+                        "createAccessToken": {
+                          "__typename": "CreateAccessTokenResultSuccess",
+                          "message": "Success",
+                          "token": {
+                            "name": "foo"
+                          }
+                        }
                       }
                     }
                   }
@@ -61,14 +69,18 @@ pub async fn test_access_token_gql(mut kamu_api_server_client: KamuApiServerClie
             indoc::indoc!(
                 r#"
                 query {
-                    auth {
-                        listAccessTokens (accountId: "<account_id>", perPage: 10, page: 0) {
+                  accounts {
+                    byId(accountId: "<account_id>") {
+                      accessTokens {
+                        listAccessTokens (perPage: 10, page: 0) {
                             nodes {
                                 name,
                                 revokedAt
                             }
                         }
+                      }
                     }
+                  }
                 }
                 "#,
             )
@@ -77,14 +89,18 @@ pub async fn test_access_token_gql(mut kamu_api_server_client: KamuApiServerClie
             Ok(indoc::indoc!(
                 r#"
                 {
-                  "auth": {
-                    "listAccessTokens": {
-                      "nodes": [
-                        {
-                          "name": "foo",
-                          "revokedAt": null
+                  "accounts": {
+                    "byId": {
+                      "accessTokens": {
+                        "listAccessTokens": {
+                          "nodes": [
+                            {
+                              "name": "foo",
+                              "revokedAt": null
+                            }
+                          ]
                         }
-                      ]
+                      }
                     }
                   }
                 }
