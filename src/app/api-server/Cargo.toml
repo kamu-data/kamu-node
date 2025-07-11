@@ -79,6 +79,9 @@ kamu-adapter-http = { workspace = true, features = [
 ], default-features = false }
 kamu-adapter-oauth = { workspace = true }
 kamu-adapter-odata = { workspace = true }
+kamu-adapter-flow-dataset = { workspace = true }
+kamu-adapter-task-dataset = { workspace = true }
+kamu-adapter-task-webhook = { workspace = true }
 kamu-auth-rebac-inmem = { workspace = true }
 kamu-auth-rebac-postgres = { workspace = true }
 kamu-auth-rebac-services = { workspace = true }
@@ -141,7 +144,7 @@ axum = { version = "0.8", features = ["ws"] }
 async-graphql = { version = "7", default-features = false }
 async-graphql-axum = "7"
 tonic = { version = "0.12", default-features = false }
-tower = { version = "0.5" }
+tower = { version = "0.5", features = ["util"] }
 tower-http = { version = "0.6", features = ["trace", "cors"] }
 utoipa = { version = "5", default-features = false, features = [] }
 utoipa-axum = { version = "0.2", default-features = false, features = [] }

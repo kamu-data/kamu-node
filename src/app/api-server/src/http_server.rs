@@ -51,7 +51,7 @@ pub async fn build_server(
     let listener = TcpListener::bind(addr).await.int_err()?;
     let local_addr = listener.local_addr().unwrap();
 
-    let (mut router, api) = OpenApiRouter::with_openapi(
+    let mut open_api_router = OpenApiRouter::with_openapi(
         kamu_adapter_http::openapi::spec_builder(
             crate::app::VERSION,
             indoc::indoc!(
@@ -80,17 +80,12 @@ pub async fn build_server(
         .build(),
     )
     .route(
-        "/ui-config",
-        axum::routing::get(ui_configuration_handler),
-    )
-    .route(
         "/graphql",
         axum::routing::post(graphql_handler),
     )
     .merge(server_console::router("Kamu API Server".to_string(), format!("v{}", crate::app::VERSION)).into())
     .merge(kamu_adapter_http::data::root_router())
     .merge(kamu_adapter_http::general::root_router())
-    .nest("/platform", kamu_adapter_http::platform::root_router())
     .nest(
         "/odata",
         match tenancy_config {
@@ -110,35 +105,46 @@ pub async fn build_server(
                 .layer(DatasetAuthorizationLayer::default()),
             tenancy_config,
         ),
-    )
-    .layer(kamu_adapter_http::AuthenticationLayer::new())
-    .layer(
-        tower_http::cors::CorsLayer::new()
-            .allow_origin(tower_http::cors::Any)
-            .allow_methods(vec![http::Method::GET, http::Method::POST])
-            .allow_headers(tower_http::cors::Any),
-    )
-    .layer(observability::axum::http_layer())
-    // Note: Healthcheck, metrics, and OpenAPI routes are placed before the tracing layer
-    // (layers execute bottom-up) to avoid spam in logs
-    .route(
-        "/system/health",
-        axum::routing::get(observability::health::health_handler),
-    )
-    .route(
-        "/system/metrics",
-        axum::routing::get(observability::metrics::metrics_handler),
-    )
-    .route(
-        "/system/info",
-        axum::routing::get(observability::build_info::build_info_handler),
-    )
-    .merge(kamu_adapter_http::openapi::router().into())
-    .fallback(unknown_fallback_handler)
-    .layer(axum::extract::Extension(gql_schema))
-    .layer(axum::extract::Extension(catalog))
-    .layer(axum::extract::Extension(ui_config))
-    .split_for_parts();
+    );
+
+    if !ui_config.feature_flags.allow_anonymous {
+        open_api_router = open_api_router.layer(kamu_adapter_http::AuthPolicyLayer::new());
+    }
+
+    let (mut router, api) = open_api_router
+        .nest(
+            "/platform",
+            kamu_adapter_http::platform::root_router(ui_config.feature_flags.allow_anonymous),
+        )
+        .route("/ui-config", axum::routing::get(ui_configuration_handler))
+        .layer(kamu_adapter_http::AuthenticationLayer::new())
+        .layer(
+            tower_http::cors::CorsLayer::new()
+                .allow_origin(tower_http::cors::Any)
+                .allow_methods(vec![http::Method::GET, http::Method::POST])
+                .allow_headers(tower_http::cors::Any),
+        )
+        .layer(observability::axum::http_layer())
+        // Note: Healthcheck, metrics, and OpenAPI routes are placed before the tracing layer
+        // (layers execute bottom-up) to avoid spam in logs
+        .route(
+            "/system/health",
+            axum::routing::get(observability::health::health_handler),
+        )
+        .route(
+            "/system/metrics",
+            axum::routing::get(observability::metrics::metrics_handler),
+        )
+        .route(
+            "/system/info",
+            axum::routing::get(observability::build_info::build_info_handler),
+        )
+        .merge(kamu_adapter_http::openapi::router().into())
+        .fallback(unknown_fallback_handler)
+        .layer(axum::extract::Extension(gql_schema))
+        .layer(axum::extract::Extension(catalog))
+        .layer(axum::extract::Extension(ui_config))
+        .split_for_parts();
 
     let maybe_shutdown_notify = if e2e_output_data_path.is_some() {
         let shutdown_notify = Arc::new(Notify::new());

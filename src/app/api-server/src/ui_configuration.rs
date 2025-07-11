@@ -41,6 +41,7 @@ pub struct UIFeatureFlags {
     pub enable_scheduling: bool,
     pub enable_dataset_env_vars_management: bool,
     pub enable_terms_of_service: bool,
+    pub allow_anonymous: bool,
 }
 
 impl Default for UIFeatureFlags {
@@ -50,6 +51,7 @@ impl Default for UIFeatureFlags {
             enable_scheduling: true,
             enable_terms_of_service: true,
             enable_dataset_env_vars_management: false,
+            allow_anonymous: false,
         }
     }
 }

@@ -33,8 +33,8 @@
 
 {% block title %}Kamu Flow Failed: {{ flow_type }} - {{ dataset_alias }}{% endblock %}
 
-{% block header %}[<a href="{{ dataset_url }}"><span
-        class="code">{{ dataset_alias }}</span></a>] Kamu {{ flow_type }} Flow{% endblock %}
+{% block header %}[<a href="{{ dataset_url }}"><span class="code">{{ dataset_alias }}</span></a>] Kamu {{ flow_type }}
+Flow{% endblock %}
 
 {% block content %}
 
@@ -42,10 +42,10 @@
     <tr align="center">
         <td style="border: 1px solid #e1e4e8; border-radius: 6px">
             <img style="width: 45px; margin-top: 20px" src="https://docs.kamu.dev/images/email/tree-structure.png"
-                 alt=""/>
+                alt="" />
             <p class="header">
                 <img style="width: 22px; vertical-align: sub" src="https://docs.kamu.dev/images/email/error.png"
-                     alt="error"/>
+                    alt="error" />
                 {{ flow_type }}: Flow has failed
             </p>
             <p style="margin-bottom: 25px">
@@ -53,11 +53,11 @@
             </p>
 
             <div class="flow-details" style="border-top: 1px solid #e1e4e8; margin: 0">
-                <strong>Flow Type:</strong> {{ flow_type }}<br/>
-                <strong>Dataset:</strong> <span class="code">{{ dataset_alias }}</span><br/>
-                <strong>Trigger:</strong> {{ trigger_type }}<br/>
-                <strong>Start Time:</strong> {{ start_time }} UTC<br/>
-                <strong>Failure Time:</strong> {{ failure_time }} UTC<br/>
+                <strong>Flow Type:</strong> {{ flow_type }}<br />
+                <strong>Dataset:</strong> <span class="code">{{ dataset_alias }}</span><br />
+                <strong>Trigger:</strong> {{ trigger_instance }}<br />
+                <strong>Start Time:</strong> {{ start_time }} UTC<br />
+                <strong>Failure Time:</strong> {{ failure_time }} UTC<br />
                 <strong>Reason:</strong> {{ failure_reason }}
             </div>
         </td>

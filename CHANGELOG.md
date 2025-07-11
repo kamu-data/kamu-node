@@ -12,9 +12,14 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## [Unreleased]
+## [0.70.0] - 2025-07-11
 ### Fixed
 - Fixed the subject in the password change notification email.
+- SQLite-specific crashes on account flow listings ([kamu CLI `0.243.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.243.1))
+### Changed
+- Major refactoring of flow & task systems ([kamu CLI `0.243.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.243.0))
+### Added
+-  New configuration property `allow_anonymous` which is true by default. And turnoff anonymous mode for API endpoints ([kamu CLI `0.244.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.244.0))
 
 ## [0.69.4] - 2025-06-20
 ### Fixed

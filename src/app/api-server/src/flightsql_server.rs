@@ -13,7 +13,8 @@ use std::net::SocketAddr;
 
 use arrow_flight::flight_service_server::FlightServiceServer;
 use futures::Future;
-use kamu_adapter_flight_sql::{AuthenticationLayer, KamuFlightSqlServiceWrapper};
+use kamu_accounts::AuthConfig;
+use kamu_adapter_flight_sql::{AuthPolicyLayer, AuthenticationLayer, KamuFlightSqlServiceWrapper};
 use tokio::net::TcpListener;
 use tonic::transport::Server;
 
@@ -22,6 +23,7 @@ use tonic::transport::Server;
 pub(crate) struct FlightSqlServer {
     catalog: dill::Catalog,
     listener: TcpListener,
+    allow_anonymous: bool,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -31,8 +33,13 @@ impl FlightSqlServer {
         let listener = TcpListener::bind((address, port.unwrap_or_default()))
             .await
             .unwrap();
+        let auth_config = catalog.get_one::<AuthConfig>().unwrap();
 
-        Self { catalog, listener }
+        Self {
+            catalog,
+            listener,
+            allow_anonymous: auth_config.allow_anonymous.unwrap(),
+        }
     }
 
     pub fn local_addr(&self) -> SocketAddr {
@@ -49,6 +56,7 @@ impl FlightSqlServer {
                 },
             ))
             .layer(AuthenticationLayer::new())
+            .layer(AuthPolicyLayer::new(self.allow_anonymous))
             .add_service(FlightServiceServer::new(KamuFlightSqlServiceWrapper))
             .serve_with_incoming(tokio_stream::wrappers::TcpListenerStream::new(
                 self.listener,
