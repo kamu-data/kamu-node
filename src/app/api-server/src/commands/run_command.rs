@@ -13,7 +13,7 @@ use std::pin::Pin;
 
 use internal_error::*;
 use kamu::domain::TenancyConfig;
-use kamu_accounts::{AuthConfig, CurrentAccountSubject};
+use kamu_accounts::CurrentAccountSubject;
 
 use super::{Command, CommandDesc};
 use crate::ui_configuration::UIConfiguration;
@@ -31,7 +31,6 @@ pub struct RunCommand {
 
     tenancy_config: TenancyConfig,
     ui_config: UIConfiguration,
-    auth_config: AuthConfig,
 
     #[dill::component(explicit)]
     server_account_subject: CurrentAccountSubject,
@@ -92,7 +91,6 @@ impl Command for RunCommand {
             self.catalog.clone(),
             self.tenancy_config,
             self.ui_config.clone(),
-            self.auth_config.allow_anonymous.unwrap(),
             self.e2e_http_port,
             self.e2e_output_data_path.as_ref(),
         )

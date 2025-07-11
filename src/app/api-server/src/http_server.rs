@@ -31,7 +31,6 @@ pub async fn build_server(
     catalog: dill::Catalog,
     tenancy_config: TenancyConfig,
     ui_config: UIConfiguration,
-    allow_anonymous: bool,
     e2e_http_port: Option<u16>,
     e2e_output_data_path: Option<&PathBuf>,
 ) -> Result<
@@ -108,14 +107,14 @@ pub async fn build_server(
         ),
     );
 
-    if !allow_anonymous {
+    if !ui_config.feature_flags.allow_anonymous {
         open_api_router = open_api_router.layer(kamu_adapter_http::AuthPolicyLayer::new());
     }
 
     let (mut router, api) = open_api_router
         .nest(
             "/platform",
-            kamu_adapter_http::platform::root_router(allow_anonymous),
+            kamu_adapter_http::platform::root_router(ui_config.feature_flags.allow_anonymous),
         )
         .route("/ui-config", axum::routing::get(ui_configuration_handler))
         .layer(kamu_adapter_http::AuthenticationLayer::new())
