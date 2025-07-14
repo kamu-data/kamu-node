@@ -353,7 +353,9 @@ pub async fn init_dependencies(
     b.add::<kamu::RemoteAliasesRegistryImpl>();
     b.add::<kamu::RemoteAliasResolverImpl>();
 
-    b.add::<kamu::DatasetChangesServiceImpl>();
+    kamu_adapter_flow_dataset::register_dependencies(&mut b);
+    kamu_adapter_task_dataset::register_dependencies(&mut b);
+    kamu_adapter_task_webhook::register_dependencies(&mut b);
 
     b.add::<kamu::RemoteRepositoryRegistryImpl>();
 
@@ -509,6 +511,11 @@ pub async fn init_dependencies(
     if need_to_add_default_predefined_accounts_config {
         b.add_value(kamu_accounts::PredefinedAccountsConfig::default());
     }
+
+    b.add_value(kamu_accounts::AuthConfig {
+        allow_anonymous: Some(config.auth.allow_anonymous),
+        ..kamu_accounts::AuthConfig::default()
+    });
 
     {
         let mut protocols = kamu::domain::Protocols {
@@ -704,6 +711,7 @@ pub async fn init_dependencies(
         min_new_password_length: config.auth.password_policy.min_new_password_length,
         feature_flags: UIFeatureFlags {
             enable_dataset_env_vars_management: config.dataset_env_vars.is_enabled(),
+            allow_anonymous: config.auth.allow_anonymous,
             ..UIFeatureFlags::default()
         },
     });

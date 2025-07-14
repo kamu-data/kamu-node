@@ -47,13 +47,11 @@ use kamu_datasets_services::DatasetEntryServiceImpl;
 use kamu_flow_system::{
     Flow,
     FlowAgentConfig,
-    FlowError,
+    FlowBinding,
     FlowEventStore,
     FlowID,
-    FlowKey,
     FlowOutcome,
     FlowProgressMessage,
-    FlowResult,
     FlowStartConditionExecutor,
     FlowTriggerAutoPolling,
 };
@@ -218,8 +216,12 @@ impl FlowProgressNotifierHarness {
 
         let (mut flow, task_id) = self.create_and_prepare_flow(dataset_id, flow_id);
 
-        flow.on_task_finished(Utc::now(), task_id, TaskOutcome::Success(TaskResult::Empty))
-            .unwrap();
+        flow.on_task_finished(
+            Utc::now(),
+            task_id,
+            TaskOutcome::Success(TaskResult::empty()),
+        )
+        .unwrap();
 
         flow.save(flow_event_store.as_ref()).await.unwrap();
 
@@ -229,7 +231,7 @@ impl FlowProgressNotifierHarness {
                 FlowProgressMessage::finished(
                     Utc::now(),
                     flow.flow_id,
-                    FlowOutcome::Success(FlowResult::Empty),
+                    FlowOutcome::Success(TaskResult::empty()),
                 ),
             )
             .await
@@ -242,7 +244,7 @@ impl FlowProgressNotifierHarness {
 
         let (mut flow, task_id) = self.create_and_prepare_flow(dataset_id, flow_id);
 
-        flow.on_task_finished(Utc::now(), task_id, TaskOutcome::Failed(TaskError::Empty))
+        flow.on_task_finished(Utc::now(), task_id, TaskOutcome::Failed(TaskError::empty()))
             .unwrap();
 
         flow.save(flow_event_store.as_ref()).await.unwrap();
@@ -250,11 +252,7 @@ impl FlowProgressNotifierHarness {
         self.outbox
             .post_message(
                 MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
-                FlowProgressMessage::finished(
-                    Utc::now(),
-                    flow.flow_id,
-                    FlowOutcome::Failed(FlowError::Failed),
-                ),
+                FlowProgressMessage::finished(Utc::now(), flow.flow_id, FlowOutcome::Failed),
             )
             .await
             .unwrap();
@@ -264,11 +262,8 @@ impl FlowProgressNotifierHarness {
         let mut flow = Flow::new(
             Utc::now(),
             flow_id,
-            FlowKey::dataset(
-                dataset_id.clone(),
-                kamu_flow_system::DatasetFlowType::Ingest,
-            ),
-            kamu_flow_system::FlowTriggerType::AutoPolling(FlowTriggerAutoPolling {
+            FlowBinding::for_dataset(dataset_id.clone(), "INGEST"),
+            kamu_flow_system::FlowTriggerInstance::AutoPolling(FlowTriggerAutoPolling {
                 trigger_time: Utc::now(),
             }),
             None,
