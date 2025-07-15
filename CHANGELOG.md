@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.70.1] - 2025-07-15
+### Fixed
+- Added migrations to modify flow events ([kamu CLI `0.244.2`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.244.2))
+
 ## [0.70.0] - 2025-07-11
 ### Fixed
 - Fixed the subject in the password change notification email.
