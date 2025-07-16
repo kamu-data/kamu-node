@@ -34,10 +34,9 @@ odf = { workspace = true }
 arrow-flight = { version = "55", features = ["flight-sql-experimental"] }
 async-trait = "0.1"
 chrono = { version = "0.4", default-features = false, features = ["now"] }
-datafusion = { version = "47", default-features = false }
+datafusion = { version = "48", default-features = false }
 futures = "0.3"
 indoc = "2"
-lazy_static = { version = "1" }
 pretty_assertions = "1"
 regex = "1"
 reqwest = { version = "0.12", default-features = false, features = ["json"] }

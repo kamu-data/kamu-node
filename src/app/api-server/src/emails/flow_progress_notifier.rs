@@ -73,26 +73,17 @@ impl FlowProgressNotifier {
         }
     }
 
-    async fn notify_flow_failed(
-        &self,
-        flow_id: kamu_fs::FlowID,
-        flow_error: &kamu_fs::FlowError,
-    ) -> Result<(), InternalError> {
+    async fn notify_flow_failed(&self, flow_id: kamu_fs::FlowID) -> Result<(), InternalError> {
         // Load flow aggregate
         let flow_state = self.flow_query_service.get_flow(flow_id).await.int_err()?;
-        match &flow_state.flow_key {
-            // Dataset flow => notify owner or initiator
-            kamu_fs::FlowKey::Dataset(fk_dataset) => {
-                // Load related dataset entry
-                let dataset_entry = match self
-                    .dataset_entry_service
-                    .get_entry(&fk_dataset.dataset_id)
-                    .await
-                {
+
+        match &flow_state.flow_binding.scope {
+            kamu_fs::FlowScope::Dataset { dataset_id } => {
+                let dataset_entry = match self.dataset_entry_service.get_entry(dataset_id).await {
                     Ok(entry) => entry,
                     Err(GetDatasetEntryError::NotFound(_)) => {
                         tracing::error!(
-                            %flow_id, dataset_id = %fk_dataset.dataset_id,
+                            %flow_id, %dataset_id,
                             "Dataset not found within flow progress email handler"
                         );
                         return Ok(());
@@ -117,10 +108,11 @@ impl FlowProgressNotifier {
                     .render_dataset_flow_failure_email(
                         &owner_account,
                         &dataset_entry,
-                        fk_dataset,
+                        flow_state.flow_binding.flow_type.as_str(),
                         FlowFailureData {
                             id: flow_id,
-                            error: flow_error,
+                            // ToDo: Replace by the real fail error message
+                            error: "Unknown",
                             started_at: flow_state
                                 .timing
                                 .running_since
@@ -129,7 +121,7 @@ impl FlowProgressNotifier {
                                 .timing
                                 .finished_at
                                 .expect("Finish time should be defined"),
-                            primary_trigger_type: flow_state.primary_trigger(),
+                            primary_trigger_instance: flow_state.primary_trigger(),
                         },
                     )
                     .await?;
@@ -149,7 +141,7 @@ impl FlowProgressNotifier {
             }
 
             // TODO: notify admin(s) about system flow failure?
-            kamu_fs::FlowKey::System(_) => {}
+            kamu_fs::FlowScope::System => {}
         }
 
         Ok(())
@@ -160,7 +152,7 @@ impl FlowProgressNotifier {
         owner_account: &'a kamu_accounts::Account,
         flow_state: &'a kamu_fs::FlowState,
     ) -> Result<Cow<'a, kamu_accounts::Account>, InternalError> {
-        if let kamu_fs::FlowTriggerType::Manual(m) = flow_state.primary_trigger()
+        if let kamu_fs::FlowTriggerInstance::Manual(m) = flow_state.primary_trigger()
             && m.initiator_account_id != owner_account.id
         {
             let initiator_account = self
@@ -178,7 +170,7 @@ impl FlowProgressNotifier {
         &self,
         owner_account: &kamu_accounts::Account,
         dataset_entry: &kamu_datasets::DatasetEntry,
-        flow_key_dataset: &kamu_fs::FlowKeyDataset,
+        flow_type: &str,
         flow_failure_data: FlowFailureData<'_>,
     ) -> Result<String, InternalError> {
         let dataset_alias = self.format_dataset_alias(owner_account, dataset_entry);
@@ -196,16 +188,13 @@ impl FlowProgressNotifier {
             .format("%Y-%m-%d %H:%M:%S")
             .to_string();
 
-        let failure_reason = self
-            .format_flow_failure_reason(flow_failure_data.error)
-            .await?;
-
         let email = FlowFailedEmail {
-            flow_type: self.format_dataset_flow_type(flow_key_dataset),
+            flow_type,
             dataset_alias: &dataset_alias,
             dataset_url: dataset_url.as_str(),
-            trigger_type: self.format_flow_trigger_type(flow_failure_data.primary_trigger_type),
-            failure_reason: &failure_reason,
+            trigger_instance: self
+                .format_flow_trigger_instance(flow_failure_data.primary_trigger_instance),
+            failure_reason: flow_failure_data.error,
             start_time: start_time.as_str(),
             failure_time: failure_time.as_str(),
             flow_details_url: &flow_details_url,
@@ -214,43 +203,15 @@ impl FlowProgressNotifier {
         email.render().int_err()
     }
 
-    fn format_dataset_flow_type(&self, fk_dataset: &kamu_fs::FlowKeyDataset) -> &str {
-        match fk_dataset.flow_type {
-            kamu_fs::DatasetFlowType::Ingest | kamu_fs::DatasetFlowType::ExecuteTransform => {
-                "Update"
-            }
-            kamu_fs::DatasetFlowType::HardCompaction => "Compact",
-            kamu_fs::DatasetFlowType::Reset => "Reset",
-        }
-    }
-
-    fn format_flow_trigger_type(&self, flow_trigger_type: &kamu_fs::FlowTriggerType) -> &str {
-        match flow_trigger_type {
-            kamu_fs::FlowTriggerType::AutoPolling(_) => "Automatic",
-            kamu_fs::FlowTriggerType::Manual(_) => "Manual",
-            kamu_fs::FlowTriggerType::Push(_) => "Data Push",
-            kamu_fs::FlowTriggerType::InputDatasetFlow(_) => "Input Dataset Flow",
-        }
-    }
-
-    async fn format_flow_failure_reason(
+    fn format_flow_trigger_instance(
         &self,
-        flow_error: &kamu_fs::FlowError,
-    ) -> Result<String, InternalError> {
-        match flow_error {
-            kamu_fs::FlowError::Failed => Ok("Unknown".to_string()),
-            kamu_fs::FlowError::InputDatasetCompacted(c) => {
-                let input_dataset_entry = self
-                    .dataset_entry_service
-                    .get_entry(&c.dataset_id)
-                    .await
-                    .int_err()?;
-                Ok(format!(
-                    "Input dataset '{}' compacted",
-                    input_dataset_entry.name
-                ))
-            }
-            kamu_fs::FlowError::ResetHeadNotFound => Ok("Reset head not found".to_string()),
+        flow_trigger_instance: &kamu_fs::FlowTriggerInstance,
+    ) -> &str {
+        match flow_trigger_instance {
+            kamu_fs::FlowTriggerInstance::AutoPolling(_) => "Automatic",
+            kamu_fs::FlowTriggerInstance::Manual(_) => "Manual",
+            kamu_fs::FlowTriggerInstance::Push(_) => "Data Push",
+            kamu_fs::FlowTriggerInstance::InputDatasetFlow(_) => "Input Dataset Flow",
         }
     }
 
@@ -314,9 +275,7 @@ impl MessageConsumerT<kamu_fs::FlowProgressMessage> for FlowProgressNotifier {
         tracing::debug!(received_message = ?message, "Received flow progress message");
         match message {
             kamu_fs::FlowProgressMessage::Finished(finished) => match &finished.outcome {
-                kamu_fs::FlowOutcome::Failed(flow_error) => {
-                    self.notify_flow_failed(finished.flow_id, flow_error).await
-                }
+                kamu_fs::FlowOutcome::Failed => self.notify_flow_failed(finished.flow_id).await,
                 kamu_fs::FlowOutcome::Aborted | kamu_fs::FlowOutcome::Success(_) => Ok(()),
             },
             kamu_fs::FlowProgressMessage::Cancelled(_)
@@ -330,10 +289,10 @@ impl MessageConsumerT<kamu_fs::FlowProgressMessage> for FlowProgressNotifier {
 
 struct FlowFailureData<'a> {
     id: kamu_fs::FlowID,
-    primary_trigger_type: &'a kamu_fs::FlowTriggerType,
+    primary_trigger_instance: &'a kamu_fs::FlowTriggerInstance,
     started_at: DateTime<Utc>,
     occurred_at: DateTime<Utc>,
-    error: &'a kamu_fs::FlowError,
+    error: &'a str,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -344,7 +303,7 @@ struct FlowFailedEmail<'a> {
     flow_type: &'a str,
     dataset_alias: &'a str,
     dataset_url: &'a str,
-    trigger_type: &'a str,
+    trigger_instance: &'a str,
     start_time: &'a str,
     failure_time: &'a str,
     failure_reason: &'a str,

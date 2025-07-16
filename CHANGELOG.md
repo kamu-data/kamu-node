@@ -16,6 +16,33 @@ Recommendation: for ease of reading, use the following order:
 ### Changed
 - GQL: `molecule` area: use `BigInt` for `ipnft_token_id`
 
+## [0.70.1] - 2025-07-15
+### Fixed
+- Added migrations to modify flow events ([kamu CLI `0.244.2`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.244.2))
+
+## [0.70.0] - 2025-07-11
+### Fixed
+- Fixed the subject in the password change notification email.
+- SQLite-specific crashes on account flow listings ([kamu CLI `0.243.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.243.1))
+### Changed
+- Major refactoring of flow & task systems ([kamu CLI `0.243.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.243.0))
+### Added
+-  New configuration property `allow_anonymous` which is true by default. And turnoff anonymous mode for API endpoints ([kamu CLI `0.244.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.244.0))
+
+## [0.69.4] - 2025-06-20
+### Fixed
+- `PredefinedAccountsRegistrator`: during account synchronization, update password hash as well ([kamu CLI `0.241.3`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.241.3)).
+
+## [0.69.3] - 2025-06-19
+### Added
+- Config: `AuthConfig` section extended with `password_policy` parameter group.
+
+## [0.69.2] - 2025-06-19
+### Added
+- GQL: `AccountMut::modifyPasswordWithConfirmation()` ([kamu CLI `0.242.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.242.0)).
+### Changed
+- Upgraded to `datafusion v48`.
+
 ## [0.69.1] - 2025-06-06
 ### Added
 - GQL: Account Renaming API ([kamu CLI `0.241.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.241.1)).

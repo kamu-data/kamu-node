@@ -19,6 +19,7 @@ use kamu::{
     EngineConfigDatafusionEmbeddedIngest,
 };
 use kamu_accounts::{AccountConfig, DidSecretEncryptionConfig};
+use kamu_accounts_services::PasswordPolicyConfig;
 use kamu_datasets::DatasetEnvVarsConfig;
 use odf::dataset::IpfsGateway;
 use serde::{Deserialize, Deserializer, Serialize};
@@ -242,13 +243,27 @@ impl EngineConfigDatafution {
 // Auth
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct AuthConfig {
     pub jwt_secret: String,
     pub providers: Vec<AuthProviderConfig>,
     pub did_encryption: DidSecretEncryptionConfig,
+    pub password_policy: PasswordPolicyConfig,
+    pub allow_anonymous: bool,
+}
+
+impl Default for AuthConfig {
+    fn default() -> Self {
+        Self {
+            jwt_secret: String::new(),
+            providers: vec![],
+            did_encryption: DidSecretEncryptionConfig::default(),
+            password_policy: PasswordPolicyConfig::default(),
+            allow_anonymous: true,
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

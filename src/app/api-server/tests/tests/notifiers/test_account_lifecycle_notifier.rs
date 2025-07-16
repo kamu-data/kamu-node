@@ -15,10 +15,12 @@ use kamu_accounts::{
     AccountDisplayName,
     AccountLifecycleMessage,
     AccountLifecycleMessageDeleted,
+    AccountLifecycleMessagePasswordChanged,
     MESSAGE_PRODUCER_KAMU_ACCOUNTS_SERVICE,
 };
 use kamu_api_server::{AccountLifecycleNotifier, EmailSubjectAccountLifecycle};
 use messaging_outbox::{Outbox, OutboxExt, OutboxImmediateImpl, register_message_dispatcher};
+use pretty_assertions::assert_eq;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -34,11 +36,11 @@ async fn test_account_created_sends_registration_email() {
         .await;
 
     let emails = harness.fake_email_sender.get_recorded_emails();
-    pretty_assertions::assert_eq!(1, emails.len());
+    assert_eq!(1, emails.len());
 
     let registration_email = emails.first().unwrap();
-    pretty_assertions::assert_eq!("wasya@example.com", registration_email.recipient.as_ref());
-    pretty_assertions::assert_eq!(
+    assert_eq!("wasya@example.com", registration_email.recipient.as_ref());
+    assert_eq!(
         EmailSubjectAccountLifecycle::Created.as_ref(),
         registration_email.subject,
     );
@@ -52,7 +54,7 @@ async fn test_account_created_sends_registration_email() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[test_log::test(tokio::test)]
-async fn test_account_deleted_sends_registration_email() {
+async fn test_account_deleted_sends_deletion_email() {
     let harness = AccountLifecycleNotifierHarness::new();
     harness
         .send_account_deleted(AccountLifecycleMessageDeleted {
@@ -63,16 +65,47 @@ async fn test_account_deleted_sends_registration_email() {
         .await;
 
     let emails = harness.fake_email_sender.get_recorded_emails();
-    pretty_assertions::assert_eq!(1, emails.len());
+    assert_eq!(1, emails.len());
 
     let registration_email = emails.first().unwrap();
-    pretty_assertions::assert_eq!("wasya@example.com", registration_email.recipient.as_ref());
-    pretty_assertions::assert_eq!(
+    assert_eq!("wasya@example.com", registration_email.recipient.as_ref());
+    assert_eq!(
         EmailSubjectAccountLifecycle::Deleted.as_ref(),
         registration_email.subject,
     );
     assert!(
         registration_email.body.contains("Wasya Pupkin"),
+        "{}",
+        registration_email.body
+    );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[test_log::test(tokio::test)]
+async fn test_password_change_sends_notification_email() {
+    let harness = AccountLifecycleNotifierHarness::new();
+    harness
+        .send_account_password_changed(AccountLifecycleMessagePasswordChanged {
+            account_id: odf::AccountID::new_generated_ed25519().1,
+            email: Email::parse("wasya@example.com").unwrap(),
+            display_name: "Wasya Pupkin".to_string(),
+        })
+        .await;
+
+    let emails = harness.fake_email_sender.get_recorded_emails();
+    assert_eq!(1, emails.len());
+
+    let registration_email = emails.first().unwrap();
+    assert_eq!("wasya@example.com", registration_email.recipient.as_ref());
+    assert_eq!(
+        EmailSubjectAccountLifecycle::PasswordChanged.as_ref(),
+        registration_email.subject,
+    );
+    assert!(
+        registration_email
+            .body
+            .contains("your account password has been changed"),
         "{}",
         registration_email.body
     );
@@ -138,6 +171,16 @@ impl AccountLifecycleNotifierHarness {
             .post_message(
                 MESSAGE_PRODUCER_KAMU_ACCOUNTS_SERVICE,
                 AccountLifecycleMessage::Deleted(message),
+            )
+            .await
+            .unwrap();
+    }
+
+    async fn send_account_password_changed(&self, message: AccountLifecycleMessagePasswordChanged) {
+        self.outbox
+            .post_message(
+                MESSAGE_PRODUCER_KAMU_ACCOUNTS_SERVICE,
+                AccountLifecycleMessage::PasswordChanged(message),
             )
             .await
             .unwrap();
