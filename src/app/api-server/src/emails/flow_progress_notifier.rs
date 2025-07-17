@@ -119,7 +119,7 @@ impl FlowProgressNotifier {
                                 .expect("Start time should be defined"),
                             occurred_at: flow_state
                                 .timing
-                                .finished_at
+                                .last_attempt_finished_at
                                 .expect("Finish time should be defined"),
                             primary_trigger_instance: flow_state.primary_trigger(),
                         },
@@ -280,6 +280,7 @@ impl MessageConsumerT<kamu_fs::FlowProgressMessage> for FlowProgressNotifier {
             },
             kamu_fs::FlowProgressMessage::Cancelled(_)
             | kamu_fs::FlowProgressMessage::Running(_)
+            | kamu_fs::FlowProgressMessage::RetryScheduled(_)
             | kamu_fs::FlowProgressMessage::Scheduled(_) => Ok(()),
         }
     }
