@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.71.1] - 2025-07-17
+### Fixed
+- Performance hotfix in flows listing ([kamu CLI `0.245.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.245.1)):
+
 ## [0.71.0] - 2025-07-17
 ### Added
 - Flow system extended with retry policy support ([kamu CLI `0.245.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.245.0)):
