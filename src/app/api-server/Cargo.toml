@@ -45,6 +45,7 @@ init-on-startup = { workspace = true }
 internal-error = { workspace = true }
 messaging-outbox = { workspace = true }
 observability = { workspace = true, default-features = false, features = [
+    "dill",
     "opentelemetry",
     "prometheus",
 ] }
