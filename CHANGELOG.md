@@ -12,6 +12,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.71.2] - 2025-07-30
+### Changed
+- GQL changes ([kamu CLI `0.245.3`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.245.3)):
+
 ## [0.71.1] - 2025-07-17
 ### Fixed
 - Performance hotfix in flows listing ([kamu CLI `0.245.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.245.1)):
