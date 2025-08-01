@@ -14,7 +14,7 @@ Recommendation: for ease of reading, use the following order:
 
 ## [Unreleased]
 ### Changed
-- GQL: `molecule` area: use `BigInt` for `ipnft_token_id`
+GQL: `MoleculeMut::create_project()`: use `U256` type for `ipnft_token_id`.
 
 ## [0.70.1] - 2025-07-15
 ### Fixed
