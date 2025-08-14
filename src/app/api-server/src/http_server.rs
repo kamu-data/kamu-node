@@ -16,9 +16,10 @@ use http_common::ApiError;
 use internal_error::{InternalError, ResultIntoInternal};
 use kamu::domain::TenancyConfig;
 use kamu_adapter_http::DatasetAuthorizationLayer;
-use observability::axum::unknown_fallback_handler;
+use observability::axum::{panic_handler, unknown_fallback_handler};
 use tokio::net::TcpListener;
 use tokio::sync::Notify;
+use tower_http::catch_panic::CatchPanicLayer;
 use utoipa_axum::router::OpenApiRouter;
 
 use crate::ui_configuration::UIConfiguration;
@@ -125,6 +126,7 @@ pub async fn build_server(
                 .allow_headers(tower_http::cors::Any),
         )
         .layer(observability::axum::http_layer())
+        .layer(CatchPanicLayer::custom(panic_handler))
         // Note: Healthcheck, metrics, and OpenAPI routes are placed before the tracing layer
         // (layers execute bottom-up) to avoid spam in logs
         .route(

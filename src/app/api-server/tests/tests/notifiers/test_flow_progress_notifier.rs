@@ -267,6 +267,7 @@ impl FlowProgressNotifierHarness {
                 trigger_time: Utc::now(),
             }),
             None,
+            None,
         );
 
         flow.schedule_for_activation(Utc::now(), Utc::now())
