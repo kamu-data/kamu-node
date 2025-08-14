@@ -16,7 +16,7 @@ jobs:
     name: Lint / Code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions-rs/toolchain@v1
         with:
           components: rustfmt, clippy
@@ -38,7 +38,7 @@ jobs:
     name: Lint / Dependencies
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions-rs/toolchain@v1
       - uses: cargo-bins/cargo-binstall@main
       - run: cargo binstall cargo-deny -y
@@ -66,8 +66,8 @@ jobs:
       # ToDo: remove one of the checkout actions
       # Currently it will cause pipeline failure:
       # https://github.com/kamu-data/kamu-node/actions/runs/13438038265/job/37545092136
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5
         with:
           repository: kamu-data/kamu-contracts
           path: kamu-contracts

@@ -45,6 +45,7 @@ init-on-startup = { workspace = true }
 internal-error = { workspace = true }
 messaging-outbox = { workspace = true }
 observability = { workspace = true, default-features = false, features = [
+    "dill",
     "opentelemetry",
     "prometheus",
 ] }
@@ -145,7 +146,7 @@ async-graphql = { version = "7", default-features = false }
 async-graphql-axum = "7"
 tonic = { version = "0.12", default-features = false }
 tower = { version = "0.5", features = ["util"] }
-tower-http = { version = "0.6", features = ["trace", "cors"] }
+tower-http = { version = "0.6", features = ["trace", "cors", "catch-panic"] }
 utoipa = { version = "5", default-features = false, features = [] }
 utoipa-axum = { version = "0.2", default-features = false, features = [] }
 
