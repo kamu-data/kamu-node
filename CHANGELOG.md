@@ -16,6 +16,10 @@ Recommendation: for ease of reading, use the following order:
 ### Changed
 GQL: `MoleculeMut::create_project()`: use `U256` type for `ipnft_token_id`.
 
+## [0.71.4] - 2025-08-15
+### Fixed
+- GQL playground fix in anonymous mode: ([kamu CLI `0.245.5`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.245.5))
+
 ## [0.71.3] - 2025-08-13
 ### Added
 - Tracing panic errors handler
