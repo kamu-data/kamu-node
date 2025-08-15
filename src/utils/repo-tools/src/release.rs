@@ -141,7 +141,7 @@ fn update_license_text(
         new_version.major != current_version.major || new_version.minor != current_version.minor;
 
     eprintln!("Updating license version: {new_version}");
-    let re = regex::Regex::new(r"(Licensed Work: +Kamu Platform Version )(\d+\.\d+\.\d+)").unwrap();
+    let re = regex::Regex::new(r"(Licensed Work: +Kamu Node Version )(\d+\.\d+\.\d+)").unwrap();
     let text = re.replace(text, |c: &Captures| format!("{}{}", &c[1], new_version));
 
     if significant_version {
@@ -201,7 +201,7 @@ mod tests {
             r#"
             ...
             Licensor:                  Kamu Data, Inc.
-            Licensed Work:             Kamu Platform Version 0.63.0
+            Licensed Work:             Kamu Node Version 0.63.0
             ...
             Change Date:               2025-01-01
             Change License:            Apache License, Version 2.0
@@ -222,7 +222,7 @@ mod tests {
                 r#"
                 ...
                 Licensor:                  Kamu Data, Inc.
-                Licensed Work:             Kamu Platform Version 0.63.1
+                Licensed Work:             Kamu Node Version 0.63.1
                 ...
                 Change Date:               2025-01-01
                 Change License:            Apache License, Version 2.0
@@ -240,7 +240,7 @@ mod tests {
             r#"
             ...
             Licensor:                  Kamu Data, Inc.
-            Licensed Work:             Kamu Platform Version 0.63.0
+            Licensed Work:             Kamu Node Version 0.63.0
             ...
             Change Date:               2025-01-01
             Change License:            Apache License, Version 2.0
@@ -261,7 +261,7 @@ mod tests {
                 r#"
                 ...
                 Licensor:                  Kamu Data, Inc.
-                Licensed Work:             Kamu Platform Version 0.64.0
+                Licensed Work:             Kamu Node Version 0.64.0
                 ...
                 Change Date:               2025-09-01
                 Change License:            Apache License, Version 2.0
