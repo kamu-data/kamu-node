@@ -7,6 +7,7 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
+use std::collections::HashMap;
 use std::sync::Arc;
 
 use chrono::{TimeDelta, Utc};
@@ -44,17 +45,7 @@ use kamu_auth_rebac_services::{
 use kamu_datasets::{DatasetEntry, DatasetEntryRepository};
 use kamu_datasets_inmem::InMemoryDatasetEntryRepository;
 use kamu_datasets_services::DatasetEntryServiceImpl;
-use kamu_flow_system::{
-    Flow,
-    FlowAgentConfig,
-    FlowBinding,
-    FlowEventStore,
-    FlowID,
-    FlowOutcome,
-    FlowProgressMessage,
-    FlowStartConditionExecutor,
-    FlowTriggerAutoPolling,
-};
+use kamu_flow_system::*;
 use kamu_flow_system_inmem::InMemoryFlowEventStore;
 use kamu_flow_system_services::{
     FlowQueryServiceImpl,
@@ -152,6 +143,7 @@ impl FlowProgressNotifierHarness {
             .add_value(FlowAgentConfig::new(
                 TimeDelta::seconds(1),
                 TimeDelta::minutes(1),
+                HashMap::new(),
             ))
             .add::<InMemoryAccountRepository>()
             .add::<AccountServiceImpl>()
@@ -262,9 +254,9 @@ impl FlowProgressNotifierHarness {
         let mut flow = Flow::new(
             Utc::now(),
             flow_id,
-            FlowBinding::for_dataset(dataset_id.clone(), "INGEST"),
-            kamu_flow_system::FlowTriggerInstance::AutoPolling(FlowTriggerAutoPolling {
-                trigger_time: Utc::now(),
+            kamu_adapter_flow_dataset::ingest_dataset_binding(dataset_id),
+            kamu_flow_system::FlowActivationCause::AutoPolling(FlowActivationCauseAutoPolling {
+                activation_time: Utc::now(),
             }),
             None,
             None,

@@ -7,6 +7,7 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
+use std::collections::HashMap;
 use std::future::Future;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -353,7 +354,8 @@ pub async fn init_dependencies(
     b.add::<kamu::RemoteAliasesRegistryImpl>();
     b.add::<kamu::RemoteAliasResolverImpl>();
 
-    kamu_adapter_flow_dataset::register_dependencies(&mut b);
+    kamu_adapter_flow_dataset::register_dependencies(&mut b, Default::default());
+    kamu_adapter_flow_webhook::register_dependencies(&mut b);
     kamu_adapter_task_dataset::register_dependencies(&mut b);
     kamu_adapter_task_webhook::register_dependencies(&mut b);
 
@@ -445,6 +447,18 @@ pub async fn init_dependencies(
         &mut b,
         kamu_datasets::MESSAGE_PRODUCER_KAMU_HTTP_ADAPTER,
     );
+    messaging_outbox::register_message_dispatcher::<
+        kamu_webhooks::WebhookSubscriptionLifecycleMessage,
+    >(
+        &mut b,
+        kamu_webhooks::MESSAGE_PRODUCER_KAMU_WEBHOOK_SUBSCRIPTION_SERVICE,
+    );
+    messaging_outbox::register_message_dispatcher::<
+        kamu_webhooks::WebhookSubscriptionEventChangesMessage,
+    >(
+        &mut b,
+        kamu_webhooks::MESSAGE_PRODUCER_KAMU_WEBHOOK_SUBSCRIPTION_EVENT_CHANGES_SERVICE,
+    );
 
     b.add_value(messaging_outbox::OutboxConfig::new(
         Duration::seconds(config.outbox.awaiting_step_secs.unwrap()),
@@ -461,6 +475,36 @@ pub async fn init_dependencies(
     b.add_value(kamu_flow_system::FlowAgentConfig::new(
         Duration::seconds(flow_agent_config.awaiting_step_secs.unwrap()),
         Duration::seconds(flow_agent_config.mandatory_throttling_period_secs.unwrap()),
+        if let Some(retry_configs) = flow_agent_config.default_retry_policies.as_ref() {
+            retry_configs
+                .iter()
+                .map(|(flow_type, retry_policy_config)| {
+                    (
+                        flow_type.clone(),
+                        kamu_flow_system::RetryPolicy::new(
+                            retry_policy_config.max_attempts.unwrap_or(0),
+                            retry_policy_config.min_delay_secs.unwrap_or(0),
+                            match retry_policy_config.backoff_type {
+                                Some(config::RetryPolicyConfigBackoffType::Exponential) => {
+                                    kamu_flow_system::RetryBackoffType::Exponential
+                                }
+                                Some(config::RetryPolicyConfigBackoffType::Linear) => {
+                                    kamu_flow_system::RetryBackoffType::Linear
+                                }
+                                Some(
+                                    config::RetryPolicyConfigBackoffType::ExponentialWithJitter,
+                                ) => kamu_flow_system::RetryBackoffType::ExponentialWithJitter,
+                                Some(config::RetryPolicyConfigBackoffType::Fixed) | None => {
+                                    kamu_flow_system::RetryBackoffType::Fixed
+                                }
+                            },
+                        ),
+                    )
+                })
+                .collect()
+        } else {
+            HashMap::new()
+        },
     ));
 
     kamu_flow_system_services::register_dependencies(&mut b);
