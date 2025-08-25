@@ -14,7 +14,8 @@ Recommendation: for ease of reading, use the following order:
 
 ## [Unreleased]
 ### Changed
-GQL: `MoleculeMut::create_project()`: use `U256` type for `ipnft_token_id`.
+- GQL: `MoleculeMut::create_project()`: use `U256` type for `ipnft_token_id`.
+- Collection API: Ignore noop changes in collection add/move
 
 ## [0.71.4] - 2025-08-15
 ### Fixed
