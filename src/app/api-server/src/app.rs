@@ -425,15 +425,15 @@ pub async fn init_dependencies(
         kamu_flow_system::FlowConfigurationUpdatedMessage,
     >(
         &mut b,
-        kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_CONFIGURATION_SERVICE,
+        kamu_flow_system::MESSAGE_PRODUCER_KAMU_FLOW_CONFIGURATION_SERVICE,
     );
     messaging_outbox::register_message_dispatcher::<kamu_flow_system::FlowTriggerUpdatedMessage>(
         &mut b,
-        kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_TRIGGER_SERVICE,
+        kamu_flow_system::MESSAGE_PRODUCER_KAMU_FLOW_TRIGGER_SERVICE,
     );
     messaging_outbox::register_message_dispatcher::<kamu_flow_system::FlowProgressMessage>(
         &mut b,
-        kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
+        kamu_flow_system::MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
     );
     messaging_outbox::register_message_dispatcher::<kamu_accounts::AccessTokenLifecycleMessage>(
         &mut b,
@@ -464,6 +464,17 @@ pub async fn init_dependencies(
         Duration::seconds(config.outbox.awaiting_step_secs.unwrap()),
         config.outbox.batch_size.unwrap(),
     ));
+
+    // Webhooks configuration
+    let webhooks_config = config.webhooks;
+    {
+        let max_consecutive_failures = webhooks_config.max_consecutive_failures.unwrap();
+        assert!(
+            max_consecutive_failures > 0,
+            "Webhooks max_consecutive_failures must be > 0"
+        );
+        b.add_value(kamu_webhooks::WebhooksConfig::new(max_consecutive_failures));
+    }
 
     let task_agent_config = config.flow_system.task_agent.unwrap();
     b.add_value(kamu_task_system::TaskAgentConfig::new(Duration::seconds(

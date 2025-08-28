@@ -12,6 +12,40 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.73.0] - 2025-08-28
+## Added  [kamu CLI `0.247.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.247.0)
+- Extended support for webhook delivery errors, differentiating between:
+    - connection failure
+    - response timeout
+    - bad status code in response
+- Improved handling of task failures in the flow system:
+    - differentiating between Paused (by user) and Stopped (automatically) flow triggers
+    - a flow trigger is stopped after a failed task, if a configured stop policy is violated:
+        - N consecutive failures (N >= 1)
+        - never (schedules next flow regardless of failures count)
+    - GQL API to define stop policy for a flow trigger
+    - webhook subscriptions are automatically marked as Unreachable if a related flow trigger is stopped
+    - GQL API to reactive webhook subscription after becoming Unreachable
+    - task errors can be classified as "recoverable" and "unrecoverable":
+        - retry policy is not applicable when encountering an unrecoverable error
+        - similarly, flow trigger is immediately disabled when encountering an 
+          unrecoverable error, regardless of stop policy associated
+        - recoverable errors are normally related to infrastructural and environment issues 
+            (i.e., unreachable polling source address, failing to pull image, webhook delivery issue)
+        - unrecoverable errors are related to logical issues, and require user corrections
+            (i.e. bad SQL in a query, bad schema, referencing unexisting secret variable)
+## Changed
+- Revised meaning of flow abortion:
+    - flows with scheduled trigger abort both the current flow run, and pause the trigger
+    - flows with reactive trigger abort current run only
+- Refactoring:
+  - Added new `UpdateAccountUseCase` and replace usage of similar methods
+  - `PredefinedAccountRegistrator` now uses `UpdateAccountUseCase` methods instead of `AccountService` methods
+- Moved versioned file logic from GQL level to `use_case`
+- Collection datasets will ignore add and move operations that don't change the entry path, ref, or extra attributes and return `CollectionUpdateUpToDate`
+### Fixed
+- Derived datasets transform event correctly resolved with unaccessible inputs
+
 ## [0.72.1] - 2025-08-20
 ### Fixed
 - Bug fixes in flow system (first deployment feedback)

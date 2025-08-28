@@ -49,7 +49,7 @@ pub struct FlowProgressNotifier {
 #[meta(MessageConsumerMeta {
     consumer_name: MESSAGE_CONSUMER_KAMU_API_SERVER_FLOW_PROGRESS_NOTIFIER,
     feeding_producers: &[
-        kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
+        kamu_flow_system::MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
     ],
     delivery: MessageDeliveryMechanism::Transactional,
     initial_consumer_boundary: InitialConsumerBoundary::Latest,

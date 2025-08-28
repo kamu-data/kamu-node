@@ -55,6 +55,8 @@ pub struct ApiServerConfig {
     pub url: UrlConfig,
     /// Configuration for flow system
     pub flow_system: FlowSystemConfig,
+    /// Configuration for webhooks
+    pub webhooks: WebhooksConfig,
     /// Ingestions sources
     pub source: SourceConfig,
     /// Outbox configuration
@@ -927,6 +929,25 @@ impl Default for TaskAgentConfig {
     fn default() -> Self {
         Self {
             task_checking_interval_secs: Some(1),
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Webhooks
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct WebhooksConfig {
+    pub max_consecutive_failures: Option<u32>,
+}
+
+impl Default for WebhooksConfig {
+    fn default() -> Self {
+        Self {
+            max_consecutive_failures: Some(5),
         }
     }
 }
