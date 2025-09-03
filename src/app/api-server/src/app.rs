@@ -201,12 +201,17 @@ where
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub fn init_observability() -> observability::init::Guard {
-    observability::init::auto(
+    let guard = observability::init::auto(
         observability::config::Config::from_env_with_prefix("KAMU_OTEL_")
             .with_service_name(BINARY_NAME)
             .with_service_version(VERSION)
             .with_default_log_levels(DEFAULT_RUST_LOG),
-    )
+    );
+
+    // Redirect panics to tracing
+    observability::panic_handler::set_hook_trace_panics(false);
+
+    guard
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -320,6 +325,10 @@ pub async fn init_dependencies(
 
     b.add_value(config.protocol.ipfs.into_gateway_config());
     b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
+
+    // GraphQL
+    b.add_value(config.extra.graphql);
+    //
 
     // FlightSQL
     let mut sql_info = kamu_adapter_flight_sql::sql_info::default_sql_info();

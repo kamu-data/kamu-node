@@ -23,15 +23,8 @@ fn main() {
 
     let args = Cli::parse();
 
-    observability::panic_handler::set_hook_trace_panics(false);
-
-    let config = match kamu_api_server::load_config(args.config.as_ref()) {
-        Ok(config) => config,
-        Err(err) => {
-            tracing::error!(error = %err, error_dbg = ?err, "Failed to load config");
-            std::process::exit(1);
-        }
-    };
+    // Using unwrap as we don't have tracing initialized yet
+    let config = kamu_api_server::load_config(args.config.as_ref()).unwrap();
 
     let mut builder = tokio::runtime::Builder::new_multi_thread();
 

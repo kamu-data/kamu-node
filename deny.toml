@@ -1,7 +1,7 @@
 [bans]
 # Forbid multiple versions of same dependency (with some exceptions)
 # TODO: Change to "deny" once we crack down on duplication
-multiple-versions = "allow"
+multiple-versions = "warn"
 
 # Avoid adding dependencies to this list as this slows down compilation.
 # Find another ways to avoid duplication.
@@ -17,13 +17,11 @@ wildcards = "deny"
 # TODO: https://github.com/EmbarkStudios/cargo-deny/issues/700
 # workspace-default-features = "deny"
 
+
 deny = [
     ### Crates we shouldn't use ####
-    # "Configure `rustls` instead"
-    { name = "openssl-sys" },
-    # Use `md-5` instead, which is part of the RustCrypto ecosystem
-    { name = "md5" },
-    # TODO: We should decide whether to stick with rustls or openssl and deny one of them
+    { name = "md5", reason = "Use `md-5` instead, which is part of the RustCrypto ecosystem" },
+    { name = "native-tls", reason = "We use rustls throughout the project" },
 
     ### Creates we deny multiple versions of ###
     # This is a temporary approach until we deny by default with some exceptions
@@ -43,7 +41,7 @@ deny = [
     { name = "prost", deny-multiple-versions = true },
     { name = "reqwest", deny-multiple-versions = true },
     # { name = "rustls", deny-multiple-versions = true },
-    { name = "native-tls", reason = "We use rustls throughout the project" },
+    { name = "sqlx", deny-multiple-versions = true },
     { name = "tokio", deny-multiple-versions = true },
     { name = "tonic", deny-multiple-versions = true },
 ]
@@ -56,6 +54,7 @@ allow = [
     "BSD-2-Clause",
     "BSD-3-Clause",
     "BSL-1.0",
+    "bzip2-1.0.6",
     "CC0-1.0",
     "CDLA-Permissive-2.0",
     "ISC",
@@ -69,10 +68,6 @@ allow = [
 ]
 private = { ignore = true }
 
-[[licenses.exceptions]]
-allow = ["Unicode-DFS-2016"]
-name = "unicode-ident"
-
 
 [[licenses.clarify]]
 name = "ring"
@@ -83,15 +78,14 @@ license-files = [{ path = "LICENSE", hash = 0xbd0eed23 }]
 [sources]
 unknown-git = "deny"
 unknown-registry = "deny"
-allow-org = { github = ["kamu-data", "apache"] }
+allow-org = { github = ["kamu-data"] }
 
 
 [advisories]
 yanked = "deny"
 # TODO: Remove when patches are available
-#       See more: https://rustsec.org/advisories/RUSTSEC-2023-0071.html
 ignore = [
-    # rsa crate vulterability (used by sqlx), no fix available yet
+    # rsa crate vulnerability (used by sqlx), no fix available yet
     # https://rustsec.org/advisories/RUSTSEC-2023-0071.html
     "RUSTSEC-2023-0071",
     # Unmaintained (proc-macro-error)

@@ -61,6 +61,10 @@ type Account {
 	Access to the flow configurations of this account
 	"""
 	accessTokens: AccountAccessTokens!
+	"""
+	Returns datasets belonging to this account
+	"""
+	ownedDatasets(page: Int, perPage: Int): DatasetConnection!
 }
 
 type AccountAccessTokens {
@@ -152,6 +156,10 @@ input AccountLookupFilter {
 
 type AccountMut {
 	"""
+	Convert to read-only accessor to an account
+	"""
+	account: Account!
+	"""
 	Update account name
 	"""
 	rename(newName: AccountName!): RenameAccountResult!
@@ -223,24 +231,68 @@ type AccountWithRoleEdge {
 
 type Accounts {
 	"""
-	Returns account by its ID
+	Returns the account that is making the call (authorized subject)
+	"""
+	me: Account!
+	"""
+	Returns an account by its ID, if found
 	"""
 	byId(accountId: AccountID!): Account
 	"""
-	Returns account by its name
+	Returns accounts by their IDs
+	"""
+	byIds(		accountIds: [AccountID!]!,
+		"""
+		Whether to skip unresolved accounts or return an error if one or more are missing
+		"""
+		skipMissing: Boolean!
+	): [Account!]!
+	"""
+	Returns an account by its name, if found
 	"""
 	byName(name: AccountName!): Account
+	"""
+	Returns accounts by their names
+	"""
+	byNames(		accountNames: [AccountName!]!,
+		"""
+		Whether to skip unresolved accounts or return an error if one or more are missing
+		"""
+		skipMissing: Boolean!
+	): [Account!]!
 }
 
 type AccountsMut {
+	"""
+	Returns the mutable account that is making the call (authorized subject)
+	"""
+	me: AccountMut!
 	"""
 	Returns a mutable account by its id
 	"""
 	byId(accountId: AccountID!): AccountMut
 	"""
+	Returns mutable accounts by their IDs
+	"""
+	byIds(		accountIds: [AccountID!]!,
+		"""
+		Whether to skip unresolved accounts or return an error if one or more are missing
+		"""
+		skipMissing: Boolean!
+	): [AccountMut!]!
+	"""
 	Returns a mutable account by its name
 	"""
 	byName(accountName: AccountName!): AccountMut
+	"""
+	Returns accounts by their names
+	"""
+	byNames(		accountNames: [AccountName!]!,
+		"""
+		Whether to skip unresolved accounts or return an error if one or more are missing
+		"""
+		skipMissing: Boolean!
+	): [AccountMut!]!
 	"""
 	Create a new account
 	"""
@@ -291,6 +343,10 @@ type AddData {
 	when resuming.
 	"""
 	newSourceState: SourceState
+	"""
+	ODF extensions.
+	"""
+	extra: ExtraAttributes
 }
 
 """
@@ -364,6 +420,7 @@ type AttachmentsEmbedded {
 
 type Auth {
 	enabledProviders: [AccountProvider!]!
+	relations(accountIds: [AccountID!]!, page: Int, perPage: Int): AuthRelationConnection!
 }
 
 type AuthMut {
@@ -373,6 +430,32 @@ type AuthMut {
 	web3: AuthWeb3Mut!
 	login(loginMethod: AccountProvider!, loginCredentialsJson: String!, deviceCode: DeviceCode): LoginResponse!
 	accountDetails(accessToken: String!): Account!
+}
+
+type AuthRelation {
+	account: Account!
+	role: DatasetAccessRole!
+	dataset: Dataset!
+}
+
+type AuthRelationConnection {
+	"""
+	A shorthand for `edges { node { ... } }`
+	"""
+	nodes: [AuthRelation!]!
+	"""
+	Approximate number of total nodes
+	"""
+	totalCount: Int!
+	"""
+	Page information
+	"""
+	pageInfo: PageBasedInfo!
+	edges: [AuthRelationEdge!]!
+}
+
+type AuthRelationEdge {
+	node: AuthRelation!
 }
 
 type AuthWeb3Mut {
@@ -639,16 +722,19 @@ input ColumnInput {
 }
 
 interface CommitResult {
+	isSuccess: Boolean!
 	message: String!
 }
 
 type CommitResultAppendError implements CommitResult & UpdateReadmeResult {
 	message: String!
+	isSuccess: Boolean!
 }
 
 type CommitResultSuccess implements CommitResult & UpdateReadmeResult {
 	oldHead: Multihash
 	newHead: Multihash!
+	isSuccess: Boolean!
 	message: String!
 }
 
@@ -840,9 +926,11 @@ type DataSchema {
 }
 
 enum DataSchemaFormat {
+	ARROW_JSON
+	ODF_JSON
+	ODF_YAML
 	PARQUET
 	PARQUET_JSON
-	ARROW_JSON
 }
 
 """
@@ -977,6 +1065,11 @@ enum DatasetAccessRole {
 }
 
 scalar DatasetAlias
+
+enum DatasetArchetype {
+	COLLECTION
+	VERSIONED_FILE
+}
 
 type DatasetCollaboration {
 	"""
@@ -1238,6 +1331,11 @@ type DatasetMetadata {
 	"""
 	currentVocab: SetVocab
 	metadataProjection(eventTypes: [MetadataEventType!]!, head: Multihash): [MetadataBlockExtended!]!
+	"""
+	Experimental: Current archetype as per `kamu.dev/archetype` annotation,
+	if any
+	"""
+	currentArchetype: DatasetArchetype
 }
 
 type DatasetMetadataMut {
@@ -1256,6 +1354,10 @@ type DatasetMetadataPermissions {
 }
 
 type DatasetMut {
+	"""
+	Convert to read-only accessor to a dataset
+	"""
+	dataset: Dataset!
 	"""
 	Access to the mutable metadata of the dataset
 	"""
@@ -1393,9 +1495,31 @@ type DatasetWebhooksPermissions {
 
 type Datasets {
 	"""
-	Returns dataset by its ID
+	Returns a dataset by its ID, if found
 	"""
 	byId(datasetId: DatasetID!): Dataset
+	"""
+	Returns multiple datasets by their IDs
+	"""
+	byIds(		datasetIds: [DatasetID!]!,
+		"""
+		Whether to skip unresolved datasets or return an error if one or more are missing
+		"""
+		skipMissing: Boolean!
+	): [Dataset!]!
+	"""
+	Returns a dataset by a ID or alias, if found
+	"""
+	byRef(datasetRef: DatasetRef!): Dataset
+	"""
+	Returns multiple datasets by their IDs or aliases
+	"""
+	byRefs(		datasetRefs: [DatasetRef!]!,
+		"""
+		Whether to skip unresolved datasets or return an error if one or more are missing
+		"""
+		skipMissing: Boolean!
+	): [Dataset!]!
 	"""
 	Returns dataset by its owner and name
 	"""
@@ -1412,9 +1536,18 @@ type Datasets {
 
 type DatasetsMut {
 	"""
-	Returns a mutable dataset by its ID
+	Returns a mutable dataset by its ID, if found
 	"""
 	byId(datasetId: DatasetID!): DatasetMut
+	"""
+	Returns mutable datasets by their IDs
+	"""
+	byIds(		datasetIds: [DatasetID!]!,
+		"""
+		Whether to skip unresolved datasets or return an error if one or more are missing
+		"""
+		skipMissing: Boolean!
+	): [DatasetMut!]!
 	"""
 	Creates a new empty dataset
 	"""
@@ -1741,6 +1874,8 @@ type ExecuteTransformInput {
 	"""
 	newOffset: Int
 }
+
+scalar ExtraAttributes
 
 scalar ExtraData
 
@@ -2760,6 +2895,7 @@ type NameLookupResultEdge {
 
 type NoChanges implements CommitResult & UpdateReadmeResult {
 	message: String!
+	isSuccess: Boolean!
 }
 
 type OdataProtocolDesc {
