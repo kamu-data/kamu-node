@@ -215,8 +215,6 @@ debug = 1
 # Use this section to test or apply emergency overrides to dependencies
 # See: https://doc.rust-lang.org/cargo/reference/overriding-dependencies.html
 [patch.crates-io]
-# TODO: Delete this workaround when new version of sqlx will be released
-sqlx = { git = 'https://github.com/kamu-data/sqlx', branch = 'nextest-race-condition' }
 
 # Use this section to build against local versions of the core crates
 [patch.'https://github.com/kamu-data/kamu-cli']
