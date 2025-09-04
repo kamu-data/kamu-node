@@ -16,6 +16,8 @@ Recommendation: for ease of reading, use the following order:
 ### Changed
 - GQL: `MoleculeMut::create_project()`: use `U256` type for `ipnft_token_id`.
 - Collection API: Ignore noop changes in collection add/move
+- GQL: `Search::query()`: case insensitive search.
+- GQL: `MoleculeMut::create_project()`: generate lowercase project account name.
 
 ## [0.71.4] - 2025-08-15
 ### Fixed
