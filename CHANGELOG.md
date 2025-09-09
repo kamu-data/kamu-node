@@ -13,7 +13,7 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## Unreleased
+## [0.74.0] - 2025-09-09
 ### Upstream
 - Upgraded to [kamu `0.248.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.248.0)
   - **Added:**
