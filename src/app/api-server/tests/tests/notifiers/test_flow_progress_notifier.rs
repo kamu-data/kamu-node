@@ -7,6 +7,7 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
+use std::collections::HashMap;
 use std::sync::Arc;
 
 use chrono::{TimeDelta, Utc};
@@ -31,8 +32,10 @@ use kamu_accounts_inmem::{
 use kamu_accounts_services::{
     AccessTokenServiceImpl,
     AccountServiceImpl,
+    CreateAccountUseCaseImpl,
     LoginPasswordAuthProvider,
     PredefinedAccountsRegistrator,
+    UpdateAccountUseCaseImpl,
 };
 use kamu_api_server::{FLOW_FAILED_SUBJECT, FlowProgressNotifier};
 use kamu_auth_rebac_inmem::InMemoryRebacRepository;
@@ -44,22 +47,9 @@ use kamu_auth_rebac_services::{
 use kamu_datasets::{DatasetEntry, DatasetEntryRepository};
 use kamu_datasets_inmem::InMemoryDatasetEntryRepository;
 use kamu_datasets_services::DatasetEntryServiceImpl;
-use kamu_flow_system::{
-    Flow,
-    FlowAgentConfig,
-    FlowBinding,
-    FlowEventStore,
-    FlowID,
-    FlowOutcome,
-    FlowProgressMessage,
-    FlowStartConditionExecutor,
-    FlowTriggerAutoPolling,
-};
+use kamu_flow_system::*;
 use kamu_flow_system_inmem::InMemoryFlowEventStore;
-use kamu_flow_system_services::{
-    FlowQueryServiceImpl,
-    MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
-};
+use kamu_flow_system_services::FlowQueryServiceImpl;
 use kamu_task_system::{TaskError, TaskID, TaskOutcome, TaskResult};
 use messaging_outbox::{Outbox, OutboxExt, OutboxImmediateImpl, register_message_dispatcher};
 use odf::DatasetID;
@@ -152,6 +142,7 @@ impl FlowProgressNotifierHarness {
             .add_value(FlowAgentConfig::new(
                 TimeDelta::seconds(1),
                 TimeDelta::minutes(1),
+                HashMap::new(),
             ))
             .add::<InMemoryAccountRepository>()
             .add::<AccountServiceImpl>()
@@ -162,6 +153,8 @@ impl FlowProgressNotifierHarness {
             .add::<LoginPasswordAuthProvider>()
             .add::<RebacServiceImpl>()
             .add::<InMemoryRebacRepository>()
+            .add::<CreateAccountUseCaseImpl>()
+            .add::<UpdateAccountUseCaseImpl>()
             .add_value(DidSecretEncryptionConfig::sample())
             .add_value(DefaultAccountProperties::default())
             .add_value(DefaultDatasetProperties::default())
@@ -244,8 +237,12 @@ impl FlowProgressNotifierHarness {
 
         let (mut flow, task_id) = self.create_and_prepare_flow(dataset_id, flow_id);
 
-        flow.on_task_finished(Utc::now(), task_id, TaskOutcome::Failed(TaskError::empty()))
-            .unwrap();
+        flow.on_task_finished(
+            Utc::now(),
+            task_id,
+            TaskOutcome::Failed(TaskError::empty_recoverable()),
+        )
+        .unwrap();
 
         flow.save(flow_event_store.as_ref()).await.unwrap();
 
@@ -262,9 +259,9 @@ impl FlowProgressNotifierHarness {
         let mut flow = Flow::new(
             Utc::now(),
             flow_id,
-            FlowBinding::for_dataset(dataset_id.clone(), "INGEST"),
-            kamu_flow_system::FlowTriggerInstance::AutoPolling(FlowTriggerAutoPolling {
-                trigger_time: Utc::now(),
+            kamu_adapter_flow_dataset::ingest_dataset_binding(dataset_id),
+            kamu_flow_system::FlowActivationCause::AutoPolling(FlowActivationCauseAutoPolling {
+                activation_time: Utc::now(),
             }),
             None,
             None,

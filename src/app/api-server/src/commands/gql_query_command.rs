@@ -34,7 +34,7 @@ impl Command for GqlQueryCommand {
     async fn run(&self) -> Result<(), InternalError> {
         let result =
             crate::gql_server::gql_query(&self.query, self.full, self.catalog.clone()).await;
-        print!("{}", result);
+        print!("{result}");
         Ok(())
     }
 }

@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!--
 Recommendation: for ease of reading, use the following order:
+- Upstream (e.g. mention notable kamu core changes)
 - Added
 - Changed
 - Fixed
@@ -19,6 +20,129 @@ Recommendation: for ease of reading, use the following order:
 - GQL: `Search::query()`: case insensitive search.
 - GQL: `MoleculeMut::create_project()`: generate lowercase project account name.
 
+## [0.74.1] - 2025-09-12
+### Upstream
+- Upgraded to [kamu `0.248.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.248.1)
+  - **Fixed:**
+    - Crash on writing datasets with `List` field type
+
+## [0.74.0] - 2025-09-09
+### Upstream
+- Upgraded to [kamu `0.248.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.248.0)
+  - **Added:**
+    - Introducing ODF Schema per [ODF RFC-016](https://github.com/open-data-fabric/open-data-fabric/blob/master/rfcs/016-odf-schema.md)
+      - New schema format is supported in GQL and REST endpoints
+    - Initial support for `ObjectLink` extended type per [ODF RFC-017](https://github.com/open-data-fabric/open-data-fabric/blob/master/rfcs/017-large-files-linking.md)
+      - Allows use of `ObjectLink[Multihash]` type in root datasets
+      - Ingest will perform validation that linked objects exists in the data repository (i.e. must be uploaded first)
+      - Ingest will produce an error on dangling reference and invalid `multihash` values
+      - The summary of linked objects count and sizes will be written to `AddData` event under `opendatafabric.org/linkedObjects` attribute
+    - GQL: Introduced `currentArchetype` endpoint
+    - GQL: `Auth::relations()` for getting ReBAC triplets for debugging purposes.
+    - GQL: Vectorized access endpoints `Accounts::byIds`, `Accounts::byNames`, `Datasets::byIds`, `Datasets::byRefs`
+    - GQL: `Account::ownedDatasets` for accessing datasets owned by an account
+    - GQL: `Account::me` for accessing current account
+  - **Changed:**
+    - `inspect schema` now defaults to ODF schema instead of DDL
+    - `SetDataSchema` events are now populated with ODF schema, with raw arrow schema deprecated
+    - `VersionedFile` and `Collection` dataset archetypes are now created with pre-defined schema that uses new `Did` and `ObjectLink` logical types
+    - GQL: `asVersionedFile` and `asCollection` endpoints now use `kamu.dev/archetype` annotation to check the dataset archetype
+      - COMPATIBILITY: The existing datasets need to be migrated by applying new schema via commit API in order to be correctly recognized
+    - dep: `ringbuf` updated from `0.3` to `0.4`.
+    - Flows: each input contribution to batching rule is reflected as an update of start condition,
+       so that flow history may show how many accumulated records were present at the moment of each update
+    - GQL: `Search::query()`: case insensitive search.
+  - **Fixed:**
+    - Crash when multiple unlabeled webhook subscriptions are defined within the same dataset
+    - Restrict dataset creation with duplicate transform inputs.
+
+## [0.73.0] - 2025-08-28
+### Added
+- Upgraded to [kamu CLI `0.247.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.247.0)
+- Extended support for webhook delivery errors, differentiating between:
+    - connection failure
+    - response timeout
+    - bad status code in response
+- Improved handling of task failures in the flow system:
+    - differentiating between Paused (by user) and Stopped (automatically) flow triggers
+    - a flow trigger is stopped after a failed task, if a configured stop policy is violated:
+        - N consecutive failures (N >= 1)
+        - never (schedules next flow regardless of failures count)
+    - GQL API to define stop policy for a flow trigger
+    - webhook subscriptions are automatically marked as Unreachable if a related flow trigger is stopped
+    - GQL API to reactive webhook subscription after becoming Unreachable
+    - task errors can be classified as "recoverable" and "unrecoverable":
+        - retry policy is not applicable when encountering an unrecoverable error
+        - similarly, flow trigger is immediately disabled when encountering an 
+          unrecoverable error, regardless of stop policy associated
+        - recoverable errors are normally related to infrastructural and environment issues 
+            (i.e., unreachable polling source address, failing to pull image, webhook delivery issue)
+        - unrecoverable errors are related to logical issues, and require user corrections
+            (i.e. bad SQL in a query, bad schema, referencing unexisting secret variable)
+### Changed
+- Revised meaning of flow abortion:
+    - flows with scheduled trigger abort both the current flow run, and pause the trigger
+    - flows with reactive trigger abort current run only
+- Refactoring:
+  - Added new `UpdateAccountUseCase` and replace usage of similar methods
+  - `PredefinedAccountRegistrator` now uses `UpdateAccountUseCase` methods instead of `AccountService` methods
+- Moved versioned file logic from GQL level to `use_case`
+- Collection datasets will ignore add and move operations that don't change the entry path, ref, or extra attributes and return `CollectionUpdateUpToDate`
+### Fixed
+- Derived datasets transform event correctly resolved with unaccessible inputs
+
+## [0.72.1] - 2025-08-20
+### Fixed
+- Bug fixes in flow system (first deployment feedback)
+  ([kamu CLI `0.246.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.246.1)):
+  - Improved idempotence of flow sensors registration for transform and webhook flows
+  - Flow triggers not issuing duplicate update events unless their pause status or rule is actually modified
+  - Flow agent should not attempt startup recovery until dependency graph is loaded
+  - Extended telemetry for flow dispatchers and sensor operations
+
+## [0.72.0] - 2025-08-20
+### Added
+- Webhooks are integrated into the Flow system, and support retries
+  ([kamu CLI `0.246.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.246.0)):
+  - Webhook delivery is now a kind of a flow
+  - Webhook delivery for dataset updates is associated with datasets, 
+    thus can be filtered in the flow history as related to the dataset,
+    so that updates and notifications are visible on the same page in the execution order
+  - Enabling, pausing, resuming webhooks is mapped to flow trigger operations
+  - Webhook payload is formed at the moment of task scheduling, thus can buffer multiple
+     intermediate updates to the interested dataset
+  - The updates to the interested datasets that arrive after a webhook task is scheduled
+     initiate next execution of the flow, which would run immediately after the current one
+     with respect of standard throttling conditions
+  - Webhook payload for dataset updates indicates whether a breaking change has happened
+  - GQL support for webhook-related flows
+  - Webhook deliveries are retryable by default (via a system-wide policy setting)
+### Changed
+- Batching rules for derived datasets have been revised and extended:
+  - Immediate (activate on first input trigger unconditionally) vs Buffering mode (non-zero records count, timeout)
+  - Explicit configuration whether the derived dataset should be reset to metadata if input has a breaking change
+  - Compaction and reset flows no longer consider ownership boundaries, and affect downstream datasets with enabled updates
+  - No more "recursive" options in compaction and reset flows. Propagating breaking change according to general rules instead.
+- Refactoring: flow system is fully decoupled from specific resource domains, and concentrates on orchestration logic only:
+  - Flow trigger instances converted into more abstract "activation cause" objects indicating source of change
+     and basic change properties (new data, breaking change)
+  - Flow scopes became type-erased JSON objects, with type-specific interpreters of attributes encapsulated in adapters
+  - Dataset-specific details of resource changes encapsulated in the adapter:
+     - supporting 4 types of sources for datasets: upstream flow, http ingest, smart protocol push, external change detection
+  - Introduced concept of dynamic flow sensors:
+     - Sensors are responsible for reacting to resource changes in flow type specific manner
+     - Sensor for derived datasets listens for input changes and decides on executing trasnform vs reset to metadata flow
+     - Sensor for webhooks dataset updates listen to monitored dataset, and schedule webhook delivery flows
+     - Sensors lifetime is bound to enabled periods of flow triggers
+     - Sensor dispatcher maintains dependencies between sensors and input events
+  - Transform flows are no longer launched at startup or at trigger enabling point unless there is new input data available
+  - Extracted "reset to metadata" into a separately managed flow type to avoid confusion
+  - Reworked database API for the flow system to provide resource-agnostic abstraction and preserve index-level effeciency.
+  - Important note: flow, task, and outbox history will be reset with this update
+- Refactoring: simplified structure of webhooks domain:
+  - `WebhookEvent` entity flattened into `WebhookDelivery`, since it can no longer be reused for multiple subscriptions
+  - Fixed handling removal of webhook subscription while flows are pending.
+  
 ## [0.71.4] - 2025-08-15
 ### Fixed
 - GQL playground fix in anonymous mode: ([kamu CLI `0.245.5`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.245.5))

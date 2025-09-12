@@ -30,8 +30,10 @@ use kamu_accounts_inmem::{
 use kamu_accounts_services::{
     AccessTokenServiceImpl,
     AccountServiceImpl,
+    CreateAccountUseCaseImpl,
     LoginPasswordAuthProvider,
     PredefinedAccountsRegistrator,
+    UpdateAccountUseCaseImpl,
 };
 use kamu_api_server::{ACCESS_TOKEN_CREATED_SUBJECT, AccessTokenLifecycleNotifier};
 use kamu_auth_rebac_inmem::InMemoryRebacRepository;
@@ -101,6 +103,8 @@ impl AccessTokenLifecycleNotifierHarness {
             .add::<LoginPasswordAuthProvider>()
             .add::<RebacServiceImpl>()
             .add::<InMemoryRebacRepository>()
+            .add::<CreateAccountUseCaseImpl>()
+            .add::<UpdateAccountUseCaseImpl>()
             .add_value(DidSecretEncryptionConfig::sample())
             .add_value(DefaultAccountProperties::default())
             .add_value(DefaultDatasetProperties::default())

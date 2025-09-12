@@ -81,6 +81,7 @@ kamu-adapter-http = { workspace = true, features = [
 kamu-adapter-oauth = { workspace = true }
 kamu-adapter-odata = { workspace = true }
 kamu-adapter-flow-dataset = { workspace = true }
+kamu-adapter-flow-webhook = { workspace = true }
 kamu-adapter-task-dataset = { workspace = true }
 kamu-adapter-task-webhook = { workspace = true }
 kamu-auth-rebac-inmem = { workspace = true }
@@ -136,7 +137,7 @@ sqlx = { version = "0.8", default-features = false, features = [
     "runtime-tokio",
     "tls-rustls-aws-lc-rs",
 ] }
-tokio-tungstenite = { version = "0.26", features = ["rustls-tls-webpki-roots"] }
+tokio-tungstenite = { version = "0.27", features = ["rustls-tls-webpki-roots"] }
 
 # APIs
 http = "1"
@@ -151,12 +152,12 @@ utoipa = { version = "5", default-features = false, features = [] }
 utoipa-axum = { version = "0.2", default-features = false, features = [] }
 
 # Tracing / logging / telemetry / metrics
-prometheus = { version = "0.13", default-features = false }
+prometheus = { version = "0.14", default-features = false }
 tracing = "0.1"
 
 # Utils
 async-trait = { version = "0.1", default-features = false }
-askama = { version = "0.12" }
+askama = { version = "0.14" }
 chrono = "0.4"
 clap = { version = "4", default-features = false, features = [
     "std",
@@ -170,7 +171,7 @@ clap = { version = "4", default-features = false, features = [
     # "env",
     "wrap_help",
 ] }
-duration-string = { version = "0.4", default-features = false, features = [
+duration-string = { version = "0.5", default-features = false, features = [
     "serde",
 ] }
 figment = { version = "0.10", features = ["env", "yaml", "json"] }

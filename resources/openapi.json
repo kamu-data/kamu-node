@@ -734,6 +734,8 @@
       "SchemaFormat": {
         "enum": [
           "ArrowJson",
+          "OdfJson",
+          "OdfYaml",
           "Parquet",
           "ParquetJson"
         ],
@@ -971,7 +973,7 @@
     },
     "termsOfService": "https://docs.kamu.dev/terms-of-service/",
     "title": "Kamu REST API",
-    "version": "0.71.4"
+    "version": "0.74.1"
   },
   "openapi": "3.1.0",
   "paths": {

@@ -7,6 +7,7 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
+use std::collections::HashMap;
 use std::future::Future;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -200,12 +201,17 @@ where
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub fn init_observability() -> observability::init::Guard {
-    observability::init::auto(
+    let guard = observability::init::auto(
         observability::config::Config::from_env_with_prefix("KAMU_OTEL_")
             .with_service_name(BINARY_NAME)
             .with_service_version(VERSION)
             .with_default_log_levels(DEFAULT_RUST_LOG),
-    )
+    );
+
+    // Redirect panics to tracing
+    observability::panic_handler::set_hook_trace_panics(false);
+
+    guard
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -320,6 +326,10 @@ pub async fn init_dependencies(
     b.add_value(config.protocol.ipfs.into_gateway_config());
     b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
 
+    // GraphQL
+    b.add_value(config.extra.graphql);
+    //
+
     // FlightSQL
     let mut sql_info = kamu_adapter_flight_sql::sql_info::default_sql_info();
     sql_info.append(SqlInfo::FlightSqlServerName, crate::BINARY_NAME);
@@ -353,7 +363,8 @@ pub async fn init_dependencies(
     b.add::<kamu::RemoteAliasesRegistryImpl>();
     b.add::<kamu::RemoteAliasResolverImpl>();
 
-    kamu_adapter_flow_dataset::register_dependencies(&mut b);
+    kamu_adapter_flow_dataset::register_dependencies(&mut b, Default::default());
+    kamu_adapter_flow_webhook::register_dependencies(&mut b);
     kamu_adapter_task_dataset::register_dependencies(&mut b);
     kamu_adapter_task_webhook::register_dependencies(&mut b);
 
@@ -423,15 +434,15 @@ pub async fn init_dependencies(
         kamu_flow_system::FlowConfigurationUpdatedMessage,
     >(
         &mut b,
-        kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_CONFIGURATION_SERVICE,
+        kamu_flow_system::MESSAGE_PRODUCER_KAMU_FLOW_CONFIGURATION_SERVICE,
     );
     messaging_outbox::register_message_dispatcher::<kamu_flow_system::FlowTriggerUpdatedMessage>(
         &mut b,
-        kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_TRIGGER_SERVICE,
+        kamu_flow_system::MESSAGE_PRODUCER_KAMU_FLOW_TRIGGER_SERVICE,
     );
     messaging_outbox::register_message_dispatcher::<kamu_flow_system::FlowProgressMessage>(
         &mut b,
-        kamu_flow_system_services::MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
+        kamu_flow_system::MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
     );
     messaging_outbox::register_message_dispatcher::<kamu_accounts::AccessTokenLifecycleMessage>(
         &mut b,
@@ -445,11 +456,34 @@ pub async fn init_dependencies(
         &mut b,
         kamu_datasets::MESSAGE_PRODUCER_KAMU_HTTP_ADAPTER,
     );
+    messaging_outbox::register_message_dispatcher::<
+        kamu_webhooks::WebhookSubscriptionLifecycleMessage,
+    >(
+        &mut b,
+        kamu_webhooks::MESSAGE_PRODUCER_KAMU_WEBHOOK_SUBSCRIPTION_SERVICE,
+    );
+    messaging_outbox::register_message_dispatcher::<
+        kamu_webhooks::WebhookSubscriptionEventChangesMessage,
+    >(
+        &mut b,
+        kamu_webhooks::MESSAGE_PRODUCER_KAMU_WEBHOOK_SUBSCRIPTION_EVENT_CHANGES_SERVICE,
+    );
 
     b.add_value(messaging_outbox::OutboxConfig::new(
         Duration::seconds(config.outbox.awaiting_step_secs.unwrap()),
         config.outbox.batch_size.unwrap(),
     ));
+
+    // Webhooks configuration
+    let webhooks_config = config.webhooks;
+    {
+        let max_consecutive_failures = webhooks_config.max_consecutive_failures.unwrap();
+        assert!(
+            max_consecutive_failures > 0,
+            "Webhooks max_consecutive_failures must be > 0"
+        );
+        b.add_value(kamu_webhooks::WebhooksConfig::new(max_consecutive_failures));
+    }
 
     let task_agent_config = config.flow_system.task_agent.unwrap();
     b.add_value(kamu_task_system::TaskAgentConfig::new(Duration::seconds(
@@ -461,6 +495,36 @@ pub async fn init_dependencies(
     b.add_value(kamu_flow_system::FlowAgentConfig::new(
         Duration::seconds(flow_agent_config.awaiting_step_secs.unwrap()),
         Duration::seconds(flow_agent_config.mandatory_throttling_period_secs.unwrap()),
+        if let Some(retry_configs) = flow_agent_config.default_retry_policies.as_ref() {
+            retry_configs
+                .iter()
+                .map(|(flow_type, retry_policy_config)| {
+                    (
+                        flow_type.clone(),
+                        kamu_flow_system::RetryPolicy::new(
+                            retry_policy_config.max_attempts.unwrap_or(0),
+                            retry_policy_config.min_delay_secs.unwrap_or(0),
+                            match retry_policy_config.backoff_type {
+                                Some(config::RetryPolicyConfigBackoffType::Exponential) => {
+                                    kamu_flow_system::RetryBackoffType::Exponential
+                                }
+                                Some(config::RetryPolicyConfigBackoffType::Linear) => {
+                                    kamu_flow_system::RetryBackoffType::Linear
+                                }
+                                Some(
+                                    config::RetryPolicyConfigBackoffType::ExponentialWithJitter,
+                                ) => kamu_flow_system::RetryBackoffType::ExponentialWithJitter,
+                                Some(config::RetryPolicyConfigBackoffType::Fixed) | None => {
+                                    kamu_flow_system::RetryBackoffType::Fixed
+                                }
+                            },
+                        ),
+                    )
+                })
+                .collect()
+        } else {
+            HashMap::new()
+        },
     ));
 
     kamu_flow_system_services::register_dependencies(&mut b);
