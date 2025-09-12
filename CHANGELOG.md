@@ -13,6 +13,12 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.74.1] - 2025-09-12
+### Upstream
+- Upgraded to [kamu `0.248.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.248.1)
+  - **Fixed:**
+    - Crash on writing datasets with `List` field type
+
 ## [0.74.0] - 2025-09-09
 ### Upstream
 - Upgraded to [kamu `0.248.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.248.0)

@@ -21,13 +21,13 @@ resolver = "2"
 [workspace.dependencies]
 
 # Apps
-kamu-api-server = { path = "src/app/api-server", version = "0.74.0", default-features = false }
+kamu-api-server = { path = "src/app/api-server", version = "0.74.1", default-features = false }
 
 # Utils
-email-gateway = { path = "src/utils/email-gateway", version = "0.74.0", default-features = false, features = [
+email-gateway = { path = "src/utils/email-gateway", version = "0.74.1", default-features = false, features = [
     "postmark",
 ] }
-graceful-shutdown = { path = "src/utils/graceful-shutdown", version = "0.74.0", default-features = false }
+graceful-shutdown = { path = "src/utils/graceful-shutdown", version = "0.74.1", default-features = false }
 
 # Utils (core)
 container-runtime = { git = "https://github.com/kamu-data/kamu-cli", branch = "master", version = "0.248.0", default-features = false }
@@ -112,17 +112,17 @@ kamu-cli-e2e-common = { git = "https://github.com/kamu-data/kamu-cli", branch = 
 kamu-cli-e2e-repo-tests = { git = "https://github.com/kamu-data/kamu-cli", branch = "master", version = "0.248.0", default-features = false }
 
 # E2E: kamu-node
-kamu-node-e2e-common = { path = "src/e2e/app/common", version = "0.74.0", default-features = false }
-kamu-node-e2e-common-macros = { path = "src/e2e/app/common-macros", version = "0.74.0", default-features = false }
-kamu-node-puppet = { path = "src/e2e/app/kamu-node-puppet", version = "0.74.0", default-features = false }
-kamu-node-e2e-repo-tests = { path = "src/e2e/app/repo-tests", version = "0.74.0", default-features = false }
+kamu-node-e2e-common = { path = "src/e2e/app/common", version = "0.74.1", default-features = false }
+kamu-node-e2e-common-macros = { path = "src/e2e/app/common-macros", version = "0.74.1", default-features = false }
+kamu-node-puppet = { path = "src/e2e/app/kamu-node-puppet", version = "0.74.1", default-features = false }
+kamu-node-e2e-repo-tests = { path = "src/e2e/app/repo-tests", version = "0.74.1", default-features = false }
 
 # TODO: Updating aws-sdk version forces to update minio image version. 
 # Update it once we will modify our tests to be compatible with latest version
 aws-sdk-s3 = "=1.68.0"
 
 [workspace.package]
-version = "0.74.0"
+version = "0.74.1"
 edition = "2024"
 homepage = "https://github.com/kamu-data/kamu-platform"
 repository = "https://github.com/kamu-data/kamu-platform"
