@@ -69,7 +69,9 @@ kamu-accounts-postgres = { workspace = true }
 kamu-accounts-services = { workspace = true }
 kamu-accounts-sqlite = { workspace = true }
 kamu-adapter-auth-oso-rebac = { workspace = true }
-kamu-adapter-auth-web3 = { workspace = true, default-features = false, features = ["did-pkh"] }
+kamu-adapter-auth-web3 = { workspace = true, default-features = false, features = [
+    "did-pkh",
+] }
 kamu-adapter-flight-sql = { workspace = true }
 kamu-adapter-graphql = { workspace = true }
 kamu-auth-web3-inmem = { workspace = true }
@@ -141,11 +143,11 @@ tokio-tungstenite = { version = "0.27", features = ["rustls-tls-webpki-roots"] }
 
 # APIs
 http = "1"
-arrow-flight = { version = "55", features = ["flight-sql-experimental"] }
+arrow-flight = { version = "56", features = ["flight-sql-experimental"] }
 axum = { version = "0.8", features = ["ws"] }
 async-graphql = { version = "7", default-features = false }
 async-graphql-axum = "7"
-tonic = { version = "0.12", default-features = false }
+tonic = { version = "0.13", default-features = false }
 tower = { version = "0.5", features = ["util"] }
 tower-http = { version = "0.6", features = ["trace", "cors", "catch-panic"] }
 utoipa = { version = "5", default-features = false, features = [] }

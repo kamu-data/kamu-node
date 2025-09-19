@@ -443,6 +443,14 @@ pub struct EthereumSourceConfig {
     /// scanned even if we didn't reach the target record number. This is useful
     /// to not lose a lot of scanning progress in case of an RPC error.
     pub commit_after_blocks_scanned: u64,
+    /// Many providers don't yet return `blockTimestamp` from `eth_getLogs` RPC
+    /// endpoint and in such cases `block_timestamp` column will be `null`.
+    /// If you enable this fallback the library will perform additional call to
+    /// `eth_getBlock` to populate the timestam, but this may result in
+    /// significant performance penalty when fetching many log records.
+    ///
+    /// See: [ethereum/execution-apis#295](https://github.com/ethereum/execution-apis/issues/295)
+    pub use_block_timestamp_fallback: bool,
 }
 
 impl Default for EthereumSourceConfig {
@@ -452,6 +460,7 @@ impl Default for EthereumSourceConfig {
             rpc_endpoints: Vec::new(),
             get_logs_block_stride: infra_cfg.get_logs_block_stride,
             commit_after_blocks_scanned: infra_cfg.commit_after_blocks_scanned,
+            use_block_timestamp_fallback: infra_cfg.use_block_timestamp_fallback,
         }
     }
 }
@@ -466,6 +475,7 @@ impl EthereumSourceConfig {
                 .collect(),
             get_logs_block_stride: self.get_logs_block_stride,
             commit_after_blocks_scanned: self.commit_after_blocks_scanned,
+            use_block_timestamp_fallback: self.use_block_timestamp_fallback,
         }
     }
 }

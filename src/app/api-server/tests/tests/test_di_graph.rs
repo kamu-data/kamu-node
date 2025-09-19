@@ -234,7 +234,7 @@ fn add_database_components(b: &mut dill::CatalogBuilder, repositories_config: Re
             b.add_value(pool.clone());
 
             let transaction_ref = database_common::TransactionRef::new(pool);
-            b.add_value(transaction_ref);
+            transaction_ref.register(b);
         }
         RepositoriesConfig::Postgres => {
             let pool = database_common::PgPoolOptions::default()
@@ -243,7 +243,7 @@ fn add_database_components(b: &mut dill::CatalogBuilder, repositories_config: Re
             b.add_value(pool.clone());
 
             let transaction_ref = database_common::TransactionRef::new(pool);
-            b.add_value(transaction_ref);
+            transaction_ref.register(b);
         }
     }
 }
