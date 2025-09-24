@@ -13,6 +13,24 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## Unreleased
+### Upstream
+- Upgraded to [kamu `0.249.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.249.0)
+  - **Changed:** 
+    - ([kamu-cli#1372](https://github.com/kamu-data/kamu-cli/pull/1372)): GQL: Performance improvement via query vectorization for APIs:
+      - `Dataset::by_ids()`;
+      - `DatasetMut::by_ids()`;
+      - `Account::by_ids()`;
+      - `AccountMut::by_ids()`.
+    - Improved compatibility with EVM-based sources
+    - Upgraded to `datafusion v50`
+    - ([kamu-cli#1384](https://github.com/kamu-data/kamu-cli/pull/1384)) `GQL: Dataset::metadata().current_push_sources`: significant speed-up through iteration 
+      over key blocks stored in the database 
+    - ([kamu-cli#1384](https://github.com/kamu-data/kamu-cli/pull/1384)) General iteration optimizations based on the dataset type (root, derived). 
+      Ability to disable hints during iteration.
+    - ([kamu-cli#1384](https://github.com/kamu-data/kamu-cli/pull/1384)) `SearchActivePushSourcesVisitor`, `SearchActivePollingSourceVisitor`: accounting for the evolution of data 
+      sources.
+
 ## [0.74.1] - 2025-09-12
 ### Upstream
 - Upgraded to [kamu `0.248.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.248.1)
