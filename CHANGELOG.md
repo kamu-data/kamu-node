@@ -13,6 +13,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [Unreleased]
+### Fixed
+- Introduced `engine.datafusionEmbedded.useLegacyArrowBufferEncoding` option that makes embedded `datafusion` batch query engine use contiguous buffer encoding (e.g. `Utf8` instead of `Utf8View`) for compatibility with older FlightSQL clients.
+
 ## [0.75.0] - 2025-09-24
 ### Upstream
 - Upgraded to [kamu `0.249.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.249.0)
