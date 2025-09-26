@@ -19,6 +19,8 @@ Recommendation: for ease of reading, use the following order:
 - Collection API: Ignore noop changes in collection add/move
 - GQL: `Search::query()`: case insensitive search.
 - GQL: `MoleculeMut::create_project()`: generate lowercase project account name.
+### Fixed
+ - Investigation: potential unstable ordering of dataset entry listings
 
 ## [0.75.1] - 2025-09-25
 ### Fixed
