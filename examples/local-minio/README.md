@@ -14,7 +14,7 @@ We'll need to run the environment in two different terminals:
 1) Run minio first:
 ```shell
 # or docker
-podman run --rm \
+podman run --rm -d \
   -p 9000:9000 \
   -p 9001:9001 \
   -v "./minio-data:/data:Z" \

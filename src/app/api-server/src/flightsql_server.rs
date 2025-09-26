@@ -49,7 +49,7 @@ impl FlightSqlServer {
     pub fn run(self) -> impl Future<Output = Result<(), impl std::error::Error>> {
         Server::builder()
             .layer(observability::tonic::grpc_layer())
-            .layer(tonic::service::interceptor(
+            .layer(tonic::service::interceptor::InterceptorLayer::new(
                 move |mut req: tonic::Request<()>| {
                     req.extensions_mut().insert(self.catalog.clone());
                     Ok(req)

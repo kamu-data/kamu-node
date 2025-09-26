@@ -40,4 +40,4 @@ done
 
 aws s3 sync ./aws-datasets-bucket s3://datasets
 
-cargo run -p kamu-api-server -- --config "${CONFIG_FILE}" run --address=127.0.0.1 --http-port=8080
+cargo run -p kamu-api-server -- --config "${CONFIG_FILE}" run --address=127.0.0.1 --http-port=8080 --flightsql-port=50050

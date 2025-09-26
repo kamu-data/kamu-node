@@ -43,7 +43,12 @@ deny = [
     # { name = "rustls", deny-multiple-versions = true },
     { name = "sqlx", deny-multiple-versions = true },
     { name = "tokio", deny-multiple-versions = true },
-    { name = "tonic", deny-multiple-versions = true },
+    # Duplication due to:
+    # - `protoc-gen-tonic` - unmaintained and does not support tonic 0.13+ 
+    # - `opentelemetry` - we need to update to newer version
+    # - `qdrant-client` - upstream needs to upgrade to newer tonic
+    # https://github.com/neoeinstein/protoc-gen-prost/pull/119
+    # { name = "tonic", deny-multiple-versions = true },
 ]
 
 

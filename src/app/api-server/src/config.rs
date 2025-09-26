@@ -9,15 +9,11 @@
 
 use std::collections::BTreeMap;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use container_runtime::{ContainerRuntimeType, NetworkNamespaceType};
 use duration_string::DurationString;
 use internal_error::*;
-use kamu::{
-    EngineConfigDatafusionEmbeddedBatchQuery,
-    EngineConfigDatafusionEmbeddedCompaction,
-    EngineConfigDatafusionEmbeddedIngest,
-};
 use kamu_accounts::{AccountConfig, DidSecretEncryptionConfig};
 use kamu_accounts_services::PasswordPolicyConfig;
 use kamu_datasets::DatasetEnvVarsConfig;
@@ -183,6 +179,13 @@ pub struct EngineConfigDatafution {
 
     /// Compaction-specific overrides to the base config
     pub compaction: BTreeMap<String, String>,
+
+    /// Makes arrow batches use contiguous `Binary` and `Utf8` encodings instead
+    /// of more modern `BinaryView` and `Utf8View`. This is only needed for
+    /// compatibility with some older libraries that don't yet support them.
+    ///
+    /// See: [kamu-node#277](https://github.com/kamu-data/kamu-node/issues/277)
+    pub use_legacy_arrow_buffer_encoding: bool,
 }
 
 impl Default for EngineConfigDatafution {
@@ -204,6 +207,7 @@ impl Default for EngineConfigDatafution {
                 .iter()
                 .map(|(k, v)| ((*k).to_string(), (*v).to_string()))
                 .collect(),
+            use_legacy_arrow_buffer_encoding: false,
         }
     }
 }
@@ -235,17 +239,23 @@ impl EngineConfigDatafution {
             };
 
         let ingest_config = from_merged_with_base_and_defaults(
-            EngineConfigDatafusionEmbeddedIngest::DEFAULT_OVERRIDES,
+            kamu::EngineConfigDatafusionEmbeddedIngest::DEFAULT_OVERRIDES,
             self.ingest,
         )?;
-        let batch_query_config = from_merged_with_base_and_defaults(
-            EngineConfigDatafusionEmbeddedBatchQuery::DEFAULT_OVERRIDES,
+        let mut batch_query_config = from_merged_with_base_and_defaults(
+            kamu::EngineConfigDatafusionEmbeddedBatchQuery::DEFAULT_OVERRIDES,
             self.batch_query,
         )?;
         let compaction_config = from_merged_with_base_and_defaults(
-            EngineConfigDatafusionEmbeddedCompaction::DEFAULT_OVERRIDES,
+            kamu::EngineConfigDatafusionEmbeddedCompaction::DEFAULT_OVERRIDES,
             self.compaction,
         )?;
+
+        batch_query_config.set_extension(Arc::new(
+            kamu::EngineConfigDatafusionEmbeddedBatchQueryExt {
+                use_legacy_arrow_buffer_encoding: self.use_legacy_arrow_buffer_encoding,
+            },
+        ));
 
         Ok((
             kamu::EngineConfigDatafusionEmbeddedIngest(ingest_config),
@@ -443,6 +453,14 @@ pub struct EthereumSourceConfig {
     /// scanned even if we didn't reach the target record number. This is useful
     /// to not lose a lot of scanning progress in case of an RPC error.
     pub commit_after_blocks_scanned: u64,
+    /// Many providers don't yet return `blockTimestamp` from `eth_getLogs` RPC
+    /// endpoint and in such cases `block_timestamp` column will be `null`.
+    /// If you enable this fallback the library will perform additional call to
+    /// `eth_getBlock` to populate the timestam, but this may result in
+    /// significant performance penalty when fetching many log records.
+    ///
+    /// See: [ethereum/execution-apis#295](https://github.com/ethereum/execution-apis/issues/295)
+    pub use_block_timestamp_fallback: bool,
 }
 
 impl Default for EthereumSourceConfig {
@@ -452,6 +470,7 @@ impl Default for EthereumSourceConfig {
             rpc_endpoints: Vec::new(),
             get_logs_block_stride: infra_cfg.get_logs_block_stride,
             commit_after_blocks_scanned: infra_cfg.commit_after_blocks_scanned,
+            use_block_timestamp_fallback: infra_cfg.use_block_timestamp_fallback,
         }
     }
 }
@@ -466,6 +485,7 @@ impl EthereumSourceConfig {
                 .collect(),
             get_logs_block_stride: self.get_logs_block_stride,
             commit_after_blocks_scanned: self.commit_after_blocks_scanned,
+            use_block_timestamp_fallback: self.use_block_timestamp_fallback,
         }
     }
 }
