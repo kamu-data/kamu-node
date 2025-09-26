@@ -13,6 +13,15 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [Unreleased]
+### Changed
+- GQL: `MoleculeMut::create_project()`: use `U256` type for `ipnft_token_id`.
+- Collection API: Ignore noop changes in collection add/move
+- GQL: `Search::query()`: case insensitive search.
+- GQL: `MoleculeMut::create_project()`: generate lowercase project account name.
+### Fixed
+ - Investigation: potential unstable ordering of dataset entry listings
+
 ## [0.75.1] - 2025-09-25
 ### Fixed
 - Introduced `engine.datafusionEmbedded.useLegacyArrowBufferEncoding` option that makes embedded `datafusion` batch query engine use contiguous buffer encoding (e.g. `Utf8` instead of `Utf8View`) for compatibility with older FlightSQL clients.
