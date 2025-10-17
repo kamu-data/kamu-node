@@ -11,6 +11,7 @@ use std::future::{Future, IntoFuture as _};
 use std::path::PathBuf;
 use std::pin::Pin;
 
+use async_utils::BackgroundAgent;
 use internal_error::*;
 use kamu::domain::TenancyConfig;
 use kamu_accounts::CurrentAccountSubject;
@@ -113,17 +114,17 @@ impl Command for RunCommand {
             std::fs::write(e2e_output_data_path, e2e_file_content).unwrap();
         }
 
-        let task_agent = system_catalog
-            .get_one::<dyn kamu_task_system::TaskAgent>()
+        let background_agents = system_catalog
+            .get::<dill::AllOf<dyn BackgroundAgent>>()
             .unwrap();
 
-        let flow_agent = system_catalog
-            .get_one::<dyn kamu_flow_system::FlowAgent>()
-            .unwrap();
-
-        let outbox_agent = system_catalog
-            .get_one::<messaging_outbox::OutboxAgent>()
-            .unwrap();
+        // Ensure we have background agents registered
+        assert!(
+            !background_agents.is_empty(),
+            "No background agents found! This indicates a DI container configuration issue. Make \
+             sure all agent implementations are registered as both their specific trait (e.g., \
+             TaskAgent) AND as BackgroundAgent in the DI container."
+        );
 
         tracing::info!(
             http_endpoint = format!("http://{}", local_addr),
@@ -149,14 +150,48 @@ impl Command for RunCommand {
             .with_graceful_shutdown(shutdown_future)
             .into_future();
 
+        // Start all background agents as tasks
+        // Note: Background agents are designed to run forever in event loops.
+        // If any agent completes normally, it's considered an unexpected event
+        // that should trigger a server shutdown.
+        let agent_tasks: Vec<_> = background_agents
+            .into_iter()
+            .map(|agent| {
+                let agent_name = agent.agent_name().to_string();
+                tokio::spawn(async move {
+                    tracing::info!("Starting background agent: {}", agent_name);
+                    let result = agent.run().await;
+                    match &result {
+                        Err(error) => {
+                            tracing::error!("Background agent {} failed: {}", agent_name, error);
+                        }
+                        Ok(()) => {
+                            tracing::warn!(
+                                "Background agent {} completed unexpectedly! This will cause \
+                                 server shutdown.",
+                                agent_name
+                            );
+                        }
+                    }
+                    result
+                })
+            })
+            .collect();
+
         // TODO: PERF: Do we need to spawn these into separate tasks?
         if !self.read_only {
             tokio::select! {
                 res = http_server => { res.int_err() },
                 res = flightsql_server.run() => { res.int_err() },
-                res = task_agent.run() => { res.int_err() },
-                res = flow_agent.run() => { res.int_err() },
-                res = outbox_agent.run() => { res.int_err() },
+                res = async {
+                    let (result, _index, _remaining) = futures::future::select_all(agent_tasks).await;
+                    match result {
+                        Ok(agent_result) => agent_result,
+                        Err(join_error) => {
+                            Err(InternalError::new(format!("Background agent task panicked: {join_error}")))
+                        },
+                    }
+                } => { res }
             }
         } else {
             tokio::select! {

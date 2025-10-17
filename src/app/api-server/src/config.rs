@@ -888,6 +888,7 @@ pub struct EmailConfigPostmarkGateway {
 #[serde(rename_all = "camelCase")]
 pub struct FlowSystemConfig {
     pub flow_agent: Option<FlowAgentConfig>,
+    pub flow_system_event_agent: Option<FlowSystemEventAgentConfig>,
     pub task_agent: Option<TaskAgentConfig>,
 }
 
@@ -895,6 +896,7 @@ impl Default for FlowSystemConfig {
     fn default() -> Self {
         Self {
             flow_agent: Some(FlowAgentConfig::default()),
+            flow_system_event_agent: Some(FlowSystemEventAgentConfig::default()),
             task_agent: Some(TaskAgentConfig::default()),
         }
     }
@@ -967,6 +969,25 @@ impl Default for TaskAgentConfig {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct FlowSystemEventAgentConfig {
+    pub min_debounce_interval_ms: Option<u32>,
+    pub max_listening_timeout_ms: Option<u32>,
+    pub batch_size: Option<usize>,
+}
+
+impl Default for FlowSystemEventAgentConfig {
+    fn default() -> Self {
+        Self {
+            min_debounce_interval_ms: Some(100),
+            max_listening_timeout_ms: Some(60000),
+            batch_size: Some(100),
+        }
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Webhooks
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -976,12 +997,14 @@ impl Default for TaskAgentConfig {
 #[serde(rename_all = "camelCase")]
 pub struct WebhooksConfig {
     pub max_consecutive_failures: Option<u32>,
+    pub delivery_timeout_secs: Option<u32>,
 }
 
 impl Default for WebhooksConfig {
     fn default() -> Self {
         Self {
-            max_consecutive_failures: Some(5),
+            max_consecutive_failures: Some(kamu_webhooks::DEFAULT_MAX_WEBHOOK_CONSECUTIVE_FAILURES),
+            delivery_timeout_secs: Some(kamu_webhooks::DEFAULT_WEBHOOK_DELIVERY_TIMEOUT),
         }
     }
 }

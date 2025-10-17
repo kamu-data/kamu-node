@@ -48,9 +48,9 @@ use kamu_datasets::{DatasetEntry, DatasetEntryRepository};
 use kamu_datasets_inmem::InMemoryDatasetEntryRepository;
 use kamu_datasets_services::DatasetEntryServiceImpl;
 use kamu_flow_system::*;
-use kamu_flow_system_inmem::InMemoryFlowEventStore;
+use kamu_flow_system_inmem::{InMemoryFlowEventStore, InMemoryFlowSystemEventBridge};
 use kamu_flow_system_services::FlowQueryServiceImpl;
-use kamu_task_system::{TaskError, TaskID, TaskOutcome, TaskResult};
+use kamu_task_system::{TaskError, TaskID, TaskOutcome};
 use messaging_outbox::{Outbox, OutboxExt, OutboxImmediateImpl, register_message_dispatcher};
 use odf::DatasetID;
 use odf::dataset::DatasetStorageUnitLocalFs;
@@ -90,22 +90,6 @@ async fn test_failed_flow_sends_email() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#[test_log::test(tokio::test)]
-async fn test_success_flow_gives_no_emails() {
-    let harness = FlowProgressNotifierHarness::new().await;
-
-    let dataset_id = odf::DatasetID::new_seeded_ed25519(b"test-dataset");
-    let dataset_name = odf::DatasetName::new_unchecked("test-dataset");
-
-    harness.make_dataset(&dataset_id, &dataset_name).await;
-    harness.send_flow_success(&dataset_id).await;
-
-    let emails = harness.fake_email_sender.get_recorded_emails();
-    assert_eq!(emails.len(), 0);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 struct FlowProgressNotifierHarness {
     _tempdir: TempDir,
     catalog: Catalog,
@@ -132,6 +116,7 @@ impl FlowProgressNotifierHarness {
             // TODO: use mocks to avoid this boilerplate, but it's waiting for kamu-cli#1010
             .add::<FlowQueryServiceImpl>()
             .add::<InMemoryFlowEventStore>()
+            .add::<InMemoryFlowSystemEventBridge>()
             .add::<DatasetEntryServiceImpl>()
             .add::<InMemoryDatasetEntryRepository>()
             .add::<DidGeneratorDefault>()
@@ -164,9 +149,9 @@ impl FlowProgressNotifierHarness {
 
         NoOpDatabasePlugin::init_database_components(&mut b);
 
-        register_message_dispatcher::<FlowProgressMessage>(
+        register_message_dispatcher::<FlowProcessLifecycleMessage>(
             &mut b,
-            MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
+            MESSAGE_PRODUCER_KAMU_FLOW_PROCESS_STATE_PROJECTOR,
         );
 
         let catalog = b.build();
@@ -203,34 +188,6 @@ impl FlowProgressNotifierHarness {
             .unwrap();
     }
 
-    async fn send_flow_success(&self, dataset_id: &DatasetID) {
-        let flow_event_store = self.catalog.get_one::<dyn FlowEventStore>().unwrap();
-        let flow_id = flow_event_store.new_flow_id().await.unwrap();
-
-        let (mut flow, task_id) = self.create_and_prepare_flow(dataset_id, flow_id);
-
-        flow.on_task_finished(
-            Utc::now(),
-            task_id,
-            TaskOutcome::Success(TaskResult::empty()),
-        )
-        .unwrap();
-
-        flow.save(flow_event_store.as_ref()).await.unwrap();
-
-        self.outbox
-            .post_message(
-                MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
-                FlowProgressMessage::finished(
-                    Utc::now(),
-                    flow.flow_id,
-                    FlowOutcome::Success(TaskResult::empty()),
-                ),
-            )
-            .await
-            .unwrap();
-    }
-
     async fn send_flow_failed(&self, dataset_id: &DatasetID) {
         let flow_event_store = self.catalog.get_one::<dyn FlowEventStore>().unwrap();
         let flow_id = flow_event_store.new_flow_id().await.unwrap();
@@ -248,8 +205,14 @@ impl FlowProgressNotifierHarness {
 
         self.outbox
             .post_message(
-                MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
-                FlowProgressMessage::finished(Utc::now(), flow.flow_id, FlowOutcome::Failed),
+                MESSAGE_PRODUCER_KAMU_FLOW_PROCESS_STATE_PROJECTOR,
+                FlowProcessLifecycleMessage::failure_registered(
+                    Utc::now(),
+                    flow.flow_binding.clone(),
+                    flow.flow_id,
+                    TaskError::empty_recoverable(),
+                    1,
+                ),
             )
             .await
             .unwrap();
