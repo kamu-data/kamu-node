@@ -13,6 +13,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.76.2] - 2025-10-20
+### Added
+- New `secretEncryptionKey` value to config to store encrypted webhook subscription secrets
+
 ## [0.76.1] - 2025-10-20
 Hotfixes in [kamu `0.251.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.251.1)
 
