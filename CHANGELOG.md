@@ -13,6 +13,9 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.76.1] - 2025-10-20
+Hotfixes in [kamu `0.251.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.251.1)
+
 ## [0.76.0] - 2025-10-16
 Upgraded to [kamu `0.251.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.251.0)
 ### Added
