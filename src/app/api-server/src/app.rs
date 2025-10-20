@@ -489,10 +489,35 @@ pub async fn init_dependencies(
             "Webhooks delivery_timeout_secs must be > 0"
         );
 
+        match webhooks_config.secret_encryption_key.as_ref() {
+            None => match &webhooks_config.secret_encryption_enabled.as_ref() {
+                None => {
+                    warn!(
+                        "Webhook encryption configuration is missing. Secrets will not be \
+                         encrypted"
+                    );
+                }
+                Some(true) => panic!("Webhook secrets encryption key is required"),
+                _ => {}
+            },
+            Some(encryption_key) => {
+                if let Some(enabled) = &webhooks_config.secret_encryption_enabled
+                    && !enabled
+                {
+                    warn!("Webhook encryption will be disabled");
+                } else {
+                    assert!(
+                        AesGcmEncryptor::try_new(encryption_key).is_ok(),
+                        "Invalid webhook secrets encryption key",
+                    );
+                }
+            }
+        }
+
         b.add_value(kamu_webhooks::WebhooksConfig::new(
             max_consecutive_failures,
-            chrono::Duration::seconds(i64::from(delivery_timeout_secs)),
-            None,
+            Duration::seconds(i64::from(delivery_timeout_secs)),
+            webhooks_config.secret_encryption_key,
         ));
     }
 
