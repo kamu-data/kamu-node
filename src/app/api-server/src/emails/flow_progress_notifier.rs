@@ -217,6 +217,7 @@ impl FlowProgressNotifier {
             kamu_fs::FlowActivationCause::AutoPolling(_) => "Automatic",
             kamu_fs::FlowActivationCause::Manual(_) => "Manual",
             kamu_fs::FlowActivationCause::ResourceUpdate(_) => "Input Resource Updated",
+            kamu_fs::FlowActivationCause::IterationFinished(_) => "Source has more data",
         }
     }
 

@@ -13,6 +13,12 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.76.3] - 2025-10-28
+### Changed
+- Ingest flow changes from [kamu `0.251.3`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.251.3)
+### Fixed
+- Fixes from [kamu `0.251.2`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.251.2)
+
 ## [0.76.2] - 2025-10-20
 ### Added
 - New `secretEncryptionKey` value to config to store encrypted webhook subscription secrets

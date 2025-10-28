@@ -621,11 +621,12 @@ impl FlightSqlConfig {
 // Database
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "provider")]
 pub enum DatabaseConfig {
+    #[default]
     InMemory,
     Sqlite(SqliteDatabaseConfig),
     Postgres(RemoteDatabaseConfig),
@@ -636,12 +637,6 @@ pub enum DatabaseConfig {
 impl DatabaseConfig {
     pub fn needs_database(&self) -> bool {
         !matches!(self, DatabaseConfig::InMemory)
-    }
-}
-
-impl Default for DatabaseConfig {
-    fn default() -> Self {
-        Self::InMemory
     }
 }
 
@@ -859,19 +854,14 @@ pub struct EmailConfig {
     pub gateway: EmailConfigGateway,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "kind")]
 pub enum EmailConfigGateway {
+    #[default]
     Dummy,
     Postmark(EmailConfigPostmarkGateway),
-}
-
-impl Default for EmailConfigGateway {
-    fn default() -> Self {
-        Self::Dummy
-    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
