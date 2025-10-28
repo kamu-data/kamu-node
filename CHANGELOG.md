@@ -13,14 +13,23 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.76.3] - 2025-10-28
+### Upstream
+- Fixes from [kamu `0.251.2`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.251.2)
+- Ingest flow changes from [kamu `0.251.3`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.251.3)
+### Changed
+- Upgraded Rust toolchain to the latest version
+
 ## [0.76.2] - 2025-10-20
 ### Added
 - New `secretEncryptionKey` value to config to store encrypted webhook subscription secrets
 
 ## [0.76.1] - 2025-10-20
+### Upstream
 Hotfixes in [kamu `0.251.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.251.1)
 
 ## [0.76.0] - 2025-10-16
+### Upstream
 Upgraded to [kamu `0.251.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.251.0)
 ### Added
 - Flow process state projection model and GQL API (individual flow badges, dashboard cards):
