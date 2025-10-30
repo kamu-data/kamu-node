@@ -13,6 +13,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.77.1] - 2025-10-30
+### Upstream
+- Hotfix from [kamu `0.252.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.252.1)
+
 ## [0.77.0] - 2025-10-30
 ### Upstream
 - Metadata blocks about data (`AddData`, `ExecuteTransform`) are now indexed in the database
