@@ -333,6 +333,7 @@ pub struct RepoConfig {
     #[serde(deserialize_with = "parse_repo_url_opt", default)]
     pub repo_url: Option<Url>,
     pub caching: RepoCachingConfig,
+    pub data_blocks_page_size: Option<usize>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]

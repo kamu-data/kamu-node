@@ -134,6 +134,7 @@ impl KamuNodePuppet {
         I: IntoIterator<Item = S>,
         S: AsRef<ffi::OsStr>,
     {
+        #[allow(deprecated)]
         let mut command = assert_cmd::Command::cargo_bin("kamu-api-server").unwrap();
 
         if let Some(env_vars) = maybe_env {

@@ -13,6 +13,13 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.77.0] - 2025-10-30
+### Upstream
+- Metadata blocks about data (`AddData`, `ExecuteTransform`) are now indexed in the database
+  [kamu `0.252.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.252.0)
+### Fixed
+- Log warning instead of error for flow_trigger_event loading if record not found
+
 ## [0.76.3] - 2025-10-28
 ### Upstream
 - Fixes from [kamu `0.251.2`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.251.2)

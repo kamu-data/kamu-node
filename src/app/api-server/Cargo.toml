@@ -134,7 +134,7 @@ reqwest = { version = "0.12", default-features = false, features = [
 rustls = { version = "0.23", default-features = false, features = [
     "aws-lc-rs",
 ] }
-rumqttc = { optional = true, version = "0.24", default-features = false, features = [
+rumqttc = { optional = true, version = "0.25", default-features = false, features = [
     "use-rustls",
 ] }
 sqlx = { version = "0.8", default-features = false, features = [

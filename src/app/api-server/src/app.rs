@@ -841,6 +841,17 @@ async fn configure_repository(
     config: &config::RepoConfig,
     s3_metrics: &Arc<S3Metrics>,
 ) {
+    b.add_value(
+        config
+            .data_blocks_page_size
+            .map(
+                |data_blocks_page_size| kamu_datasets_services::MetadataChainDbBackedConfig {
+                    data_blocks_page_size,
+                },
+            )
+            .unwrap_or_default(),
+    );
+
     match repo_url.scheme() {
         "file" => {
             use odf::dataset::DatasetStorageUnitLocalFs;
@@ -862,6 +873,9 @@ async fn configure_repository(
             if config.caching.registry_cache_enabled {
                 b.add::<odf::dataset::S3RegistryCache>();
             }
+
+            // TODO: consider removing this local FS cache completely,
+            // as metadata is now cached in the database layer.
 
             let metadata_cache_local_fs_path = config
                 .caching
