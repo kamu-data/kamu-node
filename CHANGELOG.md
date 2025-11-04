@@ -13,6 +13,15 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.77.2] - 2025-11-04
+### Upstream
+- Dataset increment now stored in flow task result to increase flow loading performance
+### Fixed
+- Executing init script for predefined accounts in parallel. Solves a noticeable slowdown 
+   of CLI commands in multi-tenant workspaces
+- Fixed S3 bucket listing issue when the number of child objects exceeds 1,000 records.   
+- GQL: Performance: first introduction of data loaders for accounts and datasets.
+
 ## [0.77.1] - 2025-10-30
 ### Upstream
 - Hotfix from [kamu `0.252.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.252.1)
