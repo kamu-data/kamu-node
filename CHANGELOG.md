@@ -13,7 +13,7 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## [Unreleased]
+## [Molecule-specific]
 ### Changed
 - GQL: `MoleculeMut::create_project()`: use `U256` type for `ipnft_token_id`.
 - Collection API: Ignore noop changes in collection add/move
@@ -21,6 +21,81 @@ Recommendation: for ease of reading, use the following order:
 - GQL: `MoleculeMut::create_project()`: generate lowercase project account name.
 ### Fixed
  - Investigation: potential unstable ordering of dataset entry listings
+
+## [0.77.2] - 2025-11-04
+### Upstream
+- Dataset increment now stored in flow task result to increase flow loading performance
+### Fixed
+- Executing init script for predefined accounts in parallel. Solves a noticeable slowdown 
+   of CLI commands in multi-tenant workspaces
+- Fixed S3 bucket listing issue when the number of child objects exceeds 1,000 records.   
+- GQL: Performance: first introduction of data loaders for accounts and datasets.
+
+## [0.77.1] - 2025-10-30
+### Upstream
+- Hotfix from [kamu `0.252.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.252.1)
+
+## [0.77.0] - 2025-10-30
+### Upstream
+- Metadata blocks about data (`AddData`, `ExecuteTransform`) are now indexed in the database
+  [kamu `0.252.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.252.0)
+### Fixed
+- Log warning instead of error for flow_trigger_event loading if record not found
+
+## [0.76.3] - 2025-10-28
+### Upstream
+- Fixes from [kamu `0.251.2`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.251.2)
+- Ingest flow changes from [kamu `0.251.3`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.251.3)
+### Changed
+- Upgraded Rust toolchain to the latest version
+
+## [0.76.2] - 2025-10-20
+### Added
+- New `secretEncryptionKey` value to config to store encrypted webhook subscription secrets
+
+## [0.76.1] - 2025-10-20
+### Upstream
+Hotfixes in [kamu `0.251.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.251.1)
+
+## [0.76.0] - 2025-10-16
+### Upstream
+Upgraded to [kamu `0.251.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.251.0)
+### Added
+- Flow process state projection model and GQL API (individual flow badges, dashboard cards):
+   - Flow process is a sequence of flow runs, and it's state is automatically projected
+   - Flow badges are statuses of flow processes (primary process + associated webhook channels)
+   - Flow dashboards are sortable and filterable card lists with pagination support
+       that represent multiple automated flow runs and facilitate
+       effective monitoring and triaging activities for the platform
+   - Unaffected with manual launches, only represent automated processes
+   - Higher level integration events model, which replaces `FlowProgressMessage`:
+      - Notify about detected flow failure
+      - Notify about change of flow process effective state
+      - Notify separately about automatic stops (too high failure rate or unrecoverable error)
+   - Projection decides on auto-stopping triggers and whether to schedule next periodic flows
+   - Flow agent only invokes success propagation on task completion, and does not interfeer with scheduling logic.
+   - Introduced `FlowEventCompleted` event that wraps the flow, and transports outcome + late activation causes
+- Internal event-sourcing projection mechanism within the flow system:
+   - Follows changes of 3 original event streams (flow configs, triggers, and runs)
+   - Shared event identifiers between events of the source streams
+   - Union-based view of merged flow stream (without physical copying)
+   - Synchronizes projections based on the merged event stream
+   - Postgres:
+      - guaranteeing proper event ordering via transaction identifiers tracking
+      - utilized LISTEN/NOTIFY mechanism to propagate changes
+   - Sqlite: incremental listening timeout approach, no risk of event ordering issues
+   - In-memory: using broadcast signals to notify about new events
+   - Flow agent tests are now based on the similar projection mechanism instead of query snapshots
+- Introduced abstraction for background agents: API server creates a collection of Tokio tasks
+    instead of directly listing particular agents.
+- Introduced automated outbox wiping procedure in Postgres   
+### Changed
+- Optimized database indices after large flow system refactoring
+- Removed obsolete "allPaused" operation from triggers at dataset level
+- Tests: refactoring - extracted common GQL harnesses for all flow tests
+### Fixed    
+- SQLX: avoid using untyped row interfaces like sqlx::Row|SqliteRow|PgRow
+
 
 ## [0.75.1] - 2025-09-25
 ### Fixed

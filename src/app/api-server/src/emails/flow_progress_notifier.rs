@@ -45,11 +45,11 @@ pub struct FlowProgressNotifier {
 
 #[component(pub)]
 #[interface(dyn MessageConsumer)]
-#[interface(dyn MessageConsumerT<kamu_fs::FlowProgressMessage>)]
+#[interface(dyn MessageConsumerT<kamu_fs::FlowProcessLifecycleMessage>)]
 #[meta(MessageConsumerMeta {
     consumer_name: MESSAGE_CONSUMER_KAMU_API_SERVER_FLOW_PROGRESS_NOTIFIER,
     feeding_producers: &[
-        kamu_flow_system::MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
+        kamu_flow_system::MESSAGE_PRODUCER_KAMU_FLOW_PROCESS_STATE_PROJECTOR,
     ],
     delivery: MessageDeliveryMechanism::Transactional,
     initial_consumer_boundary: InitialConsumerBoundary::Latest,
@@ -217,6 +217,7 @@ impl FlowProgressNotifier {
             kamu_fs::FlowActivationCause::AutoPolling(_) => "Automatic",
             kamu_fs::FlowActivationCause::Manual(_) => "Manual",
             kamu_fs::FlowActivationCause::ResourceUpdate(_) => "Input Resource Updated",
+            kamu_fs::FlowActivationCause::IterationFinished(_) => "Source has more data",
         }
     }
 
@@ -266,27 +267,25 @@ impl MessageConsumer for FlowProgressNotifier {}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[async_trait::async_trait]
-impl MessageConsumerT<kamu_fs::FlowProgressMessage> for FlowProgressNotifier {
+impl MessageConsumerT<kamu_fs::FlowProcessLifecycleMessage> for FlowProgressNotifier {
     #[tracing::instrument(
         level = "debug",
         skip_all,
-        name = "FlowProgressNotifier[FlowProgressMessage]"
+        name = "FlowProgressNotifier[FlowProcessLifecycleMessage]"
     )]
     async fn consume_message(
         &self,
         _: &Catalog,
-        message: &kamu_fs::FlowProgressMessage,
+        message: &kamu_fs::FlowProcessLifecycleMessage,
     ) -> Result<(), InternalError> {
         tracing::debug!(received_message = ?message, "Received flow progress message");
         match message {
-            kamu_fs::FlowProgressMessage::Finished(finished) => match &finished.outcome {
-                kamu_fs::FlowOutcome::Failed => self.notify_flow_failed(finished.flow_id).await,
-                kamu_fs::FlowOutcome::Aborted | kamu_fs::FlowOutcome::Success(_) => Ok(()),
-            },
-            kamu_fs::FlowProgressMessage::Cancelled(_)
-            | kamu_fs::FlowProgressMessage::Running(_)
-            | kamu_fs::FlowProgressMessage::RetryScheduled(_)
-            | kamu_fs::FlowProgressMessage::Scheduled(_) => Ok(()),
+            kamu_fs::FlowProcessLifecycleMessage::FailureRegistered(failed) => {
+                self.notify_flow_failed(failed.flow_id).await
+            }
+
+            kamu_fs::FlowProcessLifecycleMessage::EffectiveStateChanged(_)
+            | kamu_fs::FlowProcessLifecycleMessage::TriggerAutoStopped(_) => Ok(()),
         }
     }
 }

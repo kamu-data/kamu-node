@@ -193,7 +193,7 @@ where
         let transaction_runner = database_common::DatabaseTransactionRunner::new(catalog);
 
         transaction_runner
-            .transactional(|transactional_catalog| async move { f(transactional_catalog).await })
+            .transactional(|transaction_catalog| async move { f(transaction_catalog).await })
             .await
     }
 }
@@ -411,7 +411,7 @@ pub async fn init_dependencies(
     b.add::<messaging_outbox::OutboxTransactionalImpl>();
     b.add::<messaging_outbox::OutboxDispatchingImpl>();
     b.bind::<dyn messaging_outbox::Outbox, messaging_outbox::OutboxDispatchingImpl>();
-    b.add::<messaging_outbox::OutboxAgent>();
+    b.add::<messaging_outbox::OutboxAgentImpl>();
     b.add::<messaging_outbox::OutboxAgentMetrics>();
 
     messaging_outbox::register_message_dispatcher::<kamu_datasets::DatasetLifecycleMessage>(
@@ -440,9 +440,9 @@ pub async fn init_dependencies(
         &mut b,
         kamu_flow_system::MESSAGE_PRODUCER_KAMU_FLOW_TRIGGER_SERVICE,
     );
-    messaging_outbox::register_message_dispatcher::<kamu_flow_system::FlowProgressMessage>(
+    messaging_outbox::register_message_dispatcher::<kamu_flow_system::FlowProcessLifecycleMessage>(
         &mut b,
-        kamu_flow_system::MESSAGE_PRODUCER_KAMU_FLOW_PROGRESS_SERVICE,
+        kamu_flow_system::MESSAGE_PRODUCER_KAMU_FLOW_PROCESS_STATE_PROJECTOR,
     );
     messaging_outbox::register_message_dispatcher::<kamu_accounts::AccessTokenLifecycleMessage>(
         &mut b,
@@ -482,7 +482,43 @@ pub async fn init_dependencies(
             max_consecutive_failures > 0,
             "Webhooks max_consecutive_failures must be > 0"
         );
-        b.add_value(kamu_webhooks::WebhooksConfig::new(max_consecutive_failures));
+
+        let delivery_timeout_secs = webhooks_config.delivery_timeout_secs.unwrap();
+        assert!(
+            delivery_timeout_secs > 0,
+            "Webhooks delivery_timeout_secs must be > 0"
+        );
+
+        match webhooks_config.secret_encryption_key.as_ref() {
+            None => match &webhooks_config.secret_encryption_enabled.as_ref() {
+                None => {
+                    warn!(
+                        "Webhook encryption configuration is missing. Secrets will not be \
+                         encrypted"
+                    );
+                }
+                Some(true) => panic!("Webhook secrets encryption key is required"),
+                _ => {}
+            },
+            Some(encryption_key) => {
+                if let Some(enabled) = &webhooks_config.secret_encryption_enabled
+                    && !enabled
+                {
+                    warn!("Webhook encryption will be disabled");
+                } else {
+                    assert!(
+                        AesGcmEncryptor::try_new(encryption_key).is_ok(),
+                        "Invalid webhook secrets encryption key",
+                    );
+                }
+            }
+        }
+
+        b.add_value(kamu_webhooks::WebhooksConfig::new(
+            max_consecutive_failures,
+            Duration::seconds(i64::from(delivery_timeout_secs)),
+            webhooks_config.secret_encryption_key,
+        ));
     }
 
     let task_agent_config = config.flow_system.task_agent.unwrap();
@@ -490,6 +526,21 @@ pub async fn init_dependencies(
         task_agent_config.task_checking_interval_secs.unwrap(),
     )));
     kamu_task_system_services::register_dependencies(&mut b);
+
+    let flow_system_event_agent_config = config.flow_system.flow_system_event_agent.unwrap();
+    b.add_value(kamu_flow_system::FlowSystemEventAgentConfig {
+        min_debounce_interval: std::time::Duration::from_millis(u64::from(
+            flow_system_event_agent_config
+                .min_debounce_interval_ms
+                .unwrap(),
+        )),
+        max_listening_timeout: std::time::Duration::from_millis(u64::from(
+            flow_system_event_agent_config
+                .max_listening_timeout_ms
+                .unwrap(),
+        )),
+        batch_size: flow_system_event_agent_config.batch_size.unwrap(),
+    });
 
     let flow_agent_config = config.flow_system.flow_agent.unwrap();
     b.add_value(kamu_flow_system::FlowAgentConfig::new(
@@ -790,6 +841,17 @@ async fn configure_repository(
     config: &config::RepoConfig,
     s3_metrics: &Arc<S3Metrics>,
 ) {
+    b.add_value(
+        config
+            .data_blocks_page_size
+            .map(
+                |data_blocks_page_size| kamu_datasets_services::MetadataChainDbBackedConfig {
+                    data_blocks_page_size,
+                },
+            )
+            .unwrap_or_default(),
+    );
+
     match repo_url.scheme() {
         "file" => {
             use odf::dataset::DatasetStorageUnitLocalFs;
@@ -811,6 +873,9 @@ async fn configure_repository(
             if config.caching.registry_cache_enabled {
                 b.add::<odf::dataset::S3RegistryCache>();
             }
+
+            // TODO: consider removing this local FS cache completely,
+            // as metadata is now cached in the database layer.
 
             let metadata_cache_local_fs_path = config
                 .caching

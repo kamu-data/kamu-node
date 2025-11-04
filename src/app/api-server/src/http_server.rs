@@ -15,6 +15,7 @@ use database_common_macros::transactional_handler;
 use http_common::ApiError;
 use internal_error::{InternalError, ResultIntoInternal};
 use kamu::domain::TenancyConfig;
+use kamu_adapter_graphql::data_loader::{account_entity_data_loader, dataset_handle_data_loader};
 use kamu_adapter_http::DatasetAuthorizationLayer;
 use observability::axum::{panic_handler, unknown_fallback_handler};
 use tokio::net::TcpListener;
@@ -46,11 +47,16 @@ pub async fn build_server(
     ),
     InternalError,
 > {
-    let gql_schema = kamu_adapter_graphql::schema();
-
     let addr = SocketAddr::from((address, e2e_http_port.or(http_port).unwrap_or(0)));
     let listener = TcpListener::bind(addr).await.int_err()?;
     let local_addr = listener.local_addr().unwrap();
+
+    let graphql_router = OpenApiRouter::new()
+        .route("/graphql", axum::routing::post(graphql_handler))
+        .layer(graphql_http::middleware::GraphqlTracingLayer::new(
+            kamu_adapter_graphql::schema(),
+            kamu_adapter_graphql::schema_quiet(),
+        ));
 
     let mut open_api_router = OpenApiRouter::with_openapi(
         kamu_adapter_http::openapi::spec_builder(
@@ -80,10 +86,7 @@ pub async fn build_server(
         )
         .build(),
     )
-    .route(
-        "/graphql",
-        axum::routing::post(graphql_handler),
-    )
+    .merge(graphql_router)
     .merge(server_console::router("Kamu API Server".to_string(), format!("v{}", crate::app::VERSION)).into())
     .merge(kamu_adapter_http::data::root_router())
     .merge(kamu_adapter_http::general::root_router())
@@ -143,7 +146,6 @@ pub async fn build_server(
         )
         .merge(kamu_adapter_http::openapi::router().into())
         .fallback(unknown_fallback_handler)
-        .layer(axum::extract::Extension(gql_schema))
         .layer(axum::extract::Extension(catalog))
         .layer(axum::extract::Extension(ui_config))
         .split_for_parts();
@@ -185,7 +187,11 @@ async fn graphql_handler(
     axum::extract::Extension(catalog): axum::extract::Extension<dill::Catalog>,
     req: async_graphql_axum::GraphQLRequest,
 ) -> Result<async_graphql_axum::GraphQLResponse, ApiError> {
-    let graphql_request = req.into_inner().data(catalog);
+    let graphql_request = req
+        .into_inner()
+        .data(account_entity_data_loader(&catalog))
+        .data(dataset_handle_data_loader(&catalog))
+        .data(catalog);
     let graphql_response = schema.execute(graphql_request).await.into();
 
     Ok(graphql_response)

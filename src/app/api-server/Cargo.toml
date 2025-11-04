@@ -33,6 +33,7 @@ query-extensions-json = ["kamu/query-extensions-json"]
 [dependencies]
 dill = { version = "0.14", default-features = false }
 
+async-utils = { workspace = true }
 container-runtime = { workspace = true }
 crypto-utils = { workspace = true }
 database-common = { workspace = true }
@@ -40,6 +41,7 @@ database-common-macros = { workspace = true }
 email-utils = { workspace = true }
 email-gateway = { workspace = true }
 graceful-shutdown = { workspace = true }
+graphql-http = { workspace = true }
 http-common = { workspace = true }
 init-on-startup = { workspace = true }
 internal-error = { workspace = true }
@@ -132,7 +134,7 @@ reqwest = { version = "0.12", default-features = false, features = [
 rustls = { version = "0.23", default-features = false, features = [
     "aws-lc-rs",
 ] }
-rumqttc = { optional = true, version = "0.24", default-features = false, features = [
+rumqttc = { optional = true, version = "0.25", default-features = false, features = [
     "use-rustls",
 ] }
 sqlx = { version = "0.8", default-features = false, features = [

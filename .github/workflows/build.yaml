@@ -55,7 +55,7 @@ jobs:
       KAMU_CONTRACTS_DIR: ../../../kamu-contracts
     services:
       postgres:
-        image: 'postgres:16'
+        image: 'postgres:18'
         env:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: root

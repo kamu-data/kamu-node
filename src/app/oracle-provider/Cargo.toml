@@ -56,7 +56,7 @@ clap = { version = "4", default-features = false, features = [
     "wrap_help",
 ] }
 ciborium = { version = "0.2", default-features = false }
-confique = { version = "0.3", default-features = false, features = ["yaml"] }
+confique = { version = "0.4", default-features = false, features = ["yaml"] }
 dill = { version = "0.14", default-features = false }
 duration-string = { version = "0.5", default-features = false, features = [
     "serde",
