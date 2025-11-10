@@ -62,7 +62,7 @@ pub async fn test_flight_sql_anonymous(mut kamu_flight_sql_client: KamuFlightSQL
                 "
         message arrow_schema {
           REQUIRED INT32 op;
-          OPTIONAL INT64 match_time (TIMESTAMP(MILLIS,true));
+          REQUIRED INT64 match_time (TIMESTAMP(MILLIS,true));
           OPTIONAL INT64 match_id;
           OPTIONAL BYTE_ARRAY player_id (STRING);
           OPTIONAL INT64 score;
@@ -106,7 +106,7 @@ pub async fn test_flight_sql(mut kamu_flight_sql_client: KamuFlightSQLClient) {
                 "
         message arrow_schema {
           REQUIRED INT32 op;
-          OPTIONAL INT64 match_time (TIMESTAMP(MILLIS,true));
+          REQUIRED INT64 match_time (TIMESTAMP(MILLIS,true));
           OPTIONAL INT64 match_id;
           OPTIONAL BYTE_ARRAY player_id (STRING);
           OPTIONAL INT64 score;

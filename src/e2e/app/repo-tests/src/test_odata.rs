@@ -76,7 +76,7 @@ pub async fn test_odata_metadata_handler(mut kamu_api_server_client: KamuApiServ
         <Property Name="offset" Type="Edm.Int64" Nullable="false"/>
         <Property Name="op" Type="Edm.Int32" Nullable="false"/>
         <Property Name="system_time" Type="Edm.DateTimeOffset" Nullable="false"/>
-        <Property Name="match_time" Type="Edm.DateTimeOffset" Nullable="true"/>
+        <Property Name="match_time" Type="Edm.DateTimeOffset" Nullable="false"/>
         <Property Name="match_id" Type="Edm.Int64" Nullable="true"/>
         <Property Name="player_id" Type="Edm.String" Nullable="true"/>
         <Property Name="score" Type="Edm.Int64" Nullable="true"/>
@@ -115,7 +115,7 @@ pub async fn test_odata_metadata_handler(mut kamu_api_server_client: KamuApiServ
             <Property Name="offset" Type="Edm.Int64" Nullable="false"/>
             <Property Name="op" Type="Edm.Int32" Nullable="false"/>
             <Property Name="system_time" Type="Edm.DateTimeOffset" Nullable="false"/>
-            <Property Name="match_time" Type="Edm.DateTimeOffset" Nullable="true"/>
+            <Property Name="match_time" Type="Edm.DateTimeOffset" Nullable="false"/>
             <Property Name="match_id" Type="Edm.Int64" Nullable="true"/>
             <Property Name="player_id" Type="Edm.String" Nullable="true"/>
             <Property Name="score" Type="Edm.Int64" Nullable="true"/>
