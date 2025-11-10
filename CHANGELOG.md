@@ -13,6 +13,15 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.77.3] - 2025-11-10
+### Upstream
+- Refactor: replaced delete_account_by_name() with delete_account_by_id() across repositories and services (#1442).
+Work with account and dataset names is fully case-insensitive, as required by ODF specification (#1442).
+- Improved handling of nullable / optional data types:
+    - Ingest merge strategies now preserve the optionality of columns
+    - Data writer will attempt to coerce column optionality, returning errors if input data contains nulls in a required field
+- Login method returns invalid credential error when login is invalid account name.
+
 ## [0.77.2] - 2025-11-04
 ### Upstream
 - Dataset increment now stored in flow task result to increase flow loading performance
