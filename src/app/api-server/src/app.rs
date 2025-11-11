@@ -392,6 +392,8 @@ pub async fn init_dependencies(
     b.add::<kamu::SetWatermarkExecutorImpl>();
     b.add::<kamu::MetadataQueryServiceImpl>();
     b.add::<kamu::QueryServiceImpl>();
+    b.add::<kamu::SchemaServiceImpl>();
+    b.add::<kamu::SessionContextBuilder>();
     b.add::<kamu::ResetPlannerImpl>();
     b.add::<kamu::ResetExecutorImpl>();
     b.add::<kamu::RemoteStatusServiceImpl>();
@@ -403,6 +405,8 @@ pub async fn init_dependencies(
     b.add::<kamu::ResetDatasetUseCaseImpl>();
     b.add::<kamu::SetWatermarkUseCaseImpl>();
     b.add::<kamu::VerifyDatasetUseCaseImpl>();
+    b.add::<kamu::GetDatasetSchemaUseCaseImpl>();
+    b.add::<kamu::QueryDatasetDataUseCaseImpl>();
 
     b.add_builder(
         messaging_outbox::OutboxImmediateImpl::builder()
