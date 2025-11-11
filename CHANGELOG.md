@@ -22,8 +22,17 @@ Recommendation: for ease of reading, use the following order:
 ### Fixed
  - Investigation: potential unstable ordering of dataset entry listings
  
+## [0.77.4] - 2025-11-11
+### Upstream [kamu `0.252.4`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.252.4)
+- Refactor: QueryService was split on 3 parts (queries, schema, and session context builder)
+2 extracted use cases (get schema and query data), clearly separating security checks from core operations
+- Concurrent execution for OSO checks and related resource loads when N datasets are requested simultaneously
+- KamuSchema: try reusing pre-resolved dataset, if hint is externally provided
+- Improved telemetry for entity loaders and spawned load tasks
+- Dataset statistics is now processed correctly without cached metadata
+
 ## [0.77.3] - 2025-11-10
-### Upstream
+### Upstream [kamu `0.252.3`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.252.3)
 - Refactor: replaced delete_account_by_name() with delete_account_by_id() across repositories and services (#1442).
 Work with account and dataset names is fully case-insensitive, as required by ODF specification (#1442).
 - Improved handling of nullable / optional data types:
@@ -32,7 +41,7 @@ Work with account and dataset names is fully case-insensitive, as required by OD
 - Login method returns invalid credential error when login is invalid account name.
 
 ## [0.77.2] - 2025-11-04
-### Upstream
+### Upstream [kamu `0.252.2`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.252.2)
 - Dataset increment now stored in flow task result to increase flow loading performance
 ### Fixed
 - Executing init script for predefined accounts in parallel. Solves a noticeable slowdown 
