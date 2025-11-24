@@ -58,9 +58,13 @@ type Account {
 	"""
 	flows: AccountFlows!
 	"""
-	Access to the flow configurations of this account
+	Access to the access token management
 	"""
 	accessTokens: AccountAccessTokens!
+	"""
+	Access to account usage statistic
+	"""
+	usage: AccountUsage!
 	"""
 	Returns datasets belonging to this account
 	"""
@@ -110,7 +114,7 @@ type AccountFieldNonUnique implements CreateAccountResult {
 }
 
 input AccountFlowFilters {
-	byStatus: FlowStatus
+	byStatus: [FlowStatus!]
 	byInitiator: InitiatorFilterInput
 	byDatasetIds: [DatasetID!]!
 	byProcessType: FlowProcessTypeFilterInput
@@ -237,6 +241,10 @@ enum AccountProvider {
 enum AccountType {
 	USER
 	ORGANIZATION
+}
+
+type AccountUsage {
+	storage: TotalDatasetsStatistic!
 }
 
 type AccountWithRole {
@@ -1195,7 +1203,19 @@ type DatasetData {
 	An estimated size of data on disk not accounting for replication or
 	caching
 	"""
-	estimatedSize: Int!
+	estimatedSizeBytes: Int!
+	"""
+	Total number of linked objects in this dataset
+	"""
+	numLinkedObjects: Int!
+	"""
+	An estimated size of linked objects
+	"""
+	estimatedLinkedObjectsSizeBytes: Int!
+	"""
+	An estimated size of all objects in dataset
+	"""
+	totalSizeBytes: Int!
 	"""
 	Returns the specified number of the latest records in the dataset
 	This is equivalent to SQL query like:
@@ -1261,7 +1281,7 @@ type DatasetFlowConfigsMut {
 }
 
 input DatasetFlowFilters {
-	byStatus: FlowStatus
+	byStatus: [FlowStatus!]
 	byInitiator: InitiatorFilterInput
 	byProcessType: FlowProcessTypeFilterInput
 }
@@ -4316,6 +4336,15 @@ enum TimeUnit {
 	HOURS
 	DAYS
 	WEEKS
+}
+
+type TotalDatasetsStatistic {
+	totalRecords: Int!
+	totalDataSizeBytes: Int!
+	totalCheckpointsSizeBytes: Int!
+	totalNumLinkedObjects: Int!
+	totalLinkedObjectsSizeBytes: Int!
+	totalSizeBytes: Int!
 }
 
 """
