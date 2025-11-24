@@ -13,6 +13,11 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.78.0] - 2025-11-24
+### Upstream [kamu `0.253.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.253.0)
+- Added retries for collection `entry` operations
+- Added new GQL methods to view account dataset statistic
+
 ## [0.77.4] - 2025-11-11
 ### Upstream [kamu `0.252.4`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.252.4)
 - Refactor: QueryService was split on 3 parts (queries, schema, and session context builder)
