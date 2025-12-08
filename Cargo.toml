@@ -109,6 +109,10 @@ kamu-webhooks-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = 
 kamu-webhooks-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_2", version = "0.253.1", default-features = false }
 kamu-webhooks-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_2", version = "0.253.1", default-features = false }
 
+# SKU modules
+kamu-molecule-domain = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_2", version = "0.253.1", default-features = false }
+kamu-molecule-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_2", version = "0.253.1", default-features = false }
+
 # E2E: kamu-cli
 kamu-cli-e2e-common = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_2", version = "0.253.1", default-features = false }
 kamu-cli-e2e-repo-tests = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_2", version = "0.253.1", default-features = false }
