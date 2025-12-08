@@ -367,6 +367,7 @@ pub async fn init_dependencies(
     kamu_adapter_flow_webhook::register_dependencies(&mut b);
     kamu_adapter_task_dataset::register_dependencies(&mut b);
     kamu_adapter_task_webhook::register_dependencies(&mut b);
+    kamu_molecule_services::register_dependencies(&mut b);
 
     b.add::<kamu::RemoteRepositoryRegistryImpl>();
 

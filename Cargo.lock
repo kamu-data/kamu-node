@@ -7032,6 +7032,7 @@ dependencies = [
  "kamu-messaging-outbox-inmem",
  "kamu-messaging-outbox-postgres",
  "kamu-messaging-outbox-sqlite",
+ "kamu-molecule-services",
  "kamu-search-openai",
  "kamu-search-qdrant",
  "kamu-search-services",
@@ -7705,6 +7706,36 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.17",
+ "uuid",
+]
+
+[[package]]
+name = "kamu-molecule-services"
+version = "0.253.1"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule_phase_2#53a28416bbc1193d1ccb1e95034b41d22aaf13b5"
+dependencies = [
+ "async-trait",
+ "bytes",
+ "chrono",
+ "common-macros",
+ "database-common",
+ "datafusion",
+ "dill",
+ "file-utils",
+ "indoc 2.0.7",
+ "internal-error",
+ "kamu-accounts",
+ "kamu-auth-rebac",
+ "kamu-core",
+ "kamu-datasets",
+ "kamu-molecule-domain",
+ "messaging-outbox",
+ "num-bigint",
+ "opendatafabric",
+ "serde_json",
+ "time-source",
+ "tokio",
+ "tracing",
  "uuid",
 ]
 
