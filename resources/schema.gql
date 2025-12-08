@@ -627,11 +627,11 @@ type Collection {
 
 type CollectionEntry {
 	"""
-	Time when this version was created
+	System time when this entry was created
 	"""
 	systemTime: DateTime!
 	"""
-	Time when this version was created
+	Event time when this entry was created
 	"""
 	eventTime: DateTime!
 	"""
@@ -708,10 +708,9 @@ type CollectionMut {
 	updateEntries(operations: [CollectionUpdateInput!]!, expectedHead: Multihash): CollectionUpdateResult!
 }
 
-"""
-Collection entry paths are similar to HTTP path components. They are rooted (start with `/`), separated by forward slashes, with elements URL-encoded (e.g. `/foo%20bar/baz`)
-"""
 scalar CollectionPath
+
+scalar CollectionPathV2
 
 type CollectionProjection {
 	"""
@@ -1317,7 +1316,7 @@ type DatasetFlowConfigs {
 
 type DatasetFlowConfigsMut {
 	setIngestConfig(ingestConfigInput: FlowConfigIngestInput!, retryPolicyInput: FlowRetryPolicyInput): SetFlowConfigResult!
-	setCompactionConfig(compactionConfigInput: FlowConfigCompactionInput!): SetFlowConfigResult!
+	setCompactionConfig(compactionConfigInput: FlowConfigCompactionInput!, retryPolicyInput: FlowRetryPolicyInput): SetFlowConfigResult!
 }
 
 input DatasetFlowFilters {
@@ -3150,7 +3149,7 @@ type MoleculeActivityAnnouncementV2 {
 	announcement: MoleculeAnnouncementEntry!
 }
 
-union MoleculeActivityEventV2 = MoleculeActivityFileAddedV2 | MoleculeActivityFileRemovedV2 | MoleculeActivityFileUpdatedV2 | MoleculeActivityAnnouncementV2
+union MoleculeActivityEventV2 = MoleculeActivityFileAddedV2 | MoleculeActivityFileUpdatedV2 | MoleculeActivityFileRemovedV2 | MoleculeActivityAnnouncementV2
 
 type MoleculeActivityEventV2Connection {
 	"""
@@ -3182,12 +3181,14 @@ type MoleculeActivityFileUpdatedV2 {
 
 type MoleculeAnnouncementEntry {
 	project: MoleculeProjectV2!
+	systemTime: DateTime!
+	eventTime: DateTime!
 	id: String!
 	headline: String!
 	body: String!
-	attachments: [String!]!
+	attachments: [DatasetID!]!
 	accessLevel: String!
-	changeBy: AccountID!
+	changeBy: String!
 	categories: [String!]!
 	tags: [String!]!
 }
@@ -3218,7 +3219,7 @@ type MoleculeAnnouncements {
 	"""
 	dataset: Dataset!
 	tail(page: Int, perPage: Int, filters: MoleculeAnnouncementsFilters): MoleculeAnnouncementEntryConnection!
-	byId(id: String!): MoleculeAnnouncementEntry!
+	byId(id: String!): MoleculeAnnouncementEntry
 }
 
 type MoleculeAnnouncementsDatasetMutV2 {
@@ -3229,7 +3230,7 @@ type MoleculeAnnouncementsDatasetMutV2 {
 		"""
 		List of dataset DIDs to link
 		"""
-		attachments: [String!],		moleculeAccessLevel: String!,		moleculeChangeBy: String!,		categories: [String!]!,		tags: [String!]!
+		attachments: [DatasetID!],		moleculeAccessLevel: String!,		moleculeChangeBy: String!,		categories: [String!]!,		tags: [String!]!
 	): CreateAnnouncementResult!
 }
 
@@ -3256,7 +3257,7 @@ input MoleculeDataRoomEntriesFilters {
 
 type MoleculeDataRoomEntry {
 	"""
-	Back link to the project
+	Backlink to the project
 	"""
 	project: MoleculeProjectV2!
 	"""
@@ -3317,11 +3318,11 @@ type MoleculeDataRoomMutV2 {
 		"""
 		Base64-encoded file content (url-safe, no padding)
 		"""
-		content: Base64Usnp!,		ref: DatasetID,		path: CollectionPath,
+		content: Base64Usnp!,		ref: DatasetID,		path: CollectionPathV2,
 		"""
 		Media type of content (e.g. application/pdf)
 		"""
-		contentType: String,		accessLevel: String!,		changeBy: String!,		description: String,		categories: [String!],		tags: [String!],		contentText: String,		encryptionMetadata: String
+		contentType: String,		accessLevel: String!,		changeBy: String!,		description: String,		categories: [String!],		tags: [String!],		contentText: String,		encryptionMetadata: MoleculeEncryptionMetadataInput
 	): MoleculeDataRoomFinishUploadFileResult!
 	"""
 	Starts the process of uploading a file to the data room.
@@ -3340,19 +3341,19 @@ type MoleculeDataRoomMutV2 {
 	Allows creating a file, upload a new version, and link a file into the
 	data room via a single transaction.
 	"""
-	finishUploadFile(uploadToken: String!, ref: DatasetID, path: CollectionPath, accessLevel: String!, changeBy: String!, description: String, categories: [String!], tags: [String!], contentText: String, encryptionMetadata: String): MoleculeDataRoomFinishUploadFileResult!
+	finishUploadFile(uploadToken: String!, ref: DatasetID, path: CollectionPathV2, accessLevel: String!, changeBy: String!, description: String, categories: [String!], tags: [String!], contentText: String, encryptionMetadata: MoleculeEncryptionMetadataInput): MoleculeDataRoomFinishUploadFileResult!
 	"""
 	Moves an entry in the data room.
 	"""
-	moveEntry(fromPath: CollectionPath!, toPath: CollectionPath!, expectedHead: Multihash): MoleculeDataRoomMoveEntryResult!
+	moveEntry(fromPath: CollectionPathV2!, toPath: CollectionPathV2!, expectedHead: Multihash): MoleculeDataRoomMoveEntryResult!
 	"""
 	Removes an entry from the data room.
 	"""
-	removeEntry(path: CollectionPath!, expectedHead: Multihash): MoleculeDataRoomRemoveEntryResult!
+	removeEntry(path: CollectionPathV2!, expectedHead: Multihash): MoleculeDataRoomRemoveEntryResult!
 	"""
 	Updates the metadata of a file in the data room.
 	"""
-	updateFileMetadata(ref: DatasetID!, accessLevel: String!, changeBy: String!, description: String, categories: [String!], tags: [String!], contentText: String, encryptionMetadata: String): MoleculeDataRoomUpdateFileMetadataResult!
+	updateFileMetadata(ref: DatasetID!, accessLevel: String!, changeBy: String!, description: String, categories: [String!], tags: [String!], contentText: String, encryptionMetadata: MoleculeEncryptionMetadataInput): MoleculeDataRoomUpdateFileMetadataResult!
 }
 
 type MoleculeDataRoomProjection {
@@ -3400,12 +3401,28 @@ type MoleculeDataRoomUpdateUpToDate implements MoleculeDataRoomMoveEntryResult {
 	message: String!
 }
 
-type MoleculeDisableProjectResultV2 {
-	dummy: String!
+type MoleculeEncryptionMetadata {
+	dataToEncryptHash: String!
+	accessControlConditions: String!
+	encryptedBy: String!
+	encryptedAt: String!
+	chain: String!
+	litSdkVersion: String!
+	litNetwork: String!
+	templateName: String!
+	contractVersion: String!
 }
 
-type MoleculeEnableProjectResultV2 {
-	dummy: String!
+input MoleculeEncryptionMetadataInput {
+	dataToEncryptHash: String!
+	accessControlConditions: String!
+	encryptedBy: String!
+	encryptedAt: String!
+	chain: String!
+	litSdkVersion: String!
+	litNetwork: String!
+	templateName: String!
+	contractVersion: String!
 }
 
 type MoleculeMut {
@@ -3445,8 +3462,8 @@ type MoleculeMutV2 {
 	its symbol will remain reserved, data will remain intact,
 	but the project will no longer appear in the listing.
 	"""
-	disableProject(ipnftUid: String!): MoleculeDisableProjectResultV2!
-	enableProject(ipnftUid: String!): MoleculeEnableProjectResultV2!
+	disableProject(ipnftUid: String!): MoleculeProjectMutationResultV2!
+	enableProject(ipnftUid: String!): MoleculeProjectMutationResultV2!
 	"""
 	Looks up the project
 	"""
@@ -3455,11 +3472,11 @@ type MoleculeMutV2 {
 
 type MoleculeProject {
 	"""
-	System time when this version was created/updated
+	System time when this project was created/updated
 	"""
 	systemTime: DateTime!
 	"""
-	Event time when this version was created/updated
+	Event time when this project was created/updated
 	"""
 	eventTime: DateTime!
 	"""
@@ -3631,6 +3648,11 @@ type MoleculeProjectMutV2 {
 	announcements: MoleculeAnnouncementsDatasetMutV2!
 }
 
+type MoleculeProjectMutationResultV2 {
+	project: MoleculeProjectMutV2!
+	message: String!
+}
+
 type MoleculeProjectV2 {
 	"""
 	System time when this project was created/updated
@@ -3655,7 +3677,7 @@ type MoleculeProjectV2 {
 	"""
 	Token ID withing the IPNFT contract
 	"""
-	ipnftTokenId: BigInt!
+	ipnftTokenId: U256!
 	"""
 	Project's organizational account
 	"""
@@ -3787,7 +3809,7 @@ type MoleculeVersionedFileEntry {
 	categories: [String!]!
 	tags: [String!]!
 	contentText: String
-	encryptionMetadata: String
+	encryptionMetadata: MoleculeEncryptionMetadata
 	"""
 	Returns encoded content in-band. Should be used for small files only and
 	will return an error if called on large data.
@@ -5083,11 +5105,11 @@ type VersionedFileContentDownload {
 
 type VersionedFileEntry {
 	"""
-	System time when this version was created/updated
+	System time when this version was created
 	"""
 	systemTime: DateTime!
 	"""
-	Event time when this version was created/updated
+	Event time when this version was created
 	"""
 	eventTime: DateTime!
 	"""
