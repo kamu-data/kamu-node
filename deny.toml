@@ -109,4 +109,7 @@ ignore = [
     # Multiple soundness issues in owning_ref (no patched versions)
     # https://rustsec.org/advisories/RUSTSEC-2022-0040
     "RUSTSEC-2022-0040",
+    # Unmaintained (rustls-pemfile)
+    # https://rustsec.org/advisories/RUSTSEC-2025-0134
+    "RUSTSEC-2025-0134",
 ]
