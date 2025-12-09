@@ -19,7 +19,7 @@ jobs:
         target:
           - x86_64-unknown-linux-gnu
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         # Check out the specified branch
         with:
           ref: ${{ github.event.inputs.branch }}
