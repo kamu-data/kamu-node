@@ -3269,7 +3269,7 @@ type MoleculeDataRoomEntry {
 	path: CollectionPath!
 	ref: DatasetID!
 	changeBy: String!
-	asVersionedFile: MoleculeVersionedFile
+	asVersionedFile: MoleculeVersionedFile!
 }
 
 type MoleculeDataRoomEntryConnection {
@@ -3378,6 +3378,12 @@ interface MoleculeDataRoomUpdateFileMetadataResult {
 }
 
 type MoleculeDataRoomUpdateFileMetadataResultEntryNotFound implements MoleculeDataRoomUpdateFileMetadataResult {
+	ref: DatasetID!
+	isSuccess: Boolean!
+	message: String!
+}
+
+type MoleculeDataRoomUpdateFileMetadataResultFileNotFound implements MoleculeDataRoomUpdateFileMetadataResult {
 	ref: DatasetID!
 	isSuccess: Boolean!
 	message: String!
@@ -3514,10 +3520,9 @@ type MoleculeProject {
 }
 
 input MoleculeProjectActivityFilters {
-	"""
-	This filter is provided as an example.
-	"""
-	byIpnftUids: [String!]
+	byTags: [String!]
+	byCategories: [String!]
+	byAccessLevels: [String!]
 }
 
 type MoleculeProjectConnection {
@@ -3793,7 +3798,18 @@ type MoleculeV2 {
 }
 
 type MoleculeVersionedFile {
+	"""
+	Returns the latest versioned file entry, regardless of data room version
+	"""
 	latest: MoleculeVersionedFileEntry
+	"""
+	Returns the versioned file entry that matches the data room entry
+	"""
+	matching: MoleculeVersionedFileEntry!
+	"""
+	Returns particular versioned file entry, regardless of data room version
+	"""
+	asOf(blockHash: Multihash!): MoleculeVersionedFileEntry
 }
 
 type MoleculeVersionedFileEntry {
