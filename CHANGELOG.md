@@ -21,7 +21,14 @@ Recommendation: for ease of reading, use the following order:
 - GQL: `MoleculeMut::create_project()`: generate lowercase project account name.
 ### Fixed
  - Investigation: potential unstable ordering of dataset entry listings
- 
+
+## [0.79.1] - 2025-12-09
+### Upstream [kamu `0.254.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.254.1)
+### Fixed
+- Fixed bug in applying projected offsets for flow states in a situation when a 
+  delayed transaction commits events with higher event IDs than later started transactions, 
+  and they all are in the same fetched bulk
+
 ## [0.79.0] - 2025-12-05
 ### Upstream [kamu `0.254.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.254.0)
 ### Added
