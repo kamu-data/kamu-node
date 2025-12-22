@@ -51,6 +51,7 @@ time-source = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/mol
 odf = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_2", version = "0.254.1", default-features = false, package = "opendatafabric" }
 
 # Domain
+kamu-core = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_2", version = "0.254.1", default-features = false }
 kamu-accounts = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_2", version = "0.254.1", default-features = false }
 kamu-auth-rebac = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_2", version = "0.254.1", default-features = false }
 kamu-auth-rebac-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_2", version = "0.254.1", default-features = false }
