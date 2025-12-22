@@ -409,6 +409,8 @@ pub async fn init_dependencies(
     b.add::<kamu::GetDatasetSchemaUseCaseImpl>();
     b.add::<kamu::QueryDatasetDataUseCaseImpl>();
 
+    b.add::<kamu::domain::DidSecretService>();
+
     b.add_builder(
         messaging_outbox::OutboxImmediateImpl::builder()
             .with_consumer_filter(messaging_outbox::ConsumerFilter::ImmediateConsumers),
@@ -732,6 +734,14 @@ pub async fn init_dependencies(
         warn!("Did secret keys will not be stored");
     }
     //
+
+    b.add_value(kamu_datasets_services::QuotaDefaultsConfig {
+        storage: config
+            .quota_defaults
+            .as_ref()
+            .and_then(|q| q.storage)
+            .unwrap_or_default(),
+    });
 
     b.add::<database_common::DatabaseTransactionRunner>();
 

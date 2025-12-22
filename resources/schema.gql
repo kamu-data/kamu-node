@@ -70,7 +70,7 @@ type Account {
 	"""
 	ownedDatasets(page: Int, perPage: Int): DatasetConnection!
 	"""
-	Returns datasets belonging to this account
+	Returns account quotas
 	"""
 	quotas: AccountQuotas!
 }
@@ -250,28 +250,24 @@ type AccountQuotas {
 	"""
 	User-level quotas
 	"""
-	user: AccountQuotasUser!
+	user: AccountQuotasUsage!
 }
 
 type AccountQuotasMut {
 	"""
-	Setting quotas at the user level.
+	Setting quotas at the account level.
 	"""
-	setUserLevelQuotas(quotas: SetUserLevelQuotasInput!): SetUserLevelQuotasResult!
+	setAccountQuotas(quotas: SetAccountQuotasInput!): SetAccountQuotasResult!
 }
 
-type AccountQuotasUser {
+type AccountQuotasUsage {
 	"""
 	User-level quotas
 	"""
-	storage: AccountQuotasUserStorage!
+	storage: AccountQuotasUsageStorage!
 }
 
-type AccountQuotasUserStorage {
-	"""
-	Total bytes used by this account.
-	"""
-	utilizedTotalBytes: Int!
+type AccountQuotasUsageStorage {
 	"""
 	Total bytes limit for this account.
 	"""
@@ -747,6 +743,14 @@ type CollectionUpdateErrorNotFound implements CollectionUpdateResult {
 	message: String!
 }
 
+type CollectionUpdateErrorQuotaExceeded implements CollectionUpdateResult {
+	used: Int
+	incoming: Int
+	limit: Int
+	isSuccess: Boolean!
+	message: String!
+}
+
 input CollectionUpdateInput {
 	"""
 	Inserts a new entry under the specified path. If an entry at the target
@@ -882,6 +886,11 @@ type CreateAccountSuccess implements CreateAccountResult {
 }
 
 type CreateAnnouncementErrorInvalidAttachment implements CreateAnnouncementResult {
+	message: String!
+	isSuccess: Boolean!
+}
+
+type CreateAnnouncementErrorQuotaExceeded implements CreateAnnouncementResult {
 	message: String!
 	isSuccess: Boolean!
 }
@@ -3370,6 +3379,12 @@ type MoleculeDataRoomMutV2 {
 	updateFileMetadata(ref: DatasetID!, accessLevel: String!, changeBy: String!, description: String, categories: [String!], tags: [String!], contentText: String, encryptionMetadata: MoleculeEncryptionMetadataInput): MoleculeDataRoomUpdateFileMetadataResult!
 }
 
+type MoleculeDataRoomPathOccupied implements MoleculeDataRoomFinishUploadFileResult & MoleculeDataRoomMoveEntryResult {
+	byEntry: MoleculeDataRoomEntry!
+	isSuccess: Boolean!
+	message: String!
+}
+
 type MoleculeDataRoomProjection {
 	entries(pathPrefix: CollectionPathV2, maxDepth: Int, page: Int, perPage: Int, filters: MoleculeDataRoomEntriesFilters): MoleculeDataRoomEntryConnection!
 	entry(path: CollectionPathV2!): MoleculeDataRoomEntry
@@ -3380,19 +3395,19 @@ interface MoleculeDataRoomRemoveEntryResult {
 	message: String!
 }
 
-type MoleculeDataRoomUpdateEntryNotFound implements MoleculeDataRoomMoveEntryResult & MoleculeDataRoomRemoveEntryResult {
+type MoleculeDataRoomUpdateEntryByPathNotFound implements MoleculeDataRoomMoveEntryResult & MoleculeDataRoomRemoveEntryResult {
 	path: CollectionPathV2!
 	isSuccess: Boolean!
 	message: String!
 }
 
-interface MoleculeDataRoomUpdateFileMetadataResult {
+type MoleculeDataRoomUpdateEntryByRefNotFound implements MoleculeDataRoomFinishUploadFileResult & MoleculeDataRoomUpdateFileMetadataResult {
+	ref: DatasetID!
 	isSuccess: Boolean!
 	message: String!
 }
 
-type MoleculeDataRoomUpdateFileMetadataResultEntryNotFound implements MoleculeDataRoomUpdateFileMetadataResult {
-	ref: DatasetID!
+interface MoleculeDataRoomUpdateFileMetadataResult {
 	isSuccess: Boolean!
 	message: String!
 }
@@ -3733,6 +3748,14 @@ type MoleculeProjectV2Connection {
 
 type MoleculeProjectV2Edge {
 	node: MoleculeProjectV2!
+}
+
+type MoleculeQuotaExceeded implements MoleculeDataRoomFinishUploadFileResult & MoleculeDataRoomMoveEntryResult & MoleculeDataRoomRemoveEntryResult & MoleculeDataRoomUpdateFileMetadataResult {
+	used: Int
+	incoming: Int
+	limit: Int
+	isSuccess: Boolean!
+	message: String!
 }
 
 enum MoleculeSearchEntityKindInput {
@@ -4542,6 +4565,27 @@ type Seed {
 	datasetKind: DatasetKind!
 }
 
+input SetAccountQuotasInput {
+	storage: SetAccountQuotasStorageInput
+}
+
+interface SetAccountQuotasResult {
+	success: Boolean!
+	message: String!
+}
+
+type SetAccountQuotasResultInvalidInput implements SetAccountQuotasResult {
+	message: String!
+}
+
+type SetAccountQuotasResultSuccess implements SetAccountQuotasResult {
+	message: String!
+}
+
+input SetAccountQuotasStorageInput {
+	limitTotalBytes: Int
+}
+
 """
 Associates a set of files with this dataset.
 
@@ -4682,18 +4726,6 @@ type SetTransform {
 	Transformation that will be applied to produce new data.
 	"""
 	transform: Transform!
-}
-
-input SetUserLevelQuotasInput {
-	storage: SetUserLevelQuotasStorageInput
-}
-
-type SetUserLevelQuotasResult {
-	dummy: Boolean!
-}
-
-input SetUserLevelQuotasStorageInput {
-	limitTotalBytes: Int
 }
 
 """
@@ -5052,6 +5084,14 @@ type UpdateVersionErrorCasFailed implements UpdateVersionResult & MoleculeDataRo
 type UpdateVersionErrorInvalidExtraData implements UpdateVersionResult & MoleculeDataRoomUpdateFileMetadataResult {
 	message: String!
 	isSuccess: Boolean!
+}
+
+type UpdateVersionErrorQuotaExceeded implements UpdateVersionResult {
+	used: Int
+	incoming: Int
+	limit: Int
+	isSuccess: Boolean!
+	message: String!
 }
 
 interface UpdateVersionResult {

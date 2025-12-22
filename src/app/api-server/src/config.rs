@@ -63,6 +63,8 @@ pub struct ApiServerConfig {
     pub identity: Option<IdentityConfig>,
     /// Seach configuration
     pub search: Option<SearchConfig>,
+    /// Default quotas configured by type
+    pub quota_defaults: Option<QuotaDefaults>,
 
     /// Experimental and temporary module configuration
     pub extra: ExtraConfig,
@@ -90,6 +92,32 @@ pub struct RuntimeConfig {
     pub worker_threads: Option<usize>,
     pub max_blocking_threads: Option<usize>,
     pub thread_stack_size: Option<usize>,
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Quota defaults
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, rename_all = "camelCase")]
+pub struct QuotaDefaults {
+    pub storage: Option<u64>,
+}
+
+impl Default for QuotaDefaults {
+    fn default() -> Self {
+        let defaults = kamu_datasets_services::QuotaDefaultsConfig::default();
+
+        Self {
+            storage: Some(defaults.storage),
+        }
+    }
+}
+
+impl QuotaDefaults {
+    pub fn sample() -> Self {
+        Self::default()
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
