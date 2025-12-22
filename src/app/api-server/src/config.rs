@@ -107,7 +107,7 @@ pub struct QuotaConfig {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub struct QuotaAccountConfig {
-    pub storage: Option<u64>,
+    pub default_storage_limit_in_bytes: Option<u64>,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
