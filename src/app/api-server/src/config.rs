@@ -64,7 +64,7 @@ pub struct ApiServerConfig {
     /// Seach configuration
     pub search: Option<SearchConfig>,
     /// Default quotas configured by type
-    pub quota_defaults: Option<QuotaDefaults>,
+    pub quota: Option<QuotaConfig>,
 
     /// Experimental and temporary module configuration
     pub extra: ExtraConfig,
@@ -100,11 +100,17 @@ pub struct RuntimeConfig {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
-pub struct QuotaDefaults {
+pub struct QuotaConfig {
+    pub account: QuotaAccountConfig,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, rename_all = "camelCase")]
+pub struct QuotaAccountConfig {
     pub storage: Option<u64>,
 }
 
-impl Default for QuotaDefaults {
+impl Default for QuotaAccountConfig {
     fn default() -> Self {
         let defaults = kamu_datasets_services::QuotaDefaultsConfig::default();
 
@@ -114,7 +120,7 @@ impl Default for QuotaDefaults {
     }
 }
 
-impl QuotaDefaults {
+impl QuotaAccountConfig {
     pub fn sample() -> Self {
         Self::default()
     }
