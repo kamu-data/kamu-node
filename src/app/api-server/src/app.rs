@@ -736,14 +736,13 @@ pub async fn init_dependencies(
     //
 
     let quota_defaults = kamu_datasets_services::QuotaDefaultsConfig::default();
-    let storage_quota = config
+    let default_account_storage_limit_in_bytes = config
         .quota
-        .as_ref()
-        .and_then(|q| q.account.storage)
+        .and_then(|q| q.account.default_storage_limit_in_bytes)
         .unwrap_or(quota_defaults.storage);
 
     b.add_value(kamu_datasets_services::QuotaDefaultsConfig {
-        storage: storage_quota,
+        storage: default_account_storage_limit_in_bytes,
     });
 
     b.add::<database_common::DatabaseTransactionRunner>();
