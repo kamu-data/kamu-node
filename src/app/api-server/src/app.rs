@@ -367,6 +367,7 @@ pub async fn init_dependencies(
     kamu_adapter_flow_webhook::register_dependencies(&mut b);
     kamu_adapter_task_dataset::register_dependencies(&mut b);
     kamu_adapter_task_webhook::register_dependencies(&mut b);
+    kamu_molecule_services::register_dependencies(&mut b);
 
     b.add::<kamu::RemoteRepositoryRegistryImpl>();
 
@@ -407,6 +408,8 @@ pub async fn init_dependencies(
     b.add::<kamu::VerifyDatasetUseCaseImpl>();
     b.add::<kamu::GetDatasetSchemaUseCaseImpl>();
     b.add::<kamu::QueryDatasetDataUseCaseImpl>();
+
+    b.add::<kamu::domain::DidSecretService>();
 
     b.add_builder(
         messaging_outbox::OutboxImmediateImpl::builder()
@@ -731,6 +734,16 @@ pub async fn init_dependencies(
         warn!("Did secret keys will not be stored");
     }
     //
+
+    let quota_defaults = kamu_datasets_services::QuotaDefaultsConfig::default();
+    let default_account_storage_limit_in_bytes = config
+        .quota
+        .and_then(|q| q.account.default_storage_limit_in_bytes)
+        .unwrap_or(quota_defaults.storage);
+
+    b.add_value(kamu_datasets_services::QuotaDefaultsConfig {
+        storage: default_account_storage_limit_in_bytes,
+    });
 
     b.add::<database_common::DatabaseTransactionRunner>();
 
