@@ -142,6 +142,7 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
             .cast(),
         ),
         cli::Command::Debug(c) => match c.subcommand {
+            cli::Debug::Depgraph(_) => Box::new(commands::DebugDepgraphCommand::builder().cast()),
             cli::Debug::SemsearchReindex(_) => {
                 Box::new(commands::DebugSemsearchReindexCommand::builder().cast())
             }
@@ -408,10 +409,9 @@ pub async fn init_dependencies(
     b.add::<kamu::GetDatasetSchemaUseCaseImpl>();
     b.add::<kamu::QueryDatasetDataUseCaseImpl>();
 
-    b.add_builder(
-        messaging_outbox::OutboxImmediateImpl::builder()
-            .with_consumer_filter(messaging_outbox::ConsumerFilter::ImmediateConsumers),
-    );
+    b.add_builder(messaging_outbox::OutboxImmediateImpl::builder(
+        messaging_outbox::ConsumerFilter::ImmediateConsumers,
+    ));
     b.add::<messaging_outbox::OutboxTransactionalImpl>();
     b.add::<messaging_outbox::OutboxDispatchingImpl>();
     b.bind::<dyn messaging_outbox::Outbox, messaging_outbox::OutboxDispatchingImpl>();

@@ -88,10 +88,9 @@ impl AccessTokenLifecycleNotifierHarness {
 
         b.add::<AccessTokenLifecycleNotifier>()
             .add_value(TenancyConfig::SingleTenant)
-            .add_builder(
-                messaging_outbox::OutboxImmediateImpl::builder()
-                    .with_consumer_filter(messaging_outbox::ConsumerFilter::AllConsumers),
-            )
+            .add_builder(messaging_outbox::OutboxImmediateImpl::builder(
+                messaging_outbox::ConsumerFilter::AllConsumers,
+            ))
             .bind::<dyn Outbox, OutboxImmediateImpl>()
             .add::<SystemTimeSourceDefault>()
             .add::<InMemoryAccountRepository>()
