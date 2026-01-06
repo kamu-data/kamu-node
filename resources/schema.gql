@@ -3167,6 +3167,11 @@ type Molecule {
 	v2: MoleculeV2!
 }
 
+input MoleculeAccessLevelRuleInput {
+	ipnftUid: String!
+	accessLevels: [String!]!
+}
+
 type MoleculeActivityAnnouncementV2 {
 	announcement: MoleculeAnnouncementEntry!
 }
@@ -3201,6 +3206,11 @@ type MoleculeActivityFileUpdatedV2 {
 	entry: MoleculeDataRoomEntry!
 }
 
+enum MoleculeActivityKindInput {
+	FILE
+	ANNOUNCEMENT
+}
+
 type MoleculeAnnouncementEntry {
 	project: MoleculeProjectV2!
 	systemTime: DateTime!
@@ -3208,7 +3218,7 @@ type MoleculeAnnouncementEntry {
 	id: String!
 	headline: String!
 	body: String!
-	attachments: [DatasetID!]!
+	attachments: [MoleculeDataRoomEntry!]!
 	accessLevel: String!
 	changeBy: String!
 	categories: [String!]!
@@ -3252,7 +3262,7 @@ type MoleculeAnnouncementsDatasetMutV2 {
 		"""
 		List of dataset DIDs to link
 		"""
-		attachments: [DatasetID!],		moleculeAccessLevel: String!,		moleculeChangeBy: String!,		categories: [String!]!,		tags: [String!]!
+		attachments: [DatasetID!],		accessLevel: String!,		changeBy: String!,		categories: [String!]!,		tags: [String!]!
 	): CreateAnnouncementResult!
 }
 
@@ -3260,6 +3270,7 @@ input MoleculeAnnouncementsFilters {
 	byTags: [String!]
 	byCategories: [String!]
 	byAccessLevels: [String!]
+	byAccessLevelRules: [MoleculeAccessLevelRuleInput!]
 }
 
 type MoleculeDataRoom {
@@ -3275,6 +3286,7 @@ input MoleculeDataRoomEntriesFilters {
 	byTags: [String!]
 	byCategories: [String!]
 	byAccessLevels: [String!]
+	byAccessLevelRules: [MoleculeAccessLevelRuleInput!]
 }
 
 type MoleculeDataRoomEntry {
@@ -3368,15 +3380,20 @@ type MoleculeDataRoomMutV2 {
 	"""
 	Moves an entry in the data room.
 	"""
-	moveEntry(fromPath: CollectionPathV2!, toPath: CollectionPathV2!, expectedHead: Multihash): MoleculeDataRoomMoveEntryResult!
+	moveEntry(fromPath: CollectionPathV2!, toPath: CollectionPathV2!, changeBy: String!, expectedHead: Multihash): MoleculeDataRoomMoveEntryResult!
 	"""
 	Removes an entry from the data room.
 	"""
-	removeEntry(path: CollectionPathV2!, expectedHead: Multihash): MoleculeDataRoomRemoveEntryResult!
+	removeEntry(path: CollectionPathV2!, changeBy: String!, expectedHead: Multihash): MoleculeDataRoomRemoveEntryResult!
 	"""
 	Updates the metadata of a file in the data room.
 	"""
-	updateFileMetadata(ref: DatasetID!, accessLevel: String!, changeBy: String!, description: String, categories: [String!], tags: [String!], contentText: String, encryptionMetadata: MoleculeEncryptionMetadataInput): MoleculeDataRoomUpdateFileMetadataResult!
+	updateFileMetadata(		ref: DatasetID!,
+		"""
+		Expected head block hash to prevent concurrent updates
+		"""
+		expectedHead: Multihash,		accessLevel: String!,		changeBy: String!,		description: String,		categories: [String!],		tags: [String!],		contentText: String
+	): MoleculeDataRoomUpdateFileMetadataResult!
 }
 
 type MoleculeDataRoomPathOccupied implements MoleculeDataRoomFinishUploadFileResult & MoleculeDataRoomMoveEntryResult {
@@ -3552,6 +3569,8 @@ input MoleculeProjectActivityFilters {
 	byTags: [String!]
 	byCategories: [String!]
 	byAccessLevels: [String!]
+	byAccessLevelRules: [MoleculeAccessLevelRuleInput!]
+	byKinds: [MoleculeActivityKindInput!]
 }
 
 type MoleculeProjectConnection {
@@ -3768,6 +3787,7 @@ input MoleculeSemanticSearchFilters {
 	byTags: [String!]
 	byCategories: [String!]
 	byAccessLevels: [String!]
+	byAccessLevelRules: [MoleculeAccessLevelRuleInput!]
 	byKinds: [MoleculeSearchEntityKindInput!]
 }
 
