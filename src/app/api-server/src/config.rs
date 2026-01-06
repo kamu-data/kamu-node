@@ -49,11 +49,11 @@ pub struct ApiServerConfig {
     pub upload_repo: UploadRepoConfig,
     /// External URLs
     pub url: UrlConfig,
-    /// Configuration for flow system
+    /// Configuration for the flow system
     pub flow_system: FlowSystemConfig,
     /// Configuration for webhooks
     pub webhooks: WebhooksConfig,
-    /// Ingestions sources
+    /// Ingestion's sources
     pub source: SourceConfig,
     /// Outbox configuration
     pub outbox: OutboxConfig,
@@ -61,7 +61,7 @@ pub struct ApiServerConfig {
     pub email: EmailConfig,
     /// UNSTABLE: Identity configuration
     pub identity: Option<IdentityConfig>,
-    /// Seach configuration
+    /// Search configuration
     pub search: Option<SearchConfig>,
     /// Default quotas configured by type
     pub quota: Option<QuotaConfig>,
