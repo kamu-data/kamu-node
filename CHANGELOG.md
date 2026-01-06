@@ -16,7 +16,7 @@ Recommendation: for ease of reading, use the following order:
 ## [0.79.2] - 2026-01-06
 ### Upstream [kamu `0.255.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.255.1)
 ### Changed
-- Upgrade dill crate to `0.15` version
+- Upgraded dill crate to `0.15` version
 
 ## [0.79.1] - 2025-12-09
 ### Upstream [kamu `0.254.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.254.1)
