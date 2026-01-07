@@ -327,6 +327,15 @@ pub async fn init_dependencies(
     b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
 
     // GraphQL
+    {
+        let mut feature_flags = kamu_adapter_graphql::GqlFeatureFlags::new();
+        if config.extra.graphql.molecule_api_v1_enabled {
+            feature_flags =
+                feature_flags.with_feature(kamu_adapter_graphql::GqlFeature::MoleculeApiV1);
+        }
+        b.add_value(feature_flags);
+    }
+
     b.add_value(config.extra.graphql);
     //
 
