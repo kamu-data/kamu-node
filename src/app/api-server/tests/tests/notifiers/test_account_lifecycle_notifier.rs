@@ -120,15 +120,12 @@ struct AccountLifecycleNotifierHarness {
 
 impl AccountLifecycleNotifierHarness {
     fn new() -> Self {
-        use dill::Component;
-
-        let mut b = dill::CatalogBuilder::new();
+        let mut b = dill::Catalog::builder();
 
         b.add::<AccountLifecycleNotifier>()
-            .add_builder(
-                messaging_outbox::OutboxImmediateImpl::builder()
-                    .with_consumer_filter(messaging_outbox::ConsumerFilter::AllConsumers),
-            )
+            .add_builder(messaging_outbox::OutboxImmediateImpl::builder(
+                messaging_outbox::ConsumerFilter::AllConsumers,
+            ))
             .bind::<dyn Outbox, OutboxImmediateImpl>()
             .add::<FakeEmailSender>();
 
