@@ -13,6 +13,11 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.80.0] - 2026-01-08
+### Upstream [kamu `0.256.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.256.0)
+### Added
+- Prototype of full-text search capabilities based on Elasticsearch
+
 ## [0.79.2] - 2026-01-06
 ### Upstream [kamu `0.255.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.255.1)
 ### Changed
