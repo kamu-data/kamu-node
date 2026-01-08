@@ -100,6 +100,7 @@ kamu-flow-system-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branc
 kamu-messaging-outbox-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "prototype/elasticsearch", version = "0.255.1", default-features = false }
 kamu-messaging-outbox-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "prototype/elasticsearch", version = "0.255.1", default-features = false }
 kamu-messaging-outbox-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "prototype/elasticsearch", version = "0.255.1", default-features = false }
+kamu-search-elasticsearch = { git = "https://github.com/kamu-data/kamu-cli", branch = "prototype/elasticsearch", version = "0.255.1", default-features = false }
 kamu-search-openai = { git = "https://github.com/kamu-data/kamu-cli", branch = "prototype/elasticsearch", version = "0.255.1", default-features = false }
 kamu-search-qdrant = { git = "https://github.com/kamu-data/kamu-cli", branch = "prototype/elasticsearch", version = "0.255.1", default-features = false }
 kamu-task-system-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "prototype/elasticsearch", version = "0.255.1", default-features = false }
