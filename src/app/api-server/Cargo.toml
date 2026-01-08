@@ -109,6 +109,7 @@ kamu-flow-system-sqlite = { workspace = true }
 kamu-messaging-outbox-inmem = { workspace = true }
 kamu-messaging-outbox-postgres = { workspace = true }
 kamu-messaging-outbox-sqlite = { workspace = true }
+kamu-search-elasticsearch = { workspace = true }
 kamu-search-openai = { workspace = true }
 kamu-search-services = { workspace = true }
 kamu-search-qdrant = { workspace = true }

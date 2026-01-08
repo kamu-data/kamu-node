@@ -428,6 +428,14 @@ type Admin {
 	selfTest: String!
 }
 
+type AdminMut {
+	search: AdminSearchMut!
+}
+
+type AdminSearchMut {
+	resetFullTextIndices: String!
+}
+
 type ApplyRolesMatrixResult {
 	message: String!
 }
@@ -2779,6 +2787,26 @@ type FlowTypeIsNotSupported implements SetFlowTriggerResult {
 	message: String!
 }
 
+type FullTextSearchHighlight {
+	field: String!
+	bestFragment: String!
+}
+
+type FullTextSearchHit {
+	id: String!
+	schemaName: String!
+	score: Float
+	source: JSON!
+	highlights: [FullTextSearchHighlight!]
+}
+
+type FullTextSearchResponse {
+	tookMs: Int!
+	timeout: Boolean!
+	totalHits: Int!
+	hits: [FullTextSearchHit!]!
+}
+
 interface GetFlowResult {
 	message: String!
 }
@@ -2792,6 +2820,11 @@ input InitiatorFilterInput @oneOf {
 	system: Boolean
 	accounts: [AccountID!]
 }
+
+"""
+A scalar that can represent any JSON value.
+"""
+scalar JSON
 
 type JdbcDesc {
 	url: String!
@@ -3099,6 +3132,10 @@ type Mutation {
 	Allows setting permissions for multiple datasets in batch mode
 	"""
 	collaboration: CollaborationMut!
+	"""
+	Admin-related functionality group
+	"""
+	admin: AdminMut!
 }
 
 union NameLookupResult = Account
@@ -3643,6 +3680,7 @@ type Search {
 	versatile interface to the user consisting of just one input field.
 	"""
 	query(query: String!, page: Int, perPage: Int): SearchResultConnection!
+	queryFullText(prompt: String!, page: Int, perPage: Int): FullTextSearchResponse!
 	"""
 	Searches for datasets and other objects managed by the
 	current node using a prompt in natural language
@@ -3731,14 +3769,8 @@ type SetAttachments {
 	attachments: Attachments!
 }
 
-"""
-Specifies the complete schema of Data Slices added to the Dataset following
-this event.
-
-See: https://github.com/kamu-data/open-data-fabric/blob/master/open-data-fabric.md#setdataschema-schema
-"""
 type SetDataSchema {
-	schema: DataSchema!
+	schema(format: DataSchemaFormat): DataSchema!
 }
 
 interface SetDatasetVisibilityResult {

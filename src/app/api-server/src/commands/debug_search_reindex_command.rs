@@ -11,7 +11,7 @@ use std::sync::Arc;
 
 use init_on_startup::InitOnStartup as _;
 use internal_error::*;
-use kamu_search_services::NaturalLanguageSearchIndexer;
+use kamu_search_services::SearchIndexerImpl;
 
 use super::{Command, CommandDesc};
 
@@ -23,17 +23,17 @@ use super::{Command, CommandDesc};
     needs_admin_auth: true,
     needs_transaction: false,
 })]
-pub struct DebugSemsearchReindexCommand {
-    indexer: Option<Arc<NaturalLanguageSearchIndexer>>,
+pub struct DebugSearchReindexCommand {
+    indexer: Option<Arc<SearchIndexerImpl>>,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[async_trait::async_trait]
-impl Command for DebugSemsearchReindexCommand {
+impl Command for DebugSearchReindexCommand {
     async fn run(&self) -> Result<(), InternalError> {
         let Some(indexer) = &self.indexer else {
-            return Err(InternalError::new("Semantic search is not configured"));
+            return Err(InternalError::new("Search indexer is not configured"));
         };
 
         indexer.run_initialization().await?;

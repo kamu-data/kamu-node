@@ -148,7 +148,7 @@ impl MessageConsumerT<AccountLifecycleMessage> for AccountLifecycleNotifier {
                 self.notify_account_password_changed(m).await
             }
             AccountLifecycleMessage::Deleted(m) => self.notify_account_deleted(m).await,
-            AccountLifecycleMessage::Renamed(_) => {
+            AccountLifecycleMessage::Updated(_) => {
                 /* ignore */
                 Ok(())
             }
