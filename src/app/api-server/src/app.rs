@@ -153,6 +153,9 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
             cli::Debug::SemsearchReindex(_) => {
                 Box::new(commands::DebugSemsearchReindexCommand::builder().cast())
             }
+            cli::Debug::SearchReindex(_) => {
+                Box::new(commands::DebugSearchReindexCommand::builder().cast())
+            }
         },
     };
 
