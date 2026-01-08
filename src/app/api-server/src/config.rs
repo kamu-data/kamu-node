@@ -49,11 +49,11 @@ pub struct ApiServerConfig {
     pub upload_repo: UploadRepoConfig,
     /// External URLs
     pub url: UrlConfig,
-    /// Configuration for flow system
+    /// Configuration for the flow system
     pub flow_system: FlowSystemConfig,
     /// Configuration for webhooks
     pub webhooks: WebhooksConfig,
-    /// Ingestions sources
+    /// Ingestion's sources
     pub source: SourceConfig,
     /// Outbox configuration
     pub outbox: OutboxConfig,
@@ -61,8 +61,10 @@ pub struct ApiServerConfig {
     pub email: EmailConfig,
     /// UNSTABLE: Identity configuration
     pub identity: Option<IdentityConfig>,
-    /// Seach configuration
+    /// Search configuration
     pub search: Option<SearchConfig>,
+    /// Default quotas configured by type
+    pub quota: Option<QuotaConfig>,
 
     /// Experimental and temporary module configuration
     pub extra: ExtraConfig,
@@ -90,6 +92,22 @@ pub struct RuntimeConfig {
     pub worker_threads: Option<usize>,
     pub max_blocking_threads: Option<usize>,
     pub thread_stack_size: Option<usize>,
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Quota
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, rename_all = "camelCase")]
+pub struct QuotaConfig {
+    pub account: QuotaAccountConfig,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, rename_all = "camelCase")]
+pub struct QuotaAccountConfig {
+    pub default_storage_limit_in_bytes: Option<u64>,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
