@@ -11,7 +11,7 @@ use std::sync::Arc;
 
 use init_on_startup::InitOnStartup as _;
 use internal_error::*;
-use kamu_search_services::SearchServiceLocalIndexer;
+use kamu_search_services::NaturalLanguageSearchIndexer;
 
 use super::{Command, CommandDesc};
 
@@ -24,7 +24,7 @@ use super::{Command, CommandDesc};
     needs_transaction: true,
 })]
 pub struct DebugSemsearchReindexCommand {
-    indexer: Option<Arc<SearchServiceLocalIndexer>>,
+    indexer: Option<Arc<NaturalLanguageSearchIndexer>>,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

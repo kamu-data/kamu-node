@@ -747,7 +747,7 @@ pub async fn init_dependencies(
     };
 
     // Search configuration
-    b.add::<kamu_search_services::SearchServiceLocalImpl>();
+    b.add::<kamu_search_services::NaturalLanguageSearchServiceImpl>();
 
     let semantic_search_threshold_score = config
         .search
@@ -765,15 +765,15 @@ pub async fn init_dependencies(
         ..
     }) = config.search
     {
-        b.add_value(kamu_search_services::SearchServiceLocalConfig {
+        b.add_value(kamu_search_services::NaturalLanguageSearchConfig {
             overfetch_factor,
             overfetch_amount,
         });
 
-        b.add::<kamu_search_services::SearchServiceLocalIndexer>();
+        b.add::<kamu_search_services::NaturalLanguageSearchIndexer>();
 
         let indexer = indexer.unwrap_or_default();
-        b.add_value(kamu_search_services::SearchServiceLocalIndexerConfig {
+        b.add_value(kamu_search_services::NaturalLanguageSearchIndexerConfig {
             clear_on_start: indexer.clear_on_start,
             skip_datasets_with_no_description: indexer.skip_datasets_with_no_description,
             skip_datasets_with_no_data: indexer.skip_datasets_with_no_data,
@@ -816,7 +816,7 @@ pub async fn init_dependencies(
             }
         }
     } else {
-        b.add_value(kamu_search_services::SearchServiceLocalConfig {
+        b.add_value(kamu_search_services::NaturalLanguageSearchConfig {
             overfetch_factor: config::SearchConfig::default_overfetch_factor(),
             overfetch_amount: config::SearchConfig::default_overfetch_amount(),
         });
