@@ -107,10 +107,9 @@ impl FlowProgressNotifierHarness {
 
         b.add::<FlowProgressNotifier>()
             .add_value(TenancyConfig::SingleTenant)
-            .add_builder(
-                messaging_outbox::OutboxImmediateImpl::builder()
-                    .with_consumer_filter(messaging_outbox::ConsumerFilter::AllConsumers),
-            )
+            .add_builder(messaging_outbox::OutboxImmediateImpl::builder(
+                messaging_outbox::ConsumerFilter::AllConsumers,
+            ))
             .bind::<dyn Outbox, OutboxImmediateImpl>()
             .add::<FakeEmailSender>()
             // TODO: use mocks to avoid this boilerplate, but it's waiting for kamu-cli#1010

@@ -31,7 +31,7 @@ query-extensions-json = ["kamu/query-extensions-json"]
 
 
 [dependencies]
-dill = { version = "0.14", default-features = false }
+dill = { version = "0.15", default-features = false }
 
 async-utils = { workspace = true }
 container-runtime = { workspace = true }
@@ -109,6 +109,7 @@ kamu-flow-system-sqlite = { workspace = true }
 kamu-messaging-outbox-inmem = { workspace = true }
 kamu-messaging-outbox-postgres = { workspace = true }
 kamu-messaging-outbox-sqlite = { workspace = true }
+kamu-search-elasticsearch = { workspace = true }
 kamu-search-openai = { workspace = true }
 kamu-search-services = { workspace = true }
 kamu-search-qdrant = { workspace = true }

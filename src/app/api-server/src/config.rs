@@ -62,7 +62,7 @@ pub struct ApiServerConfig {
     /// UNSTABLE: Identity configuration
     pub identity: Option<IdentityConfig>,
     /// Seach configuration
-    pub search: Option<SearchConfig>,
+    pub search: SearchConfig,
 
     /// Experimental and temporary module configuration
     pub extra: ExtraConfig,
@@ -1035,7 +1035,10 @@ pub struct SearchConfig {
     pub embeddings_encoder: EmbeddingsEncoderConfig,
 
     /// Vector repository configuration
-    pub vector_repo: VectorRepoConfig,
+    pub vector_repo: VectorRepositoryConfig,
+
+    /// Search repository configuration
+    pub repo: SearchRepositoryConfig,
 
     /// The multiplication factor that determines how many more points will be
     /// requested from vector store to compensate for filtering out results that
@@ -1067,6 +1070,26 @@ impl SearchConfig {
 
     pub fn default_semantic_search_threshold_score() -> f32 {
         0.0
+    }
+}
+
+impl Default for SearchConfig {
+    fn default() -> Self {
+        Self {
+            indexer: Some(SearchIndexerConfig::default()),
+            embeddings_chunker: Some(EmbeddingsChunkerConfig::default()),
+            embeddings_encoder: EmbeddingsEncoderConfig::default(),
+            // vector_repo: VectorRepositoryConfig::Qdrant(VectorRepositoryConfigQdrant::default()),
+            vector_repo: VectorRepositoryConfig::Dummy,
+            //repo: SearchRepositoryConfig::Elasticsearch(
+            //    SearchRepositoryConfigElasticsearch::default(),
+            //),
+            repo: SearchRepositoryConfig::Dummy,
+            overfetch_factor: SearchConfig::default_overfetch_factor(),
+            overfetch_amount: SearchConfig::default_overfetch_amount(),
+            semantic_search_threshold_score: SearchConfig::default_semantic_search_threshold_score(
+            ),
+        }
     }
 }
 
@@ -1175,24 +1198,25 @@ impl Default for EmbeddingsEncoderConfigOpenAi {
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "kind")]
-pub enum VectorRepoConfig {
-    Qdrant(VectorRepoConfigQdrant),
+pub enum VectorRepositoryConfig {
+    Dummy,
+    Qdrant(VectorRepositoryConfigQdrant),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
-pub struct VectorRepoConfigQdrant {
+pub struct VectorRepositoryConfigQdrant {
     pub url: String,
     pub api_key: Option<String>,
     pub collection_name: Option<String>,
     pub dimensions: Option<usize>,
 }
 
-impl Default for VectorRepoConfigQdrant {
+impl Default for VectorRepositoryConfigQdrant {
     fn default() -> Self {
         Self {
-            url: String::new(),
+            url: "http://localhost:6334".to_string(),
             api_key: None,
             collection_name: Some("kamu-datasets".to_string()),
             dimensions: Some(SearchConfig::DEFAULT_DIMENSIONS),
@@ -1200,21 +1224,38 @@ impl Default for VectorRepoConfigQdrant {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
-pub struct VectorRepoConfigQdrantContainer {
-    pub image: Option<String>,
-    pub dimensions: Option<usize>,
-    pub start_timeout: Option<DurationString>,
+#[serde(tag = "kind")]
+pub enum SearchRepositoryConfig {
+    Dummy,
+    Elasticsearch(SearchRepositoryConfigElasticsearch),
 }
 
-impl Default for VectorRepoConfigQdrantContainer {
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct SearchRepositoryConfigElasticsearch {
+    pub url: String,
+    pub password: Option<String>,
+    pub ca_cert_pem_path: Option<String>,
+    pub index_prefix: Option<String>,
+    pub timeout_secs: Option<u64>,
+    pub enable_compression: Option<bool>,
+}
+
+impl Default for SearchRepositoryConfigElasticsearch {
     fn default() -> Self {
         Self {
-            image: Some(kamu::utils::docker_images::QDRANT.to_string()),
-            dimensions: Some(SearchConfig::DEFAULT_DIMENSIONS),
-            start_timeout: Some(DurationString::from_string("30s".to_owned()).unwrap()),
+            url: "http://localhost:9200".to_string(),
+            password: Some("root".to_string()),
+            ca_cert_pem_path: None,
+            index_prefix: Some("kamu-node".to_string()),
+            timeout_secs: Some(30),
+            enable_compression: Some(false),
         }
     }
 }

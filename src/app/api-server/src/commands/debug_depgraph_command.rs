@@ -7,11 +7,7 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-use std::sync::Arc;
-
-use init_on_startup::InitOnStartup as _;
 use internal_error::*;
-use kamu_search_services::NaturalLanguageSearchIndexer;
 
 use super::{Command, CommandDesc};
 
@@ -21,22 +17,21 @@ use super::{Command, CommandDesc};
 #[dill::interface(dyn Command)]
 #[dill::meta(CommandDesc {
     needs_admin_auth: true,
-    needs_transaction: false,
+    needs_transaction: true,
 })]
-pub struct DebugSemsearchReindexCommand {
-    indexer: Option<Arc<NaturalLanguageSearchIndexer>>,
+pub struct DebugDepgraphCommand {
+    catalog: dill::CatalogWeakRef,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[async_trait::async_trait]
-impl Command for DebugSemsearchReindexCommand {
+impl Command for DebugDepgraphCommand {
     async fn run(&self) -> Result<(), InternalError> {
-        let Some(indexer) = &self.indexer else {
-            return Err(InternalError::new("Semantic search is not configured"));
-        };
+        use std::io::Write;
 
-        indexer.run_initialization().await?;
+        let text = dill::utils::plantuml::render(&self.catalog.upgrade());
+        std::io::stdout().write_all(text.as_bytes()).int_err()?;
         Ok(())
     }
 }

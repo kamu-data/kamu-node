@@ -1,0 +1,1091 @@
+@startuml
+
+hide circle
+hide empty members
+hide <<i>> stereotype
+
+<style>
+class {
+    .i {
+        FontColor blue
+    }
+}
+</style>
+
+interface "AccessTokenRepository" <<i>>
+interface "AccessTokenService" <<i>>
+interface "AccountAuthorizationHelper" <<i>>
+interface "AccountRepository" <<i>>
+interface "AccountService" <<i>>
+interface "AppendDatasetMetadataBatchUseCase" <<i>>
+interface "ApplyAccountDatasetRelationsUseCase" <<i>>
+interface "AuthenticationProvider" <<i>>
+interface "AuthenticationService" <<i>>
+interface "BackgroundAgent" <<i>>
+interface "CommitDatasetEventUseCase" <<i>>
+interface "CompactDatasetUseCase" <<i>>
+interface "CompactionExecutor" <<i>>
+interface "CompactionPlanner" <<i>>
+interface "CreateAccountUseCase" <<i>>
+interface "CreateDatasetFromSnapshotUseCase" <<i>>
+interface "CreateDatasetUseCase" <<i>>
+interface "CreateWebhookSubscriptionUseCase" <<i>>
+interface "DataFormatRegistry" <<i>>
+interface "DatabasePasswordProvider" <<i>>
+interface "DatabasePasswordRefresher" <<i>>
+interface "DatabaseTransactionManager" <<i>>
+interface "DatasetActionAuthorizer" <<i>>
+interface "DatasetDataBlockRepository" <<i>>
+interface "DatasetDependencyRepository" <<i>>
+interface "DatasetEntryRemovalListener" <<i>>
+interface "DatasetEntryRepository" <<i>>
+interface "DatasetEntryService" <<i>>
+interface "DatasetEntryWriter" <<i>>
+interface "DatasetEnvVarRepository" <<i>>
+interface "DatasetEnvVarService" <<i>>
+interface "DatasetFactory" <<i>>
+interface "DatasetIncrementQueryService" <<i>>
+interface "DatasetKeyBlockRepository" <<i>>
+interface "DatasetKeyValueService" <<i>>
+interface "DatasetReferenceRepository" <<i>>
+interface "DatasetReferenceService" <<i>>
+interface "DatasetRegistry" <<i>>
+interface "DatasetS3Builder" <<i>>
+interface "DatasetStatisticsRepository" <<i>>
+interface "DatasetStatisticsService" <<i>>
+interface "DatasetStorageUnit" <<i>>
+interface "DatasetStorageUnitWriter" <<i>>
+interface "DeleteAccountUseCase" <<i>>
+interface "DeleteDatasetUseCase" <<i>>
+interface "DependencyGraphService" <<i>>
+interface "DidGenerator" <<i>>
+interface "DidSecretKeyRepository" <<i>>
+interface "EmailSender" <<i>>
+interface "EmbeddingsChunker" <<i>>
+interface "EmbeddingsEncoder" <<i>>
+interface "EngineProvisioner" <<i>>
+interface "ExpensiveAccountRepository" <<i>>
+interface "FlowAgent" <<i>>
+interface "FlowAgentTestDriver" <<i>>
+interface "FlowConfigurationEventStore" <<i>>
+interface "FlowConfigurationService" <<i>>
+interface "FlowController" <<i>>
+interface "FlowEventStore" <<i>>
+interface "FlowProcessStateQuery" <<i>>
+interface "FlowProcessStateRepository" <<i>>
+interface "FlowQueryService" <<i>>
+interface "FlowRunService" <<i>>
+interface "FlowSchedulingService" <<i>>
+interface "FlowScopeRemovalHandler" <<i>>
+interface "FlowSensorDispatcher" <<i>>
+interface "FlowSystemEventAgent" <<i>>
+interface "FlowSystemEventBridge" <<i>>
+interface "FlowSystemEventProjector" <<i>>
+interface "FlowTriggerEventStore" <<i>>
+interface "FlowTriggerService" <<i>>
+interface "GetDatasetDownstreamDependenciesUseCase" <<i>>
+interface "GetDatasetSchemaUseCase" <<i>>
+interface "GetDatasetUpstreamDependenciesUseCase" <<i>>
+interface "InitOnStartup" <<i>>
+interface "JwtTokenIssuer" <<i>>
+interface "MarkWebhookSubscriptionUnreachableUseCase" <<i>>
+interface "MessageConsumer" <<i>>
+interface "MessageConsumerT" <<i>>
+interface "MetadataQueryService" <<i>>
+interface "MetricsProvider" <<i>>
+interface "ModifyAccountPasswordUseCase" <<i>>
+interface "NaturalLanguageSearchService" <<i>>
+interface "OAuthDeviceCodeGenerator" <<i>>
+interface "OAuthDeviceCodeRepository" <<i>>
+interface "OAuthDeviceCodeService" <<i>>
+interface "ObjectStoreBuilder" <<i>>
+interface "ObjectStoreRegistry" <<i>>
+interface "OdfServerAccessTokenResolver" <<i>>
+interface "OutboxAgent" <<i>>
+interface "OutboxMessageConsumptionRepository" <<i>>
+interface "OutboxMessageRepository" <<i>>
+interface "PasswordHashRepository" <<i>>
+interface "PauseWebhookSubscriptionUseCase" <<i>>
+interface "PollingIngestService" <<i>>
+interface "PullDatasetUseCase" <<i>>
+interface "PullRequestPlanner" <<i>>
+interface "PushDatasetUseCase" <<i>>
+interface "PushIngestDataUseCase" <<i>>
+interface "PushIngestExecutor" <<i>>
+interface "PushIngestPlanner" <<i>>
+interface "PushRequestPlanner" <<i>>
+interface "QueryDatasetDataUseCase" <<i>>
+interface "QueryService" <<i>>
+interface "ReactivateWebhookSubscriptionUseCase" <<i>>
+interface "RebacDatasetRegistryFacade" <<i>>
+interface "RebacRepository" <<i>>
+interface "RebacService" <<i>>
+interface "RemoteAliasResolver" <<i>>
+interface "RemoteAliasesRegistry" <<i>>
+interface "RemoteRepositoryRegistry" <<i>>
+interface "RemoteStatusService" <<i>>
+interface "RemoveWebhookSubscriptionUseCase" <<i>>
+interface "RenameDatasetUseCase" <<i>>
+interface "ResetDatasetUseCase" <<i>>
+interface "ResetExecutor" <<i>>
+interface "ResetPlanner" <<i>>
+interface "ResumeWebhookSubscriptionUseCase" <<i>>
+interface "RotateWebhookSubscriptionSecretUseCase" <<i>>
+interface "SchemaService" <<i>>
+interface "SearchEntitySchemaProvider" <<i>>
+interface "SearchService" <<i>>
+interface "SessionAuth" <<i>>
+interface "SessionManager" <<i>>
+interface "SetWatermarkExecutor" <<i>>
+interface "SetWatermarkPlanner" <<i>>
+interface "SetWatermarkUseCase" <<i>>
+interface "SmartTransferProtocolClient" <<i>>
+interface "SyncService" <<i>>
+interface "SystemTimeSource" <<i>>
+interface "TaskAgent" <<i>>
+interface "TaskDefinitionPlanner" <<i>>
+interface "TaskEventStore" <<i>>
+interface "TaskRunner" <<i>>
+interface "TaskScheduler" <<i>>
+interface "TransformElaborationService" <<i>>
+interface "TransformExecutor" <<i>>
+interface "TransformFlowEvaluator" <<i>>
+interface "TransformRequestPlanner" <<i>>
+interface "UpdateAccountUseCase" <<i>>
+interface "UpdateCollectionEntriesUseCase" <<i>>
+interface "UpdateVersionFileUseCase" <<i>>
+interface "UpdateWebhookSubscriptionUseCase" <<i>>
+interface "UploadService" <<i>>
+interface "VerificationService" <<i>>
+interface "VerifyDatasetUseCase" <<i>>
+interface "Web3AuthEip4361NonceRepository" <<i>>
+interface "Web3AuthEip4361NonceService" <<i>>
+interface "WebhookDeliveryRepository" <<i>>
+interface "WebhookDeliveryWorker" <<i>>
+interface "WebhookSecretGenerator" <<i>>
+interface "WebhookSender" <<i>>
+interface "WebhookSigner" <<i>>
+interface "WebhookSubscriptionEventStore" <<i>>
+interface "WebhookSubscriptionQueryService" <<i>>
+class "AccessToken" <<singleton>>
+class "AccessTokenLifecycleNotifier"
+class "AccessTokenServiceImpl"
+class "AccountAuthorizationHelperImpl"
+class "AccountLifecycleNotifier"
+class "AccountProperties" <<singleton>>
+class "AccountSearchSchemaProvider"
+class "AccountSearchUpdater"
+class "AccountServiceImpl"
+class "AppendDatasetMetadataBatchUseCaseImpl"
+class "ApplyAccountDatasetRelationsUseCaseImpl"
+class "AuthConfig" <<singleton>>
+class "AuthenticationServiceImpl"
+class "BuildInfo" <<singleton>>
+class "CacheDir" <<singleton>>
+class "CommitDatasetEventUseCaseImpl"
+class "CompactDatasetUseCaseImpl"
+class "CompactionExecutorImpl"
+class "CompactionPlannerImpl"
+class "Config" <<singleton>>
+class "ContainerRuntime"
+class "ContainerRuntimeConfig" <<singleton>>
+class "CreateAccountUseCaseImpl"
+class "CreateDatasetFromSnapshotUseCaseImpl"
+class "CreateDatasetUseCaseHelper"
+class "CreateDatasetUseCaseImpl"
+class "CreateWebhookSubscriptionUseCaseImpl"
+class "CurrentAccountSubject" <<singleton>>
+class "DataFormatRegistryImpl"
+class "DatabaseConnectionSettings" <<singleton>>
+class "DatabaseFixedPasswordProvider"
+class "DatabaseTransactionRunner"
+class "DatasetAccountLifecycleHandler"
+class "DatasetAliasUpdateHandler"
+class "DatasetBlockIndexer"
+class "DatasetBlockUpdateHandler"
+class "DatasetEntryIndexer"
+class "DatasetEntryServiceImpl"
+class "DatasetEnvVarServiceNull"
+class "DatasetEnvVarsConfig" <<singleton>>
+class "DatasetFactoryImpl"
+class "DatasetIncrementQueryServiceImpl"
+class "DatasetKeyValueServiceSysEnv"
+class "DatasetProperties" <<singleton>>
+class "DatasetReferenceIndexer"
+class "DatasetReferenceServiceImpl"
+class "DatasetS3BuilderDatabaseBackedImpl"
+class "DatasetSearchSchemaProvider"
+class "DatasetSearchUpdater"
+class "DatasetStatisticsIndexer"
+class "DatasetStatisticsServiceImpl"
+class "DatasetStatisticsUpdateHandler"
+class "DatasetStorageUnitS3"
+class "DeleteAccountUseCaseImpl"
+class "DeleteDatasetUseCaseImpl"
+class "DeliverWebhookTaskPlanner"
+class "DeliverWebhookTaskRunner"
+class "DependencyGraphImmediateListener"
+class "DependencyGraphIndexer"
+class "DependencyGraphServiceImpl" <<singleton>>
+class "DidGeneratorDefault"
+class "DidSecretEncryptionConfig" <<singleton>>
+class "DidSecretService"
+class "DummyEmailSender"
+class "DummyNaturalLanguageSearchService"
+class "DummyOdfServerAccessTokenResolver"
+class "DummySearchService"
+class "EmbeddingsChunkerConfigSimple" <<singleton>>
+class "EmbeddingsChunkerSimple"
+class "EmbeddingsEncoderConfigOpenAI" <<singleton>>
+class "EmbeddingsEncoderOpenAi" <<singleton>>
+class "EngineConfigDatafusionEmbeddedBatchQuery" <<singleton>>
+class "EngineConfigDatafusionEmbeddedCompaction" <<singleton>>
+class "EngineConfigDatafusionEmbeddedIngest" <<singleton>>
+class "EngineProvisionerLocal"
+class "EngineProvisionerLocalConfig" <<singleton>>
+class "EthereumSourceConfig" <<singleton>>
+class "FetchService"
+class "FileUploadLimitConfig" <<singleton>>
+class "FlowAbortHelper"
+class "FlowAgentConfig" <<singleton>>
+class "FlowAgentImpl" <<singleton>>
+class "FlowConfigurationServiceImpl"
+class "FlowControllerCompact"
+class "FlowControllerIngest"
+class "FlowControllerReset"
+class "FlowControllerResetToMetadata"
+class "FlowControllerTransform"
+class "FlowControllerWebhookDeliver"
+class "FlowDatasetsEventBridge"
+class "FlowProcessStateProjector"
+class "FlowProgressNotifier"
+class "FlowQueryServiceImpl"
+class "FlowRunServiceImpl"
+class "FlowSchedulingServiceImpl"
+class "FlowSensorDispatcherImpl" <<singleton>>
+class "FlowSystemEventAgentConfig" <<singleton>>
+class "FlowSystemEventAgentImpl" <<singleton>>
+class "FlowTriggerServiceImpl"
+class "FlowWebhooksEventBridge"
+class "GetDatasetDownstreamDependenciesUseCaseImpl"
+class "GetDatasetSchemaUseCaseImpl"
+class "GetDatasetUpstreamDependenciesUseCaseImpl"
+class "HardCompactDatasetTaskPlanner"
+class "HardCompactDatasetTaskRunner"
+class "IpfsClient" <<singleton>>
+class "IpfsGateway" <<singleton>>
+class "JwtAuthenticationConfig" <<singleton>>
+class "KamuAuthOso"
+class "KamuFlightSqlService"
+class "LoginPasswordAuthProvider"
+class "MarkWebhookSubscriptionUnreachableUseCaseImpl"
+class "MessageDispatcherT" <<singleton>>
+class "MessageDispatcherT" <<singleton>>
+class "MessageDispatcherT" <<singleton>>
+class "MessageDispatcherT" <<singleton>>
+class "MessageDispatcherT" <<singleton>>
+class "MessageDispatcherT" <<singleton>>
+class "MessageDispatcherT" <<singleton>>
+class "MessageDispatcherT" <<singleton>>
+class "MessageDispatcherT" <<singleton>>
+class "MessageDispatcherT" <<singleton>>
+class "MessageDispatcherT" <<singleton>>
+class "MessageDispatcherT" <<singleton>>
+class "MetadataChainDbBackedConfig" <<singleton>>
+class "MetadataQueryServiceImpl"
+class "ModifyAccountPasswordUseCaseImpl"
+class "MqttSourceConfig" <<singleton>>
+class "NaturalLanguageSearchConfig" <<singleton>>
+class "NaturalLanguageSearchIndexerConfig" <<singleton>>
+class "OAuthDeviceCodeGeneratorDefault"
+class "OAuthDeviceCodeServiceImpl"
+class "ObjectStoreBuilderLocalFs" <<agnostic>>
+class "ObjectStoreBuilderS3" <<agnostic>>
+class "ObjectStoreRegistryImpl" <<singleton>>
+class "OsoDatasetAuthorizer"
+class "OsoResourceServiceImpl"
+class "OutboxAgentImpl" <<singleton>>
+class "OutboxAgentMetrics" <<singleton>>
+class "OutboxConfig" <<singleton>>
+class "OutboxDispatchingImpl"
+class "OutboxImmediateImpl"
+class "OutboxTransactionalImpl"
+class "PauseWebhookSubscriptionUseCaseImpl"
+class "PollingIngestServiceImpl"
+class "Pool" <<singleton>>
+class "PostgresAccessTokenRepository"
+class "PostgresAccountRepository"
+class "PostgresDatasetDataBlockRepository"
+class "PostgresDatasetDependencyRepository"
+class "PostgresDatasetEntryRepository"
+class "PostgresDatasetEnvVarRepository"
+class "PostgresDatasetKeyBlockRepository"
+class "PostgresDatasetReferenceRepository"
+class "PostgresDatasetStatisticsRepository"
+class "PostgresDidSecretKeyRepository"
+class "PostgresFlowConfigurationEventStore"
+class "PostgresFlowEventStore"
+class "PostgresFlowProcessStateQuery"
+class "PostgresFlowProcessStateRepository"
+class "PostgresFlowSystemEventBridge" <<agnostic>>
+class "PostgresFlowTriggerEventStore"
+class "PostgresOAuthDeviceCodeRepository"
+class "PostgresOutboxMessageConsumptionRepository"
+class "PostgresOutboxMessageRepository"
+class "PostgresPasswordRefresher"
+class "PostgresPlugin"
+class "PostgresRebacRepository"
+class "PostgresTaskEventStore"
+class "PostgresTransactionManager"
+class "PostgresWeb3AuthEip4361NonceRepository"
+class "PostgresWebhookDeliveryRepository"
+class "PostgresWebhookSubscriptionEventStore"
+class "PredefinedAccountsConfig" <<singleton>>
+class "PredefinedAccountsRegistrator"
+class "ProbeTaskPlanner"
+class "ProbeTaskRunner"
+class "PullDatasetUseCaseImpl"
+class "PullRequestPlannerImpl"
+class "PushDatasetUseCaseImpl"
+class "PushIngestDataUseCaseImpl"
+class "PushIngestExecutorImpl"
+class "PushIngestPlannerImpl"
+class "PushRequestPlannerImpl"
+class "QueryDatasetDataUseCaseImpl"
+class "QueryServiceImpl"
+class "ReactivateWebhookSubscriptionUseCaseImpl"
+class "RebacDatasetLifecycleMessageConsumer"
+class "RebacDatasetRegistryFacadeImpl"
+class "RebacIndexer"
+class "RebacServiceImpl"
+class "Registry" <<singleton>>
+class "RemoteAliasResolverImpl"
+class "RemoteAliasesRegistryImpl"
+class "RemoteReposDir" <<singleton>>
+class "RemoteRepositoryRegistryImpl"
+class "RemoteStatusServiceImpl"
+class "RemoveWebhookSubscriptionUseCaseImpl"
+class "RenameDatasetUseCaseImpl"
+class "ResetDatasetTaskPlanner"
+class "ResetDatasetTaskRunner"
+class "ResetDatasetToMetadataTaskRunner"
+class "ResetDatasetUseCaseImpl"
+class "ResetExecutorImpl"
+class "ResetPlannerImpl"
+class "ResetToMetadataDatasetTaskPlanner"
+class "ResumeWebhookSubscriptionUseCaseImpl"
+class "RotateWebhookSubscriptionSecretUseCaseImpl"
+class "RunInfoDir" <<singleton>>
+class "S3Metrics" <<singleton>>
+class "SchemaServiceImpl"
+class "ServerUrlConfig" <<singleton>>
+class "SessionAuthAnonymous"
+class "SessionAuthConfig" <<singleton>>
+class "SessionCachingConfig" <<singleton>>
+class "SessionContextBuilder"
+class "SessionId" <<singleton>>
+class "SessionManagerCaching"
+class "SessionManagerCachingState" <<singleton>>
+class "SetWatermarkExecutorImpl"
+class "SetWatermarkPlannerImpl"
+class "SetWatermarkUseCaseImpl"
+class "SimpleTransferProtocol"
+class "SourceConfig" <<singleton>>
+class "SqlInfoData" <<singleton>>
+class "SyncRequestBuilder"
+class "SyncServiceImpl"
+class "SystemTimeSourceDefault" <<agnostic>>
+class "TaskAgentConfig" <<singleton>>
+class "TaskAgentImpl" <<singleton>>
+class "TaskSchedulerImpl"
+class "TenancyConfig" <<singleton>>
+class "TransactionRef" <<singleton>>
+class "TransactionRefT" <<singleton>>
+class "TransformElaborationServiceImpl"
+class "TransformExecutorImpl"
+class "TransformFlowEvaluatorImpl"
+class "TransformRequestPlannerImpl"
+class "UIConfiguration" <<singleton>>
+class "UpdateAccountUseCaseImpl"
+class "UpdateCollectionEntriesUseCaseImpl"
+class "UpdateDatasetTaskPlanner"
+class "UpdateDatasetTaskRunner"
+class "UpdateVersionFileUseCaseImpl"
+class "UpdateWebhookSubscriptionUseCaseImpl"
+class "UploadServiceLocal"
+class "VerificationServiceImpl"
+class "VerifyDatasetUseCaseImpl"
+class "Web3AuthEip4361NonceServiceImpl"
+class "Web3WalletAuthenticationProvider"
+class "WebhookDatasetRemovalHandler"
+class "WebhookDeliveryWorkerImpl"
+class "WebhookSecretGeneratorImpl"
+class "WebhookSenderImpl"
+class "WebhookSignerImpl"
+class "WebhookSubscriptionQueryServiceImpl"
+class "WebhooksConfig" <<singleton>>
+class "WsSmartTransferProtocolClient"
+"ContainerRuntime"  --> "ContainerRuntimeConfig"
+"DatabasePasswordProvider" <|-- "DatabaseFixedPasswordProvider"
+"DatabasePasswordRefresher" <|-- "PostgresPasswordRefresher"
+"PostgresPasswordRefresher"  --> "DatabaseConnectionSettings"
+"PostgresPasswordRefresher"  --> "DatabasePasswordProvider"
+"PostgresPasswordRefresher"  --> "Pool"
+"DatabaseTransactionRunner"  --> "Catalog"
+"DatabaseTransactionManager" <|-- "PostgresTransactionManager"
+"PostgresTransactionManager"  --> "Pool"
+"EmailSender" <|-- "DummyEmailSender"
+"EngineProvisioner" <|-- "EngineProvisionerLocal"
+"EngineProvisionerLocal"  --> "ContainerRuntime"
+"EngineProvisionerLocal"  --> "EngineProvisionerLocalConfig"
+"EngineProvisionerLocal"  --> "RunInfoDir"
+"CompactionExecutor" <|-- "CompactionExecutorImpl"
+"CompactionExecutorImpl"  --> "ObjectStoreRegistry"
+"CompactionExecutorImpl"  --> "SystemTimeSource"
+"CompactionExecutorImpl"  --> "EngineConfigDatafusionEmbeddedCompaction"
+"CompactionExecutorImpl"  --> "RunInfoDir"
+"CompactionPlanner" <|-- "CompactionPlannerImpl"
+"DataFormatRegistry" <|-- "DataFormatRegistryImpl"
+"FetchService"  --> "ContainerRuntime"
+"FetchService"  --> "DatasetKeyValueService"
+"FetchService" "?" --> "EthereumSourceConfig"
+"FetchService" "?" --> "HttpSourceConfig"
+"FetchService" "?" --> "MqttSourceConfig"
+"FetchService" "?" --> "SourceConfig"
+"FetchService"  --> "RunInfoDir"
+"PollingIngestService" <|-- "PollingIngestServiceImpl"
+"PollingIngestServiceImpl"  --> "EngineProvisioner"
+"PollingIngestServiceImpl"  --> "DataFormatRegistry"
+"PollingIngestServiceImpl"  --> "ObjectStoreRegistry"
+"PollingIngestServiceImpl"  --> "SystemTimeSource"
+"PollingIngestServiceImpl"  --> "EngineConfigDatafusionEmbeddedIngest"
+"PollingIngestServiceImpl"  --> "FetchService"
+"PollingIngestServiceImpl"  --> "CacheDir"
+"PollingIngestServiceImpl"  --> "RunInfoDir"
+"PushIngestExecutor" <|-- "PushIngestExecutorImpl"
+"PushIngestExecutorImpl"  --> "EngineProvisioner"
+"PushIngestExecutorImpl"  --> "DataFormatRegistry"
+"PushIngestExecutorImpl"  --> "ObjectStoreRegistry"
+"PushIngestExecutorImpl"  --> "EngineConfigDatafusionEmbeddedIngest"
+"PushIngestPlanner" <|-- "PushIngestPlannerImpl"
+"PushIngestPlannerImpl"  --> "DataFormatRegistry"
+"PushIngestPlannerImpl"  --> "SystemTimeSource"
+"PushIngestPlannerImpl"  --> "RunInfoDir"
+"MetadataQueryService" <|-- "MetadataQueryServiceImpl"
+"ObjectStoreBuilder" <|-- "ObjectStoreBuilderLocalFs"
+"ObjectStoreBuilder" <|-- "ObjectStoreBuilderS3"
+"ObjectStoreRegistry" <|-- "ObjectStoreRegistryImpl"
+"ObjectStoreRegistryImpl" "*" --> "ObjectStoreBuilder"
+"PullRequestPlanner" <|-- "PullRequestPlannerImpl"
+"PullRequestPlannerImpl"  --> "RemoteAliasesRegistry"
+"PullRequestPlannerImpl"  --> "TransformRequestPlanner"
+"PullRequestPlannerImpl"  --> "DatasetRegistry"
+"PullRequestPlannerImpl"  --> "DependencyGraphService"
+"PullRequestPlannerImpl"  --> "SyncRequestBuilder"
+"PullRequestPlannerImpl"  --> "CurrentAccountSubject"
+"PushRequestPlanner" <|-- "PushRequestPlannerImpl"
+"PushRequestPlannerImpl"  --> "RemoteAliasResolver"
+"QueryService" <|-- "QueryServiceImpl"
+"QueryServiceImpl"  --> "DatasetActionAuthorizer"
+"QueryServiceImpl"  --> "DatasetRegistry"
+"QueryServiceImpl"  --> "SessionContextBuilder"
+"RemoteAliasResolver" <|-- "RemoteAliasResolverImpl"
+"RemoteAliasResolverImpl"  --> "RemoteAliasesRegistry"
+"RemoteAliasResolverImpl"  --> "RemoteRepositoryRegistry"
+"RemoteAliasResolverImpl"  --> "OdfServerAccessTokenResolver"
+"RemoteAliasesRegistry" <|-- "RemoteAliasesRegistryImpl"
+"RemoteAliasesRegistryImpl"  --> "DatasetRegistry"
+"RemoteRepositoryRegistry" <|-- "RemoteRepositoryRegistryImpl"
+"RemoteRepositoryRegistryImpl"  --> "RemoteReposDir"
+"RemoteStatusService" <|-- "RemoteStatusServiceImpl"
+"RemoteStatusServiceImpl"  --> "RemoteAliasesRegistry"
+"RemoteStatusServiceImpl"  --> "DatasetRegistry"
+"RemoteStatusServiceImpl"  --> "DatasetFactory"
+"ResetExecutor" <|-- "ResetExecutorImpl"
+"ResetPlanner" <|-- "ResetPlannerImpl"
+"SchemaService" <|-- "SchemaServiceImpl"
+"SchemaServiceImpl"  --> "SessionContextBuilder"
+"SessionContextBuilder"  --> "ObjectStoreRegistry"
+"SessionContextBuilder"  --> "DatasetRegistry"
+"SessionContextBuilder"  --> "EngineConfigDatafusionEmbeddedBatchQuery"
+"SyncRequestBuilder"  --> "RemoteAliasResolver"
+"SyncRequestBuilder"  --> "RemoteRepositoryRegistry"
+"SyncRequestBuilder"  --> "DatasetRegistry"
+"SyncRequestBuilder"  --> "DatasetFactory"
+"SyncService" <|-- "SyncServiceImpl"
+"SyncServiceImpl"  --> "SmartTransferProtocolClient"
+"SyncServiceImpl"  --> "RemoteRepositoryRegistry"
+"SyncServiceImpl"  --> "DatasetFactory"
+"SyncServiceImpl"  --> "IpfsClient"
+"SyncServiceImpl"  --> "SimpleTransferProtocol"
+"TransformElaborationService" <|-- "TransformElaborationServiceImpl"
+"TransformElaborationServiceImpl"  --> "CompactionExecutor"
+"TransformElaborationServiceImpl"  --> "CompactionPlanner"
+"TransformElaborationServiceImpl"  --> "SystemTimeSource"
+"TransformExecutor" <|-- "TransformExecutorImpl"
+"TransformExecutorImpl"  --> "EngineProvisioner"
+"TransformRequestPlanner" <|-- "TransformRequestPlannerImpl"
+"TransformRequestPlannerImpl"  --> "DatasetRegistry"
+"VerificationService" <|-- "VerificationServiceImpl"
+"VerificationServiceImpl"  --> "TransformExecutor"
+"VerificationServiceImpl"  --> "TransformRequestPlanner"
+"SetWatermarkExecutor" <|-- "SetWatermarkExecutorImpl"
+"SetWatermarkPlanner" <|-- "SetWatermarkPlannerImpl"
+"SetWatermarkPlannerImpl"  --> "RemoteAliasesRegistry"
+"SetWatermarkPlannerImpl"  --> "SystemTimeSource"
+"CompactDatasetUseCase" <|-- "CompactDatasetUseCaseImpl"
+"CompactDatasetUseCaseImpl"  --> "RebacDatasetRegistryFacade"
+"CompactDatasetUseCaseImpl"  --> "CompactionExecutor"
+"CompactDatasetUseCaseImpl"  --> "CompactionPlanner"
+"PullDatasetUseCase" <|-- "PullDatasetUseCaseImpl"
+"PullDatasetUseCaseImpl"  --> "Catalog"
+"PullDatasetUseCaseImpl"  --> "PollingIngestService"
+"PullDatasetUseCaseImpl"  --> "SyncService"
+"PullDatasetUseCaseImpl"  --> "TransformElaborationService"
+"PullDatasetUseCaseImpl"  --> "TransformExecutor"
+"PullDatasetUseCaseImpl"  --> "TenancyConfig"
+"PushDatasetUseCase" <|-- "PushDatasetUseCaseImpl"
+"PushDatasetUseCaseImpl"  --> "Catalog"
+"PushDatasetUseCaseImpl"  --> "SyncService"
+"PushIngestDataUseCase" <|-- "PushIngestDataUseCaseImpl"
+"PushIngestDataUseCaseImpl"  --> "PushIngestExecutor"
+"PushIngestDataUseCaseImpl"  --> "PushIngestPlanner"
+"PushIngestDataUseCaseImpl"  --> "Outbox"
+"GetDatasetSchemaUseCase" <|-- "GetDatasetSchemaUseCaseImpl"
+"GetDatasetSchemaUseCaseImpl"  --> "RebacDatasetRegistryFacade"
+"GetDatasetSchemaUseCaseImpl"  --> "SchemaService"
+"QueryDatasetDataUseCase" <|-- "QueryDatasetDataUseCaseImpl"
+"QueryDatasetDataUseCaseImpl"  --> "RebacDatasetRegistryFacade"
+"QueryDatasetDataUseCaseImpl"  --> "QueryService"
+"QueryDatasetDataUseCaseImpl"  --> "DatasetRegistry"
+"ResetDatasetUseCase" <|-- "ResetDatasetUseCaseImpl"
+"ResetDatasetUseCaseImpl"  --> "RebacDatasetRegistryFacade"
+"ResetDatasetUseCaseImpl"  --> "ResetExecutor"
+"ResetDatasetUseCaseImpl"  --> "ResetPlanner"
+"SetWatermarkUseCase" <|-- "SetWatermarkUseCaseImpl"
+"SetWatermarkUseCaseImpl"  --> "RebacDatasetRegistryFacade"
+"SetWatermarkUseCaseImpl"  --> "SetWatermarkExecutor"
+"SetWatermarkUseCaseImpl"  --> "SetWatermarkPlanner"
+"VerifyDatasetUseCase" <|-- "VerifyDatasetUseCaseImpl"
+"VerifyDatasetUseCaseImpl"  --> "RebacDatasetRegistryFacade"
+"VerifyDatasetUseCaseImpl"  --> "VerificationService"
+"SimpleTransferProtocol"  --> "Catalog"
+"AccessTokenRepository" <|-- "PostgresAccessTokenRepository"
+"PostgresAccessTokenRepository"  --> "TransactionRefT"
+"AccountRepository" <|-- "PostgresAccountRepository"
+"ExpensiveAccountRepository" <|-- "PostgresAccountRepository"
+"PasswordHashRepository" <|-- "PostgresAccountRepository"
+"PostgresAccountRepository"  --> "TransactionRefT"
+"DidSecretKeyRepository" <|-- "PostgresDidSecretKeyRepository"
+"PostgresDidSecretKeyRepository"  --> "TransactionRefT"
+"OAuthDeviceCodeRepository" <|-- "PostgresOAuthDeviceCodeRepository"
+"PostgresOAuthDeviceCodeRepository"  --> "TransactionRefT"
+"SearchEntitySchemaProvider" <|-- "AccountSearchSchemaProvider"
+"AccountSearchSchemaProvider"  --> "Catalog"
+"MessageConsumer" <|-- "AccountSearchUpdater"
+"MessageConsumerT" <|-- "AccountSearchUpdater"
+"AccountSearchUpdater"  --> "SearchService"
+"AccessTokenService" <|-- "AccessTokenServiceImpl"
+"AccessTokenServiceImpl"  --> "AccessTokenRepository"
+"AccessTokenServiceImpl"  --> "Outbox"
+"AccessTokenServiceImpl"  --> "SystemTimeSource"
+"AccountService" <|-- "AccountServiceImpl"
+"AccountServiceImpl" "?" --> "PasswordHashingMode"
+"AccountServiceImpl"  --> "AccountRepository"
+"AccountServiceImpl"  --> "PasswordHashRepository"
+"AuthenticationService" <|-- "AuthenticationServiceImpl"
+"JwtTokenIssuer" <|-- "AuthenticationServiceImpl"
+"AuthenticationServiceImpl"  --> "AccessTokenService"
+"AuthenticationServiceImpl"  --> "AccountService"
+"AuthenticationServiceImpl" "*" --> "AuthenticationProvider"
+"AuthenticationServiceImpl"  --> "OAuthDeviceCodeService"
+"AuthenticationServiceImpl"  --> "Outbox"
+"AuthenticationServiceImpl"  --> "SystemTimeSource"
+"AuthenticationServiceImpl"  --> "AuthConfig"
+"AuthenticationServiceImpl"  --> "JwtAuthenticationConfig"
+"MessageConsumer" <|-- "DidSecretService"
+"MessageConsumerT" <|-- "DidSecretService"
+"MessageConsumerT" <|-- "DidSecretService"
+"DidSecretService"  --> "DidSecretKeyRepository"
+"AuthenticationProvider" <|-- "LoginPasswordAuthProvider"
+"LoginPasswordAuthProvider"  --> "AccountService"
+"OAuthDeviceCodeGenerator" <|-- "OAuthDeviceCodeGeneratorDefault"
+"InitOnStartup" <|-- "OAuthDeviceCodeServiceImpl"
+"OAuthDeviceCodeService" <|-- "OAuthDeviceCodeServiceImpl"
+"OAuthDeviceCodeServiceImpl"  --> "OAuthDeviceCodeRepository"
+"OAuthDeviceCodeServiceImpl"  --> "OAuthDeviceCodeGenerator"
+"OAuthDeviceCodeServiceImpl"  --> "SystemTimeSource"
+"InitOnStartup" <|-- "PredefinedAccountsRegistrator"
+"PredefinedAccountsRegistrator"  --> "AccountService"
+"PredefinedAccountsRegistrator"  --> "CreateAccountUseCase"
+"PredefinedAccountsRegistrator"  --> "UpdateAccountUseCase"
+"PredefinedAccountsRegistrator"  --> "RebacService"
+"PredefinedAccountsRegistrator"  --> "PredefinedAccountsConfig"
+"PredefinedAccountsRegistrator"  --> "AccountProperties"
+"CreateAccountUseCase" <|-- "CreateAccountUseCaseImpl"
+"CreateAccountUseCaseImpl"  --> "DidSecretKeyRepository"
+"CreateAccountUseCaseImpl"  --> "AccountService"
+"CreateAccountUseCaseImpl"  --> "Outbox"
+"CreateAccountUseCaseImpl"  --> "SystemTimeSource"
+"CreateAccountUseCaseImpl"  --> "DidSecretEncryptionConfig"
+"DeleteAccountUseCase" <|-- "DeleteAccountUseCaseImpl"
+"DeleteAccountUseCaseImpl"  --> "AccountService"
+"DeleteAccountUseCaseImpl"  --> "AccountAuthorizationHelper"
+"DeleteAccountUseCaseImpl"  --> "Outbox"
+"DeleteAccountUseCaseImpl"  --> "SystemTimeSource"
+"ModifyAccountPasswordUseCase" <|-- "ModifyAccountPasswordUseCaseImpl"
+"ModifyAccountPasswordUseCaseImpl"  --> "AccountService"
+"ModifyAccountPasswordUseCaseImpl"  --> "AccountAuthorizationHelper"
+"ModifyAccountPasswordUseCaseImpl"  --> "Outbox"
+"ModifyAccountPasswordUseCaseImpl"  --> "SystemTimeSource"
+"UpdateAccountUseCase" <|-- "UpdateAccountUseCaseImpl"
+"UpdateAccountUseCaseImpl"  --> "AccountService"
+"UpdateAccountUseCaseImpl" "lazy" --> "AccountAuthorizationHelper"
+"UpdateAccountUseCaseImpl"  --> "Outbox"
+"UpdateAccountUseCaseImpl"  --> "SystemTimeSource"
+"AccountAuthorizationHelper" <|-- "AccountAuthorizationHelperImpl"
+"AccountAuthorizationHelperImpl"  --> "RebacService"
+"AccountAuthorizationHelperImpl"  --> "CurrentAccountSubject"
+"DatasetActionAuthorizer" <|-- "OsoDatasetAuthorizer"
+"OsoDatasetAuthorizer"  --> "CurrentAccountSubject"
+"OsoDatasetAuthorizer"  --> "KamuAuthOso"
+"OsoDatasetAuthorizer"  --> "OsoResourceServiceImpl"
+"OsoResourceServiceImpl"  --> "RebacService"
+"OsoResourceServiceImpl"  --> "DatasetEntryService"
+"AuthenticationProvider" <|-- "Web3WalletAuthenticationProvider"
+"Web3WalletAuthenticationProvider"  --> "Web3AuthEip4361NonceService"
+"Web3WalletAuthenticationProvider"  --> "SystemTimeSource"
+"Web3WalletAuthenticationProvider"  --> "ServerUrlConfig"
+"KamuFlightSqlService"  --> "SqlInfoData"
+"KamuFlightSqlService" "lazy" --> "SessionAuth"
+"KamuFlightSqlService" "lazy" --> "SessionManager"
+"SessionAuth" <|-- "SessionAuthAnonymous"
+"SessionManager" <|-- "SessionManagerCaching"
+"SessionManagerCaching" "lazy" --> "QueryService"
+"SessionManagerCaching"  --> "SystemTimeSource"
+"SessionManagerCaching"  --> "CurrentAccountSubject"
+"SessionManagerCaching"  --> "SessionCachingConfig"
+"SessionManagerCaching"  --> "SessionManagerCachingState"
+"SessionManagerCaching"  --> "SessionId"
+"FlowController" <|-- "FlowControllerCompact"
+"FlowControllerCompact"  --> "Catalog"
+"FlowControllerCompact"  --> "FlowSensorDispatcher"
+"FlowController" <|-- "FlowControllerIngest"
+"FlowControllerIngest"  --> "Catalog"
+"FlowControllerIngest"  --> "DatasetIncrementQueryService"
+"FlowControllerIngest"  --> "FlowRunService"
+"FlowControllerIngest"  --> "FlowSensorDispatcher"
+"FlowController" <|-- "FlowControllerReset"
+"FlowControllerReset"  --> "Catalog"
+"FlowControllerReset"  --> "FlowSensorDispatcher"
+"FlowController" <|-- "FlowControllerResetToMetadata"
+"FlowControllerResetToMetadata"  --> "Catalog"
+"FlowControllerResetToMetadata"  --> "FlowSensorDispatcher"
+"FlowController" <|-- "FlowControllerTransform"
+"FlowControllerTransform"  --> "Catalog"
+"FlowControllerTransform"  --> "DatasetIncrementQueryService"
+"FlowControllerTransform"  --> "FlowSensorDispatcher"
+"MessageConsumer" <|-- "FlowDatasetsEventBridge"
+"MessageConsumerT" <|-- "FlowDatasetsEventBridge"
+"MessageConsumerT" <|-- "FlowDatasetsEventBridge"
+"MessageConsumerT" <|-- "FlowDatasetsEventBridge"
+"FlowDatasetsEventBridge"  --> "FlowSensorDispatcher"
+"FlowDatasetsEventBridge"  --> "SystemTimeSource"
+"TransformFlowEvaluator" <|-- "TransformFlowEvaluatorImpl"
+"TransformFlowEvaluatorImpl"  --> "TransformRequestPlanner"
+"TransformFlowEvaluatorImpl"  --> "DatasetRegistry"
+"FlowController" <|-- "FlowControllerWebhookDeliver"
+"FlowControllerWebhookDeliver"  --> "Catalog"
+"FlowControllerWebhookDeliver"  --> "FlowSensorDispatcher"
+"MessageConsumer" <|-- "FlowWebhooksEventBridge"
+"MessageConsumerT" <|-- "FlowWebhooksEventBridge"
+"MessageConsumerT" <|-- "FlowWebhooksEventBridge"
+"MessageConsumerT" <|-- "FlowWebhooksEventBridge"
+"FlowWebhooksEventBridge"  --> "SystemTimeSource"
+"FlowWebhooksEventBridge"  --> "WebhooksConfig"
+"UploadService" <|-- "UploadServiceLocal"
+"UploadServiceLocal" "?" --> "AccessToken"
+"UploadServiceLocal"  --> "ServerUrlConfig"
+"UploadServiceLocal"  --> "FileUploadLimitConfig"
+"UploadServiceLocal"  --> "CacheDir"
+"SmartTransferProtocolClient" <|-- "WsSmartTransferProtocolClient"
+"WsSmartTransferProtocolClient"  --> "Catalog"
+"WsSmartTransferProtocolClient"  --> "OdfServerAccessTokenResolver"
+"TaskDefinitionPlanner" <|-- "HardCompactDatasetTaskPlanner"
+"HardCompactDatasetTaskPlanner"  --> "Catalog"
+"TaskDefinitionPlanner" <|-- "ResetDatasetTaskPlanner"
+"ResetDatasetTaskPlanner"  --> "Catalog"
+"TaskDefinitionPlanner" <|-- "ResetToMetadataDatasetTaskPlanner"
+"ResetToMetadataDatasetTaskPlanner"  --> "Catalog"
+"TaskDefinitionPlanner" <|-- "UpdateDatasetTaskPlanner"
+"UpdateDatasetTaskPlanner"  --> "Catalog"
+"UpdateDatasetTaskPlanner"  --> "TenancyConfig"
+"TaskRunner" <|-- "HardCompactDatasetTaskRunner"
+"HardCompactDatasetTaskRunner"  --> "Catalog"
+"HardCompactDatasetTaskRunner"  --> "CompactionExecutor"
+"TaskRunner" <|-- "ResetDatasetTaskRunner"
+"ResetDatasetTaskRunner"  --> "Catalog"
+"ResetDatasetTaskRunner"  --> "ResetExecutor"
+"TaskRunner" <|-- "ResetDatasetToMetadataTaskRunner"
+"ResetDatasetToMetadataTaskRunner"  --> "Catalog"
+"ResetDatasetToMetadataTaskRunner"  --> "CompactionExecutor"
+"TaskRunner" <|-- "UpdateDatasetTaskRunner"
+"UpdateDatasetTaskRunner"  --> "Catalog"
+"UpdateDatasetTaskRunner"  --> "PollingIngestService"
+"UpdateDatasetTaskRunner"  --> "SyncService"
+"UpdateDatasetTaskRunner"  --> "TransformElaborationService"
+"UpdateDatasetTaskRunner"  --> "TransformExecutor"
+"TaskDefinitionPlanner" <|-- "DeliverWebhookTaskPlanner"
+"TaskRunner" <|-- "DeliverWebhookTaskRunner"
+"DeliverWebhookTaskRunner"  --> "WebhookDeliveryWorker"
+"MessageConsumer" <|-- "AccessTokenLifecycleNotifier"
+"MessageConsumerT" <|-- "AccessTokenLifecycleNotifier"
+"AccessTokenLifecycleNotifier"  --> "EmailSender"
+"AccessTokenLifecycleNotifier"  --> "AccountService"
+"AccessTokenLifecycleNotifier"  --> "ServerUrlConfig"
+"MessageConsumer" <|-- "AccountLifecycleNotifier"
+"MessageConsumerT" <|-- "AccountLifecycleNotifier"
+"AccountLifecycleNotifier"  --> "EmailSender"
+"MessageConsumer" <|-- "FlowProgressNotifier"
+"MessageConsumerT" <|-- "FlowProgressNotifier"
+"FlowProgressNotifier"  --> "EmailSender"
+"FlowProgressNotifier"  --> "AccountService"
+"FlowProgressNotifier"  --> "DatasetEntryService"
+"FlowProgressNotifier"  --> "FlowQueryService"
+"FlowProgressNotifier"  --> "ServerUrlConfig"
+"FlowProgressNotifier"  --> "TenancyConfig"
+"RebacRepository" <|-- "PostgresRebacRepository"
+"PostgresRebacRepository"  --> "TransactionRefT"
+"MessageConsumer" <|-- "RebacDatasetLifecycleMessageConsumer"
+"MessageConsumerT" <|-- "RebacDatasetLifecycleMessageConsumer"
+"RebacDatasetLifecycleMessageConsumer"  --> "RebacService"
+"RebacDatasetLifecycleMessageConsumer"  --> "DatasetProperties"
+"RebacDatasetRegistryFacade" <|-- "RebacDatasetRegistryFacadeImpl"
+"RebacDatasetRegistryFacadeImpl"  --> "DatasetActionAuthorizer"
+"RebacDatasetRegistryFacadeImpl"  --> "DatasetRegistry"
+"InitOnStartup" <|-- "RebacIndexer"
+"RebacIndexer"  --> "ExpensiveAccountRepository"
+"RebacIndexer"  --> "RebacService"
+"RebacIndexer"  --> "DatasetEntryService"
+"RebacIndexer"  --> "PredefinedAccountsConfig"
+"RebacService" <|-- "RebacServiceImpl"
+"RebacServiceImpl"  --> "RebacRepository"
+"RebacServiceImpl"  --> "AccountProperties"
+"RebacServiceImpl"  --> "DatasetProperties"
+"ApplyAccountDatasetRelationsUseCase" <|-- "ApplyAccountDatasetRelationsUseCaseImpl"
+"ApplyAccountDatasetRelationsUseCaseImpl"  --> "RebacService"
+"ApplyAccountDatasetRelationsUseCaseImpl"  --> "DatasetActionAuthorizer"
+"Web3AuthEip4361NonceRepository" <|-- "PostgresWeb3AuthEip4361NonceRepository"
+"PostgresWeb3AuthEip4361NonceRepository"  --> "TransactionRefT"
+"InitOnStartup" <|-- "Web3AuthEip4361NonceServiceImpl"
+"Web3AuthEip4361NonceService" <|-- "Web3AuthEip4361NonceServiceImpl"
+"Web3AuthEip4361NonceServiceImpl"  --> "Web3AuthEip4361NonceRepository"
+"Web3AuthEip4361NonceServiceImpl"  --> "SystemTimeSource"
+"DidGenerator" <|-- "DidGeneratorDefault"
+"DatasetDataBlockRepository" <|-- "PostgresDatasetDataBlockRepository"
+"PostgresDatasetDataBlockRepository"  --> "TransactionRefT"
+"DatasetDependencyRepository" <|-- "PostgresDatasetDependencyRepository"
+"DatasetEntryRemovalListener" <|-- "PostgresDatasetDependencyRepository"
+"PostgresDatasetDependencyRepository"  --> "TransactionRefT"
+"DatasetEntryRepository" <|-- "PostgresDatasetEntryRepository"
+"PostgresDatasetEntryRepository"  --> "TransactionRefT"
+"PostgresDatasetEntryRepository" "*" --> "DatasetEntryRemovalListener"
+"DatasetEnvVarRepository" <|-- "PostgresDatasetEnvVarRepository"
+"PostgresDatasetEnvVarRepository"  --> "TransactionRefT"
+"DatasetKeyBlockRepository" <|-- "PostgresDatasetKeyBlockRepository"
+"PostgresDatasetKeyBlockRepository"  --> "TransactionRefT"
+"DatasetReferenceRepository" <|-- "PostgresDatasetReferenceRepository"
+"PostgresDatasetReferenceRepository"  --> "TransactionRefT"
+"DatasetStatisticsRepository" <|-- "PostgresDatasetStatisticsRepository"
+"PostgresDatasetStatisticsRepository"  --> "TransactionRefT"
+"SearchEntitySchemaProvider" <|-- "DatasetSearchSchemaProvider"
+"DatasetSearchSchemaProvider"  --> "Catalog"
+"MessageConsumer" <|-- "DatasetSearchUpdater"
+"MessageConsumerT" <|-- "DatasetSearchUpdater"
+"MessageConsumerT" <|-- "DatasetSearchUpdater"
+"MessageConsumerT" <|-- "DatasetSearchUpdater"
+"DatasetSearchUpdater"  --> "DatasetEntryService"
+"DatasetSearchUpdater"  --> "DatasetRegistry"
+"DatasetSearchUpdater"  --> "SearchService"
+"InitOnStartup" <|-- "DatasetBlockIndexer"
+"DatasetBlockIndexer"  --> "Catalog"
+"MessageConsumer" <|-- "DatasetBlockUpdateHandler"
+"MessageConsumerT" <|-- "DatasetBlockUpdateHandler"
+"DatasetBlockUpdateHandler"  --> "DatasetDataBlockRepository"
+"DatasetBlockUpdateHandler"  --> "DatasetKeyBlockRepository"
+"DatasetBlockUpdateHandler"  --> "DatasetRegistry"
+"DatasetBlockUpdateHandler"  --> "Outbox"
+"MessageConsumer" <|-- "DatasetAccountLifecycleHandler"
+"MessageConsumerT" <|-- "DatasetAccountLifecycleHandler"
+"DatasetAccountLifecycleHandler"  --> "DatasetRegistry"
+"DatasetAccountLifecycleHandler"  --> "DeleteDatasetUseCase"
+"DatasetAccountLifecycleHandler"  --> "DatasetEntryWriter"
+"MessageConsumer" <|-- "DatasetAliasUpdateHandler"
+"MessageConsumerT" <|-- "DatasetAliasUpdateHandler"
+"MessageConsumerT" <|-- "DatasetAliasUpdateHandler"
+"DatasetAliasUpdateHandler"  --> "DatasetRegistry"
+"DatasetIncrementQueryService" <|-- "DatasetIncrementQueryServiceImpl"
+"DatasetIncrementQueryServiceImpl"  --> "DatasetRegistry"
+"InitOnStartup" <|-- "DatasetEntryIndexer"
+"DatasetEntryIndexer"  --> "AccountService"
+"DatasetEntryIndexer" "lazy" --> "DatasetEntryRepository"
+"DatasetEntryIndexer"  --> "DatasetStorageUnit"
+"DatasetEntryIndexer"  --> "SystemTimeSource"
+"DatasetEntryService" <|-- "DatasetEntryServiceImpl"
+"DatasetRegistry" <|-- "DatasetEntryServiceImpl"
+"DatasetEntryWriter" <|-- "DatasetEntryServiceImpl"
+"DatasetEntryServiceImpl"  --> "AccountService"
+"DatasetEntryServiceImpl"  --> "DatasetEntryRepository"
+"DatasetEntryServiceImpl"  --> "DatasetStorageUnit"
+"DatasetEntryServiceImpl"  --> "SystemTimeSource"
+"DatasetEntryServiceImpl"  --> "CurrentAccountSubject"
+"DatasetEntryServiceImpl"  --> "TenancyConfig"
+"DatasetEnvVarService" <|-- "DatasetEnvVarServiceNull"
+"DatasetKeyValueService" <|-- "DatasetKeyValueServiceSysEnv"
+"MessageConsumer" <|-- "DependencyGraphImmediateListener"
+"MessageConsumerT" <|-- "DependencyGraphImmediateListener"
+"DependencyGraphImmediateListener"  --> "DatasetDependencyRepository"
+"DependencyGraphImmediateListener"  --> "DatasetRegistry"
+"DependencyGraphImmediateListener"  --> "DependencyGraphService"
+"DependencyGraphImmediateListener"  --> "Outbox"
+"InitOnStartup" <|-- "DependencyGraphIndexer"
+"DependencyGraphIndexer"  --> "DatasetDependencyRepository"
+"DependencyGraphIndexer"  --> "DatasetRegistry"
+"DependencyGraphIndexer"  --> "DependencyGraphServiceImpl"
+"DependencyGraphService" <|-- "DependencyGraphServiceImpl"
+"MessageConsumer" <|-- "DependencyGraphServiceImpl"
+"MessageConsumerT" <|-- "DependencyGraphServiceImpl"
+"MessageConsumerT" <|-- "DependencyGraphServiceImpl"
+"DatasetS3Builder" <|-- "DatasetS3BuilderDatabaseBackedImpl"
+"DatasetS3BuilderDatabaseBackedImpl"  --> "Catalog"
+"DatasetS3BuilderDatabaseBackedImpl"  --> "MetadataChainDbBackedConfig"
+"DatasetS3BuilderDatabaseBackedImpl" "?" --> "PathBuf"
+"InitOnStartup" <|-- "DatasetReferenceIndexer"
+"DatasetReferenceIndexer"  --> "DatasetEntryRepository"
+"DatasetReferenceIndexer"  --> "DatasetReferenceRepository"
+"DatasetReferenceIndexer"  --> "DatasetStorageUnit"
+"DatasetReferenceService" <|-- "DatasetReferenceServiceImpl"
+"MessageConsumer" <|-- "DatasetReferenceServiceImpl"
+"MessageConsumerT" <|-- "DatasetReferenceServiceImpl"
+"DatasetReferenceServiceImpl"  --> "DatasetReferenceRepository"
+"DatasetReferenceServiceImpl"  --> "Outbox"
+"DatasetReferenceServiceImpl"  --> "DatasetStorageUnitWriter"
+"DatasetReferenceServiceImpl"  --> "SystemTimeSource"
+"InitOnStartup" <|-- "DatasetStatisticsIndexer"
+"DatasetStatisticsIndexer"  --> "Catalog"
+"DatasetStatisticsService" <|-- "DatasetStatisticsServiceImpl"
+"DatasetStatisticsServiceImpl"  --> "DatasetStatisticsRepository"
+"MessageConsumer" <|-- "DatasetStatisticsUpdateHandler"
+"MessageConsumerT" <|-- "DatasetStatisticsUpdateHandler"
+"DatasetStatisticsUpdateHandler"  --> "DatasetStatisticsRepository"
+"DatasetStatisticsUpdateHandler"  --> "DatasetRegistry"
+"AppendDatasetMetadataBatchUseCase" <|-- "AppendDatasetMetadataBatchUseCaseImpl"
+"CommitDatasetEventUseCase" <|-- "CommitDatasetEventUseCaseImpl"
+"CommitDatasetEventUseCaseImpl"  --> "RebacDatasetRegistryFacade"
+"CommitDatasetEventUseCaseImpl"  --> "SystemTimeSource"
+"CreateDatasetFromSnapshotUseCase" <|-- "CreateDatasetFromSnapshotUseCaseImpl"
+"CreateDatasetFromSnapshotUseCaseImpl"  --> "DidSecretKeyRepository"
+"CreateDatasetFromSnapshotUseCaseImpl" "lazy" --> "RebacService"
+"CreateDatasetFromSnapshotUseCaseImpl"  --> "DidGenerator"
+"CreateDatasetFromSnapshotUseCaseImpl"  --> "DatasetRegistry"
+"CreateDatasetFromSnapshotUseCaseImpl"  --> "SystemTimeSource"
+"CreateDatasetFromSnapshotUseCaseImpl"  --> "CurrentAccountSubject"
+"CreateDatasetFromSnapshotUseCaseImpl"  --> "DidSecretEncryptionConfig"
+"CreateDatasetFromSnapshotUseCaseImpl"  --> "CreateDatasetUseCaseHelper"
+"CreateDatasetUseCase" <|-- "CreateDatasetUseCaseImpl"
+"CreateDatasetUseCaseImpl" "lazy" --> "RebacService"
+"CreateDatasetUseCaseImpl"  --> "CurrentAccountSubject"
+"CreateDatasetUseCaseImpl"  --> "CreateDatasetUseCaseHelper"
+"DeleteDatasetUseCase" <|-- "DeleteDatasetUseCaseImpl"
+"DeleteDatasetUseCaseImpl"  --> "RebacDatasetRegistryFacade"
+"DeleteDatasetUseCaseImpl"  --> "DatasetRegistry"
+"DeleteDatasetUseCaseImpl"  --> "DependencyGraphService"
+"DeleteDatasetUseCaseImpl"  --> "DatasetEntryWriter"
+"DeleteDatasetUseCaseImpl"  --> "Outbox"
+"DeleteDatasetUseCaseImpl"  --> "DatasetStorageUnitWriter"
+"DeleteDatasetUseCaseImpl"  --> "SystemTimeSource"
+"GetDatasetDownstreamDependenciesUseCase" <|-- "GetDatasetDownstreamDependenciesUseCaseImpl"
+"GetDatasetDownstreamDependenciesUseCaseImpl"  --> "DatasetActionAuthorizer"
+"GetDatasetDownstreamDependenciesUseCaseImpl"  --> "DatasetEntryService"
+"GetDatasetDownstreamDependenciesUseCaseImpl"  --> "DependencyGraphService"
+"GetDatasetDownstreamDependenciesUseCaseImpl"  --> "TenancyConfig"
+"GetDatasetUpstreamDependenciesUseCase" <|-- "GetDatasetUpstreamDependenciesUseCaseImpl"
+"GetDatasetUpstreamDependenciesUseCaseImpl"  --> "DatasetActionAuthorizer"
+"GetDatasetUpstreamDependenciesUseCaseImpl"  --> "DatasetEntryService"
+"GetDatasetUpstreamDependenciesUseCaseImpl"  --> "DependencyGraphService"
+"GetDatasetUpstreamDependenciesUseCaseImpl"  --> "TenancyConfig"
+"RenameDatasetUseCase" <|-- "RenameDatasetUseCaseImpl"
+"RenameDatasetUseCaseImpl"  --> "RebacDatasetRegistryFacade"
+"RenameDatasetUseCaseImpl"  --> "DatasetEntryWriter"
+"RenameDatasetUseCaseImpl"  --> "Outbox"
+"RenameDatasetUseCaseImpl"  --> "SystemTimeSource"
+"UpdateCollectionEntriesUseCase" <|-- "UpdateCollectionEntriesUseCaseImpl"
+"UpdateCollectionEntriesUseCaseImpl"  --> "QueryService"
+"UpdateCollectionEntriesUseCaseImpl"  --> "PushIngestDataUseCase"
+"UpdateVersionFileUseCase" <|-- "UpdateVersionFileUseCaseImpl"
+"UpdateVersionFileUseCaseImpl"  --> "QueryService"
+"UpdateVersionFileUseCaseImpl"  --> "PushIngestDataUseCase"
+"CreateDatasetUseCaseHelper" "lazy" --> "AccountService"
+"CreateDatasetUseCaseHelper"  --> "DatasetEntryWriter"
+"CreateDatasetUseCaseHelper"  --> "Outbox"
+"CreateDatasetUseCaseHelper"  --> "DatasetStorageUnitWriter"
+"CreateDatasetUseCaseHelper"  --> "SystemTimeSource"
+"CreateDatasetUseCaseHelper"  --> "TenancyConfig"
+"FlowConfigurationEventStore" <|-- "PostgresFlowConfigurationEventStore"
+"PostgresFlowConfigurationEventStore"  --> "TransactionRefT"
+"FlowEventStore" <|-- "PostgresFlowEventStore"
+"PostgresFlowEventStore"  --> "TransactionRefT"
+"FlowSystemEventBridge" <|-- "PostgresFlowSystemEventBridge"
+"PostgresFlowSystemEventBridge"  --> "Pool"
+"FlowTriggerEventStore" <|-- "PostgresFlowTriggerEventStore"
+"PostgresFlowTriggerEventStore"  --> "TransactionRefT"
+"FlowProcessStateQuery" <|-- "PostgresFlowProcessStateQuery"
+"PostgresFlowProcessStateQuery"  --> "TransactionRefT"
+"FlowProcessStateRepository" <|-- "PostgresFlowProcessStateRepository"
+"PostgresFlowProcessStateRepository"  --> "TransactionRefT"
+"PostgresFlowProcessStateRepository"  --> "SystemTimeSource"
+"FlowScopeRemovalHandler" <|-- "FlowAbortHelper"
+"FlowAbortHelper"  --> "Catalog"
+"FlowAbortHelper"  --> "FlowEventStore"
+"FlowAbortHelper"  --> "FlowSensorDispatcher"
+"FlowAbortHelper"  --> "TaskScheduler"
+"FlowAbortHelper"  --> "SystemTimeSource"
+"BackgroundAgent" <|-- "FlowAgentImpl"
+"InitOnStartup" <|-- "FlowAgentImpl"
+"FlowAgent" <|-- "FlowAgentImpl"
+"FlowAgentTestDriver" <|-- "FlowAgentImpl"
+"MessageConsumer" <|-- "FlowAgentImpl"
+"MessageConsumerT" <|-- "FlowAgentImpl"
+"MessageConsumerT" <|-- "FlowAgentImpl"
+"FlowAgentImpl"  --> "CatalogWeakRef"
+"FlowAgentImpl"  --> "SystemTimeSource"
+"FlowAgentImpl"  --> "FlowAgentConfig"
+"FlowQueryService" <|-- "FlowQueryServiceImpl"
+"FlowQueryServiceImpl"  --> "FlowEventStore"
+"FlowRunService" <|-- "FlowRunServiceImpl"
+"FlowRunServiceImpl"  --> "FlowEventStore"
+"FlowRunServiceImpl"  --> "FlowTriggerService"
+"FlowRunServiceImpl"  --> "FlowAgentConfig"
+"FlowRunServiceImpl"  --> "FlowAbortHelper"
+"FlowRunServiceImpl"  --> "FlowSchedulingServiceImpl"
+"FlowSchedulingService" <|-- "FlowSchedulingServiceImpl"
+"FlowSchedulingServiceImpl"  --> "FlowEventStore"
+"FlowSchedulingServiceImpl"  --> "FlowProcessStateQuery"
+"FlowSchedulingServiceImpl"  --> "FlowConfigurationService"
+"FlowSchedulingServiceImpl"  --> "FlowAgentConfig"
+"FlowConfigurationService" <|-- "FlowConfigurationServiceImpl"
+"FlowScopeRemovalHandler" <|-- "FlowConfigurationServiceImpl"
+"FlowConfigurationServiceImpl"  --> "FlowConfigurationEventStore"
+"FlowConfigurationServiceImpl"  --> "SystemTimeSource"
+"FlowScopeRemovalHandler" <|-- "FlowProcessStateProjector"
+"FlowSystemEventProjector" <|-- "FlowProcessStateProjector"
+"FlowProcessStateProjector"  --> "FlowProcessStateRepository"
+"FlowProcessStateProjector"  --> "FlowTriggerService"
+"FlowProcessStateProjector"  --> "FlowSchedulingService"
+"FlowProcessStateProjector"  --> "Outbox"
+"FlowScopeRemovalHandler" <|-- "FlowSensorDispatcherImpl"
+"FlowSensorDispatcher" <|-- "FlowSensorDispatcherImpl"
+"BackgroundAgent" <|-- "FlowSystemEventAgentImpl"
+"FlowSystemEventAgent" <|-- "FlowSystemEventAgentImpl"
+"FlowSystemEventAgentImpl"  --> "CatalogWeakRef"
+"FlowSystemEventAgentImpl"  --> "FlowSystemEventBridge"
+"FlowSystemEventAgentImpl"  --> "FlowSystemEventAgentConfig"
+"FlowScopeRemovalHandler" <|-- "FlowTriggerServiceImpl"
+"FlowTriggerService" <|-- "FlowTriggerServiceImpl"
+"FlowTriggerServiceImpl"  --> "FlowTriggerEventStore"
+"FlowTriggerServiceImpl"  --> "Outbox"
+"FlowTriggerServiceImpl"  --> "SystemTimeSource"
+"OutboxMessageConsumptionRepository" <|-- "PostgresOutboxMessageConsumptionRepository"
+"PostgresOutboxMessageConsumptionRepository"  --> "TransactionRefT"
+"OutboxMessageRepository" <|-- "PostgresOutboxMessageRepository"
+"PostgresOutboxMessageRepository"  --> "TransactionRefT"
+"EmbeddingsEncoder" <|-- "EmbeddingsEncoderOpenAi"
+"EmbeddingsEncoderOpenAi"  --> "EmbeddingsEncoderConfigOpenAI"
+"NaturalLanguageSearchService" <|-- "DummyNaturalLanguageSearchService"
+"SearchService" <|-- "DummySearchService"
+"EmbeddingsChunker" <|-- "EmbeddingsChunkerSimple"
+"EmbeddingsChunkerSimple"  --> "EmbeddingsChunkerConfigSimple"
+"TaskEventStore" <|-- "PostgresTaskEventStore"
+"PostgresTaskEventStore"  --> "TransactionRefT"
+"TaskDefinitionPlanner" <|-- "ProbeTaskPlanner"
+"TaskRunner" <|-- "ProbeTaskRunner"
+"BackgroundAgent" <|-- "TaskAgentImpl"
+"InitOnStartup" <|-- "TaskAgentImpl"
+"TaskAgent" <|-- "TaskAgentImpl"
+"TaskAgentImpl"  --> "CatalogWeakRef"
+"TaskAgentImpl"  --> "SystemTimeSource"
+"TaskAgentImpl"  --> "TaskAgentConfig"
+"TaskScheduler" <|-- "TaskSchedulerImpl"
+"TaskSchedulerImpl"  --> "TaskEventStore"
+"TaskSchedulerImpl"  --> "SystemTimeSource"
+"WebhookDeliveryRepository" <|-- "PostgresWebhookDeliveryRepository"
+"PostgresWebhookDeliveryRepository"  --> "TransactionRefT"
+"WebhookSubscriptionEventStore" <|-- "PostgresWebhookSubscriptionEventStore"
+"PostgresWebhookSubscriptionEventStore"  --> "TransactionRefT"
+"MessageConsumer" <|-- "WebhookDatasetRemovalHandler"
+"MessageConsumerT" <|-- "WebhookDatasetRemovalHandler"
+"WebhookDatasetRemovalHandler"  --> "WebhookSubscriptionEventStore"
+"WebhookDeliveryWorker" <|-- "WebhookDeliveryWorkerImpl"
+"WebhookDeliveryWorkerImpl"  --> "Catalog"
+"WebhookDeliveryWorkerImpl"  --> "WebhookSender"
+"WebhookDeliveryWorkerImpl"  --> "WebhookSigner"
+"WebhookSecretGenerator" <|-- "WebhookSecretGeneratorImpl"
+"WebhookSecretGeneratorImpl"  --> "WebhooksConfig"
+"WebhookSender" <|-- "WebhookSenderImpl"
+"WebhookSenderImpl"  --> "WebhooksConfig"
+"WebhookSigner" <|-- "WebhookSignerImpl"
+"WebhookSignerImpl"  --> "WebhooksConfig"
+"WebhookSubscriptionQueryService" <|-- "WebhookSubscriptionQueryServiceImpl"
+"WebhookSubscriptionQueryServiceImpl"  --> "WebhookSubscriptionEventStore"
+"CreateWebhookSubscriptionUseCase" <|-- "CreateWebhookSubscriptionUseCaseImpl"
+"CreateWebhookSubscriptionUseCaseImpl"  --> "WebhookSubscriptionEventStore"
+"CreateWebhookSubscriptionUseCaseImpl"  --> "WebhookSecretGenerator"
+"CreateWebhookSubscriptionUseCaseImpl"  --> "Outbox"
+"MarkWebhookSubscriptionUnreachableUseCase" <|-- "MarkWebhookSubscriptionUnreachableUseCaseImpl"
+"MarkWebhookSubscriptionUnreachableUseCaseImpl"  --> "WebhookSubscriptionEventStore"
+"MarkWebhookSubscriptionUnreachableUseCaseImpl"  --> "Outbox"
+"PauseWebhookSubscriptionUseCase" <|-- "PauseWebhookSubscriptionUseCaseImpl"
+"PauseWebhookSubscriptionUseCaseImpl"  --> "WebhookSubscriptionEventStore"
+"PauseWebhookSubscriptionUseCaseImpl"  --> "Outbox"
+"ReactivateWebhookSubscriptionUseCase" <|-- "ReactivateWebhookSubscriptionUseCaseImpl"
+"ReactivateWebhookSubscriptionUseCaseImpl"  --> "WebhookSubscriptionEventStore"
+"ReactivateWebhookSubscriptionUseCaseImpl"  --> "Outbox"
+"RemoveWebhookSubscriptionUseCase" <|-- "RemoveWebhookSubscriptionUseCaseImpl"
+"RemoveWebhookSubscriptionUseCaseImpl"  --> "WebhookSubscriptionEventStore"
+"RemoveWebhookSubscriptionUseCaseImpl"  --> "Outbox"
+"ResumeWebhookSubscriptionUseCase" <|-- "ResumeWebhookSubscriptionUseCaseImpl"
+"ResumeWebhookSubscriptionUseCaseImpl"  --> "WebhookSubscriptionEventStore"
+"ResumeWebhookSubscriptionUseCaseImpl"  --> "Outbox"
+"RotateWebhookSubscriptionSecretUseCase" <|-- "RotateWebhookSubscriptionSecretUseCaseImpl"
+"RotateWebhookSubscriptionSecretUseCaseImpl"  --> "WebhookSubscriptionEventStore"
+"RotateWebhookSubscriptionSecretUseCaseImpl"  --> "WebhookSecretGenerator"
+"UpdateWebhookSubscriptionUseCase" <|-- "UpdateWebhookSubscriptionUseCaseImpl"
+"UpdateWebhookSubscriptionUseCaseImpl"  --> "WebhookSubscriptionEventStore"
+"UpdateWebhookSubscriptionUseCaseImpl"  --> "Outbox"
+"BackgroundAgent" <|-- "OutboxAgentImpl"
+"InitOnStartup" <|-- "OutboxAgentImpl"
+"OutboxAgent" <|-- "OutboxAgentImpl"
+"OutboxAgentImpl"  --> "CatalogWeakRef"
+"OutboxAgentImpl" "*" --> "MessageDispatcher"
+"OutboxAgentImpl"  --> "OutboxAgentMetrics"
+"OutboxAgentImpl"  --> "OutboxConfig"
+"MetricsProvider" <|-- "OutboxAgentMetrics"
+"OutboxDispatchingImpl"  --> "Catalog"
+"OutboxDispatchingImpl"  --> "OutboxImmediateImpl"
+"OutboxDispatchingImpl"  --> "OutboxTransactionalImpl"
+"OutboxImmediateImpl"  --> "Catalog"
+"OutboxImmediateImpl" "*" --> "MessageDispatcher"
+"OutboxTransactionalImpl"  --> "OutboxMessageRepository"
+"OutboxTransactionalImpl"  --> "SystemTimeSource"
+"OdfServerAccessTokenResolver" <|-- "DummyOdfServerAccessTokenResolver"
+"DatasetStorageUnit" <|-- "DatasetStorageUnitS3"
+"DatasetStorageUnitWriter" <|-- "DatasetStorageUnitS3"
+"DatasetStorageUnitS3"  --> "DatasetS3Builder"
+"DatasetStorageUnitS3"  --> "SystemTimeSource"
+"DatasetStorageUnitS3" "?" --> "S3RegistryCache"
+"DatasetFactory" <|-- "DatasetFactoryImpl"
+"DatasetFactoryImpl"  --> "OdfServerAccessTokenResolver"
+"DatasetFactoryImpl"  --> "IpfsGateway"
+"DatasetFactoryImpl" "?" --> "S3Metrics"
+"SystemTimeSource" <|-- "SystemTimeSourceDefault"
+@enduml

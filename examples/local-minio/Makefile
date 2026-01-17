@@ -5,19 +5,19 @@
 .PHONY: minio-start
 minio-start:
 	podman run \
-	--name kamu-minio \
-	--rm -d \
-	-p 9000:9000 \
-	-p 9001:9001 \
-	-v "./minio-data:/data:Z" \
-	-e "MINIO_ROOT_USER=minio" \
-	-e "MINIO_ROOT_PASSWORD=minio123" \
-	quay.io/minio/minio server /data --console-address ":9001"
+		--name kamu-minio \
+		--rm -d \
+		-p 9000:9000 \
+		-p 9001:9001 \
+		-v "./minio-data:/data:Z" \
+		-e "MINIO_ROOT_USER=minio" \
+		-e "MINIO_ROOT_PASSWORD=minio123" \
+		quay.io/minio/minio server /data --console-address ":9001"
 
 
 .PHONY: minio-stop
 minio-stop:
-	podman kill kamu-minio
+	podman kill kamu-minio || true
 
 
 .PHONY: minio-sync
@@ -41,7 +41,7 @@ postgres-stop:
 
 .PHONY: postgres-restore-dump
 postgres-restore-dump:
-	psql -U root -h 127.0.0.1 -p 5433 -d kamu -f ../../.priv/dump-2025-12-07T14:30:57-08:00.sql
+	psql -U root -h 127.0.0.1 -p 5433 -d kamu -f ./dump.sql
 	sqlx migrate run --source ../../../kamu-cli/migrations/postgres --database-url postgres://root:root@localhost:5433/kamu
 
 
@@ -55,7 +55,7 @@ run-sqlite:
 	AWS_SECRET_ACCESS_KEY=minio123 \
 	AWS_ENDPOINT_URL=http://localhost:9000 \
 	AWS_SESSION_TOKEN= \
-	cargo run -p kamu-api-server -- --config config_sqlite.yaml run --address=127.0.0.1 --http-port=8080 --flightsql-port=50050
+		cargo run -p kamu-api-server -- --config config_sqlite.yaml run --address=127.0.0.1 --http-port=8080 --flightsql-port=50050
 
 
 .PHONY: run-postgres
@@ -64,7 +64,7 @@ run-postgres:
 	AWS_SECRET_ACCESS_KEY=minio123 \
 	AWS_ENDPOINT_URL=http://localhost:9000 \
 	AWS_SESSION_TOKEN= \
-	cargo run -p kamu-api-server -- --config config_postgres.yaml run --address=127.0.0.1 --http-port=8080 --flightsql-port=50050
+		cargo run -p kamu-api-server -- --config config_postgres.yaml run --address=127.0.0.1 --http-port=8080 --flightsql-port=50050
 
 
 ###############################################################################
