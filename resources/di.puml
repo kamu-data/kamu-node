@@ -338,6 +338,7 @@ class "MetadataQueryServiceImpl"
 class "ModifyAccountPasswordUseCaseImpl"
 class "MoleculeAnnouncementsServiceImpl"
 class "MoleculeAppendGlobalDataRoomActivityUseCaseImpl"
+class "MoleculeConfig" <<singleton>>
 class "MoleculeCreateAnnouncementUseCaseImpl"
 class "MoleculeCreateDataRoomEntryUseCaseImpl"
 class "MoleculeCreateProjectUseCaseImpl"

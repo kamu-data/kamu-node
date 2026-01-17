@@ -401,6 +401,8 @@ pub async fn init_dependencies(
         },
     );
 
+    b.add_value(kamu_molecule_services::domain::MoleculeConfig::default());
+
     b.add::<kamu::RemoteRepositoryRegistryImpl>();
 
     b.add::<kamu::utils::simple_transfer_protocol::SimpleTransferProtocol>();
