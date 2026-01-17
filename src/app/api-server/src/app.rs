@@ -17,7 +17,7 @@ use chrono::Duration;
 use crypto_utils::AesGcmEncryptor;
 use dill::*;
 use internal_error::*;
-use kamu::domain::{DidGeneratorDefault, TenancyConfig};
+use kamu::domain::{DidGeneratorDefault, KamuBackgroundCatalog, TenancyConfig};
 use observability::metrics::MetricsProvider;
 use s3_utils::{S3Context, S3Metrics};
 use tracing::{error, info, warn};
@@ -119,6 +119,13 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
         catalog
     };
 
+    let catalog = CatalogBuilder::new_chained(&catalog)
+        .add_value(KamuBackgroundCatalog::new(
+            catalog.clone(),
+            server_account_subject.clone(),
+        ))
+        .build();
+
     let command_builder: Box<dyn TypedBuilder<dyn Command>> = match args.command {
         cli::Command::Gql(c) => match c.subcommand {
             cli::Gql::Schema(_) => Box::new(commands::GqlSchemaCommand::builder().cast()),
@@ -142,8 +149,12 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
             .cast(),
         ),
         cli::Command::Debug(c) => match c.subcommand {
+            cli::Debug::Depgraph(_) => Box::new(commands::DebugDepgraphCommand::builder().cast()),
             cli::Debug::SemsearchReindex(_) => {
                 Box::new(commands::DebugSemsearchReindexCommand::builder().cast())
+            }
+            cli::Debug::SearchReindex(_) => {
+                Box::new(commands::DebugSearchReindexCommand::builder().cast())
             }
         },
     };
@@ -376,7 +387,19 @@ pub async fn init_dependencies(
     kamu_adapter_flow_webhook::register_dependencies(&mut b);
     kamu_adapter_task_dataset::register_dependencies(&mut b);
     kamu_adapter_task_webhook::register_dependencies(&mut b);
-    kamu_molecule_services::register_dependencies(&mut b);
+
+    let incremental_search_indexing = config
+        .search
+        .indexer
+        .as_ref()
+        .is_some_and(|i| i.incremental_indexing);
+
+    kamu_molecule_services::register_dependencies(
+        &mut b,
+        kamu_molecule_services::MoleculeDomainDependenciesOptions {
+            incremental_search_indexing,
+        },
+    );
 
     b.add::<kamu::RemoteRepositoryRegistryImpl>();
 
@@ -420,10 +443,9 @@ pub async fn init_dependencies(
 
     b.add::<kamu::domain::DidSecretService>();
 
-    b.add_builder(
-        messaging_outbox::OutboxImmediateImpl::builder()
-            .with_consumer_filter(messaging_outbox::ConsumerFilter::ImmediateConsumers),
-    );
+    b.add_builder(messaging_outbox::OutboxImmediateImpl::builder(
+        messaging_outbox::ConsumerFilter::ImmediateConsumers,
+    ));
     b.add::<messaging_outbox::OutboxTransactionalImpl>();
     b.add::<messaging_outbox::OutboxDispatchingImpl>();
     b.bind::<dyn messaging_outbox::Outbox, messaging_outbox::OutboxDispatchingImpl>();
@@ -597,7 +619,14 @@ pub async fn init_dependencies(
     kamu_flow_system_services::register_dependencies(&mut b);
 
     kamu_adapter_auth_oso_rebac::register_dependencies(&mut b);
-    kamu_datasets_services::register_dependencies(&mut b, true);
+    kamu_datasets_services::register_dependencies(
+        &mut b,
+        kamu_datasets_services::DatasetDomainDependenciesOptions {
+            needs_indexing: true,
+            incremental_search_indexing,
+        },
+    );
+
     kamu_auth_rebac_services::register_dependencies(&mut b, true);
     kamu_webhooks_services::register_dependencies(&mut b);
 
@@ -605,7 +634,14 @@ pub async fn init_dependencies(
 
     configure_repository(&mut b, repo_url, &config.repo, &s3_metrics).await;
 
-    kamu_accounts_services::register_dependencies(&mut b, true, true);
+    kamu_accounts_services::register_dependencies(
+        &mut b,
+        kamu_accounts_services::AccountDomainDependenciesOptions {
+            needs_indexing: true,
+            production: true,
+            incremental_search_indexing,
+        },
+    );
 
     let mut need_to_add_default_predefined_accounts_config = true;
 
@@ -769,86 +805,106 @@ pub async fn init_dependencies(
     };
 
     // Search configuration
-    b.add::<kamu_search_services::SearchServiceLocalImpl>();
 
-    let semantic_search_threshold_score = config
-        .search
-        .as_ref()
-        .map(|s| s.semantic_search_threshold_score)
-        .unwrap_or(config::SearchConfig::default_semantic_search_threshold_score());
-
-    if let Some(config::SearchConfig {
+    let config::SearchConfig {
         indexer,
         embeddings_chunker,
         embeddings_encoder,
         vector_repo,
+        repo,
         overfetch_factor,
         overfetch_amount,
         ..
-    }) = config.search
-    {
-        b.add_value(kamu_search_services::SearchServiceLocalConfig {
-            overfetch_factor,
-            overfetch_amount,
-        });
+    } = config.search;
 
-        b.add::<kamu_search_services::SearchServiceLocalIndexer>();
+    b.add_value(kamu_search_services::NaturalLanguageSearchConfig {
+        overfetch_factor,
+        overfetch_amount,
+    });
 
-        let indexer = indexer.unwrap_or_default();
-        b.add_value(kamu_search_services::SearchServiceLocalIndexerConfig {
-            clear_on_start: indexer.clear_on_start,
-            skip_datasets_with_no_description: indexer.skip_datasets_with_no_description,
-            skip_datasets_with_no_data: indexer.skip_datasets_with_no_data,
-            payload_include_content: indexer.payload_include_content,
-        });
+    let indexer = indexer.unwrap_or_default();
+    b.add_value(kamu_search::SearchIndexerConfig {
+        clear_on_start: indexer.clear_on_start,
+        skip_datasets_with_no_description: indexer.skip_datasets_with_no_description,
+        skip_datasets_with_no_data: indexer.skip_datasets_with_no_data,
+        payload_include_content: indexer.payload_include_content,
+    });
 
-        match embeddings_chunker.unwrap_or_default() {
-            config::EmbeddingsChunkerConfig::Simple(cfg) => {
-                let d = config::EmbeddingsChunkerConfigSimple::default();
-                b.add::<kamu_search_services::EmbeddingsChunkerSimple>();
-                b.add_value(kamu_search_services::EmbeddingsChunkerConfigSimple {
-                    split_sections: cfg.split_sections.or(d.split_sections).unwrap(),
-                    split_paragraphs: cfg.split_paragraphs.or(d.split_paragraphs).unwrap(),
-                });
-            }
+    match embeddings_chunker.unwrap_or_default() {
+        config::EmbeddingsChunkerConfig::Simple(cfg) => {
+            let d = config::EmbeddingsChunkerConfigSimple::default();
+            b.add::<kamu_search_services::EmbeddingsChunkerSimple>();
+            b.add_value(kamu_search_services::EmbeddingsChunkerConfigSimple {
+                split_sections: cfg.split_sections.or(d.split_sections).unwrap(),
+                split_paragraphs: cfg.split_paragraphs.or(d.split_paragraphs).unwrap(),
+            });
         }
-
-        match embeddings_encoder {
-            config::EmbeddingsEncoderConfig::OpenAi(cfg) => {
-                let d = config::EmbeddingsEncoderConfigOpenAi::default();
-                b.add::<kamu_search_openai::EmbeddingsEncoderOpenAi>();
-                b.add_value(kamu_search_openai::EmbeddingsEncoderConfigOpenAI {
-                    url: cfg.url,
-                    api_key: Some(cfg.api_key.into()),
-                    model_name: cfg.model_name.or(d.model_name).unwrap(),
-                    dimensions: cfg.dimensions.or(d.dimensions).unwrap(),
-                });
-            }
-        }
-
-        match vector_repo {
-            config::VectorRepoConfig::Qdrant(cfg) => {
-                let d = config::VectorRepoConfigQdrant::default();
-                b.add::<kamu_search_qdrant::VectorRepositoryQdrant>();
-                b.add_value(kamu_search_qdrant::VectorRepositoryConfigQdrant {
-                    url: cfg.url,
-                    collection_name: cfg.collection_name.or(d.collection_name).unwrap(),
-                    dimensions: cfg.dimensions.or(d.dimensions).unwrap(),
-                });
-            }
-        }
-    } else {
-        b.add_value(kamu_search_services::SearchServiceLocalConfig {
-            overfetch_factor: config::SearchConfig::default_overfetch_factor(),
-            overfetch_amount: config::SearchConfig::default_overfetch_amount(),
-        });
     }
+
+    match embeddings_encoder {
+        config::EmbeddingsEncoderConfig::OpenAi(cfg) => {
+            let d = config::EmbeddingsEncoderConfigOpenAi::default();
+            b.add::<kamu_search_openai::EmbeddingsEncoderOpenAi>();
+            b.add_value(kamu_search_openai::EmbeddingsEncoderConfigOpenAI {
+                url: cfg.url,
+                api_key: Some(cfg.api_key.into()),
+                model_name: cfg.model_name.or(d.model_name).unwrap(),
+                dimensions: cfg.dimensions.or(d.dimensions).unwrap(),
+            });
+        }
+    }
+
+    match vector_repo {
+        config::VectorRepositoryConfig::Dummy => {
+            b.add::<kamu_search_services::DummyNaturalLanguageSearchService>();
+        }
+
+        config::VectorRepositoryConfig::Qdrant(cfg) => {
+            b.add::<kamu_search_services::NaturalLanguageSearchIndexer>();
+            b.add::<kamu_search_services::NaturalLanguageSearchServiceImpl>();
+
+            let d = config::VectorRepositoryConfigQdrant::default();
+            b.add::<kamu_search_qdrant::VectorRepositoryQdrant>();
+            b.add_value(kamu_search_qdrant::VectorRepositoryConfigQdrant {
+                url: cfg.url,
+                collection_name: cfg.collection_name.or(d.collection_name).unwrap(),
+                dimensions: cfg.dimensions.or(d.dimensions).unwrap(),
+            });
+        }
+    }
+
+    match repo {
+        config::SearchRepositoryConfig::Dummy => {
+            b.add::<kamu_search_services::DummySearchService>();
+        }
+
+        config::SearchRepositoryConfig::Elasticsearch(cfg) => {
+            let d = config::SearchRepositoryConfigElasticsearch::default();
+            b.add::<kamu_search_services::SearchServiceImpl>();
+            b.add::<kamu_search_services::SearchIndexerImpl>();
+            b.add::<kamu_search_elasticsearch::ElasticsearchRepository>();
+            b.add_value(kamu_search_elasticsearch::ElasticsearchClientConfig {
+                url: url::Url::parse(&cfg.url).int_err()?,
+                password: cfg.password,
+                timeout_secs: cfg.timeout_secs.or(d.timeout_secs).unwrap(),
+                enable_compression: cfg.enable_compression.or(d.enable_compression).unwrap(),
+                ca_cert_pem_path: cfg
+                    .ca_cert_pem_path
+                    .or(d.ca_cert_pem_path)
+                    .map(std::path::PathBuf::from),
+            });
+            b.add_value(kamu_search_elasticsearch::ElasticsearchRepositoryConfig {
+                index_prefix: cfg.index_prefix.or(d.index_prefix).unwrap(),
+            });
+        }
+    }
+
     //
 
     // UI
     b.add_value(UIConfiguration {
         ingest_upload_file_limit_mb: config.upload_repo.max_file_size_mb,
-        semantic_search_threshold_score,
+        semantic_search_threshold_score: config.search.semantic_search_threshold_score,
         min_new_password_length: config.auth.password_policy.min_new_password_length,
         feature_flags: UIFeatureFlags {
             enable_dataset_env_vars_management: config.dataset_env_vars.is_enabled(),

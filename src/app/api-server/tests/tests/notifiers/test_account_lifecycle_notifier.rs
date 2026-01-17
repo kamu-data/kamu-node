@@ -9,6 +9,7 @@
 
 use std::sync::Arc;
 
+use chrono::Utc;
 use email_gateway::FakeEmailSender;
 use email_utils::Email;
 use kamu_accounts::{
@@ -58,6 +59,7 @@ async fn test_account_deleted_sends_deletion_email() {
     let harness = AccountLifecycleNotifierHarness::new();
     harness
         .send_account_deleted(AccountLifecycleMessageDeleted {
+            event_time: Utc::now(),
             account_id: odf::AccountID::new_generated_ed25519().1,
             email: Email::parse("wasya@example.com").unwrap(),
             display_name: "Wasya Pupkin".to_string(),
@@ -87,6 +89,7 @@ async fn test_password_change_sends_notification_email() {
     let harness = AccountLifecycleNotifierHarness::new();
     harness
         .send_account_password_changed(AccountLifecycleMessagePasswordChanged {
+            event_time: Utc::now(),
             account_id: odf::AccountID::new_generated_ed25519().1,
             email: Email::parse("wasya@example.com").unwrap(),
             display_name: "Wasya Pupkin".to_string(),
@@ -120,15 +123,12 @@ struct AccountLifecycleNotifierHarness {
 
 impl AccountLifecycleNotifierHarness {
     fn new() -> Self {
-        use dill::Component;
-
-        let mut b = dill::CatalogBuilder::new();
+        let mut b = dill::Catalog::builder();
 
         b.add::<AccountLifecycleNotifier>()
-            .add_builder(
-                messaging_outbox::OutboxImmediateImpl::builder()
-                    .with_consumer_filter(messaging_outbox::ConsumerFilter::AllConsumers),
-            )
+            .add_builder(messaging_outbox::OutboxImmediateImpl::builder(
+                messaging_outbox::ConsumerFilter::AllConsumers,
+            ))
             .bind::<dyn Outbox, OutboxImmediateImpl>()
             .add::<FakeEmailSender>();
 
@@ -157,8 +157,10 @@ impl AccountLifecycleNotifierHarness {
             .post_message(
                 MESSAGE_PRODUCER_KAMU_ACCOUNTS_SERVICE,
                 AccountLifecycleMessage::created(
+                    Utc::now(),
                     odf::AccountID::new_seeded_ed25519(account_name.as_bytes()),
                     email,
+                    account_name,
                     display_name,
                 ),
             )
