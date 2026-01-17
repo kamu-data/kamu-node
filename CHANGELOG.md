@@ -13,6 +13,15 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.80.1] - 2026-01-17
+### Upstream [kamu `0.256.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.256.1)
+### Added
+- `SearchIndexerConfig` is respected both by natural and full-text search engine
+- Ability to disable incremental full-text search indexing via config option
+### Changed
+- Upgraded core to `datafusion v52`
+- Upgraded to `kamu-engine-datafusion v0.9.0` based on latest `datafusion`
+
 ## [0.80.0] - 2026-01-08
 ### Upstream [kamu `0.256.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.256.0)
 ### Added

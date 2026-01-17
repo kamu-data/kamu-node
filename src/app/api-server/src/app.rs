@@ -595,7 +595,18 @@ pub async fn init_dependencies(
     kamu_flow_system_services::register_dependencies(&mut b);
 
     kamu_adapter_auth_oso_rebac::register_dependencies(&mut b);
-    kamu_datasets_services::register_dependencies(&mut b, true);
+    kamu_datasets_services::register_dependencies(
+        &mut b,
+        kamu_datasets_services::DatasetDomainDependenciesOptions {
+            needs_indexing: true,
+            incremental_search_indexing: config
+                .search
+                .indexer
+                .as_ref()
+                .is_some_and(|i| i.incremental_indexing),
+        },
+    );
+
     kamu_auth_rebac_services::register_dependencies(&mut b, true);
     kamu_webhooks_services::register_dependencies(&mut b);
 
@@ -603,7 +614,18 @@ pub async fn init_dependencies(
 
     configure_repository(&mut b, repo_url, &config.repo, &s3_metrics).await;
 
-    kamu_accounts_services::register_dependencies(&mut b, true, true);
+    kamu_accounts_services::register_dependencies(
+        &mut b,
+        kamu_accounts_services::AccountDomainDependenciesOptions {
+            needs_indexing: true,
+            production: true,
+            incremental_search_indexing: config
+                .search
+                .indexer
+                .as_ref()
+                .is_some_and(|i| i.incremental_indexing),
+        },
+    );
 
     let mut need_to_add_default_predefined_accounts_config = true;
 
@@ -775,7 +797,7 @@ pub async fn init_dependencies(
     });
 
     let indexer = indexer.unwrap_or_default();
-    b.add_value(kamu_search_services::NaturalLanguageSearchIndexerConfig {
+    b.add_value(kamu_search::SearchIndexerConfig {
         clear_on_start: indexer.clear_on_start,
         skip_datasets_with_no_description: indexer.skip_datasets_with_no_description,
         skip_datasets_with_no_data: indexer.skip_datasets_with_no_data,

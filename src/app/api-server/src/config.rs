@@ -1099,6 +1099,9 @@ impl Default for SearchConfig {
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct SearchIndexerConfig {
+    /// Whether incremental indexing is enabled
+    pub incremental_indexing: bool,
+
     // Whether to clear and re-index on start or use existing vectors if any
     #[serde(default)]
     pub clear_on_start: bool,

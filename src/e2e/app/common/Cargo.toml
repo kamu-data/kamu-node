@@ -31,10 +31,10 @@ kamu-node-puppet = { workspace = true, default-features = false, features = [
 ] }
 odf = { workspace = true }
 
-arrow-flight = { version = "56", features = ["flight-sql-experimental"] }
+arrow-flight = { version = "57", features = ["flight-sql-experimental"] }
 async-trait = "0.1"
 chrono = { version = "0.4", default-features = false, features = ["now"] }
-datafusion = { version = "50", default-features = false }
+datafusion = { version = "52", default-features = false }
 futures = "0.3"
 indoc = "2"
 pretty_assertions = "1"
@@ -51,7 +51,7 @@ sqlx = { version = "0.8", default-features = false, features = [
 thiserror = { version = "2", default-features = false }
 tokio = { version = "1", default-features = false, features = ["macros", "fs"] }
 tokio-retry = "0.3"
-tonic = { version = "0.13", default-features = false }
+tonic = { version = "0.14", default-features = false }
 
 
 [dev-dependencies]
