@@ -79,6 +79,14 @@ pub struct ApiServerConfig {
 #[serde(rename_all = "camelCase")]
 pub struct ExtraConfig {
     pub graphql: kamu_adapter_graphql::Config,
+    pub molecule: MoleculeConfig,
+}
+
+#[derive(Debug, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct MoleculeConfig {
+    pub enable_reads_from_projections: bool,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -401,7 +401,9 @@ pub async fn init_dependencies(
         },
     );
 
-    b.add_value(kamu_molecule_services::domain::MoleculeConfig::default());
+    b.add_value(kamu_molecule_services::domain::MoleculeConfig {
+        enable_reads_from_projections: config.extra.molecule.enable_reads_from_projections,
+    });
 
     b.add::<kamu::RemoteRepositoryRegistryImpl>();
 
