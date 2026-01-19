@@ -8071,6 +8071,8 @@ dependencies = [
 name = "kamu-node-e2e-repo-tests"
 version = "0.80.0"
 dependencies = [
+ "async-graphql",
+ "base64",
  "indoc 2.0.7",
  "kamu-accounts",
  "kamu-adapter-http",

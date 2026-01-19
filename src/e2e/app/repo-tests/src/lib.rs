@@ -12,6 +12,7 @@
 mod test_access_token_gql;
 mod test_dataset;
 mod test_flight_sql;
+mod test_molecule_v2;
 mod test_odata;
 mod test_openapi;
 mod test_selftest;
@@ -20,6 +21,7 @@ mod test_swagger;
 pub use test_access_token_gql::*;
 pub use test_dataset::*;
 pub use test_flight_sql::*;
+pub use test_molecule_v2::*;
 pub use test_odata::*;
 pub use test_openapi::*;
 pub use test_selftest::*;

@@ -79,6 +79,11 @@ impl KamuNodePuppet {
                             - accountName: kamu
                               password: kamu.dev
                               email: kamu@example.com
+                              properties: [ admin, canProvisionAccounts ]
+                            - accountName: molecule
+                              password: molecule.dev
+                              email: molecule@example.com
+                              properties: [ admin, canProvisionAccounts ]
                         - kind: github
                           clientId: FOO
                           clientSecret: BAR

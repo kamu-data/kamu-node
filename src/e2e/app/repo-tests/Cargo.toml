@@ -22,6 +22,8 @@ doctest = false
 
 
 [dependencies]
+async-graphql = { version = "7", default-features = false }
+base64 = { version = "0.22", default-features = false, features = ["std"] }
 kamu-cli-e2e-common = { workspace = true }
 kamu-node-e2e-common = { workspace = true }
 kamu-adapter-http = { workspace = true }
