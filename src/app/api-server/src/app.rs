@@ -338,6 +338,15 @@ pub async fn init_dependencies(
     b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
 
     // GraphQL
+    {
+        let mut feature_flags = kamu_adapter_graphql::GqlFeatureFlags::new();
+        if config.extra.graphql.molecule_api_v1_enabled {
+            feature_flags =
+                feature_flags.with_feature(kamu_adapter_graphql::GqlFeature::MoleculeApiV1);
+        }
+        b.add_value(feature_flags);
+    }
+
     b.add_value(config.extra.graphql);
     //
 
@@ -379,6 +388,23 @@ pub async fn init_dependencies(
     kamu_adapter_task_dataset::register_dependencies(&mut b);
     kamu_adapter_task_webhook::register_dependencies(&mut b);
 
+    let incremental_search_indexing = config
+        .search
+        .indexer
+        .as_ref()
+        .is_some_and(|i| i.incremental_indexing);
+
+    kamu_molecule_services::register_dependencies(
+        &mut b,
+        kamu_molecule_services::MoleculeDomainDependenciesOptions {
+            incremental_search_indexing,
+        },
+    );
+
+    b.add_value(kamu_molecule_services::domain::MoleculeConfig {
+        enable_reads_from_projections: config.extra.molecule.enable_reads_from_projections,
+    });
+
     b.add::<kamu::RemoteRepositoryRegistryImpl>();
 
     b.add::<kamu::utils::simple_transfer_protocol::SimpleTransferProtocol>();
@@ -418,6 +444,8 @@ pub async fn init_dependencies(
     b.add::<kamu::VerifyDatasetUseCaseImpl>();
     b.add::<kamu::GetDatasetSchemaUseCaseImpl>();
     b.add::<kamu::QueryDatasetDataUseCaseImpl>();
+
+    b.add::<kamu::domain::DidSecretService>();
 
     b.add_builder(messaging_outbox::OutboxImmediateImpl::builder(
         messaging_outbox::ConsumerFilter::ImmediateConsumers,
@@ -595,7 +623,14 @@ pub async fn init_dependencies(
     kamu_flow_system_services::register_dependencies(&mut b);
 
     kamu_adapter_auth_oso_rebac::register_dependencies(&mut b);
-    kamu_datasets_services::register_dependencies(&mut b, true);
+    kamu_datasets_services::register_dependencies(
+        &mut b,
+        kamu_datasets_services::DatasetDomainDependenciesOptions {
+            needs_indexing: true,
+            incremental_search_indexing,
+        },
+    );
+
     kamu_auth_rebac_services::register_dependencies(&mut b, true);
     kamu_webhooks_services::register_dependencies(&mut b);
 
@@ -603,7 +638,14 @@ pub async fn init_dependencies(
 
     configure_repository(&mut b, repo_url, &config.repo, &s3_metrics).await;
 
-    kamu_accounts_services::register_dependencies(&mut b, true, true);
+    kamu_accounts_services::register_dependencies(
+        &mut b,
+        kamu_accounts_services::AccountDomainDependenciesOptions {
+            needs_indexing: true,
+            production: true,
+            incremental_search_indexing,
+        },
+    );
 
     let mut need_to_add_default_predefined_accounts_config = true;
 
@@ -742,6 +784,16 @@ pub async fn init_dependencies(
     }
     //
 
+    let quota_defaults = kamu_datasets_services::QuotaDefaultsConfig::default();
+    let default_account_storage_limit_in_bytes = config
+        .quota
+        .and_then(|q| q.account.default_storage_limit_in_bytes)
+        .unwrap_or(quota_defaults.storage);
+
+    b.add_value(kamu_datasets_services::QuotaDefaultsConfig {
+        storage: default_account_storage_limit_in_bytes,
+    });
+
     b.add::<database_common::DatabaseTransactionRunner>();
 
     configure_email_gateway(&mut b, &config.email)?;
@@ -775,7 +827,7 @@ pub async fn init_dependencies(
     });
 
     let indexer = indexer.unwrap_or_default();
-    b.add_value(kamu_search_services::NaturalLanguageSearchIndexerConfig {
+    b.add_value(kamu_search::SearchIndexerConfig {
         clear_on_start: indexer.clear_on_start,
         skip_datasets_with_no_description: indexer.skip_datasets_with_no_description,
         skip_datasets_with_no_data: indexer.skip_datasets_with_no_data,
