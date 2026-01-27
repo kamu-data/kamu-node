@@ -76,6 +76,7 @@ kamu-adapter-auth-web3 = { workspace = true, default-features = false, features 
 ] }
 kamu-adapter-flight-sql = { workspace = true }
 kamu-adapter-graphql = { workspace = true }
+kamu-auth-rebac = { workspace = true }
 kamu-auth-web3-inmem = { workspace = true }
 kamu-auth-web3-postgres = { workspace = true }
 kamu-auth-web3-sqlite = { workspace = true }
@@ -113,7 +114,6 @@ kamu-search = { workspace = true }
 kamu-search-elasticsearch = { workspace = true }
 kamu-search-openai = { workspace = true }
 kamu-search-services = { workspace = true }
-kamu-search-qdrant = { workspace = true }
 kamu-task-system = { workspace = true }
 kamu-task-system-inmem = { workspace = true }
 kamu-task-system-postgres = { workspace = true }

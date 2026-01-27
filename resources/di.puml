@@ -51,11 +51,13 @@ interface "DatasetReferenceRepository" <<i>>
 interface "DatasetReferenceService" <<i>>
 interface "DatasetRegistry" <<i>>
 interface "DatasetS3Builder" <<i>>
+interface "DatasetSearchService" <<i>>
 interface "DatasetStatisticsRepository" <<i>>
 interface "DatasetStatisticsService" <<i>>
 interface "DatasetStorageUnit" <<i>>
 interface "DatasetStorageUnitWriter" <<i>>
 interface "DeleteAccountUseCase" <<i>>
+interface "DeleteDatasetRebacPropertiesUseCase" <<i>>
 interface "DeleteDatasetUseCase" <<i>>
 interface "DependencyGraphService" <<i>>
 interface "DidGenerator" <<i>>
@@ -94,7 +96,6 @@ interface "MessageConsumerT" <<i>>
 interface "MetadataQueryService" <<i>>
 interface "MetricsProvider" <<i>>
 interface "ModifyAccountPasswordUseCase" <<i>>
-interface "NaturalLanguageSearchService" <<i>>
 interface "OAuthDeviceCodeGenerator" <<i>>
 interface "OAuthDeviceCodeRepository" <<i>>
 interface "OAuthDeviceCodeService" <<i>>
@@ -136,6 +137,7 @@ interface "SearchEntitySchemaProvider" <<i>>
 interface "SearchService" <<i>>
 interface "SessionAuth" <<i>>
 interface "SessionManager" <<i>>
+interface "SetDatasetRebacPropertiesUseCase" <<i>>
 interface "SetWatermarkExecutor" <<i>>
 interface "SetWatermarkPlanner" <<i>>
 interface "SetWatermarkUseCase" <<i>>
@@ -151,6 +153,7 @@ interface "TransformElaborationService" <<i>>
 interface "TransformExecutor" <<i>>
 interface "TransformFlowEvaluator" <<i>>
 interface "TransformRequestPlanner" <<i>>
+interface "UnsetDatasetAccountsRelationsUseCase" <<i>>
 interface "UpdateAccountUseCase" <<i>>
 interface "UpdateCollectionEntriesUseCase" <<i>>
 interface "UpdateVersionFileUseCase" <<i>>
@@ -214,11 +217,13 @@ class "DatasetReferenceIndexer"
 class "DatasetReferenceServiceImpl"
 class "DatasetS3BuilderDatabaseBackedImpl"
 class "DatasetSearchSchemaProvider"
+class "DatasetSearchServiceImpl"
 class "DatasetStatisticsIndexer"
 class "DatasetStatisticsServiceImpl"
 class "DatasetStatisticsUpdateHandler"
 class "DatasetStorageUnitS3"
 class "DeleteAccountUseCaseImpl"
+class "DeleteDatasetRebacPropertiesUseCaseImpl"
 class "DeleteDatasetUseCaseImpl"
 class "DeliverWebhookTaskPlanner"
 class "DeliverWebhookTaskRunner"
@@ -229,7 +234,6 @@ class "DidGeneratorDefault"
 class "DidSecretEncryptionConfig" <<singleton>>
 class "DidSecretService"
 class "DummyEmailSender"
-class "DummyNaturalLanguageSearchService"
 class "DummyOdfServerAccessTokenResolver"
 class "DummySearchService"
 class "EmbeddingsChunkerConfigSimple" <<singleton>>
@@ -289,11 +293,12 @@ class "MessageDispatcherT" <<singleton>>
 class "MessageDispatcherT" <<singleton>>
 class "MessageDispatcherT" <<singleton>>
 class "MessageDispatcherT" <<singleton>>
+class "MessageDispatcherT" <<singleton>>
+class "MessageDispatcherT" <<singleton>>
 class "MetadataChainDbBackedConfig" <<singleton>>
 class "MetadataQueryServiceImpl"
 class "ModifyAccountPasswordUseCaseImpl"
 class "MqttSourceConfig" <<singleton>>
-class "NaturalLanguageSearchConfig" <<singleton>>
 class "OAuthDeviceCodeGeneratorDefault"
 class "OAuthDeviceCodeServiceImpl"
 class "ObjectStoreBuilderLocalFs" <<agnostic>>
@@ -384,6 +389,7 @@ class "SessionContextBuilder"
 class "SessionId" <<singleton>>
 class "SessionManagerCaching"
 class "SessionManagerCachingState" <<singleton>>
+class "SetDatasetRebacPropertiesUseCaseImpl"
 class "SetWatermarkExecutorImpl"
 class "SetWatermarkPlannerImpl"
 class "SetWatermarkUseCaseImpl"
@@ -404,6 +410,7 @@ class "TransformExecutorImpl"
 class "TransformFlowEvaluatorImpl"
 class "TransformRequestPlannerImpl"
 class "UIConfiguration" <<singleton>>
+class "UnsetDatasetAccountsRelationsUseCaseImpl"
 class "UpdateAccountUseCaseImpl"
 class "UpdateCollectionEntriesUseCaseImpl"
 class "UpdateDatasetTaskPlanner"
@@ -598,10 +605,6 @@ class "WsSmartTransferProtocolClient"
 "AuthenticationServiceImpl"  --> "SystemTimeSource"
 "AuthenticationServiceImpl"  --> "AuthConfig"
 "AuthenticationServiceImpl"  --> "JwtAuthenticationConfig"
-"MessageConsumer" <|-- "DidSecretService"
-"MessageConsumerT" <|-- "DidSecretService"
-"MessageConsumerT" <|-- "DidSecretService"
-"DidSecretService"  --> "DidSecretKeyRepository"
 "AuthenticationProvider" <|-- "LoginPasswordAuthProvider"
 "LoginPasswordAuthProvider"  --> "AccountService"
 "OAuthDeviceCodeGenerator" <|-- "OAuthDeviceCodeGeneratorDefault"
@@ -753,7 +756,8 @@ class "WsSmartTransferProtocolClient"
 "PostgresRebacRepository"  --> "TransactionRefT"
 "MessageConsumer" <|-- "RebacDatasetLifecycleMessageConsumer"
 "MessageConsumerT" <|-- "RebacDatasetLifecycleMessageConsumer"
-"RebacDatasetLifecycleMessageConsumer"  --> "RebacService"
+"RebacDatasetLifecycleMessageConsumer"  --> "DeleteDatasetRebacPropertiesUseCase"
+"RebacDatasetLifecycleMessageConsumer"  --> "SetDatasetRebacPropertiesUseCase"
 "RebacDatasetLifecycleMessageConsumer"  --> "DatasetProperties"
 "RebacDatasetRegistryFacade" <|-- "RebacDatasetRegistryFacadeImpl"
 "RebacDatasetRegistryFacadeImpl"  --> "DatasetActionAuthorizer"
@@ -761,6 +765,7 @@ class "WsSmartTransferProtocolClient"
 "InitOnStartup" <|-- "RebacIndexer"
 "RebacIndexer"  --> "ExpensiveAccountRepository"
 "RebacIndexer"  --> "RebacService"
+"RebacIndexer"  --> "SetDatasetRebacPropertiesUseCase"
 "RebacIndexer"  --> "DatasetEntryService"
 "RebacIndexer"  --> "PredefinedAccountsConfig"
 "RebacService" <|-- "RebacServiceImpl"
@@ -770,6 +775,16 @@ class "WsSmartTransferProtocolClient"
 "ApplyAccountDatasetRelationsUseCase" <|-- "ApplyAccountDatasetRelationsUseCaseImpl"
 "ApplyAccountDatasetRelationsUseCaseImpl"  --> "RebacService"
 "ApplyAccountDatasetRelationsUseCaseImpl"  --> "DatasetActionAuthorizer"
+"ApplyAccountDatasetRelationsUseCaseImpl"  --> "Outbox"
+"DeleteDatasetRebacPropertiesUseCase" <|-- "DeleteDatasetRebacPropertiesUseCaseImpl"
+"DeleteDatasetRebacPropertiesUseCaseImpl"  --> "RebacService"
+"DeleteDatasetRebacPropertiesUseCaseImpl"  --> "Outbox"
+"SetDatasetRebacPropertiesUseCase" <|-- "SetDatasetRebacPropertiesUseCaseImpl"
+"SetDatasetRebacPropertiesUseCaseImpl"  --> "RebacService"
+"SetDatasetRebacPropertiesUseCaseImpl"  --> "Outbox"
+"UnsetDatasetAccountsRelationsUseCase" <|-- "UnsetDatasetAccountsRelationsUseCaseImpl"
+"UnsetDatasetAccountsRelationsUseCaseImpl"  --> "RebacService"
+"UnsetDatasetAccountsRelationsUseCaseImpl"  --> "Outbox"
 "Web3AuthEip4361NonceRepository" <|-- "PostgresWeb3AuthEip4361NonceRepository"
 "PostgresWeb3AuthEip4361NonceRepository"  --> "TransactionRefT"
 "InitOnStartup" <|-- "Web3AuthEip4361NonceServiceImpl"
@@ -795,7 +810,12 @@ class "WsSmartTransferProtocolClient"
 "PostgresDatasetStatisticsRepository"  --> "TransactionRefT"
 "SearchEntitySchemaProvider" <|-- "DatasetSearchSchemaProvider"
 "DatasetSearchSchemaProvider"  --> "Catalog"
-"DatasetSearchSchemaProvider"  --> "SearchIndexerConfig"
+"DatasetSearchSchemaProvider"  --> "EmbeddingsChunker"
+"DatasetSearchSchemaProvider"  --> "EmbeddingsEncoder"
+"DatasetSearchService" <|-- "DatasetSearchServiceImpl"
+"DatasetSearchServiceImpl"  --> "DatasetRegistry"
+"DatasetSearchServiceImpl"  --> "EmbeddingsEncoder"
+"DatasetSearchServiceImpl"  --> "SearchService"
 "InitOnStartup" <|-- "DatasetBlockIndexer"
 "DatasetBlockIndexer"  --> "Catalog"
 "MessageConsumer" <|-- "DatasetBlockUpdateHandler"
@@ -815,6 +835,10 @@ class "WsSmartTransferProtocolClient"
 "DatasetAliasUpdateHandler"  --> "DatasetRegistry"
 "DatasetIncrementQueryService" <|-- "DatasetIncrementQueryServiceImpl"
 "DatasetIncrementQueryServiceImpl"  --> "DatasetRegistry"
+"MessageConsumer" <|-- "DidSecretService"
+"MessageConsumerT" <|-- "DidSecretService"
+"MessageConsumerT" <|-- "DidSecretService"
+"DidSecretService"  --> "DidSecretKeyRepository"
 "InitOnStartup" <|-- "DatasetEntryIndexer"
 "DatasetEntryIndexer"  --> "AccountService"
 "DatasetEntryIndexer" "lazy" --> "DatasetEntryRepository"
@@ -987,7 +1011,6 @@ class "WsSmartTransferProtocolClient"
 "PostgresOutboxMessageRepository"  --> "TransactionRefT"
 "EmbeddingsEncoder" <|-- "EmbeddingsEncoderOpenAi"
 "EmbeddingsEncoderOpenAi"  --> "EmbeddingsEncoderConfigOpenAI"
-"NaturalLanguageSearchService" <|-- "DummyNaturalLanguageSearchService"
 "SearchService" <|-- "DummySearchService"
 "EmbeddingsChunker" <|-- "EmbeddingsChunkerSimple"
 "EmbeddingsChunkerSimple"  --> "EmbeddingsChunkerConfigSimple"

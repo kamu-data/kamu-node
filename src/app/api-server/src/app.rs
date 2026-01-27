@@ -150,9 +150,6 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
         ),
         cli::Command::Debug(c) => match c.subcommand {
             cli::Debug::Depgraph(_) => Box::new(commands::DebugDepgraphCommand::builder().cast()),
-            cli::Debug::SemsearchReindex(_) => {
-                Box::new(commands::DebugSemsearchReindexCommand::builder().cast())
-            }
             cli::Debug::SearchReindex(_) => {
                 Box::new(commands::DebugSearchReindexCommand::builder().cast())
             }
@@ -470,6 +467,14 @@ pub async fn init_dependencies(
         &mut b,
         kamu_datasets::MESSAGE_PRODUCER_KAMU_HTTP_ADAPTER,
     );
+    messaging_outbox::register_message_dispatcher::<kamu_auth_rebac::RebacDatasetPropertiesMessage>(
+        &mut b,
+        kamu_auth_rebac::MESSAGE_PRODUCER_KAMU_REBAC_DATASET_PROPERTIES_SERVICE,
+    );
+    messaging_outbox::register_message_dispatcher::<kamu_auth_rebac::RebacDatasetRelationsMessage>(
+        &mut b,
+        kamu_auth_rebac::MESSAGE_PRODUCER_KAMU_REBAC_DATASET_RELATIONS_SERVICE,
+    );
     messaging_outbox::register_message_dispatcher::<
         kamu_webhooks::WebhookSubscriptionLifecycleMessage,
     >(
@@ -784,24 +789,13 @@ pub async fn init_dependencies(
         indexer,
         embeddings_chunker,
         embeddings_encoder,
-        vector_repo,
         repo,
-        overfetch_factor,
-        overfetch_amount,
         ..
     } = config.search;
-
-    b.add_value(kamu_search_services::NaturalLanguageSearchConfig {
-        overfetch_factor,
-        overfetch_amount,
-    });
 
     let indexer = indexer.unwrap_or_default();
     b.add_value(kamu_search::SearchIndexerConfig {
         clear_on_start: indexer.clear_on_start,
-        skip_datasets_with_no_description: indexer.skip_datasets_with_no_description,
-        skip_datasets_with_no_data: indexer.skip_datasets_with_no_data,
-        payload_include_content: indexer.payload_include_content,
     });
 
     match embeddings_chunker.unwrap_or_default() {
@@ -823,25 +817,6 @@ pub async fn init_dependencies(
                 url: cfg.url,
                 api_key: Some(cfg.api_key.into()),
                 model_name: cfg.model_name.or(d.model_name).unwrap(),
-                dimensions: cfg.dimensions.or(d.dimensions).unwrap(),
-            });
-        }
-    }
-
-    match vector_repo {
-        config::VectorRepositoryConfig::Dummy => {
-            b.add::<kamu_search_services::DummyNaturalLanguageSearchService>();
-        }
-
-        config::VectorRepositoryConfig::Qdrant(cfg) => {
-            b.add::<kamu_search_services::NaturalLanguageSearchIndexer>();
-            b.add::<kamu_search_services::NaturalLanguageSearchServiceImpl>();
-
-            let d = config::VectorRepositoryConfigQdrant::default();
-            b.add::<kamu_search_qdrant::VectorRepositoryQdrant>();
-            b.add_value(kamu_search_qdrant::VectorRepositoryConfigQdrant {
-                url: cfg.url,
-                collection_name: cfg.collection_name.or(d.collection_name).unwrap(),
                 dimensions: cfg.dimensions.or(d.dimensions).unwrap(),
             });
         }
@@ -869,6 +844,7 @@ pub async fn init_dependencies(
             });
             b.add_value(kamu_search_elasticsearch::ElasticsearchRepositoryConfig {
                 index_prefix: cfg.index_prefix.or(d.index_prefix).unwrap(),
+                embedding_dimensions: cfg.embedding_dimensions.or(d.embedding_dimensions).unwrap(),
             });
         }
     }

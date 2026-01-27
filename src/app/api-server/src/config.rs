@@ -1034,23 +1034,8 @@ pub struct SearchConfig {
     /// Embeddings encoder configuration
     pub embeddings_encoder: EmbeddingsEncoderConfig,
 
-    /// Vector repository configuration
-    pub vector_repo: VectorRepositoryConfig,
-
     /// Search repository configuration
     pub repo: SearchRepositoryConfig,
-
-    /// The multiplication factor that determines how many more points will be
-    /// requested from vector store to compensate for filtering out results that
-    /// may be inaccessible to user.
-    #[serde(default = "SearchConfig::default_overfetch_factor")]
-    pub overfetch_factor: f32,
-
-    /// The additive value that determines how many more points will be
-    /// requested from vector store to compensate for filtering out results that
-    /// may be inaccessible to user.
-    #[serde(default = "SearchConfig::default_overfetch_amount")]
-    pub overfetch_amount: usize,
 
     #[serde(default = "SearchConfig::default_semantic_search_threshold_score")]
     pub semantic_search_threshold_score: f32,
@@ -1079,14 +1064,7 @@ impl Default for SearchConfig {
             indexer: Some(SearchIndexerConfig::default()),
             embeddings_chunker: Some(EmbeddingsChunkerConfig::default()),
             embeddings_encoder: EmbeddingsEncoderConfig::default(),
-            // vector_repo: VectorRepositoryConfig::Qdrant(VectorRepositoryConfigQdrant::default()),
-            vector_repo: VectorRepositoryConfig::Dummy,
-            //repo: SearchRepositoryConfig::Elasticsearch(
-            //    SearchRepositoryConfigElasticsearch::default(),
-            //),
             repo: SearchRepositoryConfig::Dummy,
-            overfetch_factor: SearchConfig::default_overfetch_factor(),
-            overfetch_amount: SearchConfig::default_overfetch_amount(),
             semantic_search_threshold_score: SearchConfig::default_semantic_search_threshold_score(
             ),
         }
@@ -1105,20 +1083,6 @@ pub struct SearchIndexerConfig {
     // Whether to clear and re-index on start or use existing vectors if any
     #[serde(default)]
     pub clear_on_start: bool,
-
-    /// Whether to skip indexing datasets that have no readme or description
-    #[serde(default)]
-    pub skip_datasets_with_no_description: bool,
-
-    /// Whether to skip indexing datasets that have no data
-    #[serde(default)]
-    pub skip_datasets_with_no_data: bool,
-
-    /// Whether to include the original text as payload of the vectors when
-    /// storing them. It is not needed for normal service operations but can
-    /// help debug issues.
-    #[serde(default)]
-    pub payload_include_content: bool,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1201,38 +1165,6 @@ impl Default for EmbeddingsEncoderConfigOpenAi {
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "kind")]
-pub enum VectorRepositoryConfig {
-    Dummy,
-    Qdrant(VectorRepositoryConfigQdrant),
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-#[serde(rename_all = "camelCase")]
-pub struct VectorRepositoryConfigQdrant {
-    pub url: String,
-    pub api_key: Option<String>,
-    pub collection_name: Option<String>,
-    pub dimensions: Option<usize>,
-}
-
-impl Default for VectorRepositoryConfigQdrant {
-    fn default() -> Self {
-        Self {
-            url: "http://localhost:6334".to_string(),
-            api_key: None,
-            collection_name: Some("kamu-datasets".to_string()),
-            dimensions: Some(SearchConfig::DEFAULT_DIMENSIONS),
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-#[serde(rename_all = "camelCase")]
-#[serde(tag = "kind")]
 pub enum SearchRepositoryConfig {
     Dummy,
     Elasticsearch(SearchRepositoryConfigElasticsearch),
@@ -1248,6 +1180,7 @@ pub struct SearchRepositoryConfigElasticsearch {
     pub index_prefix: Option<String>,
     pub timeout_secs: Option<u64>,
     pub enable_compression: Option<bool>,
+    pub embedding_dimensions: Option<usize>,
 }
 
 impl Default for SearchRepositoryConfigElasticsearch {
@@ -1259,6 +1192,7 @@ impl Default for SearchRepositoryConfigElasticsearch {
             index_prefix: Some("kamu-node".to_string()),
             timeout_secs: Some(30),
             enable_compression: Some(false),
+            embedding_dimensions: Some(SearchConfig::DEFAULT_DIMENSIONS),
         }
     }
 }

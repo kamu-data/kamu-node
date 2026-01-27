@@ -130,7 +130,6 @@ pub struct DebugGroup {
 #[derive(Debug, clap::Subcommand)]
 pub enum Debug {
     Depgraph(Depgraph),
-    SemsearchReindex(SemsearchReindex),
     SearchReindex(SearchReindex),
 }
 
