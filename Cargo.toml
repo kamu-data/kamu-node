@@ -30,7 +30,8 @@ email-gateway = { path = "src/utils/email-gateway", version = "0.81.1", default-
 graceful-shutdown = { path = "src/utils/graceful-shutdown", version = "0.81.1", default-features = false }
 
 
-async-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.257.2", default-features = false }            # Utils (core)
+# Utils (core)
+async-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.257.2", default-features = false }
 container-runtime = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.257.2", default-features = false }
 crypto-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.257.2", default-features = false }
 database-common = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.257.2", default-features = false }
