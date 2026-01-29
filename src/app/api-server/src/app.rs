@@ -798,6 +798,8 @@ pub async fn init_dependencies(
         clear_on_start: indexer.clear_on_start,
     });
 
+    b.add::<kamu_search_services::EmbeddingsProviderImpl>();
+
     match embeddings_chunker.unwrap_or_default() {
         config::EmbeddingsChunkerConfig::Simple(cfg) => {
             let d = config::EmbeddingsChunkerConfigSimple::default();
@@ -819,6 +821,10 @@ pub async fn init_dependencies(
                 model_name: cfg.model_name.or(d.model_name).unwrap(),
                 dimensions: cfg.dimensions.or(d.dimensions).unwrap(),
             });
+        }
+
+        config::EmbeddingsEncoderConfig::Dummy => {
+            b.add::<kamu_search_services::DummyEmbeddingsEncoder>();
         }
     }
 

@@ -13,6 +13,11 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.81.1] - 2026-01-29
+### Upstream [kamu `0.257.2`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.257.2)
+### Changed
+- Hybrid search flow enhancements and hotfixes
+
 ## [0.81.0] - 2026-01-27
 ### Upstream [kamu `0.257.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.257.1)
 ### Added

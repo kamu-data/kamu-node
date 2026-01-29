@@ -1130,6 +1130,7 @@ impl Default for EmbeddingsChunkerConfigSimple {
 #[serde(tag = "kind")]
 pub enum EmbeddingsEncoderConfig {
     OpenAi(EmbeddingsEncoderConfigOpenAi),
+    Dummy,
 }
 
 impl Default for EmbeddingsEncoderConfig {
