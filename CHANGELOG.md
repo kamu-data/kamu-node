@@ -21,6 +21,34 @@ Recommendation: for ease of reading, use the following order:
 - GQL: `MoleculeMut::create_project()`: generate lowercase project account name.
 ### Fixed
  - Investigation: potential unstable ordering of dataset entry listings
+ 
+## [0.81.1] - 2026-01-29
+### Upstream [kamu `0.257.2`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.257.2)
+### Changed
+- Hybrid search flow enhancements and hotfixes
+
+## [0.81.0] - 2026-01-27
+### Upstream [kamu `0.257.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.257.1)
+### Added
+- Elasticsearch solution supports security aspects
+- Elasticsearch solution now supports vector (semantic) and hybrid search
+### Changed
+- Enchancements to textual search: clearly modeling search intent, boosting support
+### Fixed
+- Hotfix: do not put empty dataset documents into Elasticsearch during full reindexing.
+- Hotfix: improved handling of `skipDatasetsWithNoDescription` and `skipDatasetsWithNoData` options when 
+   processing incremental updates to datasets search indices
+- Hotfix: handling 404 error from Elasticsearch when requesting non-existing document by ID
+- Requests with invalid/expired tokens now returns unauthorized response
+
+## [0.80.1] - 2026-01-17
+### Upstream [kamu `0.256.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.256.1)
+### Added
+- `SearchIndexerConfig` is respected both by natural and full-text search engine
+- Ability to disable incremental full-text search indexing via config option
+### Changed
+- Upgraded core to `datafusion v52`
+- Upgraded to `kamu-engine-datafusion v0.9.0` based on latest `datafusion`
 
 ## [0.80.0] - 2026-01-08
 ### Upstream [kamu `0.256.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.256.0)

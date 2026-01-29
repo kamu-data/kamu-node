@@ -9,7 +9,6 @@
 
 mod debug_depgraph_command;
 mod debug_search_reindex_command;
-mod debug_semsearch_reindex_command;
 mod gql_query_command;
 mod gql_schema_command;
 mod list_metrics_command;
@@ -17,7 +16,6 @@ mod run_command;
 
 pub use debug_depgraph_command::*;
 pub use debug_search_reindex_command::*;
-pub use debug_semsearch_reindex_command::*;
 pub use gql_query_command::*;
 pub use gql_schema_command::*;
 pub use list_metrics_command::*;
