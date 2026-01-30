@@ -13,6 +13,11 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.81.2] - 2026-01-30
+### Upstream [kamu `0.257.3`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.257.3)
+### Changed
+- Hotfix ReBAC->DatasetSearchUpdater path
+
 ## [0.81.1] - 2026-01-29
 ### Upstream [kamu `0.257.2`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.257.2)
 ### Changed
