@@ -1678,8 +1678,8 @@ dependencies = [
 
 [[package]]
 name = "async-utils"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "internal-error",
@@ -2003,9 +2003,9 @@ dependencies = [
 
 [[package]]
 name = "aws-smithy-async"
-version = "1.2.8"
+version = "1.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9330762ee48c6cecfad2cb37b1506c16c8e858c90638eda2b1a7272b56f88bd5"
+checksum = "4e0e99800414b0c4cae85ed775a1559f8992f4e69f5ebafe9c936e29609eae78"
 dependencies = [
  "futures-util",
  "pin-project-lite",
@@ -2035,9 +2035,9 @@ dependencies = [
 
 [[package]]
 name = "aws-smithy-eventstream"
-version = "0.60.15"
+version = "0.60.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0810b22ae554f5076c3eabe1fe89b01aee61c354c575789f67e248e83c5f472b"
+checksum = "b1adc2eb689a24741c9dcc21ec19be78839a7899594883d3305cf4c7abae9b3d"
 dependencies = [
  "aws-smithy-types",
  "bytes",
@@ -2088,9 +2088,9 @@ dependencies = [
 
 [[package]]
 name = "aws-smithy-http-client"
-version = "1.1.6"
+version = "1.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec918f18147cec121cb142a91b0038f66d99bbe903e585dccf871920e90b22ab"
+checksum = "23141f8daeab46574a1969ddb7316bc2928732e5721b3abfa8d1e16927ea9a52"
 dependencies = [
  "aws-smithy-async",
  "aws-smithy-runtime-api",
@@ -2127,18 +2127,18 @@ dependencies = [
 
 [[package]]
 name = "aws-smithy-observability"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a700a7702874cd78b85fecdc9f64f3f72eb22fb713791cb445bcfd2a15bc1ecf"
+checksum = "112e30b3c5379273de88c8cedfc96ce0211e9af22115ceb6975b5c072eccdfb9"
 dependencies = [
  "aws-smithy-runtime-api",
 ]
 
 [[package]]
 name = "aws-smithy-query"
-version = "0.60.10"
+version = "0.60.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "adc4a6cdc289a37be7fddb7f4365448187d62c603a40e6d46d13c68e5e81900f"
+checksum = "2a57c5122eafc566cba4d3cbaacb53dd8a0cacd71155c728d1f4a9179cdd75ae"
 dependencies = [
  "aws-smithy-types",
  "urlencoding",
@@ -2170,9 +2170,9 @@ dependencies = [
 
 [[package]]
 name = "aws-smithy-runtime-api"
-version = "1.11.0"
+version = "1.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5c47b1e62accf759b01aba295e40479d1ba8fb77c2a54f0fed861c809ca49761"
+checksum = "1d09ba34c17c65a53b65b0ec0d80cf7a934947d407cb7c4fb7753f96de147663"
 dependencies = [
  "aws-smithy-async",
  "aws-smithy-types",
@@ -2187,9 +2187,9 @@ dependencies = [
 
 [[package]]
 name = "aws-smithy-types"
-version = "1.4.0"
+version = "1.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c2d447863bdec38c899e5753a48c0abcf590f3ec629e257ad5a9ef8806ad7714"
+checksum = "8169129deda9dc18731b7b160f75121507e02f45f2101e48f0252dcd997e9da1"
 dependencies = [
  "base64-simd",
  "bytes",
@@ -2782,9 +2782,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.54"
+version = "1.2.55"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6354c81bbfd62d9cfa9cb3c773c2b7b2a3a482d569de977fd0e961f6e7c00583"
+checksum = "47b26a0954ae34af09b50f0de26458fa95369a0d478d8236d3f93082b219bd29"
 dependencies = [
  "find-msvc-tools",
  "jobserver",
@@ -2990,8 +2990,8 @@ dependencies = [
 
 [[package]]
 name = "common-macros"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "quote",
  "syn 2.0.114",
@@ -3113,8 +3113,8 @@ dependencies = [
 
 [[package]]
 name = "container-runtime"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "cfg-if",
@@ -3315,8 +3315,8 @@ dependencies = [
 
 [[package]]
 name = "crypto-utils"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "aes-gcm",
  "argon2",
@@ -3561,8 +3561,8 @@ dependencies = [
 
 [[package]]
 name = "database-common"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -3587,8 +3587,8 @@ dependencies = [
 
 [[package]]
 name = "database-common-macros"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "quote",
  "syn 2.0.114",
@@ -4697,7 +4697,7 @@ dependencies = [
 
 [[package]]
 name = "email-gateway"
-version = "0.81.1"
+version = "0.81.2"
 dependencies = [
  "async-trait",
  "dill",
@@ -4713,8 +4713,8 @@ dependencies = [
 
 [[package]]
 name = "email-utils"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "serde",
  "thiserror 2.0.18",
@@ -4804,8 +4804,8 @@ dependencies = [
 
 [[package]]
 name = "enum-variants"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 
 [[package]]
 name = "env_filter"
@@ -4868,8 +4868,8 @@ dependencies = [
 
 [[package]]
 name = "event-sourcing"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -4883,8 +4883,8 @@ dependencies = [
 
 [[package]]
 name = "event-sourcing-macros"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "quote",
  "syn 2.0.114",
@@ -4989,8 +4989,8 @@ dependencies = [
 
 [[package]]
 name = "file-utils"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "serde",
 ]
@@ -5008,9 +5008,9 @@ dependencies = [
 
 [[package]]
 name = "find-msvc-tools"
-version = "0.1.8"
+version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8591b0bcc8a98a64310a2fae1bb3e9b8564dd10e381e6e28010fde8e8e8568db"
+checksum = "5baebc0774151f905a1a2cc41989300b1e6fbb29aff0ceffa1064fdd3088d582"
 
 [[package]]
 name = "fixed-hash"
@@ -5117,8 +5117,8 @@ dependencies = [
 
 [[package]]
 name = "format-utils"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 
 [[package]]
 name = "fraction"
@@ -5373,7 +5373,7 @@ checksum = "0cc23270f6e1808e30a928bdc84dea0b9b4136a8bc82338574f23baf47bbd280"
 
 [[package]]
 name = "graceful-shutdown"
-version = "0.81.1"
+version = "0.81.2"
 dependencies = [
  "tokio",
  "tracing",
@@ -5381,8 +5381,8 @@ dependencies = [
 
 [[package]]
 name = "graphql-http"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-graphql",
  "axum",
@@ -5837,8 +5837,8 @@ dependencies = [
 
 [[package]]
 name = "http-common"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "axum",
  "http 1.4.0",
@@ -6207,8 +6207,8 @@ dependencies = [
 
 [[package]]
 name = "init-on-startup"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "bon",
@@ -6252,8 +6252,8 @@ checksum = "8bb03732005da905c88227371639bf1ad885cc712789c011c31c5fb3ab3ccf02"
 
 [[package]]
 name = "internal-error"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "thiserror 2.0.18",
 ]
@@ -6574,9 +6574,9 @@ dependencies = [
 
 [[package]]
 name = "jsonschema"
-version = "0.40.0"
+version = "0.40.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f80ac113b82d2ca7f3c4b56e88bb28aadbcfb534f258a6f4adf1d4ff3e764798"
+checksum = "0dcaf824ade10ef8aa88a026854185616eac3992da54220e07035dfbe1ca66f3"
 dependencies = [
  "ahash 0.8.12",
  "bytecount",
@@ -6637,8 +6637,8 @@ dependencies = [
 
 [[package]]
 name = "kamu"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "alloy",
  "async-recursion",
@@ -6712,8 +6712,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "base32",
@@ -6748,8 +6748,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts-inmem"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -6767,8 +6767,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts-postgres"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -6789,8 +6789,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts-services"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -6823,8 +6823,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts-sqlite"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -6845,8 +6845,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-auth-oso-rebac"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "database-common",
@@ -6870,8 +6870,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-auth-web3"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "dill",
@@ -6894,8 +6894,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-flight-sql"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "arrow-flight",
  "async-trait",
@@ -6923,8 +6923,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-flow-dataset"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -6949,8 +6949,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-flow-webhook"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -6978,8 +6978,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-graphql"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-graphql",
  "async-trait",
@@ -7038,8 +7038,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-http"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "aws-sdk-s3",
@@ -7095,8 +7095,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-oauth"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "dill",
@@ -7113,8 +7113,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-odata"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "axum",
@@ -7139,8 +7139,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-task-dataset"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "common-macros",
@@ -7159,8 +7159,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-task-webhook"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -7180,7 +7180,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-api-server"
-version = "0.81.1"
+version = "0.81.2"
 dependencies = [
  "arrow-flight",
  "askama",
@@ -7301,8 +7301,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-rebac"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "internal-error",
@@ -7319,8 +7319,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-rebac-inmem"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "dill",
@@ -7330,8 +7330,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-rebac-postgres"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "database-common",
@@ -7343,8 +7343,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-rebac-services"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "dill",
@@ -7363,8 +7363,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-rebac-sqlite"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "database-common",
@@ -7377,8 +7377,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-web3"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "alloy-primitives",
  "async-trait",
@@ -7393,8 +7393,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-web3-inmem"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -7405,8 +7405,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-web3-postgres"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -7419,8 +7419,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-web3-services"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -7435,8 +7435,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-web3-sqlite"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -7449,8 +7449,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-cli-e2e-common"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-graphql",
  "async-trait",
@@ -7480,8 +7480,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-cli-e2e-common-macros"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "quote",
  "syn 2.0.114",
@@ -7489,8 +7489,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-cli-e2e-repo-tests"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-graphql",
  "base64",
@@ -7524,8 +7524,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-cli-puppet"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "assert_cmd",
  "async-trait",
@@ -7545,8 +7545,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-core"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7581,8 +7581,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7619,8 +7619,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets-inmem"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "cheap-clone",
@@ -7637,8 +7637,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets-postgres"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7657,8 +7657,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets-services"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7702,8 +7702,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets-sqlite"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7723,8 +7723,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -7752,8 +7752,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system-inmem"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7773,8 +7773,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system-postgres"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7795,8 +7795,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system-services"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7825,8 +7825,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system-sqlite"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7848,8 +7848,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-ingest-datafusion"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -7875,8 +7875,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-messaging-outbox-inmem"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "dill",
@@ -7888,8 +7888,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-messaging-outbox-postgres"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7905,8 +7905,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-messaging-outbox-sqlite"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7921,8 +7921,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-molecule-domain"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "bytes",
@@ -7950,8 +7950,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-molecule-services"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "bytes",
@@ -7986,7 +7986,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-common"
-version = "0.81.1"
+version = "0.81.2"
 dependencies = [
  "arrow-flight",
  "async-trait",
@@ -8016,7 +8016,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-common-macros"
-version = "0.81.1"
+version = "0.81.2"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -8025,7 +8025,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-postgres"
-version = "0.81.1"
+version = "0.81.2"
 dependencies = [
  "database-common",
  "indoc 2.0.7",
@@ -8040,7 +8040,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-repo-tests"
-version = "0.81.1"
+version = "0.81.2"
 dependencies = [
  "indoc 2.0.7",
  "kamu-accounts",
@@ -8055,7 +8055,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-sqlite"
-version = "0.81.1"
+version = "0.81.2"
 dependencies = [
  "database-common",
  "indoc 2.0.7",
@@ -8070,7 +8070,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-puppet"
-version = "0.81.1"
+version = "0.81.2"
 dependencies = [
  "assert_cmd",
  "async-trait",
@@ -8084,7 +8084,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-oracle-provider"
-version = "0.81.1"
+version = "0.81.2"
 dependencies = [
  "alloy",
  "async-trait",
@@ -8117,7 +8117,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-repo-tools"
-version = "0.81.1"
+version = "0.81.2"
 dependencies = [
  "chrono",
  "clap",
@@ -8133,8 +8133,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-search"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -8151,8 +8151,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-search-cache-inmem"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "cheap-clone",
@@ -8164,8 +8164,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-search-cache-postgres"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -8180,8 +8180,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-search-cache-sqlite"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -8196,8 +8196,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-search-elasticsearch"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "canonical_json",
@@ -8219,8 +8219,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-search-openai"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-openai",
  "async-trait",
@@ -8234,8 +8234,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-search-services"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -8259,8 +8259,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -8281,8 +8281,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system-inmem"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "database-common",
@@ -8294,8 +8294,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system-postgres"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -8310,8 +8310,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system-services"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -8333,8 +8333,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system-sqlite"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -8350,8 +8350,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-webhooks"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "bytes",
@@ -8376,8 +8376,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-webhooks-inmem"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "chrono",
@@ -8392,8 +8392,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-webhooks-postgres"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -8413,8 +8413,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-webhooks-services"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "base64",
@@ -8447,8 +8447,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-webhooks-sqlite"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -8916,8 +8916,8 @@ dependencies = [
 
 [[package]]
 name = "messaging-outbox"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -9065,8 +9065,8 @@ dependencies = [
 
 [[package]]
 name = "multiformats"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "base64",
  "bs58 0.5.1",
@@ -9368,8 +9368,8 @@ dependencies = [
 
 [[package]]
 name = "observability"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "axum",
@@ -9448,8 +9448,8 @@ checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
 
 [[package]]
 name = "opendatafabric"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "opendatafabric-data-utils",
  "opendatafabric-dataset",
@@ -9464,8 +9464,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-data-utils"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "arrow",
  "arrow-digest",
@@ -9488,8 +9488,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-dataset"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "bytes",
@@ -9514,8 +9514,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-dataset-impl"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -9550,8 +9550,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-metadata"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "arrow",
  "base64",
@@ -9582,8 +9582,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-storage"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -9601,8 +9601,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-storage-http"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -9621,8 +9621,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-storage-inmem"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -9637,8 +9637,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-storage-lfs"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -9657,8 +9657,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-storage-s3"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -10846,8 +10846,8 @@ dependencies = [
 
 [[package]]
 name = "random-strings"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "rand 0.9.2",
 ]
@@ -10962,9 +10962,9 @@ dependencies = [
 
 [[package]]
 name = "referencing"
-version = "0.40.0"
+version = "0.40.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eea91dda8cb0c3e8a78b69a78ba2e311c457a109ffd35c4bdbd66286da5dd999"
+checksum = "ff7fb9c41b51adf30fddae79a0f6267ae59f91b6b797dfe496ce931f1eff1730"
 dependencies = [
  "ahash 0.8.12",
  "fluent-uri",
@@ -11464,8 +11464,8 @@ checksum = "700de91d5fd6091442d00fdd9ee790af6d4f0f480562b0f5a1e8f59e90aafe73"
 
 [[package]]
 name = "s3-utils"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-utils",
  "aws-config",
@@ -11806,8 +11806,8 @@ dependencies = [
 
 [[package]]
 name = "server-console"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-graphql",
  "axum",
@@ -12719,8 +12719,8 @@ dependencies = [
 
 [[package]]
 name = "test-utils"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "axum",
  "container-runtime",
@@ -12836,8 +12836,8 @@ dependencies = [
 
 [[package]]
 name = "time-source"
-version = "0.257.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#fbc1f363400e320a929ef261d663a4738039b6b6"
+version = "0.257.3"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=sku%2Fmolecule#e1d3ecb6ee96640f3696130890d554c3511d29b2"
 dependencies = [
  "async-trait",
  "chrono",

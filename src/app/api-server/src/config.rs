@@ -1071,14 +1071,6 @@ impl SearchConfig {
     pub const DEFAULT_MODEL: &str = "text-embedding-ada-002";
     pub const DEFAULT_DIMENSIONS: usize = 1536;
 
-    pub fn default_overfetch_factor() -> f32 {
-        2.0
-    }
-
-    pub fn default_overfetch_amount() -> usize {
-        10
-    }
-
     pub fn default_semantic_search_threshold_score() -> f32 {
         0.0
     }
