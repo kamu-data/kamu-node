@@ -15,7 +15,7 @@ members = [
     "src/e2e/app/postgres",
     "src/e2e/app/sqlite",
 ]
-resolver = "2"
+resolver = "3"
 
 
 [workspace.dependencies]
