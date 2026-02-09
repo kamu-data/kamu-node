@@ -13,6 +13,11 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.82.0] - 2026-02-09
+### Upstream [kamu `0.258.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.258.0)
+### Added
+- Generating config JSON Schemas and Markdown readmes
+
 ## [0.81.2] - 2026-01-30
 ### Upstream [kamu `0.257.3`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.257.3)
 ### Changed
