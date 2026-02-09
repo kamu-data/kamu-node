@@ -9,4 +9,5 @@
 
 mod api_schemas;
 mod notifiers;
+mod test_config;
 mod test_di_graph;

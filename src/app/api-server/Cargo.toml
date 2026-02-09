@@ -180,15 +180,29 @@ clap = { version = "4", default-features = false, features = [
     # "env",
     "wrap_help",
 ] }
-duration-string = { version = "0.5", default-features = false, features = [
-    "serde",
-] }
-figment = { version = "0.10", features = ["env", "yaml", "json"] }
 futures = "0.3"
 indoc = "2"
 secrecy = "0.10"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+setty = { version = "0.3", features = [
+    "derive-clone",
+    "derive-debug",
+    "derive-partial-eq",
+    "derive-deserialize",
+    "derive-serialize",
+    "derive-jsonschema",
+    "case-fields-camel",
+    "case-enums-pascal",
+    "case-enums-any",
+    "fmt-json",
+    "fmt-yaml",
+    "types-chrono",
+    "types-duration-string",
+    "types-url",
+    "gen-jsonschema",
+    "gen-markdown",
+] }
 strum_macros = { version = "0.27", default-features = false }
 tempfile = "3"
 tokio = { version = "1", default-features = false, features = [
