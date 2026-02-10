@@ -336,11 +336,7 @@ pub async fn init_dependencies(
 
     // GraphQL
     {
-        let mut feature_flags = kamu_adapter_graphql::GqlFeatureFlags::new();
-        if config.extra.graphql.molecule_api_v1_enabled {
-            feature_flags =
-                feature_flags.with_feature(kamu_adapter_graphql::GqlFeature::MoleculeApiV1);
-        }
+        let feature_flags = kamu_adapter_graphql::GqlFeatureFlags::new();
         b.add_value(feature_flags);
     }
 
