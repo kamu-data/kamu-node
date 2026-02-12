@@ -15,6 +15,9 @@ class {
 interface "AccessTokenRepository" <<i>>
 interface "AccessTokenService" <<i>>
 interface "AccountAuthorizationHelper" <<i>>
+interface "AccountQuotaEventStore" <<i>>
+interface "AccountQuotaService" <<i>>
+interface "AccountQuotaStorageChecker" <<i>>
 interface "AccountRepository" <<i>>
 interface "AccountService" <<i>>
 interface "AppendDatasetMetadataBatchUseCase" <<i>>
@@ -69,6 +72,8 @@ interface "EmbeddingsEncoder" <<i>>
 interface "EmbeddingsProvider" <<i>>
 interface "EngineProvisioner" <<i>>
 interface "ExpensiveAccountRepository" <<i>>
+interface "FindCollectionEntriesUseCase" <<i>>
+interface "FindVersionedFileVersionUseCase" <<i>>
 interface "FlowAgent" <<i>>
 interface "FlowAgentTestDriver" <<i>>
 interface "FlowConfigurationEventStore" <<i>>
@@ -158,11 +163,13 @@ interface "TransformRequestPlanner" <<i>>
 interface "UnsetDatasetAccountsRelationsUseCase" <<i>>
 interface "UpdateAccountUseCase" <<i>>
 interface "UpdateCollectionEntriesUseCase" <<i>>
-interface "UpdateVersionFileUseCase" <<i>>
+interface "UpdateVersionedFileUseCase" <<i>>
 interface "UpdateWebhookSubscriptionUseCase" <<i>>
 interface "UploadService" <<i>>
 interface "VerificationService" <<i>>
 interface "VerifyDatasetUseCase" <<i>>
+interface "ViewCollectionEntriesUseCase" <<i>>
+interface "ViewVersionedFileHistoryUseCase" <<i>>
 interface "Web3AuthEip4361NonceRepository" <<i>>
 interface "Web3AuthEip4361NonceService" <<i>>
 interface "WebhookDeliveryRepository" <<i>>
@@ -178,6 +185,8 @@ class "AccessTokenServiceImpl"
 class "AccountAuthorizationHelperImpl"
 class "AccountLifecycleNotifier"
 class "AccountProperties" <<singleton>>
+class "AccountQuotaCheckerStorageImpl"
+class "AccountQuotaServiceImpl"
 class "AccountSearchSchemaProvider"
 class "AccountServiceImpl"
 class "AppendDatasetMetadataBatchUseCaseImpl"
@@ -250,6 +259,8 @@ class "EngineProvisionerLocalConfig" <<singleton>>
 class "EthereumSourceConfig" <<singleton>>
 class "FetchService"
 class "FileUploadLimitConfig" <<singleton>>
+class "FindCollectionEntriesUseCaseImpl"
+class "FindVersionedFileVersionUseCaseImpl"
 class "FlowAbortHelper"
 class "FlowAgentConfig" <<singleton>>
 class "FlowAgentImpl" <<singleton>>
@@ -319,6 +330,7 @@ class "PauseWebhookSubscriptionUseCaseImpl"
 class "PollingIngestServiceImpl"
 class "Pool" <<singleton>>
 class "PostgresAccessTokenRepository"
+class "PostgresAccountQuotaEventStore"
 class "PostgresAccountRepository"
 class "PostgresDatasetDataBlockRepository"
 class "PostgresDatasetDependencyRepository"
@@ -359,6 +371,7 @@ class "PushIngestPlannerImpl"
 class "PushRequestPlannerImpl"
 class "QueryDatasetDataUseCaseImpl"
 class "QueryServiceImpl"
+class "QuotaDefaultsConfig" <<singleton>>
 class "ReactivateWebhookSubscriptionUseCaseImpl"
 class "RebacDatasetLifecycleMessageConsumer"
 class "RebacDatasetRegistryFacadeImpl"
@@ -419,11 +432,13 @@ class "UpdateAccountUseCaseImpl"
 class "UpdateCollectionEntriesUseCaseImpl"
 class "UpdateDatasetTaskPlanner"
 class "UpdateDatasetTaskRunner"
-class "UpdateVersionFileUseCaseImpl"
+class "UpdateVersionedFileUseCaseImpl"
 class "UpdateWebhookSubscriptionUseCaseImpl"
 class "UploadServiceLocal"
 class "VerificationServiceImpl"
 class "VerifyDatasetUseCaseImpl"
+class "ViewCollectionEntriesUseCaseImpl"
+class "ViewVersionedFileHistoryUseCaseImpl"
 class "Web3AuthEip4361NonceServiceImpl"
 class "Web3WalletAuthenticationProvider"
 class "WebhookDatasetRemovalHandler"
@@ -432,6 +447,7 @@ class "WebhookSecretGeneratorImpl"
 class "WebhookSenderImpl"
 class "WebhookSignerImpl"
 class "WebhookSubscriptionQueryServiceImpl"
+class "WebhookTriggerStartupRecoveryJob"
 class "WebhooksConfig" <<singleton>>
 class "WsSmartTransferProtocolClient"
 "ContainerRuntime"  --> "ContainerRuntimeConfig"
@@ -472,10 +488,13 @@ class "WsSmartTransferProtocolClient"
 "PollingIngestServiceImpl"  --> "CacheDir"
 "PollingIngestServiceImpl"  --> "RunInfoDir"
 "PushIngestExecutor" <|-- "PushIngestExecutorImpl"
+"PushIngestExecutorImpl"  --> "AccountQuotaStorageChecker"
+"PushIngestExecutorImpl"  --> "AccountService"
 "PushIngestExecutorImpl"  --> "EngineProvisioner"
 "PushIngestExecutorImpl"  --> "DataFormatRegistry"
 "PushIngestExecutorImpl"  --> "ObjectStoreRegistry"
 "PushIngestExecutorImpl"  --> "EngineConfigDatafusionEmbeddedIngest"
+"PushIngestExecutorImpl"  --> "TenancyConfig"
 "PushIngestPlanner" <|-- "PushIngestPlannerImpl"
 "PushIngestPlannerImpl"  --> "DataFormatRegistry"
 "PushIngestPlannerImpl"  --> "SystemTimeSource"
@@ -495,6 +514,7 @@ class "WsSmartTransferProtocolClient"
 "PushRequestPlanner" <|-- "PushRequestPlannerImpl"
 "PushRequestPlannerImpl"  --> "RemoteAliasResolver"
 "QueryService" <|-- "QueryServiceImpl"
+"QueryServiceImpl"  --> "RebacDatasetRegistryFacade"
 "QueryServiceImpl"  --> "DatasetActionAuthorizer"
 "QueryServiceImpl"  --> "DatasetRegistry"
 "QueryServiceImpl"  --> "SessionContextBuilder"
@@ -581,6 +601,8 @@ class "WsSmartTransferProtocolClient"
 "SimpleTransferProtocol"  --> "Catalog"
 "AccessTokenRepository" <|-- "PostgresAccessTokenRepository"
 "PostgresAccessTokenRepository"  --> "TransactionRefT"
+"AccountQuotaEventStore" <|-- "PostgresAccountQuotaEventStore"
+"PostgresAccountQuotaEventStore"  --> "TransactionRefT"
 "AccountRepository" <|-- "PostgresAccountRepository"
 "ExpensiveAccountRepository" <|-- "PostgresAccountRepository"
 "PasswordHashRepository" <|-- "PostgresAccountRepository"
@@ -595,6 +617,9 @@ class "WsSmartTransferProtocolClient"
 "AccessTokenServiceImpl"  --> "AccessTokenRepository"
 "AccessTokenServiceImpl"  --> "Outbox"
 "AccessTokenServiceImpl"  --> "SystemTimeSource"
+"AccountQuotaService" <|-- "AccountQuotaServiceImpl"
+"AccountQuotaServiceImpl"  --> "AccountQuotaEventStore"
+"AccountQuotaServiceImpl"  --> "SystemTimeSource"
 "AccountService" <|-- "AccountServiceImpl"
 "AccountServiceImpl" "?" --> "PasswordHashingMode"
 "AccountServiceImpl"  --> "AccountRepository"
@@ -705,6 +730,11 @@ class "WsSmartTransferProtocolClient"
 "MessageConsumerT" <|-- "FlowWebhooksEventBridge"
 "FlowWebhooksEventBridge"  --> "SystemTimeSource"
 "FlowWebhooksEventBridge"  --> "WebhooksConfig"
+"InitOnStartup" <|-- "WebhookTriggerStartupRecoveryJob"
+"WebhookTriggerStartupRecoveryJob"  --> "FlowTriggerService"
+"WebhookTriggerStartupRecoveryJob"  --> "WebhookSubscriptionQueryService"
+"WebhookTriggerStartupRecoveryJob"  --> "SystemTimeSource"
+"WebhookTriggerStartupRecoveryJob"  --> "WebhooksConfig"
 "UploadService" <|-- "UploadServiceLocal"
 "UploadServiceLocal" "?" --> "AccessToken"
 "UploadServiceLocal"  --> "ServerUrlConfig"
@@ -818,6 +848,10 @@ class "WsSmartTransferProtocolClient"
 "DatasetSearchServiceImpl"  --> "DatasetRegistry"
 "DatasetSearchServiceImpl"  --> "EmbeddingsProvider"
 "DatasetSearchServiceImpl"  --> "SearchService"
+"AccountQuotaStorageChecker" <|-- "AccountQuotaCheckerStorageImpl"
+"AccountQuotaCheckerStorageImpl"  --> "AccountQuotaEventStore"
+"AccountQuotaCheckerStorageImpl"  --> "DatasetStatisticsService"
+"AccountQuotaCheckerStorageImpl"  --> "QuotaDefaultsConfig"
 "InitOnStartup" <|-- "DatasetBlockIndexer"
 "DatasetBlockIndexer"  --> "Catalog"
 "MessageConsumer" <|-- "DatasetBlockUpdateHandler"
@@ -894,12 +928,20 @@ class "WsSmartTransferProtocolClient"
 "MessageConsumerT" <|-- "DatasetStatisticsUpdateHandler"
 "DatasetStatisticsUpdateHandler"  --> "DatasetStatisticsRepository"
 "DatasetStatisticsUpdateHandler"  --> "DatasetRegistry"
+"FindCollectionEntriesUseCase" <|-- "FindCollectionEntriesUseCaseImpl"
+"FindCollectionEntriesUseCaseImpl"  --> "QueryService"
+"UpdateCollectionEntriesUseCase" <|-- "UpdateCollectionEntriesUseCaseImpl"
+"UpdateCollectionEntriesUseCaseImpl"  --> "QueryService"
+"UpdateCollectionEntriesUseCaseImpl"  --> "PushIngestDataUseCase"
+"ViewCollectionEntriesUseCase" <|-- "ViewCollectionEntriesUseCaseImpl"
+"ViewCollectionEntriesUseCaseImpl"  --> "QueryService"
 "AppendDatasetMetadataBatchUseCase" <|-- "AppendDatasetMetadataBatchUseCaseImpl"
 "CommitDatasetEventUseCase" <|-- "CommitDatasetEventUseCaseImpl"
 "CommitDatasetEventUseCaseImpl"  --> "RebacDatasetRegistryFacade"
 "CommitDatasetEventUseCaseImpl"  --> "SystemTimeSource"
 "CreateDatasetFromSnapshotUseCase" <|-- "CreateDatasetFromSnapshotUseCaseImpl"
 "CreateDatasetFromSnapshotUseCaseImpl"  --> "DidSecretKeyRepository"
+"CreateDatasetFromSnapshotUseCaseImpl" "lazy" --> "RebacService"
 "CreateDatasetFromSnapshotUseCaseImpl"  --> "DidGenerator"
 "CreateDatasetFromSnapshotUseCaseImpl"  --> "DatasetRegistry"
 "CreateDatasetFromSnapshotUseCaseImpl"  --> "SystemTimeSource"
@@ -907,6 +949,7 @@ class "WsSmartTransferProtocolClient"
 "CreateDatasetFromSnapshotUseCaseImpl"  --> "DidSecretEncryptionConfig"
 "CreateDatasetFromSnapshotUseCaseImpl"  --> "CreateDatasetUseCaseHelper"
 "CreateDatasetUseCase" <|-- "CreateDatasetUseCaseImpl"
+"CreateDatasetUseCaseImpl" "lazy" --> "RebacService"
 "CreateDatasetUseCaseImpl"  --> "CurrentAccountSubject"
 "CreateDatasetUseCaseImpl"  --> "CreateDatasetUseCaseHelper"
 "DeleteDatasetUseCase" <|-- "DeleteDatasetUseCaseImpl"
@@ -932,12 +975,14 @@ class "WsSmartTransferProtocolClient"
 "RenameDatasetUseCaseImpl"  --> "DatasetEntryWriter"
 "RenameDatasetUseCaseImpl"  --> "Outbox"
 "RenameDatasetUseCaseImpl"  --> "SystemTimeSource"
-"UpdateCollectionEntriesUseCase" <|-- "UpdateCollectionEntriesUseCaseImpl"
-"UpdateCollectionEntriesUseCaseImpl"  --> "QueryService"
-"UpdateCollectionEntriesUseCaseImpl"  --> "PushIngestDataUseCase"
-"UpdateVersionFileUseCase" <|-- "UpdateVersionFileUseCaseImpl"
-"UpdateVersionFileUseCaseImpl"  --> "QueryService"
-"UpdateVersionFileUseCaseImpl"  --> "PushIngestDataUseCase"
+"FindVersionedFileVersionUseCase" <|-- "FindVersionedFileVersionUseCaseImpl"
+"FindVersionedFileVersionUseCaseImpl"  --> "QueryService"
+"UpdateVersionedFileUseCase" <|-- "UpdateVersionedFileUseCaseImpl"
+"UpdateVersionedFileUseCaseImpl"  --> "QueryService"
+"UpdateVersionedFileUseCaseImpl"  --> "PushIngestDataUseCase"
+"UpdateVersionedFileUseCaseImpl"  --> "SystemTimeSource"
+"ViewVersionedFileHistoryUseCase" <|-- "ViewVersionedFileHistoryUseCaseImpl"
+"ViewVersionedFileHistoryUseCaseImpl"  --> "QueryService"
 "CreateDatasetUseCaseHelper"  --> "DatasetEntryWriter"
 "CreateDatasetUseCaseHelper"  --> "Outbox"
 "CreateDatasetUseCaseHelper"  --> "DatasetStorageUnitWriter"

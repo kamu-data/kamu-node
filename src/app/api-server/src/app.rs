@@ -587,6 +587,17 @@ pub async fn init_dependencies(
             .collect(),
     ));
 
+    let quota_defaults = kamu_datasets_services::QuotaDefaultsConfig::default();
+    let default_account_storage_limit_in_bytes = config
+        .quota
+        .account
+        .default_storage_limit_in_bytes
+        .unwrap_or(quota_defaults.storage);
+
+    b.add_value(kamu_datasets_services::QuotaDefaultsConfig {
+        storage: default_account_storage_limit_in_bytes,
+    });
+
     kamu_flow_system_services::register_dependencies(&mut b);
 
     kamu_adapter_auth_oso_rebac::register_dependencies(&mut b);

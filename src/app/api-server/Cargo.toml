@@ -64,7 +64,7 @@ s3-utils = { workspace = true }
 server-console = { workspace = true }
 time-source = { workspace = true }
 
-kamu = { workspace = true }
+kamu = { workspace = true, features = ["query-extensions-nested-functions"] }
 kamu-accounts = { workspace = true }
 kamu-accounts-inmem = { workspace = true }
 kamu-accounts-postgres = { workspace = true }

@@ -82,7 +82,7 @@
       }
     },
     "flowSystem": {
-      "description": "Configuration for flow system",
+      "description": "Configuration for the flow system",
       "$ref": "#/$defs/FlowSystemConfig",
       "default": {
         "flowAgent": {
@@ -136,6 +136,13 @@
         }
       }
     },
+    "quota": {
+      "description": "Default quotas configured by type",
+      "$ref": "#/$defs/QuotaConfig",
+      "default": {
+        "account": {}
+      }
+    },
     "repo": {
       "description": "Dataset repository",
       "$ref": "#/$defs/RepoConfig",
@@ -151,7 +158,7 @@
       "default": {}
     },
     "search": {
-      "description": "Seach configuration",
+      "description": "Search configuration",
       "$ref": "#/$defs/SearchConfig",
       "default": {
         "embeddingsChunker": {
@@ -175,7 +182,7 @@
       }
     },
     "source": {
-      "description": "Ingestions sources",
+      "description": "Ingestion's sources",
       "$ref": "#/$defs/SourceConfig",
       "default": {
         "ethereum": {
@@ -1183,6 +1190,30 @@
             "httpGateway": "http://localhost:8080/",
             "preResolveDnslink": true
           }
+        }
+      },
+      "additionalProperties": false
+    },
+    "QuotaAccountConfig": {
+      "type": "object",
+      "properties": {
+        "defaultStorageLimitInBytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint64",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "QuotaConfig": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "$ref": "#/$defs/QuotaAccountConfig",
+          "default": {}
         }
       },
       "additionalProperties": false
