@@ -714,7 +714,7 @@ pub async fn init_dependencies(
             b.add::<kamu_datasets_services::DatasetEnvVarServiceNull>();
         }
         Some(encryption_key) => {
-            if dataset_env_vars_config.enabled {
+            if !dataset_env_vars_config.enabled {
                 warn!("Dataset env vars feature will be disabled");
                 b.add::<kamu_datasets_services::DatasetKeyValueServiceSysEnv>();
                 b.add::<kamu_datasets_services::DatasetEnvVarServiceNull>();
