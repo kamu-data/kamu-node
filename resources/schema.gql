@@ -69,6 +69,10 @@ type Account {
 	Returns datasets belonging to this account
 	"""
 	ownedDatasets(page: Int, perPage: Int): DatasetConnection!
+	"""
+	Returns account quotas
+	"""
+	quotas: AccountQuotas!
 }
 
 type AccountAccessTokens {
@@ -226,6 +230,10 @@ type AccountMut {
 	Access to the mutable flow configurations of this account
 	"""
 	accessTokens: AccountAccessTokensMut!
+	"""
+	Access to the mutable quotas of this account
+	"""
+	quotas: AccountQuotasMut!
 }
 
 scalar AccountName
@@ -236,6 +244,34 @@ enum AccountProvider {
 	PASSWORD
 	OAUTH_GITHUB
 	WEB3_WALLET
+}
+
+type AccountQuotas {
+	"""
+	User-level quotas
+	"""
+	user: AccountQuotasUsage!
+}
+
+type AccountQuotasMut {
+	"""
+	Setting quotas at the account level.
+	"""
+	setAccountQuotas(quotas: SetAccountQuotasInput!): SetAccountQuotasResult!
+}
+
+type AccountQuotasUsage {
+	"""
+	User-level quotas
+	"""
+	storage: AccountQuotasUsageStorage!
+}
+
+type AccountQuotasUsageStorage {
+	"""
+	Total bytes limit for this account.
+	"""
+	limitTotalBytes: Int!
 }
 
 enum AccountType {
@@ -596,11 +632,11 @@ type Collection {
 
 type CollectionEntry {
 	"""
-	Time when this version was created
+	System time when this entry was created
 	"""
 	systemTime: DateTime!
 	"""
-	Time when this version was created
+	Event time when this entry was created
 	"""
 	eventTime: DateTime!
 	"""
@@ -677,9 +713,6 @@ type CollectionMut {
 	updateEntries(operations: [CollectionUpdateInput!]!, expectedHead: Multihash): CollectionUpdateResult!
 }
 
-"""
-Collection entry paths are similar to HTTP path components. They are rooted (start with `/`), separated by forward slashes, with elements URL-encoded (e.g. `/foo%20bar/baz`)
-"""
 scalar CollectionPath
 
 type CollectionProjection {
@@ -707,6 +740,14 @@ type CollectionUpdateErrorCasFailed implements CollectionUpdateResult {
 
 type CollectionUpdateErrorNotFound implements CollectionUpdateResult {
 	path: CollectionPath!
+	isSuccess: Boolean!
+	message: String!
+}
+
+type CollectionUpdateErrorQuotaExceeded implements CollectionUpdateResult {
+	used: Int
+	incoming: Int
+	limit: Int
 	isSuccess: Boolean!
 	message: String!
 }
@@ -3763,6 +3804,27 @@ type Seed {
 	datasetKind: DatasetKind!
 }
 
+input SetAccountQuotasInput {
+	storage: SetAccountQuotasStorageInput
+}
+
+interface SetAccountQuotasResult {
+	isSuccess: Boolean!
+	message: String!
+}
+
+type SetAccountQuotasResultInvalidInput implements SetAccountQuotasResult {
+	message: String!
+}
+
+type SetAccountQuotasResultSuccess implements SetAccountQuotasResult {
+	message: String!
+}
+
+input SetAccountQuotasStorageInput {
+	limitTotalBytes: Int
+}
+
 """
 Associates a set of files with this dataset.
 
@@ -4252,6 +4314,14 @@ type UpdateVersionErrorInvalidExtraData implements UpdateVersionResult {
 	isSuccess: Boolean!
 }
 
+type UpdateVersionErrorQuotaExceeded implements UpdateVersionResult {
+	used: Int
+	incoming: Int
+	limit: Int
+	isSuccess: Boolean!
+	message: String!
+}
+
 interface UpdateVersionResult {
 	isSuccess: Boolean!
 	message: String!
@@ -4340,11 +4410,11 @@ type VersionedFileContentDownload {
 
 type VersionedFileEntry {
 	"""
-	System time when this version was created/updated
+	System time when this version was created
 	"""
 	systemTime: DateTime!
 	"""
-	Event time when this version was created/updated
+	Event time when this version was created
 	"""
 	eventTime: DateTime!
 	"""

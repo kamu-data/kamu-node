@@ -8,14 +8,15 @@
 | `email` | [`EmailConfig`](#emailconfig) |  | Email gateway configuration |
 | `engine` | [`EngineConfig`](#engineconfig) |  | Ingest and transform engines |
 | `extra` | [`ExtraConfig`](#extraconfig) |  | Experimental and temporary module configuration |
-| `flowSystem` | [`FlowSystemConfig`](#flowsystemconfig) |  | Configuration for flow system |
+| `flowSystem` | [`FlowSystemConfig`](#flowsystemconfig) |  | Configuration for the flow system |
 | `identity` | [`IdentityConfig`](#identityconfig) |  | UNSTABLE: Identity configuration |
 | `outbox` | [`OutboxConfig`](#outboxconfig) |  | Outbox configuration |
 | `protocol` | [`ProtocolConfig`](#protocolconfig) |  | Protocols |
+| `quota` | [`QuotaConfig`](#quotaconfig) |  | Default quotas configured by type |
 | `repo` | [`RepoConfig`](#repoconfig) |  | Dataset repository |
 | `runtime` | [`RuntimeConfig`](#runtimeconfig) |  | Tokio runtime |
-| `search` | [`SearchConfig`](#searchconfig) |  | Seach configuration |
-| `source` | [`SourceConfig`](#sourceconfig) |  | Ingestions sources |
+| `search` | [`SearchConfig`](#searchconfig) |  | Search configuration |
+| `source` | [`SourceConfig`](#sourceconfig) |  | Ingestion's sources |
 | `uploadRepo` | [`UploadRepoConfig`](#uploadrepoconfig) |  | File upload repository |
 | `url` | [`UrlConfig`](#urlconfig) |  | External URLs |
 | `webhooks` | [`WebhooksConfig`](#webhooksconfig) |  | Configuration for webhooks |
@@ -457,6 +458,20 @@ Base type: `string`
 |---|---|---|---|
 | `flightSql` | [`FlightSqlConfig`](#flightsqlconfig) |  | FlightSQL configuration |
 | `ipfs` | [`IpfsConfig`](#ipfsconfig) |  | IPFS configuration |
+
+
+## `QuotaAccountConfig`
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `defaultStorageLimitInBytes` | `integer` |  |  |
+
+
+## `QuotaConfig`
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `account` | [`QuotaAccountConfig`](#quotaaccountconfig) |  |  |
 
 
 ## `RepoCachingConfig`

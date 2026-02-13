@@ -13,7 +13,8 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## [Unreleased]
+## [0.83.0] - 2026-02-12
+### Upstream [kamu `0.259.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.259.1)
 ### Fixed
 - Hotfix: broken dataset secrets feature after Setty update
 

@@ -43,6 +43,10 @@ make minio-sync
     ```shell
     psql -U root -h 127.0.0.1 -p 5433 -d kamu -f DUMP.sql
     ```
+  - Apply latest migrations, if necessary:
+    ```shell
+    sqlx migrate run --source ../../../kamu-cli/migrations/postgres --database-url postgres://root:root@localhost:5433/kamu
+    ```
   - Run the server:
   ```shell
   RUST_LOG=info make run-postgres
