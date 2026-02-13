@@ -343,11 +343,7 @@ impl OdfOracleProvider {
                     idle_start = Some(std::time::Instant::now());
                 }
 
-                tokio::time::sleep(std::time::Duration::from_millis(
-                    self.config.loop_idle_time_ms,
-                ))
-                .await;
-
+                tokio::time::sleep(self.config.loop_idle_time.into()).await;
                 continue;
             } else {
                 idle_start = None;
@@ -729,13 +725,13 @@ impl OdfOracleProvider {
 
         tracing::debug!(
             transaction_confirmations = self.config.transaction_confirmations,
-            transaction_timeout_s = self.config.transaction_timeout_s,
+            transaction_timeout = %self.config.transaction_timeout,
             "Waiting transaction to be accepted"
         );
 
         let receipt = pending_tx
             .with_required_confirmations(self.config.transaction_confirmations)
-            .with_timeout(Some(Duration::from_secs(self.config.transaction_timeout_s)))
+            .with_timeout(Some(self.config.transaction_timeout.into()))
             .get_receipt()
             .await
             .int_err()?;

@@ -227,7 +227,6 @@ class "CommitDatasetEventUseCaseImpl"
 class "CompactDatasetUseCaseImpl"
 class "CompactionExecutorImpl"
 class "CompactionPlannerImpl"
-class "Config" <<singleton>>
 class "ContainerRuntime"
 class "ContainerRuntimeConfig" <<singleton>>
 class "CreateAccountUseCaseImpl"
@@ -314,6 +313,7 @@ class "FlowWebhooksEventBridge"
 class "GetDatasetDownstreamDependenciesUseCaseImpl"
 class "GetDatasetSchemaUseCaseImpl"
 class "GetDatasetUpstreamDependenciesUseCaseImpl"
+class "GqlConfig" <<singleton>>
 class "GqlFeatureFlags" <<singleton>>
 class "HardCompactDatasetTaskPlanner"
 class "HardCompactDatasetTaskRunner"

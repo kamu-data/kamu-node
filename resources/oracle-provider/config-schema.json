@@ -1,0 +1,142 @@
+{
+  "$defs": {
+    "DurationString": {
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "apiAccessToken": {
+      "description": "API token to use for authentication with the server",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "apiUrl": {
+      "default": "http://localhost:8080/",
+      "description": "URL of the ODF-compatible API server that will execute requests",
+      "format": "uri",
+      "type": "string"
+    },
+    "blocksStride": {
+      "default": 100000,
+      "description": "Number of blocks to examine per one getLogs RPC request when catching up",
+      "format": "uint64",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "chainId": {
+      "default": 0,
+      "description": "ID of the chain used during signing to prevent replay attacks",
+      "format": "uint64",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "httpAddress": {
+      "default": "127.0.0.1",
+      "description": "Interface to listen for HTTP admin traffic on",
+      "type": "string"
+    },
+    "httpPort": {
+      "default": 0,
+      "description": "Port to listen for HTTP admin traffic on",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "ignoreConsumers": {
+      "default": [],
+      "description": "Consumer addresses to ignore requests from (use as a disaster recovery\nmechanism only)",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "ignoreRequests": {
+      "default": [],
+      "description": "Request IDs that provider should skip over (use as a disaster recovery\nmechanism only)",
+      "items": {
+        "format": "uint64",
+        "minimum": 0,
+        "type": "integer"
+      },
+      "type": "array"
+    },
+    "loopIdleTime": {
+      "$ref": "#/$defs/DurationString",
+      "default": "1s",
+      "description": "Time to sleep while waiting for new blocks"
+    },
+    "oracleContractAddress": {
+      "combine": "replace",
+      "description": "Address of the oracle contract to read logs from",
+      "type": "string"
+    },
+    "providerAddress": {
+      "combine": "replace",
+      "description": "Address of this provider's account to use when submitting transactions",
+      "type": "string"
+    },
+    "providerPrivateKey": {
+      "description": "Private key of the provider to use when signing transactions.",
+      "type": "string"
+    },
+    "rpcUrl": {
+      "default": "http://localhost:8545/",
+      "description": "Ethereum-compatible JSON-RPC address",
+      "format": "uri",
+      "type": "string"
+    },
+    "scanFromBlock": {
+      "description": "Block number to start scanning from on startup (precedence:\nscan_from_block, scan_last_blocks, scan_last_blocks_period)",
+      "format": "uint64",
+      "minimum": 0,
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "scanLastBlocks": {
+      "description": "Number of last blocks to scan on startup (precedence: scan_from_block,\nscan_last_blocks, scan_last_blocks_period)",
+      "format": "uint64",
+      "minimum": 0,
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "scanLastBlocksPeriod": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DurationString"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Time period in which blocks will be scanned on startup (precedence:\nscan_from_block, scan_last_blocks, scan_last_blocks_period)"
+    },
+    "transactionConfirmations": {
+      "description": "Number of confirmations to await before considering transaction included",
+      "format": "uint64",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "transactionTimeout": {
+      "$ref": "#/$defs/DurationString",
+      "default": "1m",
+      "description": "Timeout when submitting a transaction"
+    }
+  },
+  "required": [
+    "oracleContractAddress",
+    "providerAddress",
+    "providerPrivateKey",
+    "transactionConfirmations"
+  ],
+  "title": "Config",
+  "type": "object"
+}

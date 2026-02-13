@@ -21,7 +21,17 @@ Recommendation: for ease of reading, use the following order:
 - GQL: `MoleculeMut::create_project()`: generate lowercase project account name.
 ### Fixed
  - Investigation: potential unstable ordering of dataset entry listings
- 
+
+## [0.83.0] - 2026-02-12
+### Upstream [kamu `0.259.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.259.1)
+### Fixed
+- Hotfix: broken dataset secrets feature after Setty update
+
+## [0.82.0] - 2026-02-09
+### Upstream [kamu `0.258.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.258.0)
+### Added
+- Generating config JSON Schemas and Markdown readmes
+
 ## [0.81.2] - 2026-01-30
 ### Upstream [kamu `0.257.3`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.257.3)
 ### Changed

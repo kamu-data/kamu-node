@@ -23,10 +23,15 @@ fn main() {
 
     let args = Cli::parse();
 
-    let config: Config = confique::Config::builder()
-        .env()
-        .file(&args.config)
-        .load()
+    let config: Config = setty::Config::new()
+        .with_source(setty::source::File::<setty::format::Yaml>::new(
+            &args.config,
+        ))
+        .with_source(setty::source::Env::<setty::format::Yaml>::new(
+            "KAMU_ORACLE_CONFIG__",
+            "__",
+        ))
+        .extract()
         .unwrap();
 
     let rt = tokio::runtime::Builder::new_multi_thread()

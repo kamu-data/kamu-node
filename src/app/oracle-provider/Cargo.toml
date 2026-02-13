@@ -56,11 +56,7 @@ clap = { version = "4", default-features = false, features = [
     "wrap_help",
 ] }
 ciborium = { version = "0.2", default-features = false }
-confique = { version = "0.4", default-features = false, features = ["yaml"] }
 dill = { version = "0.15", default-features = false }
-duration-string = { version = "0.5", default-features = false, features = [
-    "serde",
-] }
 hex = { version = "0.4" }
 http = { version = "1", default-features = false }
 internal-error = { workspace = true }
@@ -77,6 +73,24 @@ rustls = { version = "0.23", default-features = false, features = [
 ] }
 serde = { version = "1", default-features = false, features = ["derive"] }
 serde_json = { version = "1", default-features = false }
+setty = { version = "0.3", features = [
+    "derive-clone",
+    "derive-debug",
+    "derive-partial-eq",
+    "derive-deserialize",
+    "derive-serialize",
+    "derive-jsonschema",
+    "case-fields-camel",
+    "case-enums-pascal",
+    "case-enums-any",
+    "fmt-json",
+    "fmt-yaml",
+    "types-chrono",
+    "types-duration-string",
+    "types-url",
+    "gen-jsonschema",
+    "gen-markdown",
+] }
 strum = { version = "0.27", default-features = false, features = [
     "std",
     "derive",

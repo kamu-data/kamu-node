@@ -7,7 +7,6 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-use std::collections::HashMap;
 use std::future::Future;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -58,7 +57,9 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
                 workspace_dir.display()
             );
         }
-        Url::from_directory_path(workspace_dir.join("datasets")).unwrap()
+        Url::from_directory_path(workspace_dir.join("datasets"))
+            .unwrap()
+            .into()
     };
 
     let tenancy_config = if args.multi_tenant || repo_url.scheme() != "file" {
@@ -225,28 +226,27 @@ pub fn init_observability() -> observability::init::Guard {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub fn load_config(path: Option<&PathBuf>) -> Result<config::ApiServerConfig, InternalError> {
-    use figment::providers::Format;
-
-    let mut figment = figment::Figment::from(figment::providers::Serialized::defaults(
-        config::ApiServerConfig::default(),
-    ));
+    let mut fig = setty::Config::new();
 
     if let Some(path) = path {
         if !path.is_file() {
             return InternalError::bail(format!("Config file '{}' not found", path.display()));
         }
 
-        figment = figment.merge(figment::providers::Yaml::file(path));
+        fig = fig.with_source(setty::source::File::<setty::format::Yaml>::new(path));
     };
 
-    figment
-        .merge(
-            figment::providers::Env::prefixed("KAMU_API_SERVER_CONFIG_")
-                .split("__")
-                .lowercase(false),
-        )
-        .extract()
-        .int_err()
+    fig = fig.with_source(setty::source::Env::<setty::format::Yaml>::new(
+        "KAMU_API_SERVER_CONFIG_",
+        "__",
+    ));
+
+    let mut cfg: config::ApiServerConfig = fig.extract().int_err()?;
+
+    // TODO: Think how to make this a `setty` feature
+    cfg.engine.datafusion_embedded.merge_with_defaults();
+
+    Ok(cfg)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -381,11 +381,7 @@ pub async fn init_dependencies(
     kamu_adapter_task_dataset::register_dependencies(&mut b);
     kamu_adapter_task_webhook::register_dependencies(&mut b);
 
-    let incremental_search_indexing = config
-        .search
-        .indexer
-        .as_ref()
-        .is_some_and(|i| i.incremental_indexing);
+    let incremental_search_indexing = config.search.indexer.incremental_indexing;
 
     kamu_molecule_services::register_dependencies(
         &mut b,
@@ -394,9 +390,7 @@ pub async fn init_dependencies(
         },
     );
 
-    b.add_value(kamu_molecule_services::domain::MoleculeConfig {
-        enable_reads_from_projections: config.extra.molecule.enable_reads_from_projections,
-    });
+    b.add_value(kamu_molecule_services::domain::MoleculeConfig::default());
 
     b.add::<kamu::RemoteRepositoryRegistryImpl>();
 
@@ -511,46 +505,44 @@ pub async fn init_dependencies(
     );
 
     b.add_value(messaging_outbox::OutboxConfig::new(
-        Duration::seconds(config.outbox.awaiting_step_secs.unwrap()),
-        config.outbox.batch_size.unwrap(),
+        Duration::seconds(config.outbox.awaiting_step_secs),
+        config.outbox.batch_size,
     ));
 
     // Webhooks configuration
     let webhooks_config = config.webhooks;
     {
-        let max_consecutive_failures = webhooks_config.max_consecutive_failures.unwrap();
+        let max_consecutive_failures = webhooks_config.max_consecutive_failures;
         assert!(
             max_consecutive_failures > 0,
             "Webhooks max_consecutive_failures must be > 0"
         );
 
-        let delivery_timeout_secs = webhooks_config.delivery_timeout_secs.unwrap();
+        let delivery_timeout_secs = webhooks_config.delivery_timeout_secs;
         assert!(
             delivery_timeout_secs > 0,
             "Webhooks delivery_timeout_secs must be > 0"
         );
 
         match webhooks_config.secret_encryption_key.as_ref() {
-            None => match &webhooks_config.secret_encryption_enabled.as_ref() {
-                None => {
+            None => {
+                if webhooks_config.secret_encryption_enabled {
+                    panic!("Webhook secrets encryption key is required")
+                } else {
                     warn!(
                         "Webhook encryption configuration is missing. Secrets will not be \
                          encrypted"
                     );
                 }
-                Some(true) => panic!("Webhook secrets encryption key is required"),
-                _ => {}
-            },
+            }
             Some(encryption_key) => {
-                if let Some(enabled) = &webhooks_config.secret_encryption_enabled
-                    && !enabled
-                {
-                    warn!("Webhook encryption will be disabled");
-                } else {
+                if webhooks_config.secret_encryption_enabled {
                     assert!(
                         AesGcmEncryptor::try_new(encryption_key).is_ok(),
                         "Invalid webhook secrets encryption key",
                     );
+                } else {
+                    warn!("Webhook encryption will be disabled");
                 }
             }
         }
@@ -562,62 +554,65 @@ pub async fn init_dependencies(
         ));
     }
 
-    let task_agent_config = config.flow_system.task_agent.unwrap();
     b.add_value(kamu_task_system::TaskAgentConfig::new(Duration::seconds(
-        task_agent_config.task_checking_interval_secs.unwrap(),
+        config.flow_system.task_agent.task_checking_interval_secs,
     )));
     kamu_task_system_services::register_dependencies(&mut b);
 
-    let flow_system_event_agent_config = config.flow_system.flow_system_event_agent.unwrap();
+    let flow_system_event_agent_config = config.flow_system.flow_system_event_agent;
     b.add_value(kamu_flow_system::FlowSystemEventAgentConfig {
         min_debounce_interval: std::time::Duration::from_millis(u64::from(
-            flow_system_event_agent_config
-                .min_debounce_interval_ms
-                .unwrap(),
+            flow_system_event_agent_config.min_debounce_interval_ms,
         )),
         max_listening_timeout: std::time::Duration::from_millis(u64::from(
-            flow_system_event_agent_config
-                .max_listening_timeout_ms
-                .unwrap(),
+            flow_system_event_agent_config.max_listening_timeout_ms,
         )),
-        batch_size: flow_system_event_agent_config.batch_size.unwrap(),
+        batch_size: flow_system_event_agent_config.batch_size,
     });
 
-    let flow_agent_config = config.flow_system.flow_agent.unwrap();
+    let flow_agent_config = config.flow_system.flow_agent;
     b.add_value(kamu_flow_system::FlowAgentConfig::new(
-        Duration::seconds(flow_agent_config.awaiting_step_secs.unwrap()),
-        Duration::seconds(flow_agent_config.mandatory_throttling_period_secs.unwrap()),
-        if let Some(retry_configs) = flow_agent_config.default_retry_policies.as_ref() {
-            retry_configs
-                .iter()
-                .map(|(flow_type, retry_policy_config)| {
-                    (
-                        flow_type.clone(),
-                        kamu_flow_system::RetryPolicy::new(
-                            retry_policy_config.max_attempts.unwrap_or(0),
-                            retry_policy_config.min_delay_secs.unwrap_or(0),
-                            match retry_policy_config.backoff_type {
-                                Some(config::RetryPolicyConfigBackoffType::Exponential) => {
-                                    kamu_flow_system::RetryBackoffType::Exponential
-                                }
-                                Some(config::RetryPolicyConfigBackoffType::Linear) => {
-                                    kamu_flow_system::RetryBackoffType::Linear
-                                }
-                                Some(
-                                    config::RetryPolicyConfigBackoffType::ExponentialWithJitter,
-                                ) => kamu_flow_system::RetryBackoffType::ExponentialWithJitter,
-                                Some(config::RetryPolicyConfigBackoffType::Fixed) | None => {
-                                    kamu_flow_system::RetryBackoffType::Fixed
-                                }
-                            },
-                        ),
-                    )
-                })
-                .collect()
-        } else {
-            HashMap::new()
-        },
+        Duration::seconds(flow_agent_config.awaiting_step_secs),
+        Duration::seconds(flow_agent_config.mandatory_throttling_period_secs),
+        flow_agent_config
+            .default_retry_policies
+            .iter()
+            .map(|(flow_type, retry_policy_config)| {
+                (
+                    flow_type.clone(),
+                    kamu_flow_system::RetryPolicy::new(
+                        retry_policy_config.max_attempts.unwrap_or(0),
+                        retry_policy_config.min_delay_secs.unwrap_or(0),
+                        match retry_policy_config.backoff_type {
+                            Some(config::RetryPolicyConfigBackoffType::Exponential) => {
+                                kamu_flow_system::RetryBackoffType::Exponential
+                            }
+                            Some(config::RetryPolicyConfigBackoffType::Linear) => {
+                                kamu_flow_system::RetryBackoffType::Linear
+                            }
+                            Some(config::RetryPolicyConfigBackoffType::ExponentialWithJitter) => {
+                                kamu_flow_system::RetryBackoffType::ExponentialWithJitter
+                            }
+                            Some(config::RetryPolicyConfigBackoffType::Fixed) | None => {
+                                kamu_flow_system::RetryBackoffType::Fixed
+                            }
+                        },
+                    ),
+                )
+            })
+            .collect(),
     ));
+
+    let quota_defaults = kamu_datasets_services::QuotaDefaultsConfig::default();
+    let default_account_storage_limit_in_bytes = config
+        .quota
+        .account
+        .default_storage_limit_in_bytes
+        .unwrap_or(quota_defaults.storage);
+
+    b.add_value(kamu_datasets_services::QuotaDefaultsConfig {
+        storage: default_account_storage_limit_in_bytes,
+    });
 
     kamu_flow_system_services::register_dependencies(&mut b);
 
@@ -683,15 +678,15 @@ pub async fn init_dependencies(
     }
 
     b.add_value(kamu_accounts::AuthConfig {
-        allow_anonymous: Some(config.auth.allow_anonymous),
+        allow_anonymous: config.auth.allow_anonymous,
         ..kamu_accounts::AuthConfig::default()
     });
 
     {
         let mut protocols = kamu::domain::Protocols {
-            base_url_platform: config.url.base_url_platform,
-            base_url_rest: config.url.base_url_rest,
-            base_url_flightsql: config.url.base_url_flightsql,
+            base_url_platform: config.url.base_url_platform.into(),
+            base_url_rest: config.url.base_url_rest.into(),
+            base_url_flightsql: config.url.base_url_flightsql.into(),
         };
 
         if let Some(e2e_http_port) = e2e_http_port {
@@ -737,20 +732,16 @@ pub async fn init_dependencies(
     let dataset_env_vars_config = &config.dataset_env_vars;
     match dataset_env_vars_config.encryption_key.as_ref() {
         None => {
-            match dataset_env_vars_config.enabled.as_ref() {
-                None => {
-                    error!("Dataset env vars configuration is missing. Feature will be disabled");
-                }
-                Some(true) => panic!("Dataset env vars encryption key is required"),
-                _ => {}
+            if dataset_env_vars_config.enabled {
+                panic!("Dataset env vars encryption key is required");
+            } else {
+                error!("Dataset env vars configuration is missing. Feature will be disabled");
             }
             b.add::<kamu_datasets_services::DatasetKeyValueServiceSysEnv>();
             b.add::<kamu_datasets_services::DatasetEnvVarServiceNull>();
         }
         Some(encryption_key) => {
-            if let Some(enabled) = &dataset_env_vars_config.enabled
-                && !enabled
-            {
+            if !dataset_env_vars_config.enabled {
                 warn!("Dataset env vars feature will be disabled");
                 b.add::<kamu_datasets_services::DatasetKeyValueServiceSysEnv>();
                 b.add::<kamu_datasets_services::DatasetEnvVarServiceNull>();
@@ -783,16 +774,6 @@ pub async fn init_dependencies(
     }
     //
 
-    let quota_defaults = kamu_datasets_services::QuotaDefaultsConfig::default();
-    let default_account_storage_limit_in_bytes = config
-        .quota
-        .and_then(|q| q.account.default_storage_limit_in_bytes)
-        .unwrap_or(quota_defaults.storage);
-
-    b.add_value(kamu_datasets_services::QuotaDefaultsConfig {
-        storage: default_account_storage_limit_in_bytes,
-    });
-
     b.add::<database_common::DatabaseTransactionRunner>();
 
     configure_email_gateway(&mut b, &config.email)?;
@@ -809,41 +790,30 @@ pub async fn init_dependencies(
 
     // Search configuration
 
-    let config::SearchConfig {
-        indexer,
-        embeddings_chunker,
-        embeddings_encoder,
-        repo,
-        ..
-    } = config.search;
-
-    let indexer = indexer.unwrap_or_default();
     b.add_value(kamu_search::SearchIndexerConfig {
-        clear_on_start: indexer.clear_on_start,
+        clear_on_start: config.search.indexer.clear_on_start,
     });
 
     b.add::<kamu_search_services::EmbeddingsProviderImpl>();
 
-    match embeddings_chunker.unwrap_or_default() {
+    match config.search.embeddings_chunker {
         config::EmbeddingsChunkerConfig::Simple(cfg) => {
-            let d = config::EmbeddingsChunkerConfigSimple::default();
             b.add::<kamu_search_services::EmbeddingsChunkerSimple>();
             b.add_value(kamu_search_services::EmbeddingsChunkerConfigSimple {
-                split_sections: cfg.split_sections.or(d.split_sections).unwrap(),
-                split_paragraphs: cfg.split_paragraphs.or(d.split_paragraphs).unwrap(),
+                split_sections: cfg.split_sections,
+                split_paragraphs: cfg.split_paragraphs,
             });
         }
     }
 
-    match embeddings_encoder {
+    match config.search.embeddings_encoder {
         config::EmbeddingsEncoderConfig::OpenAi(cfg) => {
-            let d = config::EmbeddingsEncoderConfigOpenAi::default();
             b.add::<kamu_search_openai::EmbeddingsEncoderOpenAi>();
             b.add_value(kamu_search_openai::EmbeddingsEncoderConfigOpenAI {
                 url: cfg.url,
-                api_key: Some(cfg.api_key.into()),
-                model_name: cfg.model_name.or(d.model_name).unwrap(),
-                dimensions: cfg.dimensions.or(d.dimensions).unwrap(),
+                api_key: cfg.api_key.map(Into::into),
+                model_name: cfg.model_name,
+                dimensions: cfg.dimensions,
             });
         }
 
@@ -852,29 +822,25 @@ pub async fn init_dependencies(
         }
     }
 
-    match repo {
+    match config.search.repo {
         config::SearchRepositoryConfig::Dummy => {
             b.add::<kamu_search_services::DummySearchService>();
         }
 
         config::SearchRepositoryConfig::Elasticsearch(cfg) => {
-            let d = config::SearchRepositoryConfigElasticsearch::default();
             b.add::<kamu_search_services::SearchServiceImpl>();
             b.add::<kamu_search_services::SearchIndexerImpl>();
             b.add::<kamu_search_elasticsearch::ElasticsearchRepository>();
             b.add_value(kamu_search_elasticsearch::ElasticsearchClientConfig {
                 url: url::Url::parse(&cfg.url).int_err()?,
                 password: cfg.password,
-                timeout_secs: cfg.timeout_secs.or(d.timeout_secs).unwrap(),
-                enable_compression: cfg.enable_compression.or(d.enable_compression).unwrap(),
-                ca_cert_pem_path: cfg
-                    .ca_cert_pem_path
-                    .or(d.ca_cert_pem_path)
-                    .map(std::path::PathBuf::from),
+                timeout_secs: cfg.timeout_secs,
+                enable_compression: cfg.enable_compression,
+                ca_cert_pem_path: cfg.ca_cert_pem_path,
             });
             b.add_value(kamu_search_elasticsearch::ElasticsearchRepositoryConfig {
-                index_prefix: cfg.index_prefix.or(d.index_prefix).unwrap(),
-                embedding_dimensions: cfg.embedding_dimensions.or(d.embedding_dimensions).unwrap(),
+                index_prefix: cfg.index_prefix,
+                embedding_dimensions: cfg.embedding_dimensions,
             });
         }
     }

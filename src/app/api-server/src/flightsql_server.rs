@@ -38,7 +38,7 @@ impl FlightSqlServer {
         Self {
             catalog,
             listener,
-            allow_anonymous: auth_config.allow_anonymous.unwrap(),
+            allow_anonymous: auth_config.allow_anonymous,
         }
     }
 
