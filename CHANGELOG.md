@@ -13,17 +13,10 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-<<<<<<< HEAD
-## [Unreleased]
-<<<<<<< HEAD
+## [0.83.0] - 2026-02-12
+### Upstream [kamu `0.259.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.259.1)
 ### Fixed
 - Hotfix: broken dataset secrets feature after Setty update
-=======
-=======
-## [0.83.0] - 2026-02-12
->>>>>>> 8a7fb3a (Release 0.83.0)
-### Upstream [kamu `0.259.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.259.0)
->>>>>>> ecfcb0e (Update kamu crate)
 
 ## [0.82.0] - 2026-02-09
 ### Upstream [kamu `0.258.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.258.0)
