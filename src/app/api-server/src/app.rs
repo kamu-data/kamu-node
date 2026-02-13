@@ -335,6 +335,11 @@ pub async fn init_dependencies(
     b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
 
     // GraphQL
+    {
+        let feature_flags = kamu_adapter_graphql::GqlFeatureFlags::new();
+        b.add_value(feature_flags);
+    }
+
     b.add_value(config.extra.graphql);
     //
 
@@ -375,6 +380,17 @@ pub async fn init_dependencies(
     kamu_adapter_flow_webhook::register_dependencies(&mut b);
     kamu_adapter_task_dataset::register_dependencies(&mut b);
     kamu_adapter_task_webhook::register_dependencies(&mut b);
+
+    let incremental_search_indexing = config.search.indexer.incremental_indexing;
+
+    kamu_molecule_services::register_dependencies(
+        &mut b,
+        kamu_molecule_services::MoleculeDomainDependenciesOptions {
+            incremental_search_indexing,
+        },
+    );
+
+    b.add_value(kamu_molecule_services::domain::MoleculeConfig::default());
 
     b.add::<kamu::RemoteRepositoryRegistryImpl>();
 
@@ -605,7 +621,7 @@ pub async fn init_dependencies(
         &mut b,
         kamu_datasets_services::DatasetDomainDependenciesOptions {
             needs_indexing: true,
-            incremental_search_indexing: config.search.indexer.incremental_indexing,
+            incremental_search_indexing,
         },
     );
 
@@ -621,7 +637,7 @@ pub async fn init_dependencies(
         kamu_accounts_services::AccountDomainDependenciesOptions {
             needs_indexing: true,
             production: true,
-            incremental_search_indexing: config.search.indexer.incremental_indexing,
+            incremental_search_indexing,
         },
     );
 

@@ -13,6 +13,15 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [Molecule-specific]
+### Changed
+- GQL: `MoleculeMut::create_project()`: use `U256` type for `ipnft_token_id`.
+- Collection API: Ignore noop changes in collection add/move
+- GQL: `Search::query()`: case insensitive search.
+- GQL: `MoleculeMut::create_project()`: generate lowercase project account name.
+### Fixed
+ - Investigation: potential unstable ordering of dataset entry listings
+
 ## [0.83.0] - 2026-02-12
 ### Upstream [kamu `0.259.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.259.1)
 ### Fixed
