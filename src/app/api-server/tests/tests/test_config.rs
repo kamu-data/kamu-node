@@ -17,8 +17,7 @@ fn update_config_schema() {
 
     let schema = setty::Config::<kamu_api_server::config::ApiServerConfig>::new()
         .json_schema()
-        .to_value();
-    let schema = serde_json::to_string_pretty(&schema).unwrap();
+        .to_string_pretty();
     std::fs::write(resources_path.join("api-server/config-schema.json"), schema).unwrap();
 }
 

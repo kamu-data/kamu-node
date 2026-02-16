@@ -185,7 +185,7 @@ indoc = "2"
 secrecy = "0.10"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-setty = { version = "0.3", features = [
+setty = { version = "1.0", features = [
     "derive-clone",
     "derive-debug",
     "derive-partial-eq",
