@@ -13,6 +13,16 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.84.0] - 2026-02-17
+### Upstream [kamu `0.260.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.260.0)
+### Added
+- Flow states UX enhancements:
+  - indicating if flow is currently running (tracking "running_since" field)
+  - remembering when flow was manually paused (tracking "paused_at" field)
+  - state listings should not include UNCONFIGURED processes by default, only if those are requested explicitly
+  - manual healing of flow process auto-resumes stopped trigger
+  - rollups support similar filters as listings
+
 ## [0.83.0] - 2026-02-12
 ### Upstream [kamu `0.259.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.259.1)
 ### Fixed

@@ -285,7 +285,8 @@ impl MessageConsumerT<kamu_fs::FlowProcessLifecycleMessage> for FlowProgressNoti
             }
 
             kamu_fs::FlowProcessLifecycleMessage::EffectiveStateChanged(_)
-            | kamu_fs::FlowProcessLifecycleMessage::TriggerAutoStopped(_) => Ok(()),
+            | kamu_fs::FlowProcessLifecycleMessage::TriggerAutoStopped(_)
+            | kamu_fs::FlowProcessLifecycleMessage::TriggerResumedFromAutoStop(_) => Ok(()),
         }
     }
 }
