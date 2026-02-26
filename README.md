@@ -23,7 +23,7 @@ Kamu Node is a set of [Kubernetes](https://kubernetes.io/)-native applications t
 - Continuously verify datasets that you are interested it to catch malicious behavior
 - Execute queries on co-located data
 
-Nodes are the building pieces of the [Open Data Fabric](https://docs.kamu.dev/odf/) and the primary way of contributing resources to the network. Unlike blockchain nodes that maintain a single ledger, Kamu nodes can form loosely connected clusters based on vested interests of their operators in certain data pipelines.
+Nodes are the building pieces of the [Open Data Fabric](https://www.opendatafabric.org/) and the primary way of contributing resources to the network. Unlike blockchain nodes that maintain a single ledger, Kamu nodes can form loosely connected clusters based on vested interests of their operators in certain data pipelines.
 
 If you are new to ODF - we recommend you to start with [Kamu CLI](https://github.com/kamu-data/kamu-cli/) for a gradual introduction.
 
@@ -38,7 +38,6 @@ You should consider Kamu Node when you want to:
 ## API Server
 Prerequisites:
 * Install `rustup`
-* Install `bunyan` crate (`cargo install bunyan`) to get human-readable log output when running services in the foreground
 
 To run API server using local `kamu` workspace:
 
@@ -51,11 +50,10 @@ To run API server using local `kamu` workspace:
   echo '  enctyptionKey: QfnEDcnUtGSW2pwVXaFPvZOwxyFm2BOC'
 } > config.yaml
 # 2. Run
-cargo run --bin kamu-api-server -- --config config.yaml run | bunyan
+cargo run --bin kamu-api-server -- --config config.yaml run
 
 # Alternative: pass the repo url via env:
-KAMU_API_SERVER_CONFIG_repo__repoUrl=workspace/.kamu/datasets \
-  kamu-api-server run | bunyan
+KAMU_API_SERVER_CONFIG_repo__repoUrl=workspace/.kamu/datasets kamu-api-server run
 ```
 
 To control log verbosity use the standard `RUST_LOG` env var:
@@ -84,11 +82,7 @@ To use it:
   echo '  repoUrl: s3://example.com/kamu_repo'
 } > config.yaml
 # 2. Run
-cargo run --bin kamu-api-server -- --config config.yaml run | bunyan
-
-# Alternative: pass the repo url via env:
-KAMU_API_SERVER_CONFIG_repo__repoUrl=s3://example.com/kamu_repo \
-  kamu-api-server run | bunyan
+cargo run --bin kamu-api-server -- --config config.yaml run
 ```
 
 
