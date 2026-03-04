@@ -13,6 +13,18 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [0.84.1] - 2026-03-04
+### Upstream [kamu `0.260.2`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.260.2)
+### Added
+- Search reset endpoint now allows specifying particular index names
+### Changed
+- Improved Outbox processing:
+  - Replaced the busy-loop polling with a Postgres NOTIFY/LISTEN mechanism.
+  - Optimized message fetching using boundary-based lookups (tx_id, message_id), with tx_id as the primary ordering criterion.
+  - Improved burst handling: the outbox now processes multiple consecutive batches upon awakening to clear backlogs faster.
+  - The outbox scheduler now ignores currently failing consumers to prevent processing stalls and head-of-line blocking.
+  - Implemented a mandatory catch-up phase before entering the main event loop.
+
 ## [0.84.0] - 2026-02-17
 ### Upstream [kamu `0.260.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.260.0)
 ### Added

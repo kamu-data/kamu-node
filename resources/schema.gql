@@ -469,7 +469,7 @@ type AdminMut {
 }
 
 type AdminSearchMut {
-	resetSearchIndices: String!
+	resetSearchIndices(entityNames: [SearchEntityName!]): String!
 }
 
 type ApplyRolesMatrixResult {
@@ -3742,6 +3742,11 @@ type Search {
 	nameLookup(query: String!, filters: LookupFilters!, page: Int, perPage: Int): NameLookupResultConnection!
 }
 
+enum SearchEntityName {
+	DATASETS
+	ACCOUNTS
+}
+
 union SearchResult = Dataset
 
 type SearchResultConnection {
@@ -3817,10 +3822,12 @@ interface SetAccountQuotasResult {
 
 type SetAccountQuotasResultInvalidInput implements SetAccountQuotasResult {
 	message: String!
+	isSuccess: Boolean!
 }
 
 type SetAccountQuotasResultSuccess implements SetAccountQuotasResult {
 	message: String!
+	isSuccess: Boolean!
 }
 
 input SetAccountQuotasStorageInput {
