@@ -138,8 +138,7 @@ interface "ObjectStoreBuilder" <<i>>
 interface "ObjectStoreRegistry" <<i>>
 interface "OdfServerAccessTokenResolver" <<i>>
 interface "OutboxAgent" <<i>>
-interface "OutboxMessageConsumptionRepository" <<i>>
-interface "OutboxMessageRepository" <<i>>
+interface "OutboxMessageBridge" <<i>>
 interface "PasswordHashRepository" <<i>>
 interface "PauseWebhookSubscriptionUseCase" <<i>>
 interface "PollingIngestService" <<i>>
@@ -385,9 +384,9 @@ class "ObjectStoreBuilderS3" <<agnostic>>
 class "ObjectStoreRegistryImpl" <<singleton>>
 class "OsoDatasetAuthorizer"
 class "OsoResourceServiceImpl"
+class "OutboxAgentConfig" <<singleton>>
 class "OutboxAgentImpl" <<singleton>>
 class "OutboxAgentMetrics" <<singleton>>
-class "OutboxConfig" <<singleton>>
 class "OutboxDispatchingImpl"
 class "OutboxImmediateImpl"
 class "OutboxTransactionalImpl"
@@ -413,8 +412,7 @@ class "PostgresFlowProcessStateRepository"
 class "PostgresFlowSystemEventBridge" <<agnostic>>
 class "PostgresFlowTriggerEventStore"
 class "PostgresOAuthDeviceCodeRepository"
-class "PostgresOutboxMessageConsumptionRepository"
-class "PostgresOutboxMessageRepository"
+class "PostgresOutboxMessageBridge" <<agnostic>>
 class "PostgresPasswordRefresher"
 class "PostgresPlugin"
 class "PostgresRebacRepository"
@@ -1118,10 +1116,8 @@ class "WsSmartTransferProtocolClient"
 "FlowTriggerServiceImpl"  --> "FlowTriggerEventStore"
 "FlowTriggerServiceImpl"  --> "Outbox"
 "FlowTriggerServiceImpl"  --> "SystemTimeSource"
-"OutboxMessageConsumptionRepository" <|-- "PostgresOutboxMessageConsumptionRepository"
-"PostgresOutboxMessageConsumptionRepository"  --> "TransactionRefT"
-"OutboxMessageRepository" <|-- "PostgresOutboxMessageRepository"
-"PostgresOutboxMessageRepository"  --> "TransactionRefT"
+"OutboxMessageBridge" <|-- "PostgresOutboxMessageBridge"
+"PostgresOutboxMessageBridge"  --> "Pool"
 "SearchEntitySchemaProvider" <|-- "MoleculeSearchSchemaProvider"
 "MoleculeSearchSchemaProvider"  --> "Catalog"
 "MoleculeAnnouncementsService" <|-- "MoleculeAnnouncementsServiceImpl"
@@ -1238,6 +1234,7 @@ class "WsSmartTransferProtocolClient"
 "EmbeddingsProviderImpl"  --> "EmbeddingsCacheRepository"
 "EmbeddingsProviderImpl"  --> "EmbeddingsChunker"
 "EmbeddingsProviderImpl"  --> "EmbeddingsEncoder"
+"EmbeddingsProviderImpl"  --> "SystemTimeSource"
 "TaskEventStore" <|-- "PostgresTaskEventStore"
 "PostgresTaskEventStore"  --> "TransactionRefT"
 "TaskDefinitionPlanner" <|-- "ProbeTaskPlanner"
@@ -1300,15 +1297,17 @@ class "WsSmartTransferProtocolClient"
 "OutboxAgent" <|-- "OutboxAgentImpl"
 "OutboxAgentImpl"  --> "CatalogWeakRef"
 "OutboxAgentImpl" "*" --> "MessageDispatcher"
+"OutboxAgentImpl"  --> "OutboxMessageBridge"
 "OutboxAgentImpl"  --> "OutboxAgentMetrics"
-"OutboxAgentImpl"  --> "OutboxConfig"
+"OutboxAgentImpl"  --> "OutboxAgentConfig"
 "MetricsProvider" <|-- "OutboxAgentMetrics"
 "OutboxDispatchingImpl"  --> "Catalog"
 "OutboxDispatchingImpl"  --> "OutboxImmediateImpl"
 "OutboxDispatchingImpl"  --> "OutboxTransactionalImpl"
 "OutboxImmediateImpl"  --> "Catalog"
 "OutboxImmediateImpl" "*" --> "MessageDispatcher"
-"OutboxTransactionalImpl"  --> "OutboxMessageRepository"
+"OutboxTransactionalImpl"  --> "CatalogWeakRef"
+"OutboxTransactionalImpl"  --> "OutboxMessageBridge"
 "OutboxTransactionalImpl"  --> "SystemTimeSource"
 "OdfServerAccessTokenResolver" <|-- "DummyOdfServerAccessTokenResolver"
 "DatasetStorageUnit" <|-- "DatasetStorageUnitS3"

@@ -147,9 +147,9 @@ type AccountFlowProcessCardEdge {
 }
 
 type AccountFlowProcesses {
-	primaryRollup: FlowProcessGroupRollup!
-	webhookRollup: FlowProcessGroupRollup!
-	fullRollup: FlowProcessGroupRollup!
+	primaryRollup(filters: FlowProcessFilters): FlowProcessGroupRollup!
+	webhookRollup(filters: FlowProcessFilters): FlowProcessGroupRollup!
+	fullRollup(filters: FlowProcessFilters): FlowProcessGroupRollup!
 	primaryCards(filters: FlowProcessFilters, ordering: FlowProcessOrdering, page: Int, perPage: Int): DatasetFlowProcessConnection!
 	webhookCards(filters: FlowProcessFilters, ordering: FlowProcessOrdering, page: Int, perPage: Int): WebhookFlowSubProcessConnection!
 	allCards(filters: FlowProcessFilters, ordering: FlowProcessOrdering, page: Int, perPage: Int): AccountFlowProcessCardConnection!
@@ -469,7 +469,7 @@ type AdminMut {
 }
 
 type AdminSearchMut {
-	resetSearchIndices: String!
+	resetSearchIndices(entityNames: [SearchEntityName!]): String!
 }
 
 type ApplyRolesMatrixResult {
@@ -2680,6 +2680,8 @@ type FlowProcessSummary {
 	lastAttemptAt: DateTime
 	lastFailureAt: DateTime
 	nextPlannedAt: DateTime
+	runningSince: DateTime
+	pausedAt: DateTime
 	autoStoppedReason: FlowProcessAutoStopReason
 	autoStoppedAt: DateTime
 }
@@ -4338,6 +4340,15 @@ type Search {
 	nameLookup(query: String!, filters: LookupFilters!, page: Int, perPage: Int): NameLookupResultConnection!
 }
 
+enum SearchEntityName {
+	DATASETS
+	ACCOUNTS
+	MOLECULE_ACTIVITIES
+	MOLECULE_ANNOUNCEMENTS
+	MOLECULE_DATA_ROOM_ENTRIES
+	MOLECULE_PROJECTS
+}
+
 union SearchResult = Dataset
 
 type SearchResultConnection {
@@ -4413,10 +4424,12 @@ interface SetAccountQuotasResult {
 
 type SetAccountQuotasResultInvalidInput implements SetAccountQuotasResult {
 	message: String!
+	isSuccess: Boolean!
 }
 
 type SetAccountQuotasResultSuccess implements SetAccountQuotasResult {
 	message: String!
+	isSuccess: Boolean!
 }
 
 input SetAccountQuotasStorageInput {

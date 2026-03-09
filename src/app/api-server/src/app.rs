@@ -504,10 +504,7 @@ pub async fn init_dependencies(
         kamu_webhooks::MESSAGE_PRODUCER_KAMU_WEBHOOK_SUBSCRIPTION_EVENT_CHANGES_SERVICE,
     );
 
-    b.add_value(messaging_outbox::OutboxConfig::new(
-        Duration::seconds(config.outbox.awaiting_step_secs),
-        config.outbox.batch_size,
-    ));
+    b.add_value(config.outbox.into_system());
 
     // Webhooks configuration
     let webhooks_config = config.webhooks;
@@ -560,15 +557,7 @@ pub async fn init_dependencies(
     kamu_task_system_services::register_dependencies(&mut b);
 
     let flow_system_event_agent_config = config.flow_system.flow_system_event_agent;
-    b.add_value(kamu_flow_system::FlowSystemEventAgentConfig {
-        min_debounce_interval: std::time::Duration::from_millis(u64::from(
-            flow_system_event_agent_config.min_debounce_interval_ms,
-        )),
-        max_listening_timeout: std::time::Duration::from_millis(u64::from(
-            flow_system_event_agent_config.max_listening_timeout_ms,
-        )),
-        batch_size: flow_system_event_agent_config.batch_size,
-    });
+    b.add_value(flow_system_event_agent_config.into_system());
 
     let flow_agent_config = config.flow_system.flow_agent;
     b.add_value(kamu_flow_system::FlowAgentConfig::new(

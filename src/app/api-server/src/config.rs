@@ -76,9 +76,9 @@ pub struct ApiServerConfig {
     #[config(default)]
     pub source: SourceConfig,
 
-    /// Outbox configuration
+    /// Outbox agent configuration
     #[config(default)]
-    pub outbox: OutboxConfig,
+    pub outbox: OutboxAgentConfig,
 
     /// Email gateway configuration
     #[config(default = EmailConfig::dummy())]
@@ -661,12 +661,25 @@ pub struct UploadRepoStorageConfigS3 {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[derive(setty::Config, setty::Default)]
-pub struct OutboxConfig {
-    #[config(default = 1)]
-    pub awaiting_step_secs: i64,
+pub struct OutboxAgentConfig {
+    #[config(default_str = "100ms")]
+    pub min_debounce_interval: DurationString,
 
-    #[config(default = 20)]
-    pub batch_size: i64,
+    #[config(default_str = "120s")]
+    pub max_listening_timeout: DurationString,
+
+    #[config(default = 100)]
+    pub batch_size: usize,
+}
+
+impl OutboxAgentConfig {
+    pub fn into_system(&self) -> messaging_outbox::OutboxAgentConfig {
+        messaging_outbox::OutboxAgentConfig {
+            min_debounce_interval: self.min_debounce_interval.into(),
+            max_listening_timeout: self.max_listening_timeout.into(),
+            batch_size: self.batch_size,
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -789,14 +802,24 @@ pub struct TaskAgentConfig {
 
 #[derive(setty::Config, setty::Default)]
 pub struct FlowSystemEventAgentConfig {
-    #[config(default = 100)]
-    pub min_debounce_interval_ms: u32,
+    #[config(default_str = "100ms")]
+    pub min_debounce_interval: DurationString,
 
-    #[config(default = 60000)]
-    pub max_listening_timeout_ms: u32,
+    #[config(default_str = "120s")]
+    pub max_listening_timeout: DurationString,
 
     #[config(default = 100)]
     pub batch_size: usize,
+}
+
+impl FlowSystemEventAgentConfig {
+    pub fn into_system(&self) -> kamu_flow_system::FlowSystemEventAgentConfig {
+        kamu_flow_system::FlowSystemEventAgentConfig {
+            min_debounce_interval: self.min_debounce_interval.into(),
+            max_listening_timeout: self.max_listening_timeout.into(),
+            batch_size: self.batch_size,
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
