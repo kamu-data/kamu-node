@@ -13,6 +13,15 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
+## [Unreleased]
+### Upstream [kamu `0.261.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.261.0)
+### Added
+- Implemented flexible flow listing ordering at service level + 2 high-level ordering modes in GQL API.
+### Changed
+- ReBAC relation and dataset property updates now suppress redundant outbox messages and downstream dataset search reindexing when the effective authorization state remains unchanged.
+- Several major dependency upgrades
+- Latest Rust nightly toolchain (March 19th, 2026)
+
 ## [0.84.1] - 2026-03-04
 ### Upstream [kamu `0.260.2`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.260.2)
 ### Added

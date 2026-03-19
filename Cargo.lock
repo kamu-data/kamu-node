@@ -152,13 +152,13 @@ dependencies = [
 
 [[package]]
 name = "alloy-chains"
-version = "0.2.30"
+version = "0.2.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90f374d3c6d729268bbe2d0e0ff992bb97898b2df756691a62ee1d5f0506bc39"
+checksum = "9247f0a399ef71aeb68f497b2b8fb348014f742b50d3b83b1e00dfe1b7d64b3d"
 dependencies = [
  "alloy-primitives",
  "num_enum",
- "strum",
+ "strum 0.27.2",
 ]
 
 [[package]]
@@ -251,7 +251,7 @@ dependencies = [
  "itoa",
  "serde",
  "serde_json",
- "winnow 0.7.14",
+ "winnow 0.7.15",
 ]
 
 [[package]]
@@ -739,7 +739,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a6df77fea9d6a2a75c0ef8d2acbdfd92286cc599983d3175ccdc170d3433d249"
 dependencies = [
  "serde",
- "winnow 0.7.14",
+ "winnow 0.7.15",
 ]
 
 [[package]]
@@ -812,13 +812,12 @@ dependencies = [
 
 [[package]]
 name = "alloy-trie"
-version = "0.9.4"
+version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4d7fd448ab0a017de542de1dcca7a58e7019fe0e7a34ed3f9543ebddf6aceffa"
+checksum = "3f14b5d9b2c2173980202c6ff470d96e7c5e202c65a9f67884ad565226df7fbb"
 dependencies = [
  "alloy-primitives",
  "alloy-rlp",
- "arrayvec",
  "derive_more",
  "nybbles",
  "serde",
@@ -855,7 +854,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "43d5b281e737544384e969a5ccad3f1cdd24b48086a0fc1b2a5262a26b8f4f4a"
 dependencies = [
  "anstyle",
- "anstyle-parse",
+ "anstyle-parse 0.2.7",
+ "anstyle-query",
+ "anstyle-wincon",
+ "colorchoice",
+ "is_terminal_polyfill",
+ "utf8parse",
+]
+
+[[package]]
+name = "anstream"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "824a212faf96e9acacdbd09febd34438f8f711fb84e09a8916013cd7815ca28d"
+dependencies = [
+ "anstyle",
+ "anstyle-parse 1.0.0",
  "anstyle-query",
  "anstyle-wincon",
  "colorchoice",
@@ -865,15 +879,24 @@ dependencies = [
 
 [[package]]
 name = "anstyle"
-version = "1.0.13"
+version = "1.0.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5192cca8006f1fd4f7237516f40fa183bb07f8fbdfedaa0036de5ea9b0b45e78"
+checksum = "940b3a0ca603d1eade50a4846a2afffd5ef57a9feac2c0e2ec2e14f9ead76000"
 
 [[package]]
 name = "anstyle-parse"
 version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4e7644824f0aa2c7b9384579234ef10eb7efb6a0deb83f9630a49594dd9c15c2"
+dependencies = [
+ "utf8parse",
+]
+
+[[package]]
+name = "anstyle-parse"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "52ce7f38b242319f7cabaa6813055467063ecdc9d355bbb4ce0c68908cd8130e"
 dependencies = [
  "utf8parse",
 ]
@@ -911,15 +934,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cab112f0a86d568ea0e627cc1d6be74a1e9cd55214684db5561995f6dad897c6"
 dependencies = [
  "num-traits",
-]
-
-[[package]]
-name = "arbitrary"
-version = "1.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c3d036a3c4ab069c7b410a2ce876bd74808d2d0888a82667669f8e783a898bf1"
-dependencies = [
- "derive_arbitrary",
 ]
 
 [[package]]
@@ -1128,9 +1142,6 @@ name = "arrayvec"
 version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7c02d123df017efcdfbd739ef81735b36c5ba83ec3c59c80a9d7ecc718f92e50"
-dependencies = [
- "serde",
-]
 
 [[package]]
 name = "arrow"
@@ -1453,14 +1464,14 @@ dependencies = [
  "memchr",
  "serde",
  "serde_derive",
- "winnow 0.7.14",
+ "winnow 0.7.15",
 ]
 
 [[package]]
 name = "assert_cmd"
-version = "2.1.2"
+version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c5bcfa8749ac45dd12cb11055aeeb6b27a3895560d60d71e3c23bf979e60514"
+checksum = "9a686bbee5efb88a82df0621b236e74d925f470e5445d3220a5648b892ec99c9"
 dependencies = [
  "anstyle",
  "bstr",
@@ -1547,7 +1558,7 @@ dependencies = [
  "proc-macro-crate",
  "proc-macro2",
  "quote",
- "strum",
+ "strum 0.27.2",
  "syn 2.0.117",
  "thiserror 2.0.18",
 ]
@@ -1596,9 +1607,9 @@ dependencies = [
 
 [[package]]
 name = "async-openai"
-version = "0.32.4"
+version = "0.33.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f4d91c2005832450ad9ac92411b9d4cec39e30be21adc76553efc47f812d59c7"
+checksum = "cc48c3deb4ad9a2ee8c8e364c79eb0f74e69e17ed7e883d55988b90ea44fe986"
 dependencies = [
  "async-openai-macros",
  "backoff",
@@ -1680,8 +1691,8 @@ dependencies = [
 
 [[package]]
 name = "async-utils"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "internal-error",
@@ -1752,9 +1763,9 @@ checksum = "c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8"
 
 [[package]]
 name = "aws-config"
-version = "1.8.14"
+version = "1.8.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a8fc176d53d6fe85017f230405e3255cedb4a02221cb55ed6d76dccbbb099b2"
+checksum = "11493b0bad143270fb8ad284a096dd529ba91924c5409adeac856cc1bf047dbc"
 dependencies = [
  "aws-credential-types",
  "aws-runtime",
@@ -1772,7 +1783,7 @@ dependencies = [
  "fastrand",
  "hex",
  "http 1.4.0",
- "ring",
+ "sha1",
  "time",
  "tokio",
  "tracing",
@@ -1782,9 +1793,9 @@ dependencies = [
 
 [[package]]
 name = "aws-credential-types"
-version = "1.2.13"
+version = "1.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6d203b0bf2626dcba8665f5cd0871d7c2c0930223d6b6be9097592fea21242d0"
+checksum = "8f20799b373a1be121fe3005fba0c2090af9411573878f224df44b42727fcaf7"
 dependencies = [
  "aws-smithy-async",
  "aws-smithy-runtime-api",
@@ -1816,9 +1827,9 @@ dependencies = [
 
 [[package]]
 name = "aws-runtime"
-version = "1.7.1"
+version = "1.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ede2ddc593e6c8acc6ce3358c28d6677a6dc49b65ba4b37a2befe14a11297e75"
+checksum = "5fc0651c57e384202e47153c1260b84a9936e19803d747615edf199dc3b98d17"
 dependencies = [
  "aws-credential-types",
  "aws-sigv4",
@@ -1878,9 +1889,9 @@ dependencies = [
 
 [[package]]
 name = "aws-sdk-secretsmanager"
-version = "1.101.0"
+version = "1.103.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "59a525ad948df2cc742875ec9b5768c70ba8089564efcef6844ef7c37abdea10"
+checksum = "ae64963d3d16d8070aaa2fb79c11cd3b13f44d2f13bba3fe8f49dcd2c42f2987"
 dependencies = [
  "aws-credential-types",
  "aws-runtime",
@@ -1902,9 +1913,9 @@ dependencies = [
 
 [[package]]
 name = "aws-sdk-sso"
-version = "1.95.0"
+version = "1.97.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "00c5ff27c6ba2cbd95e6e26e2e736676fdf6bcf96495b187733f521cfe4ce448"
+checksum = "9aadc669e184501caaa6beafb28c6267fc1baef0810fb58f9b205485ca3f2567"
 dependencies = [
  "aws-credential-types",
  "aws-runtime",
@@ -1926,9 +1937,9 @@ dependencies = [
 
 [[package]]
 name = "aws-sdk-ssooidc"
-version = "1.97.0"
+version = "1.99.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4d186f1e5a3694a188e5a0640b3115ccc6e084d104e16fd6ba968dca072ffef8"
+checksum = "1342a7db8f358d3de0aed2007a0b54e875458e39848d54cc1d46700b2bfcb0a8"
 dependencies = [
  "aws-credential-types",
  "aws-runtime",
@@ -1950,9 +1961,9 @@ dependencies = [
 
 [[package]]
 name = "aws-sdk-sts"
-version = "1.99.0"
+version = "1.101.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9acba7c62f3d4e2408fa998a3a8caacd8b9a5b5549cf36e2372fbdae329d5449"
+checksum = "ab41ad64e4051ecabeea802d6a17845a91e83287e1dd249e6963ea1ba78c428a"
 dependencies = [
  "aws-credential-types",
  "aws-runtime",
@@ -1975,9 +1986,9 @@ dependencies = [
 
 [[package]]
 name = "aws-sigv4"
-version = "1.4.1"
+version = "1.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "37411f8e0f4bea0c3ca0958ce7f18f6439db24d555dbd809787262cd00926aa9"
+checksum = "b0b660013a6683ab23797778e21f1f854744fdf05f68204b4cca4c8c04b5d1f4"
 dependencies = [
  "aws-credential-types",
  "aws-smithy-eventstream",
@@ -2197,9 +2208,9 @@ dependencies = [
 
 [[package]]
 name = "aws-smithy-types"
-version = "1.4.6"
+version = "1.4.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2b1117b3b2bbe166d11199b540ceed0d0f7676e36e7b962b5a437a9971eac75"
+checksum = "9d73dbfbaa8e4bc57b9045137680b958d274823509a360abfd8e1d514d40c95c"
 dependencies = [
  "base64-simd",
  "bytes",
@@ -2232,9 +2243,9 @@ dependencies = [
 
 [[package]]
 name = "aws-types"
-version = "1.3.13"
+version = "1.3.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0470cc047657c6e286346bdf10a8719d26efd6a91626992e0e64481e44323e96"
+checksum = "47c8323699dd9b3c8d5b3c13051ae9cdef58fd179957c882f8374dd8725962d9"
 dependencies = [
  "aws-credential-types",
  "aws-smithy-async",
@@ -2539,9 +2550,9 @@ dependencies = [
 
 [[package]]
 name = "bon"
-version = "3.9.0"
+version = "3.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2d13a61f2963b88eef9c1be03df65d42f6996dfeac1054870d950fcf66686f83"
+checksum = "f47dbe92550676ee653353c310dfb9cf6ba17ee70396e1f7cf0a2020ad49b2fe"
 dependencies = [
  "bon-macros",
  "rustversion",
@@ -2549,9 +2560,9 @@ dependencies = [
 
 [[package]]
 name = "bon-macros"
-version = "3.9.0"
+version = "3.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d314cc62af2b6b0c65780555abb4d02a03dd3b799cd42419044f0c38d99738c0"
+checksum = "519bd3116aeeb42d5372c29d982d16d0170d3d4a5ed85fc7dd91642ffff3c67c"
 dependencies = [
  "darling 0.23.0",
  "ident_case",
@@ -2570,19 +2581,20 @@ checksum = "dc0b364ead1874514c8c2855ab558056ebfeb775653e7ae45ff72f28f8f3166c"
 
 [[package]]
 name = "borsh"
-version = "1.6.0"
+version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d1da5ab77c1437701eeff7c88d968729e7766172279eab0676857b3d63af7a6f"
+checksum = "cfd1e3f8955a5d7de9fab72fc8373fade9fb8a703968cb200ae3dc6cf08e185a"
 dependencies = [
  "borsh-derive",
+ "bytes",
  "cfg_aliases",
 ]
 
 [[package]]
 name = "borsh-derive"
-version = "1.6.0"
+version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0686c856aa6aac0c4498f936d7d6a02df690f614c03e4d906d1018062b5c5e2c"
+checksum = "bfcfdc083699101d5a7965e49925975f2f55060f94f9a05e7187be95d530ca59"
 dependencies = [
  "once_cell",
  "proc-macro-crate",
@@ -2707,28 +2719,18 @@ dependencies = [
 
 [[package]]
 name = "bzip2"
-version = "0.5.2"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49ecfb22d906f800d4fe833b6282cf4dc1c298f5057ca0b5445e5c209735ca47"
+checksum = "f3a53fac24f34a81bc9954b5d6cfce0c21e18ec6959f44f56e8e90e4bb7c346c"
 dependencies = [
- "bzip2-sys",
-]
-
-[[package]]
-name = "bzip2-sys"
-version = "0.1.13+1.0.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "225bff33b2141874fe80d71e07d6eec4f85c5c216453dd96388240f96e1acc14"
-dependencies = [
- "cc",
- "pkg-config",
+ "libbz2-rs-sys",
 ]
 
 [[package]]
 name = "c-kzg"
-version = "2.1.6"
+version = "2.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a0f582957c24870b7bfd12bf562c40b4734b533cafbaf8ded31d6d85f462c01"
+checksum = "6648ed1e4ea8e8a1a4a2c78e1cda29a3fd500bc622899c340d8525ea9a76b24a"
 dependencies = [
  "blst",
  "cc",
@@ -2786,9 +2788,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.56"
+version = "1.2.57"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aebf35691d1bfb0ac386a69bac2fde4dd276fb618cf8bf4f5318fe285e821bb2"
+checksum = "7a0dd1ca384932ff3641c8718a02769f1698e7563dc6974ffd03346116310423"
 dependencies = [
  "find-msvc-tools",
  "jobserver",
@@ -2912,9 +2914,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.5.60"
+version = "4.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2797f34da339ce31042b27d23607e051786132987f595b02ba4f6a6dffb7030a"
+checksum = "b193af5b67834b676abd72466a96c1024e6a6ad978a1f484bd90b85c94041351"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -2922,11 +2924,11 @@ dependencies = [
 
 [[package]]
 name = "clap_builder"
-version = "4.5.60"
+version = "4.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24a241312cea5059b13574bb9b3861cabf758b879c15190b37b6d6fd63ab6876"
+checksum = "714a53001bf66416adb0e2ef5ac857140e7dc3a0c48fb28b2f10762fc4b5069f"
 dependencies = [
- "anstream",
+ "anstream 1.0.0",
  "anstyle",
  "clap_lex",
  "strsim",
@@ -2935,9 +2937,9 @@ dependencies = [
 
 [[package]]
 name = "clap_derive"
-version = "4.5.55"
+version = "4.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a92793da1a46a5f2a02a6f4c46c6496b28c43638adea8306fcb0caa1634f24e5"
+checksum = "1110bd8a634a1ab8cb04345d8d878267d57c3cf1b38d91b71af6686408bbca6a"
 dependencies = [
  "heck 0.5.0",
  "proc-macro2",
@@ -2947,9 +2949,9 @@ dependencies = [
 
 [[package]]
 name = "clap_lex"
-version = "1.0.0"
+version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3a822ea5bc7590f9d40f1ba12c0dc3c2760f3482c6984db1573ad11031420831"
+checksum = "c8d4a3bb8b1e0c1050499d1815f5ab16d04f0959b233085fb31653fbfc9d98f9"
 
 [[package]]
 name = "cmake"
@@ -2962,9 +2964,9 @@ dependencies = [
 
 [[package]]
 name = "colorchoice"
-version = "1.0.4"
+version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b05b61dc5112cbb17e4b6cd61790d9845d13888356391624cbe7e41efeac1e75"
+checksum = "1d07550c9036bf2ae0c684c4297d503f838287c83c53686d05370d0e139ae570"
 
 [[package]]
 name = "combination"
@@ -2994,8 +2996,8 @@ dependencies = [
 
 [[package]]
 name = "common-macros"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "quote",
  "syn 2.0.117",
@@ -3094,8 +3096,8 @@ dependencies = [
 
 [[package]]
 name = "container-runtime"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "cfg-if",
@@ -3297,8 +3299,8 @@ dependencies = [
 
 [[package]]
 name = "crypto-utils"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "aes-gcm",
  "argon2",
@@ -3350,15 +3352,15 @@ dependencies = [
  "openssl-probe 0.1.6",
  "openssl-sys",
  "schannel",
- "socket2 0.6.2",
+ "socket2 0.6.3",
  "windows-sys 0.59.0",
 ]
 
 [[package]]
 name = "curl-sys"
-version = "0.4.85+curl-8.18.0"
+version = "0.4.86+curl-8.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c0efa6142b5ecc05f6d3eaa39e6af4888b9d3939273fb592c92b7088a8cf3fdb"
+checksum = "3a1dd6a487cf4532ce0d801634b82aa2deb7c9c3ed930b9dadfce904df000745"
 dependencies = [
  "cc",
  "libc",
@@ -3543,8 +3545,8 @@ dependencies = [
 
 [[package]]
 name = "database-common"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -3569,8 +3571,8 @@ dependencies = [
 
 [[package]]
 name = "database-common-macros"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "quote",
  "syn 2.0.117",
@@ -3578,9 +3580,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "503f1f4a9060ae6e650d3dff5dc7a21266fea1302d890768d45b4b28586e830f"
+checksum = "ea28305c211e3541c9cfcf06a23d0d8c7c824b4502ed1fdf0a6ff4ad24ee531c"
 dependencies = [
  "arrow",
  "arrow-schema",
@@ -3630,9 +3632,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-catalog"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "14417a3ee4ae3d092b56cd6c1d32e8ff3e2c9ec130ecb2276ec91c89fd599399"
+checksum = "78ab99b6df5f60a6ddbc515e4c05caee1192d395cf3cb67ce5d1c17e3c9b9b74"
 dependencies = [
  "arrow",
  "async-trait",
@@ -3655,9 +3657,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-catalog-listing"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9d0eba824adb45a4b3ac6f0251d40df3f6a9382371cad136f4f14ac9ebc6bc10"
+checksum = "77ae3d14912c0d779ada98d30dc60f3244f3c26c2446b87394629ea5c076a31c"
 dependencies = [
  "arrow",
  "async-trait",
@@ -3678,9 +3680,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-common"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0039deefbd00c56adf5168b7ca58568fb058e4ba4c5a03b09f8be371b4e434b6"
+checksum = "ea2df29b9592a5d55b8238eaf67d2f21963d5a08cd1a8b7670134405206caabd"
 dependencies = [
  "ahash 0.8.12",
  "arrow",
@@ -3701,9 +3703,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-common-runtime"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1ec7e3e60b813048331f8fb9673583173e5d2dd8fef862834ee871fc98b57ca7"
+checksum = "42639baa0049d5fffd7e283504b9b5e7b9b2e7a2dea476eed60ab0d40d999b85"
 dependencies = [
  "futures",
  "log",
@@ -3712,9 +3714,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-datasource"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "802068957f620302ecf05f84ff4019601aeafd36f5f3f1334984af2e34265129"
+checksum = "25951b617bb22a9619e1520450590cb2004bfcad10bcb396b961f4a1a10dcec5"
 dependencies = [
  "arrow",
  "async-trait",
@@ -3741,9 +3743,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-datasource-arrow"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90fc387d5067c62d494a6647d29c5ad4fcdd5a6e50ab4ea1d2568caa2d66f2cc"
+checksum = "dc0b28226960ba99c50d78ac6f736ebe09eb5cb3bb9bb58194266278000ca41f"
 dependencies = [
  "arrow",
  "arrow-ipc",
@@ -3765,9 +3767,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-datasource-csv"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "efd5e20579bb6c8bd4e6c620253972fb723822030c280dd6aa047f660d09eeba"
+checksum = "f538b57b052a678b1ce860181c65d3ace5a8486312dc50b41c01dd585a773a51"
 dependencies = [
  "arrow",
  "async-trait",
@@ -3788,9 +3790,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-datasource-json"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c0788b0d48fcef31880a02013ea3cc18e5a4e0eacc3b0abdd2cd0597b99dc96e"
+checksum = "89fbc1d32b1b03c9734e27c0c5f041232b68621c8455f22769838634750a196c"
 dependencies = [
  "arrow",
  "async-trait",
@@ -3810,9 +3812,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-datasource-parquet"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "66639b70f1f363f5f0950733170100e588f1acfacac90c1894e231194aa35957"
+checksum = "203271d31fe5613a5943181db70ec98162121d1de94a9a300d5e5f19f9500a32"
 dependencies = [
  "arrow",
  "async-trait",
@@ -3840,9 +3842,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-doc"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e44b41f3e8267c6cf3eec982d63f34db9f1dd5f30abfd2e1f124f0871708952e"
+checksum = "5b6450dc702b3d39e8ced54c3356abb453bd2f3cea86d90d555a4b92f7a38462"
 
 [[package]]
 name = "datafusion-ethers"
@@ -3863,9 +3865,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-execution"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e456f60e5d38db45335e84617006d90af14a8c8c5b8e959add708b2daaa0e2c"
+checksum = "e66a02fa601de49da5181dbdcf904a18b16a184db2b31f5e5534552ea2d5e660"
 dependencies = [
  "arrow",
  "async-trait",
@@ -3884,9 +3886,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-expr"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6507c719804265a58043134580c1c20767e7c23ba450724393f03ec982769ad9"
+checksum = "cdf59a9b308a1a07dc2eb2f85e6366bc0226dc390b40f3aa0a72d79f1cfe2465"
 dependencies = [
  "arrow",
  "async-trait",
@@ -3906,9 +3908,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-expr-common"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a413caa9c5885072b539337aed68488f0291653e8edd7d676c92df2480f6cab0"
+checksum = "bd99eac4c6538c708638db43e7a3bd88e0e57955ddb722d420fb9a6d38dfc28f"
 dependencies = [
  "arrow",
  "datafusion-common",
@@ -3919,9 +3921,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-functions"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "189256495dc9cbbb8e20dbcf161f60422e628d201a78df8207e44bd4baefadb6"
+checksum = "11aa2c492ac046397b36d57c62a72982aad306495bbcbcdbcabd424d4a2fe245"
 dependencies = [
  "arrow",
  "arrow-buffer",
@@ -3946,9 +3948,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-functions-aggregate"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "12e73dfee4cd67c4a507ffff4c5a711d39983adf544adbc09c09bf06f789f413"
+checksum = "325a00081898945d48d6194d9ca26120e523c993be3bb7c084061a5a2a72e787"
 dependencies = [
  "ahash 0.8.12",
  "arrow",
@@ -3967,9 +3969,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-functions-aggregate-common"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87727bd9e65f4f9ac6d608c9810b7da9eaa3b18b26a4a4b76520592d49020acf"
+checksum = "809bbcb1e0dbec5d0ce30d493d135aea7564f1ba4550395f7f94321223df2dae"
 dependencies = [
  "ahash 0.8.12",
  "arrow",
@@ -3992,9 +3994,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-functions-nested"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2e5ef761359224b7c2b5a1bfad6296ac63225f8583d08ad18af9ba1a89ac3887"
+checksum = "29ebaa5d7024ef45973e0a7db1e9aeaa647936496f4d4061c0448f23d77d6320"
 dependencies = [
  "arrow",
  "arrow-ord",
@@ -4015,9 +4017,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-functions-table"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3b17dac25dfda2d2a90ff0ad1c054a11fb1523766226bec6e9bd8c410daee2ae"
+checksum = "60eab6f39df9ee49a2c7fa38eddc01fa0086ee31b29c7d19f38e72f479609752"
 dependencies = [
  "arrow",
  "async-trait",
@@ -4031,9 +4033,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-functions-window"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c594a29ddb22cbdbce500e4d99b5b2392c5cecb4c1086298b41d1ffec14dbb77"
+checksum = "e00b2c15e342a90e65a846199c9e49293dd09fe1bcd63d8be2544604892f7eb8"
 dependencies = [
  "arrow",
  "datafusion-common",
@@ -4049,9 +4051,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-functions-window-common"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9aa1b15ed81c7543f62264a30dd49dec4b1b0b698053b968f53be32dfba4f729"
+checksum = "493e2e1d1f4753dfc139a5213f1b5d0b97eea46a82d9bda3c7908aa96981b74b"
 dependencies = [
  "datafusion-common",
  "datafusion-physical-expr-common",
@@ -4059,9 +4061,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-macros"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c00c31c4795597aa25b74cab5174ac07a53051f27ce1e011ecaffa9eaeecef81"
+checksum = "ba01c55ade8278a791b429f7bf5cb1de64de587a342d084b18245edfae7096e2"
 dependencies = [
  "datafusion-doc",
  "quote",
@@ -4091,9 +4093,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-optimizer"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "80ccf60767c09302b2e0fc3afebb3761a6d508d07316fab8c5e93312728a21bb"
+checksum = "a80c6dfbba6a2163a9507f6353ac78c69d8deb26232c9e419160e58ff7c3e047"
 dependencies = [
  "arrow",
  "chrono",
@@ -4110,9 +4112,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-physical-expr"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c64b7f277556944e4edd3558da01d9e9ff9f5416f1c0aa7fee088e57bd141a7e"
+checksum = "5d3a86264bb9163e7360b6622e789bc7fcbb43672e78a8493f0bc369a41a57c6"
 dependencies = [
  "ahash 0.8.12",
  "arrow",
@@ -4133,9 +4135,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-physical-expr-adapter"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b7abaee372ea2d19c016ee9ef8629c4415257d291cdd152bc7f0b75f28af1b63"
+checksum = "3f5e00e524ac33500be6c5eeac940bd3f6b984ba9b7df0cd5f6c34a8a2cc4d6b"
 dependencies = [
  "arrow",
  "datafusion-common",
@@ -4148,9 +4150,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-physical-expr-common"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "42237efe621f92adc22d111b531fdbc2cc38ca9b5e02327535628fb103ae2157"
+checksum = "2ae769ea5d688b4e74e9be5cad6f9d9f295b540825355868a3ab942380dd97ce"
 dependencies = [
  "ahash 0.8.12",
  "arrow",
@@ -4165,9 +4167,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-physical-optimizer"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd093498bd1319c6e5c76e9dfa905e78486f01b34579ce97f2e3a49f84c37fac"
+checksum = "f3588753ab2b47b0e43cd823fe5e7944df6734dabd6dafb72e2cc1c2a22f1944"
 dependencies = [
  "arrow",
  "datafusion-common",
@@ -4183,9 +4185,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-physical-plan"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7cbe61b12daf81a9f20ba03bd3541165d51f86e004ef37426b11881330eed261"
+checksum = "79949cbb109c2a45c527bfe0d956b9f2916807c05d4d2e66f3fd0af827ac2b61"
 dependencies = [
  "ahash 0.8.12",
  "arrow",
@@ -4214,9 +4216,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-pruning"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0124331116db7f79df92ebfd2c3b11a8f90240f253555c9bb084f10b6fecf1dd"
+checksum = "6434e2ee8a39d04b95fed688ff34dc251af6e4a0c2e1714716b6e3846690d589"
 dependencies = [
  "arrow",
  "datafusion-common",
@@ -4231,9 +4233,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-session"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1673e3c58ba618a6ea0568672f00664087b8982c581e9afd5aa6c3c79c9b431f"
+checksum = "c91efb8302b4877d499c37e9a71886b90236ab27d9cc42fd51112febf341abd6"
 dependencies = [
  "async-trait",
  "datafusion-common",
@@ -4245,9 +4247,9 @@ dependencies = [
 
 [[package]]
 name = "datafusion-sql"
-version = "52.2.0"
+version = "52.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5272d256dab5347bb39d2040589f45d8c6b715b27edcb5fffe88cc8b9c3909cb"
+checksum = "3f01eef7bcf4d00e87305b55f1b75792384e130fe0258bac02cd48378ae5ff87"
 dependencies = [
  "arrow",
  "bigdecimal",
@@ -4327,17 +4329,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 1.0.109",
-]
-
-[[package]]
-name = "derive_arbitrary"
-version = "1.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e567bd82dcff979e4b03460c307b3cdc9e96fde3d73bed1496d2bc75d9dd62a"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.117",
 ]
 
 [[package]]
@@ -4695,8 +4686,8 @@ dependencies = [
 
 [[package]]
 name = "email-utils"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "schemars 1.2.1",
  "serde",
@@ -4787,8 +4778,8 @@ dependencies = [
 
 [[package]]
 name = "enum-variants"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 
 [[package]]
 name = "env_filter"
@@ -4805,7 +4796,7 @@ version = "0.11.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b2daee4ea451f429a58296525ddf28b45a3b64f1acf6587e2067437bb11e218d"
 dependencies = [
- "anstream",
+ "anstream 0.6.21",
  "anstyle",
  "env_filter",
  "log",
@@ -4851,8 +4842,8 @@ dependencies = [
 
 [[package]]
 name = "event-sourcing"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -4866,8 +4857,8 @@ dependencies = [
 
 [[package]]
 name = "event-sourcing-macros"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "quote",
  "syn 2.0.117",
@@ -4957,8 +4948,8 @@ checksum = "28dea519a9695b9977216879a3ebfddf92f1c08c05d984f8996aecd6ecdc811d"
 
 [[package]]
 name = "file-utils"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "serde",
 ]
@@ -5085,8 +5076,8 @@ dependencies = [
 
 [[package]]
 name = "format-utils"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 
 [[package]]
 name = "fraction"
@@ -5284,15 +5275,16 @@ dependencies = [
 
 [[package]]
 name = "geojson"
-version = "0.24.2"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e26f3c45b36fccc9cf2805e61d4da6bc4bbd5a3a9589b01afa3a40eff703bd79"
+checksum = "510c094bfc76ea34d02eee00833254945b70491d79a9c0b050abed6eaa799ffb"
 dependencies = [
  "geo-types",
  "log",
  "serde",
  "serde_json",
  "thiserror 2.0.18",
+ "tinyvec",
 ]
 
 [[package]]
@@ -5361,8 +5353,8 @@ dependencies = [
 
 [[package]]
 name = "graphql-http"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-graphql",
  "axum",
@@ -5826,8 +5818,8 @@ dependencies = [
 
 [[package]]
 name = "http-common"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "axum",
  "http 1.4.0",
@@ -5983,7 +5975,7 @@ dependencies = [
  "libc",
  "percent-encoding",
  "pin-project-lite",
- "socket2 0.6.2",
+ "socket2 0.6.3",
  "tokio",
  "tower-service",
  "tracing",
@@ -6201,8 +6193,8 @@ dependencies = [
 
 [[package]]
 name = "init-on-startup"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "bon",
@@ -6240,8 +6232,8 @@ checksum = "8bb03732005da905c88227371639bf1ad885cc712789c011c31c5fb3ab3ccf02"
 
 [[package]]
 name = "internal-error"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "thiserror 2.0.18",
 ]
@@ -6561,9 +6553,9 @@ dependencies = [
 
 [[package]]
 name = "jsonschema"
-version = "0.40.2"
+version = "0.45.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba783d17473c27cfd4d1d72785dc1c26d5faba8072f50fec4ebea179bec8f33d"
+checksum = "6f29616f6e19415398eb186964fb7cbbeef572c79bede3622a8277667924bbe3"
 dependencies = [
  "ahash 0.8.12",
  "bytecount",
@@ -6624,8 +6616,8 @@ dependencies = [
 
 [[package]]
 name = "kamu"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "alloy",
  "async-recursion",
@@ -6701,8 +6693,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "base32",
@@ -6731,15 +6723,15 @@ dependencies = [
  "serde_with",
  "setty",
  "sqlx",
- "strum",
+ "strum 0.28.0",
  "thiserror 2.0.18",
  "uuid",
 ]
 
 [[package]]
 name = "kamu-accounts-inmem"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "chrono",
@@ -6757,8 +6749,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts-postgres"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -6779,8 +6771,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts-services"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "chrono",
@@ -6814,8 +6806,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-accounts-sqlite"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -6836,8 +6828,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-auth-oso-rebac"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "database-common",
@@ -6861,8 +6853,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-auth-web3"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "dill",
@@ -6885,8 +6877,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-flight-sql"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "arrow-flight",
  "async-trait",
@@ -6914,8 +6906,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-flow-dataset"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "chrono",
@@ -6940,8 +6932,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-flow-webhook"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "chrono",
@@ -6969,8 +6961,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-graphql"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-graphql",
  "async-trait",
@@ -7018,7 +7010,7 @@ dependencies = [
  "serde_json",
  "setty",
  "sha3",
- "strum",
+ "strum 0.28.0",
  "thiserror 2.0.18",
  "time-source",
  "tokio",
@@ -7029,8 +7021,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-http"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "aws-sdk-s3",
@@ -7068,13 +7060,13 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_with",
- "strum",
+ "strum 0.28.0",
  "tar",
  "thiserror 2.0.18",
  "time-source",
  "tokio",
  "tokio-stream",
- "tokio-tungstenite 0.28.0",
+ "tokio-tungstenite 0.29.0",
  "tokio-util",
  "tower",
  "tracing",
@@ -7086,8 +7078,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-oauth"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "dill",
@@ -7104,8 +7096,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-odata"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "axum",
@@ -7130,8 +7122,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-task-dataset"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "common-macros",
@@ -7150,8 +7142,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-adapter-task-webhook"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "chrono",
@@ -7290,8 +7282,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-rebac"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "internal-error",
@@ -7302,14 +7294,14 @@ dependencies = [
  "opendatafabric",
  "serde",
  "sqlx",
- "strum",
+ "strum 0.28.0",
  "thiserror 2.0.18",
 ]
 
 [[package]]
 name = "kamu-auth-rebac-inmem"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "dill",
@@ -7319,8 +7311,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-rebac-postgres"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "database-common",
@@ -7332,8 +7324,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-rebac-services"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "dill",
@@ -7352,8 +7344,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-rebac-sqlite"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "database-common",
@@ -7366,8 +7358,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-web3"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "alloy-primitives",
  "async-trait",
@@ -7382,8 +7374,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-web3-inmem"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "chrono",
@@ -7394,8 +7386,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-web3-postgres"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "chrono",
@@ -7408,8 +7400,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-web3-services"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "chrono",
@@ -7424,8 +7416,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-auth-web3-sqlite"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "chrono",
@@ -7438,8 +7430,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-cli-e2e-common"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-graphql",
  "async-trait",
@@ -7469,8 +7461,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-cli-e2e-common-macros"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "quote",
  "syn 2.0.117",
@@ -7478,8 +7470,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-cli-e2e-repo-tests"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-graphql",
  "base64",
@@ -7513,8 +7505,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-cli-puppet"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "assert_cmd",
  "async-trait",
@@ -7534,8 +7526,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-core"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7559,7 +7551,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_with",
- "strum",
+ "strum 0.28.0",
  "thiserror 2.0.18",
  "tokio",
  "tokio-stream",
@@ -7570,8 +7562,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-datafusion-udf"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "datafusion",
  "kamu-core",
@@ -7581,8 +7573,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7608,7 +7600,7 @@ dependencies = [
  "serde_json",
  "setty",
  "sqlx",
- "strum",
+ "strum 0.28.0",
  "thiserror 2.0.18",
  "tokio",
  "tokio-stream",
@@ -7618,8 +7610,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets-inmem"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "cheap-clone",
@@ -7636,8 +7628,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets-postgres"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7656,8 +7648,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets-services"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7701,8 +7693,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-datasets-sqlite"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7722,8 +7714,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -7743,7 +7735,7 @@ dependencies = [
  "serde_json",
  "serde_with",
  "sqlx",
- "strum",
+ "strum 0.28.0",
  "thiserror 2.0.18",
  "tokio-stream",
  "tracing",
@@ -7751,8 +7743,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system-inmem"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7766,7 +7758,7 @@ dependencies = [
  "opendatafabric",
  "serde",
  "serde_json",
- "strum",
+ "strum 0.28.0",
  "time-source",
  "tokio",
  "tracing",
@@ -7774,8 +7766,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system-postgres"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7798,8 +7790,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system-services"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7828,8 +7820,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-flow-system-sqlite"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7853,8 +7845,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-ingest-datafusion"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "chrono",
@@ -7880,8 +7872,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-messaging-outbox-inmem"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "dill",
@@ -7893,8 +7885,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-messaging-outbox-postgres"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -7912,8 +7904,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-messaging-outbox-sqlite"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -8050,7 +8042,7 @@ dependencies = [
  "serde",
  "serde_json",
  "setty",
- "strum",
+ "strum 0.27.2",
  "test-group",
  "test-log",
  "thiserror 2.0.18",
@@ -8077,8 +8069,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-search"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "chrono",
@@ -8089,14 +8081,14 @@ dependencies = [
  "opendatafabric",
  "serde",
  "serde_json",
- "strum",
+ "strum 0.28.0",
  "thiserror 2.0.18",
 ]
 
 [[package]]
 name = "kamu-search-cache-inmem"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "cheap-clone",
@@ -8108,8 +8100,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-search-cache-postgres"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "chrono",
@@ -8124,8 +8116,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-search-cache-sqlite"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "chrono",
@@ -8140,8 +8132,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-search-elasticsearch"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "canonical_json",
@@ -8163,8 +8155,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-search-openai"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-openai",
  "async-trait",
@@ -8178,8 +8170,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-search-services"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "chrono",
@@ -8204,8 +8196,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -8226,8 +8218,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system-inmem"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "database-common",
@@ -8239,8 +8231,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system-postgres"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -8255,8 +8247,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system-services"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -8278,8 +8270,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-task-system-sqlite"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -8295,8 +8287,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-webhooks"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "bytes",
@@ -8321,8 +8313,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-webhooks-inmem"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "chrono",
@@ -8337,8 +8329,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-webhooks-postgres"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -8358,8 +8350,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-webhooks-services"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "base64",
@@ -8392,8 +8384,8 @@ dependencies = [
 
 [[package]]
 name = "kamu-webhooks-sqlite"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -8579,10 +8571,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "libc"
-version = "0.2.182"
+name = "libbz2-rs-sys"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6800badb6cb2082ffd7b6a67e6125bb39f18782f793520caee8cb8846be06112"
+checksum = "2c4a545a15244c7d945065b5d392b2d2d7f21526fba56ce51467b06ed445e8f7"
+
+[[package]]
+name = "libc"
+version = "0.2.183"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b5b646652bf6661599e1da8901b3b9522896f01e736bad5f723fe7a3a27f899d"
 
 [[package]]
 name = "libm"
@@ -8615,9 +8613,9 @@ dependencies = [
 
 [[package]]
 name = "libz-sys"
-version = "1.1.24"
+version = "1.1.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4735e9cbde5aac84a5ce588f6b23a90b9b0b528f6c5a8db8a4aff300463a0839"
+checksum = "d52f4c29e2a68ac30c9087e1b772dc9f44a2b66ed44edf2266cf2be9b03dafc1"
 dependencies = [
  "cc",
  "libc",
@@ -8738,9 +8736,9 @@ checksum = "112b39cec0b298b6c1999fee3e31427f74f676e4cb9879ed1a121b43661a4154"
 
 [[package]]
 name = "lz4_flex"
-version = "0.12.0"
+version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ab6473172471198271ff72e9379150e9dfd70d8e533e0752a27e515b48dd375e"
+checksum = "98c23545df7ecf1b16c303910a69b079e8e251d60f7dd2cc9b4177f2afaf1746"
 dependencies = [
  "twox-hash",
 ]
@@ -8846,8 +8844,8 @@ dependencies = [
 
 [[package]]
 name = "messaging-outbox"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -8994,8 +8992,8 @@ dependencies = [
 
 [[package]]
 name = "multiformats"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "base64",
  "bs58 0.5.1",
@@ -9193,9 +9191,9 @@ dependencies = [
 
 [[package]]
 name = "num_enum"
-version = "0.7.5"
+version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1207a7e20ad57b847bbddc6776b968420d38292bbfe2089accff5e19e82454c"
+checksum = "5d0bca838442ec211fa11de3a8b0e0e8f3a4522575b5c4c06ed722e005036f26"
 dependencies = [
  "num_enum_derive",
  "rustversion",
@@ -9203,9 +9201,9 @@ dependencies = [
 
 [[package]]
 name = "num_enum_derive"
-version = "0.7.5"
+version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ff32365de1b6743cb203b710788263c44a03de03802daf96092f2da4fe6ba4d7"
+checksum = "680998035259dcfcafe653688bf2aa6d3e2dc05e98be6ab46afb089dc84f1df8"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -9298,8 +9296,8 @@ dependencies = [
 
 [[package]]
 name = "observability"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "axum",
@@ -9336,9 +9334,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.21.3"
+version = "1.21.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
+checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 dependencies = [
  "critical-section",
  "portable-atomic",
@@ -9378,8 +9376,8 @@ checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
 
 [[package]]
 name = "opendatafabric"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "opendatafabric-data-utils",
  "opendatafabric-dataset",
@@ -9394,8 +9392,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-data-utils"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "arrow",
  "arrow-digest",
@@ -9418,8 +9416,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-dataset"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "bytes",
@@ -9435,7 +9433,7 @@ dependencies = [
  "pin-project",
  "s3-utils",
  "serde",
- "strum",
+ "strum 0.28.0",
  "thiserror 2.0.18",
  "tokio-stream",
  "tracing",
@@ -9444,8 +9442,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-dataset-impl"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -9480,8 +9478,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-metadata"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "arrow",
  "base64",
@@ -9513,8 +9511,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-storage"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -9532,8 +9530,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-storage-http"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -9552,8 +9550,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-storage-inmem"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -9568,8 +9566,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-storage-lfs"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -9588,8 +9586,8 @@ dependencies = [
 
 [[package]]
 name = "opendatafabric-storage-s3"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "async-utils",
@@ -9632,9 +9630,9 @@ dependencies = [
 
 [[package]]
 name = "openssl-sys"
-version = "0.9.111"
+version = "0.9.112"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "82cab2d520aa75e3c58898289429321eb788c3106963d0dc886ec7a5f4adc321"
+checksum = "57d55af3b3e226502be1526dfdba67ab0e9c96fc293004e79576b2b9edb0dbdb"
 dependencies = [
  "cc",
  "libc",
@@ -10239,9 +10237,9 @@ checksum = "c33a9471896f1c69cecef8d20cbe2f7accd12527ce60845ff44c153bb2a21b49"
 
 [[package]]
 name = "portable-atomic-util"
-version = "0.2.5"
+version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a9db96d7fa8782dd8c15ce32ffe8680bbd1e978a43bf51a34d39483540495f5"
+checksum = "091397be61a01d4be58e7841595bd4bfedb15f1cd54977d79b8271e94ed799a3"
 dependencies = [
  "portable-atomic",
 ]
@@ -10368,7 +10366,7 @@ version = "3.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e67ba7e9b2b56446f1d419b1d807906278ffa1a658a8a5d8a39dcb1f5a78614f"
 dependencies = [
- "toml_edit 0.25.3+spec-1.1.0",
+ "toml_edit 0.25.5+spec-1.1.0",
 ]
 
 [[package]]
@@ -10593,7 +10591,7 @@ dependencies = [
  "quinn-udp",
  "rustc-hash",
  "rustls 0.23.37",
- "socket2 0.6.2",
+ "socket2 0.6.3",
  "thiserror 2.0.18",
  "tokio",
  "tracing",
@@ -10602,9 +10600,9 @@ dependencies = [
 
 [[package]]
 name = "quinn-proto"
-version = "0.11.13"
+version = "0.11.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f1906b49b0c3bc04b5fe5d86a77925ae6524a19b816ae38ce1e426255f1d8a31"
+checksum = "434b42fec591c96ef50e21e886936e66d3cc3f737104fdb9b737c40ffb94c098"
 dependencies = [
  "bytes",
  "getrandom 0.3.4",
@@ -10630,7 +10628,7 @@ dependencies = [
  "cfg_aliases",
  "libc",
  "once_cell",
- "socket2 0.6.2",
+ "socket2 0.6.3",
  "tracing",
  "windows-sys 0.60.2",
 ]
@@ -10744,8 +10742,8 @@ dependencies = [
 
 [[package]]
 name = "random-strings"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "rand 0.9.2",
 ]
@@ -10860,9 +10858,9 @@ dependencies = [
 
 [[package]]
 name = "referencing"
-version = "0.40.2"
+version = "0.45.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bef39a30a317e883d1ef4c43aa849f90f480d90bb24904fd38266e61d6be58f2"
+checksum = "b8a618c14f8ba29d8193bb55e2bf13e4fb2b1115313ecb7ae94b43100c7ac7d5"
 dependencies = [
  "ahash 0.8.12",
  "fluent-uri",
@@ -11362,8 +11360,8 @@ checksum = "700de91d5fd6091442d00fdd9ee790af6d4f0f480562b0f5a1e8f59e90aafe73"
 
 [[package]]
 name = "s3-utils"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-utils",
  "aws-config",
@@ -11392,9 +11390,9 @@ dependencies = [
 
 [[package]]
 name = "schannel"
-version = "0.1.28"
+version = "0.1.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "891d81b926048e76efe18581bf793546b4c0eaf8448d72be8de2bbee5fd166e1"
+checksum = "91c1b7e4904c873ef0710c1f407dde2e6287de2bebc1bbbf7d430bb7cbffd939"
 dependencies = [
  "windows-sys 0.61.2",
 ]
@@ -11676,9 +11674,9 @@ dependencies = [
 
 [[package]]
 name = "serde_with"
-version = "3.17.0"
+version = "3.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "381b283ce7bc6b476d903296fb59d0d36633652b633b27f64db4fb46dcbfc3b9"
+checksum = "dd5414fad8e6907dbdd5bc441a50ae8d6e26151a03b1de04d89a5576de61d01f"
 dependencies = [
  "base64",
  "chrono",
@@ -11695,11 +11693,11 @@ dependencies = [
 
 [[package]]
 name = "serde_with_macros"
-version = "3.17.0"
+version = "3.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a6d4e30573c8cb306ed6ab1dca8423eec9a463ea0e155f45399455e0368b27e0"
+checksum = "d3db8978e608f1fe7357e211969fd9abdcae80bac1ba7a3369bb7eb6b404eb65"
 dependencies = [
- "darling 0.21.3",
+ "darling 0.23.0",
  "proc-macro2",
  "quote",
  "syn 2.0.117",
@@ -11730,8 +11728,8 @@ dependencies = [
 
 [[package]]
 name = "server-console"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-graphql",
  "axum",
@@ -11977,12 +11975,12 @@ dependencies = [
 
 [[package]]
 name = "socket2"
-version = "0.6.2"
+version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "86f4aa3ad99f2088c990dfa82d367e19cb29268ed67c574d10d0a4bfe71f07e0"
+checksum = "3a766e1110788c36f4fa1c2b71b387a7815aa65f88ce0229841826633d93723e"
 dependencies = [
  "libc",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -12235,9 +12233,9 @@ dependencies = [
 
 [[package]]
 name = "ssi-caips"
-version = "0.2.2"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44bd44fe8f27632b0a80415dc934e4ec00a89c9bf99aec3073e037e7f38c04f1"
+checksum = "9b72537ab24b91065a01de3667b9fb2842b9e9574f44f4fbac7a4892b98adb16"
 dependencies = [
  "bs58 0.4.0",
  "linked-data",
@@ -12249,9 +12247,9 @@ dependencies = [
 
 [[package]]
 name = "ssi-claims-core"
-version = "0.1.3"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "54a2c9fba21b4ac915f5596c8cb59d8820eefceb52bc222463ff2297369242c9"
+checksum = "b6077d3e3cbfe8c034a704131cfcb51a7628f5ee940f7679b1f12202e280e468"
 dependencies = [
  "chrono",
  "educe 0.4.23",
@@ -12259,7 +12257,7 @@ dependencies = [
  "ssi-crypto",
  "ssi-eip712",
  "ssi-json-ld",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
 ]
 
 [[package]]
@@ -12270,14 +12268,14 @@ checksum = "5d0eda75b662bc3d7a9e751292c96a71a3d9bdcfb887e0b895032a5fd23c203e"
 
 [[package]]
 name = "ssi-core"
-version = "0.2.3"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4354a6134c0b984d51a75f850e8e9d78991b0b928389582113a4b77ea2960ff0"
+checksum = "5ce624bf36e40a13cbb7f7d375b0a2613346fbdb9fa6adb974a1b98bc85de512"
 dependencies = [
  "async-trait",
  "pin-project",
  "serde",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
 ]
 
 [[package]]
@@ -12343,9 +12341,9 @@ dependencies = [
 
 [[package]]
 name = "ssi-jwk"
-version = "0.3.2"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2e5310d92e495cfed2483a058a88a4b21d8c68279d91d695ed9c0a7b8d032dfe"
+checksum = "8661b5d6865c305d60d7f6cba252ee1f505461d439813c4e0725d46c0d6d4848"
 dependencies = [
  "base64",
  "getrandom 0.2.17",
@@ -12483,6 +12481,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "strum"
+version = "0.28.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9628de9b8791db39ceda2b119bbe13134770b56c138ec1d3af810d045c04f9bd"
+dependencies = [
+ "strum_macros 0.28.0",
+]
+
+[[package]]
 name = "strum_macros"
 version = "0.24.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -12500,6 +12507,18 @@ name = "strum_macros"
 version = "0.27.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7695ce3845ea4b33927c055a39dc438a45b059f7c1b3d91d38d10355fb8cbca7"
+dependencies = [
+ "heck 0.5.0",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.117",
+]
+
+[[package]]
+name = "strum_macros"
+version = "0.28.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ab85eea0270ee17587ed4156089e10b9e6880ee688791d45a905f5b1ca36f664"
 dependencies = [
  "heck 0.5.0",
  "proc-macro2",
@@ -12598,9 +12617,9 @@ checksum = "adb6935a6f5c20170eeceb1a3835a49e12e19d792f6dd344ccc76a985ca5a6ca"
 
 [[package]]
 name = "tempfile"
-version = "3.26.0"
+version = "3.27.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "82a72c767771b47409d2345987fda8628641887d5466101319899796367354a0"
+checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
  "getrandom 0.4.2",
@@ -12673,8 +12692,8 @@ dependencies = [
 
 [[package]]
 name = "test-utils"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "axum",
  "container-runtime",
@@ -12790,8 +12809,8 @@ dependencies = [
 
 [[package]]
 name = "time-source"
-version = "0.260.2"
-source = "git+https://github.com/kamu-data/kamu-cli?branch=master#a6afa153847b99bcd5709a7f9e9e509032743b40"
+version = "0.261.0"
+source = "git+https://github.com/kamu-data/kamu-cli?branch=master#acb336da2df6bd470e797d4d6ad023ec1130cccb"
 dependencies = [
  "async-trait",
  "chrono",
@@ -12820,10 +12839,11 @@ dependencies = [
 
 [[package]]
 name = "tinyvec"
-version = "1.10.0"
+version = "1.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bfa5fdc3bce6191a1dbc8c02d5c8bffcf557bafa17c124c5264a458f1b0613fa"
+checksum = "3e61e67053d25a4e82c844e8424039d9745781b3fc4f32b8d55ed50f5f667ef3"
 dependencies = [
+ "serde_core",
  "tinyvec_macros",
 ]
 
@@ -12845,7 +12865,7 @@ dependencies = [
  "parking_lot",
  "pin-project-lite",
  "signal-hook-registry",
- "socket2 0.6.2",
+ "socket2 0.6.3",
  "tokio-macros",
  "windows-sys 0.61.2",
 ]
@@ -12937,6 +12957,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "tokio-tungstenite"
+version = "0.29.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8f72a05e828585856dacd553fba484c242c46e391fb0e58917c942ee9202915c"
+dependencies = [
+ "futures-util",
+ "log",
+ "tokio",
+ "tungstenite 0.29.0",
+]
+
+[[package]]
 name = "tokio-util"
 version = "0.7.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -12973,9 +13005,9 @@ dependencies = [
 
 [[package]]
 name = "toml_datetime"
-version = "1.0.0+spec-1.1.0"
+version = "1.0.1+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "32c2555c699578a4f59f0cc68e5116c8d7cabbd45e1409b989d4be085b53f13e"
+checksum = "9b320e741db58cac564e26c607d3cc1fdc4a88fd36c879568c07856ed83ff3e9"
 dependencies = [
  "serde_core",
 ]
@@ -12990,28 +13022,28 @@ dependencies = [
  "serde",
  "serde_spanned",
  "toml_datetime 0.6.11",
- "winnow 0.7.14",
+ "winnow 0.7.15",
 ]
 
 [[package]]
 name = "toml_edit"
-version = "0.25.3+spec-1.1.0"
+version = "0.25.5+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a0a07913e63758bc95142d9863a5a45173b71515e68b690cad70cf99c3255ce1"
+checksum = "8ca1a40644a28bce036923f6a431df0b34236949d111cc07cb6dca830c9ef2e1"
 dependencies = [
  "indexmap 2.13.0",
- "toml_datetime 1.0.0+spec-1.1.0",
+ "toml_datetime 1.0.1+spec-1.1.0",
  "toml_parser",
- "winnow 0.7.14",
+ "winnow 1.0.0",
 ]
 
 [[package]]
 name = "toml_parser"
-version = "1.0.9+spec-1.1.0"
+version = "1.0.10+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "702d4415e08923e7e1ef96cd5727c0dfed80b4d2fa25db9647fe5eb6f7c5a4c4"
+checksum = "7df25b4befd31c4816df190124375d5a20c6b6921e2cad937316de3fccd63420"
 dependencies = [
- "winnow 0.7.14",
+ "winnow 1.0.0",
 ]
 
 [[package]]
@@ -13033,7 +13065,7 @@ dependencies = [
  "hyper-util",
  "percent-encoding",
  "pin-project",
- "socket2 0.6.2",
+ "socket2 0.6.3",
  "sync_wrapper",
  "tokio",
  "tokio-stream",
@@ -13196,9 +13228,9 @@ dependencies = [
 
 [[package]]
 name = "tracing-subscriber"
-version = "0.3.22"
+version = "0.3.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2f30143827ddab0d256fd843b7a66d164e9f271cfa0dde49142c5ca0ca291f1e"
+checksum = "cb7f578e5945fb242538965c2d0b04418d38ec25c79d160cd279bf0731c8d319"
 dependencies = [
  "matchers",
  "nu-ansi-term",
@@ -13256,8 +13288,24 @@ dependencies = [
  "rustls-pki-types",
  "sha1",
  "thiserror 2.0.18",
- "url",
  "utf-8",
+]
+
+[[package]]
+name = "tungstenite"
+version = "0.29.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c01152af293afb9c7c2a57e4b559c5620b421f6d133261c60dd2d0cdb38e6b8"
+dependencies = [
+ "bytes",
+ "data-encoding",
+ "http 1.4.0",
+ "httparse",
+ "log",
+ "rand 0.9.2",
+ "sha1",
+ "thiserror 2.0.18",
+ "url",
 ]
 
 [[package]]
@@ -13265,6 +13313,12 @@ name = "twox-hash"
 version = "2.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9ea3136b675547379c4bd395ca6b938e5ad3c3d20fad76e7fe85f9e0d011419c"
+
+[[package]]
+name = "typed-path"
+version = "0.12.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8e28f89b80c87b8fb0cf04ab448d5dd0dd0ade2f8891bae878de66a75a28600e"
 
 [[package]]
 name = "typenum"
@@ -13480,9 +13534,9 @@ dependencies = [
 
 [[package]]
 name = "uuid"
-version = "1.21.0"
+version = "1.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b672338555252d43fd2240c714dc444b8c6fb0a5c5335e65a07bba7742735ddb"
+checksum = "a68d3c8f01c0cfa54a75291d83601161799e4a89a39e0929f4b0354d88757a37"
 dependencies = [
  "getrandom 0.4.2",
  "js-sys",
@@ -14124,9 +14178,18 @@ dependencies = [
 
 [[package]]
 name = "winnow"
-version = "0.7.14"
+version = "0.7.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5a5364e9d77fcdeeaa6062ced926ee3381faa2ee02d3eb83a5c27a8825540829"
+checksum = "df79d97927682d2fd8adb29682d1140b343be4ac0f08fd68b7765d9c059d3945"
+dependencies = [
+ "memchr",
+]
+
+[[package]]
+name = "winnow"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a90e88e4667264a994d34e6d1ab2d26d398dcdca8b7f52bec8668957517fc7d8"
 dependencies = [
  "memchr",
 ]
@@ -14330,18 +14393,18 @@ dependencies = [
 
 [[package]]
 name = "zerocopy"
-version = "0.8.40"
+version = "0.8.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a789c6e490b576db9f7e6b6d661bcc9799f7c0ac8352f56ea20193b2681532e5"
+checksum = "f2578b716f8a7a858b7f02d5bd870c14bf4ddbbcf3a4c05414ba6503640505e3"
 dependencies = [
  "zerocopy-derive",
 ]
 
 [[package]]
 name = "zerocopy-derive"
-version = "0.8.40"
+version = "0.8.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f65c489a7071a749c849713807783f70672b28094011623e200cb86dcb835953"
+checksum = "7e6cc098ea4d3bd6246687de65af3f920c430e236bee1e3bf2e441463f08a02f"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -14424,16 +14487,16 @@ dependencies = [
 
 [[package]]
 name = "zip"
-version = "3.0.0"
+version = "8.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "12598812502ed0105f607f941c386f43d441e00148fce9dec3ca5ffb0bde9308"
+checksum = "b680f2a0cd479b4cff6e1233c483fdead418106eae419dc60200ae9850f6d004"
 dependencies = [
- "arbitrary",
  "bzip2",
  "crc32fast",
  "flate2",
  "indexmap 2.13.0",
  "memchr",
+ "typed-path",
  "zopfli",
  "zstd",
 ]
