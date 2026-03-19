@@ -13,7 +13,7 @@ Recommendation: for ease of reading, use the following order:
 - Fixed
 -->
 
-## [Unreleased]
+## [0.85.0] - 2026-03-19
 ### Upstream [kamu `0.261.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.261.0)
 ### Added
 - Implemented flexible flow listing ordering at service level + 2 high-level ordering modes in GQL API.
