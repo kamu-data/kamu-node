@@ -1,4 +1,4 @@
-/minio-data
+/rustfs-data
 /aws-datasets-bucket
 
 kamu-api-server.sqlite*

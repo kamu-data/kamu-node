@@ -122,9 +122,6 @@ kamu-node-e2e-common-macros = { path = "src/e2e/app/common-macros", version = "0
 kamu-node-puppet = { path = "src/e2e/app/kamu-node-puppet", version = "0.85.0", default-features = false }
 kamu-node-e2e-repo-tests = { path = "src/e2e/app/repo-tests", version = "0.85.0", default-features = false }
 
-# TODO: Updating aws-sdk version forces to update minio image version. 
-# Update it once we will modify our tests to be compatible with latest version
-aws-sdk-s3 = "=1.68.0"
 
 [workspace.package]
 version = "0.85.0"
