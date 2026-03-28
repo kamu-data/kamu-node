@@ -31,10 +31,10 @@ kamu-node-puppet = { workspace = true, default-features = false, features = [
 ] }
 odf = { workspace = true }
 
-arrow-flight = { version = "57", features = ["flight-sql-experimental"] }
+arrow-flight = { version = "58", features = ["flight-sql-experimental"] }
 async-trait = "0.1"
 chrono = { version = "0.4", default-features = false, features = ["now"] }
-datafusion = { version = "52", default-features = false }
+datafusion = { version = "53", default-features = false }
 futures = "0.3"
 indoc = "2"
 pretty_assertions = "1"

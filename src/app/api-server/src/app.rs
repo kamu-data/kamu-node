@@ -708,9 +708,11 @@ pub async fn init_dependencies(
         }
         config::UploadRepoStorageConfig::S3(s3_config) => {
             let s3_upload_direct_url = Url::parse(&s3_config.bucket_s3_url).unwrap();
-            let s3_context = S3Context::from_url(&s3_upload_direct_url)
-                .await
-                .with_metrics(s3_metrics);
+            let s3_context = S3Context::builder()
+                .with_url(&s3_upload_direct_url)
+                .with_metrics(s3_metrics)
+                .build()
+                .await;
 
             b.add_builder(kamu_adapter_http::platform::UploadServiceS3::builder(
                 s3_context,
@@ -883,9 +885,11 @@ async fn configure_repository(
         "s3" | "s3+http" | "s3+https" => {
             use odf::dataset::DatasetStorageUnitS3;
 
-            let s3_context = S3Context::from_url(repo_url)
-                .await
-                .with_metrics(s3_metrics.clone());
+            let s3_context = S3Context::builder()
+                .with_url(repo_url)
+                .with_metrics(s3_metrics.clone())
+                .build()
+                .await;
 
             if config.caching.registry_cache_enabled {
                 b.add::<odf::dataset::S3RegistryCache>();
@@ -907,7 +911,9 @@ async fn configure_repository(
             );
 
             let allow_http = repo_url.scheme() == "s3+http";
-            b.add_builder(kamu::ObjectStoreBuilderS3::builder(s3_context, allow_http));
+            b.add_builder(kamu::ObjectStoreBuilderS3::builder(
+                s3_context, allow_http, None, None,
+            ));
 
             // LFS object store is still needed for Datafusion operations that create
             // temporary file, such as push ingest

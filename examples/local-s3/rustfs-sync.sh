@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-export AWS_ACCESS_KEY_ID=minio
-export AWS_SECRET_ACCESS_KEY=minio123
+export AWS_ACCESS_KEY_ID=rustfs
+export AWS_SECRET_ACCESS_KEY=rustfs123
 export AWS_ENDPOINT_URL=http://localhost:9000
 export AWS_SESSION_TOKEN=
 
