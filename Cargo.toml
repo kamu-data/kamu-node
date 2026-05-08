@@ -33,6 +33,7 @@ graceful-shutdown = { path = "src/utils/graceful-shutdown", version = "0.84.1", 
 # Utils (core)
 async-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
 container-runtime = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
+crypto-eip712-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
 crypto-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
 database-common = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
 database-common-macros = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }

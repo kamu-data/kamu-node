@@ -714,9 +714,20 @@ impl IdentityConfig {
     }
 
     pub fn to_infra_cfg(&self) -> Option<kamu_adapter_http::data::query_types::IdentityConfig> {
-        self.private_key
-            .clone()
-            .map(|private_key| kamu_adapter_http::data::query_types::IdentityConfig { private_key })
+        // TODO: Molecule: Phase 3: externalize config -->
+        use crypto_eip712_utils::{SigningKey, b256};
+
+        let private_key =
+            b256!("0x42f3bebeb03afa3f14440c6837fa653a84e76bb74d62856227a97f3ee487b601");
+        let secp256k1_private_key = SigningKey::from_slice(private_key.as_slice()).unwrap();
+        // <--
+
+        self.private_key.clone().map(|ed25519_private_key| {
+            kamu_adapter_http::data::query_types::IdentityConfig {
+                ed25519_private_key,
+                secp256k1_private_key,
+            }
+        })
     }
 }
 
