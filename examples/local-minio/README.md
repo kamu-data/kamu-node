@@ -38,14 +38,11 @@ make minio-sync
     ```shell
     make postgres-start
     ```
-  - Download the database dump using the [provided instructions](https://github.com/kamu-data/kamu-deploy/blob/master/DEVELOPER.md#make-a-database-backup).
+  - Download the database `./dump.sql` using the [provided instructions](https://github.com/kamu-data/kamu-deploy/blob/master/DEVELOPER.md#make-a-database-backup).
   - Apply the dump to the local database:
     ```shell
-    psql -U root -h 127.0.0.1 -p 5433 -d kamu -f DUMP.sql
-    ```
-  - Apply latest migrations, if necessary:
-    ```shell
-    sqlx migrate run --source ../../../kamu-cli/migrations/postgres --database-url postgres://root:root@localhost:5433/kamu
+    # ⚠️ Please note: when applied, Outbox tables will be cleared.
+    make postgres-restore-dump
     ```
   - Run the server:
   ```shell
