@@ -65,6 +65,7 @@ kamu-flow-system-services = { git = "https://github.com/kamu-data/kamu-cli", bra
 kamu-search = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
 kamu-search-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
 kamu-signing = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
+kamu-signing-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
 kamu-task-system = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
 kamu-task-system-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
 kamu-webhooks = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
@@ -109,7 +110,6 @@ kamu-search-cache-postgres = { git = "https://github.com/kamu-data/kamu-cli", br
 kamu-search-cache-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
 kamu-search-elasticsearch = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
 kamu-search-openai = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
-kamu-signing-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
 kamu-task-system-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
 kamu-task-system-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }
 kamu-task-system-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule_phase_3", version = "0.260.2", default-features = false }

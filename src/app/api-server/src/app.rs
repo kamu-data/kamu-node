@@ -381,6 +381,8 @@ pub async fn init_dependencies(
     kamu_adapter_task_dataset::register_dependencies(&mut b);
     kamu_adapter_task_webhook::register_dependencies(&mut b);
 
+    kamu_signing_services::register_dependencies(&mut b);
+
     let incremental_search_indexing = config.search.indexer.incremental_indexing;
 
     kamu_molecule_services::register_dependencies(

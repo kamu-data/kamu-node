@@ -119,6 +119,7 @@ kamu-search-services = { workspace = true }
 kamu-signing = { workspace = true, default-features = false, features = [
     "schemars",
 ] }
+kamu-signing-services = { workspace = true }
 kamu-task-system = { workspace = true }
 kamu-task-system-inmem = { workspace = true }
 kamu-task-system-postgres = { workspace = true }
