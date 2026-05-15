@@ -35,15 +35,13 @@ dill = { version = "0.15", default-features = false }
 
 async-utils = { workspace = true }
 container-runtime = { workspace = true }
-crypto-eip712-utils = { workspace = true }
 crypto-utils = { workspace = true }
 database-common = { workspace = true }
 database-common-macros = { workspace = true }
-email-utils = { workspace = true }
 email-gateway = { workspace = true }
+email-utils = { workspace = true }
 graceful-shutdown = { workspace = true }
 graphql-http = { workspace = true }
-http-common = { workspace = true }
 init-on-startup = { workspace = true }
 internal-error = { workspace = true }
 messaging-outbox = { workspace = true }
@@ -77,17 +75,17 @@ kamu-adapter-auth-web3 = { workspace = true, default-features = false, features 
 ] }
 kamu-adapter-flight-sql = { workspace = true }
 kamu-adapter-graphql = { workspace = true }
+kamu-adapter-http = { workspace = true, features = [
+    "e2e",
+], default-features = false }
 kamu-auth-rebac = { workspace = true }
 kamu-auth-web3-inmem = { workspace = true }
 kamu-auth-web3-postgres = { workspace = true }
 kamu-auth-web3-sqlite = { workspace = true }
-kamu-adapter-http = { workspace = true, features = [
-    "e2e",
-], default-features = false }
-kamu-adapter-oauth = { workspace = true }
-kamu-adapter-odata = { workspace = true }
 kamu-adapter-flow-dataset = { workspace = true }
 kamu-adapter-flow-webhook = { workspace = true }
+kamu-adapter-oauth = { workspace = true }
+kamu-adapter-odata = { workspace = true }
 kamu-adapter-task-dataset = { workspace = true }
 kamu-adapter-task-webhook = { workspace = true }
 kamu-auth-rebac-inmem = { workspace = true }
@@ -112,21 +110,24 @@ kamu-messaging-outbox-inmem = { workspace = true }
 kamu-messaging-outbox-postgres = { workspace = true }
 kamu-messaging-outbox-sqlite = { workspace = true }
 kamu-search = { workspace = true }
-kamu-search-elasticsearch = { workspace = true }
-kamu-search-openai = { workspace = true }
-kamu-search-services = { workspace = true }
 kamu-search-cache-inmem = { workspace = true }
 kamu-search-cache-postgres = { workspace = true }
 kamu-search-cache-sqlite = { workspace = true }
+kamu-search-elasticsearch = { workspace = true }
+kamu-search-openai = { workspace = true }
+kamu-search-services = { workspace = true }
+kamu-signing = { workspace = true, default-features = false, features = [
+    "schemars",
+] }
 kamu-task-system = { workspace = true }
 kamu-task-system-inmem = { workspace = true }
 kamu-task-system-postgres = { workspace = true }
 kamu-task-system-services = { workspace = true }
 kamu-task-system-sqlite = { workspace = true }
 kamu-webhooks = { workspace = true }
-kamu-webhooks-services = { workspace = true }
 kamu-webhooks-inmem = { workspace = true }
 kamu-webhooks-postgres = { workspace = true }
+kamu-webhooks-services = { workspace = true }
 kamu-webhooks-sqlite = { workspace = true }
 
 # SKU
