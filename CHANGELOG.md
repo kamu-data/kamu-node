@@ -22,6 +22,11 @@ Recommendation: for ease of reading, use the following order:
 ### Fixed
  - Investigation: potential unstable ordering of dataset entry listings
 
+## [Unreleased]
+### Upstream [kamu `0.263.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.263.0)
+- Support for ODF schemas in polling and push sources
+- **Breaking:** In manifests and GQL the `ReadStep::schema` field now carries ODF schema format while old schema is now available as `ddlSchema`
+
 ## [0.85.0] - 2026-03-19
 ### Upstream [kamu `0.261.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.261.0)
 ### Added
