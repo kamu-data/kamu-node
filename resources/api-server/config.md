@@ -69,7 +69,7 @@
   &quot;images&quot;: {
     &quot;datafusion&quot;: &quot;ghcr.io&#x2F;kamu-data&#x2F;engine-datafusion:0.9.0&quot;,
     &quot;flink&quot;: &quot;ghcr.io&#x2F;kamu-data&#x2F;engine-flink:0.18.2-flink_1.16.0-scala_2.12-java8&quot;,
-    &quot;risingwave&quot;: &quot;ghcr.io&#x2F;kamu-data&#x2F;engine-risingwave:0.2.0-risingwave_1.7.0-alpha&quot;,
+    &quot;risingwave&quot;: &quot;ghcr.io&#x2F;kamu-data&#x2F;engine-risingwave:0.3.0&quot;,
     &quot;spark&quot;: &quot;ghcr.io&#x2F;kamu-data&#x2F;engine-spark:0.23.1-spark_3.5.0&quot;
   },
   &quot;networkNs&quot;: &quot;Private&quot;,
@@ -572,7 +572,6 @@ Base type: `string`
 <tbody>
 <tr><td><a href="#databasecredentialsourceconfigrawpassword"><code>RawPassword</code></a></td></tr>
 <tr><td><a href="#databasecredentialsourceconfigawssecret"><code>AwsSecret</code></a></td></tr>
-<tr><td><a href="#databasecredentialsourceconfigawsiamtoken"><code>AwsIamToken</code></a></td></tr>
 </tbody>
 </table>
 
@@ -617,27 +616,6 @@ Base type: `string`
 </tr>
 <tr>
 <td><code>secretName</code></td>
-<td><code>string</code></td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-
-
-## `DatabaseCredentialSourceConfig::AwsIamToken`
-
-<table>
-<thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr>
-<td><code>kind</code></td>
-<td><code>string</code></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td><code>userName</code></td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -942,7 +920,7 @@ Base type: `string`
 <td><pre><code class="language-json">{
   &quot;datafusion&quot;: &quot;ghcr.io&#x2F;kamu-data&#x2F;engine-datafusion:0.9.0&quot;,
   &quot;flink&quot;: &quot;ghcr.io&#x2F;kamu-data&#x2F;engine-flink:0.18.2-flink_1.16.0-scala_2.12-java8&quot;,
-  &quot;risingwave&quot;: &quot;ghcr.io&#x2F;kamu-data&#x2F;engine-risingwave:0.2.0-risingwave_1.7.0-alpha&quot;,
+  &quot;risingwave&quot;: &quot;ghcr.io&#x2F;kamu-data&#x2F;engine-risingwave:0.3.0&quot;,
   &quot;spark&quot;: &quot;ghcr.io&#x2F;kamu-data&#x2F;engine-spark:0.23.1-spark_3.5.0&quot;
 }</code></pre></td>
 <td>UNSTABLE: Default engine images</td>
@@ -1065,7 +1043,7 @@ See: [kamu-node#277](https://github.com/kamu-data/kamu-node/issues/277)
 <tr>
 <td><code>risingwave</code></td>
 <td><code>string</code></td>
-<td><code class="language-json">&quot;ghcr.io&#x2F;kamu-data&#x2F;engine-risingwave:0.2.0-risingwave_1.7.0-alpha&quot;</code></td>
+<td><code class="language-json">&quot;ghcr.io&#x2F;kamu-data&#x2F;engine-risingwave:0.3.0&quot;</code></td>
 <td>UNSTABLE: RisingWave engine image</td>
 </tr>
 <tr>
