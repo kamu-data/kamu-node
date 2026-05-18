@@ -2,3 +2,4 @@
 /aws-datasets-bucket
 
 kamu-api-server.sqlite*
+dump.sql

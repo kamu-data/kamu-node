@@ -175,6 +175,7 @@ interface "SetDatasetRebacPropertiesUseCase" <<i>>
 interface "SetWatermarkExecutor" <<i>>
 interface "SetWatermarkPlanner" <<i>>
 interface "SetWatermarkUseCase" <<i>>
+interface "SignEip712UseCase" <<i>>
 interface "SmartTransferProtocolClient" <<i>>
 interface "SyncService" <<i>>
 interface "SystemTimeSource" <<i>>
@@ -473,6 +474,7 @@ class "SetDatasetRebacPropertiesUseCaseImpl"
 class "SetWatermarkExecutorImpl"
 class "SetWatermarkPlannerImpl"
 class "SetWatermarkUseCaseImpl"
+class "SignEip712UseCaseImpl"
 class "SimpleTransferProtocol"
 class "SourceConfig" <<singleton>>
 class "SqlInfoData" <<singleton>>
@@ -1235,6 +1237,14 @@ class "WsSmartTransferProtocolClient"
 "EmbeddingsProviderImpl"  --> "EmbeddingsChunker"
 "EmbeddingsProviderImpl"  --> "EmbeddingsEncoder"
 "EmbeddingsProviderImpl"  --> "SystemTimeSource"
+"SignEip712UseCase" <|-- "SignEip712UseCaseImpl"
+"SignEip712UseCaseImpl"  --> "DidSecretKeyRepository"
+"SignEip712UseCaseImpl"  --> "AccountService"
+"SignEip712UseCaseImpl"  --> "AccountAuthorizationHelper"
+"SignEip712UseCaseImpl"  --> "DatasetActionAuthorizer"
+"SignEip712UseCaseImpl"  --> "CurrentAccountSubject"
+"SignEip712UseCaseImpl"  --> "DidSecretEncryptionConfig"
+"SignEip712UseCaseImpl" "?" --> "IdentityConfig"
 "TaskEventStore" <|-- "PostgresTaskEventStore"
 "PostgresTaskEventStore"  --> "TransactionRefT"
 "TaskDefinitionPlanner" <|-- "ProbeTaskPlanner"
