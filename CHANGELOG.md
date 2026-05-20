@@ -21,7 +21,21 @@ Recommendation: for ease of reading, use the following order:
 - GQL: `MoleculeMut::create_project()`: generate lowercase project account name.
 ### Fixed
  - Investigation: potential unstable ordering of dataset entry listings
- 
+
+## [0.86.0] - 2026-05-16
+### Upstream [kamu `0.263.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.263.0)
+- Support for ODF schemas in polling and push sources
+- **Breaking:** In manifests and GQL the `ReadStep::schema` field now carries ODF schema format while old schema is now available as `ddlSchema`
+
+## [0.85.0] - 2026-03-19
+### Upstream [kamu `0.261.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.261.0)
+### Added
+- Implemented flexible flow listing ordering at service level + 2 high-level ordering modes in GQL API.
+### Changed
+- ReBAC relation and dataset property updates now suppress redundant outbox messages and downstream dataset search reindexing when the effective authorization state remains unchanged.
+- Several major dependency upgrades
+- Latest Rust nightly toolchain (March 19th, 2026)
+
 ## [0.84.1] - 2026-03-04
 ### Upstream [kamu `0.260.2`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.260.2)
 ### Added

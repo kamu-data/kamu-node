@@ -80,7 +80,7 @@ fn main() {
 fn get_current_version() -> Version {
     let root_cargo_content = std::fs::read_to_string(Path::new("Cargo.toml"))
         .expect("Could not read root Cargo.toml file");
-    let cargo_toml: toml::Value =
+    let cargo_toml: toml::Table =
         toml::from_str(&root_cargo_content).expect("Failed to parse a Cargo.toml");
     cargo_toml["workspace"]["package"]["version"]
         .as_str()
