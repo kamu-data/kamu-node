@@ -50,7 +50,9 @@ impl KamuNodePuppet {
         let temp_dir = tempfile::tempdir().unwrap();
 
         let s3_server = if options.repo_type == RepositoryType::S3 {
-            Some(LocalS3Server::new().await)
+            let s3 = LocalS3Server::new().await;
+            s3.set_credentials_env_vars();
+            Some(s3)
         } else {
             None
         };

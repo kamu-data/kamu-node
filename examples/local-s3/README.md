@@ -1,30 +1,30 @@
-# Example: local-minio
+# Example: local-s3
 
-This example shows how to run `kamu-api-server` locally with the S3 repository located in minio.
+This example shows how to run `kamu-api-server` locally with an S3-compatible repository.
 
 ### Preparation
 
 ```shell
-cd ./examples/local-minio
+cd ./examples/local-s3
 ```
 
 ### Starting environment
 
 We'll need to run the environment in two different terminals:
-1) Start `minio` first:
+1) Start `rustfs` first:
 ```shell
-make minio-start
+make rustfs-start
 ```
 2) (Optional) Create a dump of the bucket data from the test environment of interest:
 ```shell
 aws-sso exec
 aws s3 sync s3://TEST_ENV_HOST ./aws-datasets-bucket
 ```
-During a later startup, the saved data will be synchronized into minio.
+During a later startup, the saved data will be synchronized into rustfs.
 
-3) Initialize `minio` buckets and sync data:
+3) Initialize `rustfs` buckets and sync data:
 ```shell
-make minio-sync
+make rustfs-sync
 ```
 
 4) You can now start `kamu-api-server`:
@@ -51,7 +51,7 @@ make minio-sync
 
 5) Clean up when you're done:
 ```shell
-make minio-stop postgres-stop clean-minio-data clean-aws-datasets-bucket
+make rustfs-stop postgres-stop clean-sqlite-data clean-aws-datasets-bucket
 
 # or simply
 make clean

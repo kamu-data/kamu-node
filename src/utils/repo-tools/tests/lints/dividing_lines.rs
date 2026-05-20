@@ -7,11 +7,10 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-use std::assert_matches::assert_matches;
 use std::fs::File;
-use std::io;
 use std::io::{Cursor, Write};
 use std::path::PathBuf;
+use std::{assert_matches, io};
 
 use grep_regex::{RegexMatcher, RegexMatcherBuilder};
 use grep_searcher::Searcher;
@@ -198,7 +197,7 @@ fn get_all_crates() -> Vec<PathBuf> {
     let root_cargo_content = std::fs::read_to_string(repo_root.join("Cargo.toml"))
         .expect("Could not read root Cargo.toml file");
 
-    let root_cargo: toml::Value = root_cargo_content
+    let root_cargo: toml::Table = root_cargo_content
         .parse()
         .expect("Failed to parse root Cargo.toml");
 
