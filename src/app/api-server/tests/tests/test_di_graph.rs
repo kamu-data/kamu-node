@@ -8,7 +8,7 @@
 // by the Apache License, Version 2.0.
 
 use kamu::domain::TenancyConfig;
-use test_utils::MinioServer;
+use test_utils::LocalS3Server;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -120,39 +120,17 @@ async fn test_di_graph_validates_remote(
     tenancy_config: TenancyConfig,
     repositories_config: RepositoriesConfig,
 ) {
-    let access_key = "AKIAIOSFODNN7EXAMPLE";
-    let secret_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
+    let tmp_dir = tempfile::tempdir().unwrap();
 
-    // TODO: Reconsider setting env vars in test runs
-    unsafe {
-        std::env::set_var("AWS_ACCESS_KEY_ID", access_key);
-        std::env::set_var("AWS_SECRET_ACCESS_KEY", secret_key);
-    }
-
-    let tmp_repo_dir = tempfile::tempdir().unwrap();
-    let bucket = "test-bucket";
-    std::fs::create_dir(tmp_repo_dir.path().join(bucket)).unwrap();
-
-    let minio = MinioServer::new(tmp_repo_dir.path(), access_key, secret_key).await;
-
-    use std::str::FromStr;
-    let repo_url = url::Url::from_str(&format!(
-        "s3+http://{}:{}/{}",
-        minio.address, minio.host_port, bucket
-    ))
-    .unwrap();
+    let s3 = LocalS3Server::new().await;
+    s3.set_credentials_env_vars();
 
     let config = get_api_server_config(repositories_config);
 
-    let mut catalog_builder = kamu_api_server::init_dependencies(
-        config,
-        &repo_url,
-        tenancy_config,
-        tmp_repo_dir.path(),
-        None,
-    )
-    .await
-    .unwrap();
+    let mut catalog_builder =
+        kamu_api_server::init_dependencies(config, &s3.url, tenancy_config, tmp_dir.path(), None)
+            .await
+            .unwrap();
 
     add_database_components(&mut catalog_builder, repositories_config);
 
@@ -184,35 +162,18 @@ async fn test_di_graph_validates_remote(
 #[test_group::group(resourcegen)]
 #[test_log::test(tokio::test)]
 async fn update_di_graph() {
-    let access_key = "AKIAIOSFODNN7EXAMPLE";
-    let secret_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
+    let tmp_dir = tempfile::tempdir().unwrap();
 
-    // TODO: Reconsider setting env vars in test runs
-    unsafe {
-        std::env::set_var("AWS_ACCESS_KEY_ID", access_key);
-        std::env::set_var("AWS_SECRET_ACCESS_KEY", secret_key);
-    }
-
-    let tmp_repo_dir = tempfile::tempdir().unwrap();
-    let bucket = "test-bucket";
-    std::fs::create_dir(tmp_repo_dir.path().join(bucket)).unwrap();
-
-    let minio = MinioServer::new(tmp_repo_dir.path(), access_key, secret_key).await;
-
-    use std::str::FromStr;
-    let repo_url = url::Url::from_str(&format!(
-        "s3+http://{}:{}/{}",
-        minio.address, minio.host_port, bucket
-    ))
-    .unwrap();
+    let s3 = LocalS3Server::new().await;
+    s3.set_credentials_env_vars();
 
     let config = get_api_server_config(RepositoriesConfig::Postgres);
 
     let mut catalog_builder = kamu_api_server::init_dependencies(
         config,
-        &repo_url,
+        &s3.url,
         TenancyConfig::MultiTenant,
-        tmp_repo_dir.path(),
+        tmp_dir.path(),
         None,
     )
     .await

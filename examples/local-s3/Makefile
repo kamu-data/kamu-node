@@ -1,28 +1,28 @@
 ###############################################################################
-# Minio
+# rustfs
 ###############################################################################
 
-.PHONY: minio-start
-minio-start:
+.PHONY: rustfs-start
+rustfs-start:
+	mkdir -p rustfs-data
 	podman run \
-		--name kamu-minio \
+		--name kamu-rustfs \
 		--rm -d \
 		-p 9000:9000 \
 		-p 9001:9001 \
-		-v "./minio-data:/data:Z" \
-		-e "MINIO_ROOT_USER=minio" \
-		-e "MINIO_ROOT_PASSWORD=minio123" \
-		quay.io/minio/minio server /data --console-address ":9001"
+		-e "RUSTFS_ROOT_USER=rustfs" \
+		-e "RUSTFS_ROOT_PASSWORD=rustfs123" \
+		docker.io/rustfs/rustfs server /data --console-address ":9001"
 
 
-.PHONY: minio-stop
-minio-stop:
-	podman kill kamu-minio || true
+.PHONY: rustfs-stop
+rustfs-stop:
+	podman kill kamu-rustfs || true
 
 
-.PHONY: minio-sync
-minio-sync:
-	./minio-sync.sh
+.PHONY: rustfs-sync
+rustfs-sync:
+	./rustfs-sync.sh
 
 
 ###############################################################################
@@ -59,8 +59,8 @@ postgres-refresh-dump: postgres-stop postgres-start postgres-restore-dump
 
 .PHONY: run-sqlite
 run-sqlite:
-	AWS_ACCESS_KEY_ID=minio \
-	AWS_SECRET_ACCESS_KEY=minio123 \
+	AWS_ACCESS_KEY_ID=rustfs \
+	AWS_SECRET_ACCESS_KEY=rustfs123 \
 	AWS_ENDPOINT_URL=http://localhost:9000 \
 	AWS_SESSION_TOKEN= \
 		cargo run -p kamu-api-server -- --config config_sqlite.yaml run --address=127.0.0.1 --http-port=8080 --flightsql-port=50050
@@ -68,8 +68,8 @@ run-sqlite:
 
 .PHONY: run-postgres
 run-postgres:
-	AWS_ACCESS_KEY_ID=minio \
-	AWS_SECRET_ACCESS_KEY=minio123 \
+	AWS_ACCESS_KEY_ID=rustfs \
+	AWS_SECRET_ACCESS_KEY=rustfs123 \
 	AWS_ENDPOINT_URL=http://localhost:9000 \
 	AWS_SESSION_TOKEN= \
 		cargo run -p kamu-api-server -- --config config_postgres.yaml run --address=127.0.0.1 --http-port=8080 --flightsql-port=50050
@@ -79,17 +79,13 @@ run-postgres:
 # Cleanup
 ###############################################################################
 
-.PHONY: clean-minio-data
-clean-minio-data:
-	rm -rf minio-data/
-	git checkout minio-data/.gitkeep
-
+.PHONY: clean-sqlite-data
+clean-sqlite-data:
+	rm kamu-api-server.sqlite*
 
 .PHONY: clean-aws-datasets-bucket
 clean-aws-datasets-bucket:
-	rm -rf aws-datasets-bucket/
-	git checkout aws-datasets-bucket/.gitkeep
-
+	rm -rf aws-datasets-bucket
 
 .PHONY: clean
-clean: minio-stop postgres-stop clean-minio-data clean-aws-datasets-bucket
+clean: rustfs-stop postgres-stop clean-sqlite-data clean-aws-datasets-bucket
