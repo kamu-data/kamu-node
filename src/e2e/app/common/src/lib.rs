@@ -7,8 +7,6 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-#![feature(assert_matches)]
-
 mod e2e_harness;
 mod e2e_test;
 mod kamu_flight_sql_client;
