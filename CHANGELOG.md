@@ -6,12 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 <!--
-Recommendation: for ease of reading, use the following order:
-- Upstream (e.g. mention notable kamu core changes)
-- Added
-- Changed
-- Fixed
+Recommendation: for ease of reading, use the following format:
+
+## [x.y.z or Unreleased] - <date>
+### Upstream (e.g. mention notable kamu core changes)
+### Added
+### Changed
+### Fixed
 -->
+
+## [0.86.1] - 2026-05-20
+### Upstream [kamu `0.263.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.263.1)
+- Elasticsearch: added ID escaping for API requests
 
 ## [0.86.0] - 2026-05-16
 ### Upstream [kamu `0.263.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.263.0)
@@ -75,7 +81,7 @@ Recommendation: for ease of reading, use the following order:
 - Elasticsearch solution supports security aspects
 - Elasticsearch solution now supports vector (semantic) and hybrid search
 ### Changed
-- Enchancements to textual search: clearly modeling search intent, boosting support
+- Enhancements to textual search: clearly modeling search intent, boosting support
 ### Fixed
 - Hotfix: do not put empty dataset documents into Elasticsearch during full reindexing.
 - Hotfix: improved handling of `skipDatasetsWithNoDescription` and `skipDatasetsWithNoData` options when 
