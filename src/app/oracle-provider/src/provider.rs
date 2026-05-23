@@ -352,9 +352,21 @@ impl OdfOracleProvider {
             let span =
                 observability::tracing::root_span!("process_block_range", from_block, to_block);
 
-            self.process_block_range(from_block, to_block)
+            match self
+                .process_block_range(from_block, to_block)
                 .instrument(span)
-                .await?;
+                .await
+            {
+                Ok(()) => Ok(()),
+                Err(ProcessBlockRangeError::InconsistentHeadBlock) => {
+                    tracing::warn!(
+                        "Detected inconsistent block head - assuming a node load-balancing issue \
+                         and will retry on next loop"
+                    );
+                    continue;
+                }
+                Err(ProcessBlockRangeError::Internal(err)) => Err(err),
+            }?;
 
             // TODO: Chain reorg resistance
             from_block = to_block + 1;
@@ -383,7 +395,9 @@ impl OdfOracleProvider {
             return Ok(());
         }
 
-        self.process_block_range(from_block, to_block).await?;
+        self.process_block_range(from_block, to_block)
+            .await
+            .int_err()?;
 
         Ok(())
     }
@@ -425,7 +439,7 @@ impl OdfOracleProvider {
         &self,
         from_block: u64,
         to_block: u64,
-    ) -> Result<(), InternalError> {
+    ) -> Result<(), ProcessBlockRangeError> {
         // TODO: Refactor towards concurrent streams model where blockchain scanning
         // continues independently from execution and submitting
         // transactions
@@ -448,7 +462,7 @@ impl OdfOracleProvider {
         &self,
         from_block: u64,
         to_block: u64,
-    ) -> Result<Vec<Log<IOdfProvider::SendRequest>>, InternalError> {
+    ) -> Result<Vec<Log<IOdfProvider::SendRequest>>, ProcessBlockRangeError> {
         assert!(from_block <= to_block);
 
         let mut pending_requests = std::collections::HashMap::new();
@@ -471,7 +485,14 @@ impl OdfOracleProvider {
                 "Getting logs page",
             );
             filter = filter.from_block(from_block_page).to_block(to_block_page);
-            let logs = self.rpc_client.get_logs(&filter).await.int_err()?;
+            let logs = match self.rpc_client.get_logs(&filter).await {
+                Ok(v) => v,
+                Err(err) if is_block_range_error(&err) => {
+                    // Likely request was routed to a node that is slightly behind
+                    Err(ProcessBlockRangeError::InconsistentHeadBlock)?
+                }
+                Err(err) => Err(err.int_err())?,
+            };
 
             for log in logs {
                 assert!(!log.removed, "Encountered removed log: {log:#?}");
@@ -744,3 +765,38 @@ impl OdfOracleProvider {
         Ok(())
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+fn is_block_range_error<Transport>(err: &alloy::transports::RpcError<Transport>) -> bool {
+    const INVALID_PARAMS: i64 = -32602;
+
+    match err {
+        // TODO: This will likely only work for Alchemy
+        alloy::transports::RpcError::ErrorResp(payload)
+            if payload.code == INVALID_PARAMS
+                && payload
+                    .message
+                    .to_lowercase()
+                    .contains("block range extends beyond current head block") =>
+        {
+            true
+        }
+        _ => false,
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, thiserror::Error)]
+enum ProcessBlockRangeError {
+    /// This error is most likely when after reading the latest head block
+    /// number the subsequent `get_logs` request is load-balanced to a node with
+    /// a slighly stale head and is rejected
+    #[error("Inconistent head block - please retry")]
+    InconsistentHeadBlock,
+    #[error(transparent)]
+    Internal(#[from] InternalError),
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

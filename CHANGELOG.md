@@ -15,6 +15,10 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
+## [Unreleased]
+### Fixed
+- Oracle crashing periodically with "block range extends beyond current head block" error 
+
 ## [0.86.1] - 2026-05-20
 ### Upstream [kamu `0.263.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.263.1)
 - Elasticsearch: added ID escaping for API requests
