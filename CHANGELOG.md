@@ -15,7 +15,7 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
-## [Unreleased]
+## [0.86.2] - 2026-05-23
 ### Fixed
 - Oracle crashing periodically with "block range extends beyond current head block" error 
 
