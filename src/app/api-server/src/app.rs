@@ -363,14 +363,6 @@ pub async fn init_dependencies(
     b.add_value(config.source.mqtt.to_infra_cfg());
     b.add_value(config.source.ethereum.to_infra_cfg());
 
-    if let Some(identity_config) = config
-        .identity
-        .as_ref()
-        .and_then(|identity| identity.to_infra_cfg())
-    {
-        b.add_value(identity_config);
-    }
-
     b.add::<odf::dataset::DatasetFactoryImpl>();
     b.add::<kamu::ObjectStoreRegistryImpl>();
     b.add::<kamu::RemoteAliasesRegistryImpl>();
@@ -381,7 +373,11 @@ pub async fn init_dependencies(
     kamu_adapter_task_dataset::register_dependencies(&mut b);
     kamu_adapter_task_webhook::register_dependencies(&mut b);
 
-    kamu_signing_services::register_dependencies(&mut b);
+    {
+        kamu_signing_services::register_dependencies(&mut b);
+
+        b.add_value(config.identity);
+    }
 
     let incremental_search_indexing = config.search.indexer.incremental_indexing;
 

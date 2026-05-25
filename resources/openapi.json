@@ -853,14 +853,7 @@
       "SignEip712Response": {
         "properties": {
           "proof": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/SignEip712Proof"
-              }
-            ]
+            "$ref": "#/components/schemas/SignEip712Proof"
           },
           "signature": {
             "$ref": "#/components/schemas/Signature"
@@ -1783,7 +1776,10 @@
             "name": "key",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/DidOdf"
+              "examples": [
+                "did:odf:fed01a561ed291d9c38b6a561ed291d9c38b63017d606c75606006bfe2508acbc4c25"
+              ],
+              "type": "string"
             }
           },
           {

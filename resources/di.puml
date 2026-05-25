@@ -317,6 +317,7 @@ class "GqlConfig" <<singleton>>
 class "GqlFeatureFlags" <<singleton>>
 class "HardCompactDatasetTaskPlanner"
 class "HardCompactDatasetTaskRunner"
+class "IdentityConfig" <<singleton>>
 class "IpfsClient" <<singleton>>
 class "IpfsGateway" <<singleton>>
 class "JwtAuthenticationConfig" <<singleton>>
@@ -1244,7 +1245,7 @@ class "WsSmartTransferProtocolClient"
 "SignEip712UseCaseImpl"  --> "DatasetActionAuthorizer"
 "SignEip712UseCaseImpl"  --> "CurrentAccountSubject"
 "SignEip712UseCaseImpl"  --> "DidSecretEncryptionConfig"
-"SignEip712UseCaseImpl" "?" --> "IdentityConfig"
+"SignEip712UseCaseImpl"  --> "IdentityConfig"
 "TaskEventStore" <|-- "PostgresTaskEventStore"
 "PostgresTaskEventStore"  --> "TransactionRefT"
 "TaskDefinitionPlanner" <|-- "ProbeTaskPlanner"

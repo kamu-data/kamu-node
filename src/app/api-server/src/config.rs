@@ -86,7 +86,7 @@ pub struct ApiServerConfig {
 
     /// UNSTABLE: Identity configuration
     #[config(default)]
-    pub identity: Option<IdentityConfig>,
+    pub identity: kamu_signing::entities::IdentityConfig,
 
     /// Search configuration
     #[config(default)]
@@ -672,56 +672,6 @@ impl OutboxAgentConfig {
             min_debounce_interval: self.min_debounce_interval.into(),
             max_listening_timeout: self.max_listening_timeout.into(),
             batch_size: self.batch_size,
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Identity
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/// Private keys are used to sign API responses.
-/// Supported algorithms: `ed25519`, `secp256k1`.
-#[derive(setty::Config, setty::Default)]
-pub struct IdentityConfig {
-    /// To generate, use:
-    ///
-    /// ```sh
-    /// dd if=/dev/urandom bs=1 count=32 status=none |
-    ///     base64 -w0 |
-    ///     tr '+/' '-_' |
-    ///     tr -d '=' |
-    ///     (echo -n u && cat)
-    /// ```
-    ///
-    /// The command above:
-    /// - Reads 32 random bytes
-    /// - base64-encodes them
-    /// - Converts default base64 encoding to base64url and removes padding
-    /// - Prepends a multibase prefix
-    #[config(combine(replace))]
-    pub private_key: Option<odf::metadata::PrivateKey>,
-
-    /// Secp256k1 private key used to sign EIP-712 typed data.
-    ///
-    /// ```sh
-    /// cast wallet new
-    /// ```
-    #[config(combine(replace))]
-    pub secp256k1_private_key: Option<kamu_signing::utils::Secp256k1Signer>,
-}
-
-impl IdentityConfig {
-    pub fn to_infra_cfg(&self) -> Option<kamu_signing::entities::IdentityConfig> {
-        if let Some(ed25519_private_key) = &self.private_key
-            && let Some(secp256k1_private_key) = &self.secp256k1_private_key
-        {
-            Some(kamu_signing::entities::IdentityConfig {
-                ed25519_private_key: ed25519_private_key.clone(),
-                secp256k1_private_key: secp256k1_private_key.clone(),
-            })
-        } else {
-            None
         }
     }
 }
