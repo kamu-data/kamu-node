@@ -15,6 +15,11 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
+## [0.86.3] - 2026-05-27
+### Upstream [kamu `0.263.2`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.263.2)
+### Fixed
+- S3 PutObject hangup issue when invoked from /ingest API
+
 ## [0.86.2] - 2026-05-23
 ### Fixed
 - Oracle crashing periodically with "block range extends beyond current head block" error 
