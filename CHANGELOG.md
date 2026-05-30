@@ -15,6 +15,10 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
+## [Unreleased]
+### Upstream [kamu `0.263.3`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.263.3)
+- Observability of HTTP and DB transactions under client connection resets
+
 ## [0.86.3] - 2026-05-27
 ### Upstream [kamu `0.263.2`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.263.2)
 ### Fixed
