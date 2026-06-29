@@ -15,8 +15,8 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
-## [Unreleased]
-### Upstream [kamu `0.XXX.X`]()
+## [0.87.0] - 2026-06-29
+### Upstream [kamu `0.264.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.264.0)
 - HTTP endpoint for signing EIP-712 typed data
 - Identity: secondary Secp256k1 private key
 
