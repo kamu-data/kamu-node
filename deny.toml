@@ -87,6 +87,8 @@ allow-org = { github = ["kamu-data"] }
 
 [advisories]
 yanked = "deny"
+unused-ignored-advisory = "deny"
+
 # TODO: Remove when patches are available
 ignore = [
     # rsa crate vulnerability (used by sqlx), no fix available yet
@@ -116,4 +118,7 @@ ignore = [
     "RUSTSEC-2026-0049",
     "RUSTSEC-2026-0098",
     "RUSTSEC-2026-0099",
+    # Unmaintained (proc-macro-error2)
+    # https://rustsec.org/advisories/RUSTSEC-2026-0173
+    "RUSTSEC-2026-0173"
 ]
