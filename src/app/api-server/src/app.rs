@@ -338,10 +338,9 @@ pub async fn init_dependencies(
     {
         let feature_flags = kamu_adapter_graphql::GqlFeatureFlags::new();
         b.add_value(feature_flags);
-    }
 
-    b.add_value(config.extra.graphql);
-    b.add_value(kamu_adapter_graphql::GqlFeatureFlags::new());
+        b.add_value(config.extra.graphql);
+    }
     //
 
     // FlightSQL
@@ -376,22 +375,18 @@ pub async fn init_dependencies(
     kamu_adapter_task_dataset::register_dependencies(&mut b);
     kamu_adapter_task_webhook::register_dependencies(&mut b);
 
-    {
-        kamu_signing_services::register_dependencies(&mut b);
-
-        b.add_value(config.identity);
-    }
-
     let incremental_search_indexing = config.search.indexer.incremental_indexing;
 
-    kamu_molecule_services::register_dependencies(
-        &mut b,
-        kamu_molecule_services::MoleculeDomainDependenciesOptions {
-            incremental_search_indexing,
-        },
-    );
+    {
+        kamu_molecule_services::register_dependencies(
+            &mut b,
+            kamu_molecule_services::MoleculeDomainDependenciesOptions {
+                incremental_search_indexing,
+            },
+        );
 
-    b.add_value(kamu_molecule_services::domain::MoleculeConfig::default());
+        b.add_value(kamu_molecule_services::domain::MoleculeConfig::default());
+    }
 
     b.add::<kamu::RemoteRepositoryRegistryImpl>();
 
