@@ -341,6 +341,7 @@ pub async fn init_dependencies(
     }
 
     b.add_value(config.extra.graphql);
+    b.add_value(kamu_adapter_graphql::GqlFeatureFlags::new());
     //
 
     // FlightSQL
@@ -362,6 +363,8 @@ pub async fn init_dependencies(
     b.add_value(config.source.to_infra_cfg());
     b.add_value(config.source.mqtt.to_infra_cfg());
     b.add_value(config.source.ethereum.to_infra_cfg());
+
+    b.add_value(config.identity);
 
     b.add::<odf::dataset::DatasetFactoryImpl>();
     b.add::<kamu::ObjectStoreRegistryImpl>();
@@ -614,6 +617,7 @@ pub async fn init_dependencies(
 
     kamu_auth_rebac_services::register_dependencies(&mut b, true);
     kamu_webhooks_services::register_dependencies(&mut b);
+    kamu_signing_services::register_dependencies(&mut b);
 
     b.add::<odf::dataset::DummyOdfServerAccessTokenResolver>();
 

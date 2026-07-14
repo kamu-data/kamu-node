@@ -1,12 +1,14 @@
 services:
   otel-collector:
-    image: "otel/opentelemetry-collector:latest"
+    image: "otel/opentelemetry-collector:0.107.0"
     command: ["--config=/etc/otel-collector.yaml"]
     volumes:
       - "./configs/otel-collector.yaml:/etc/otel-collector.yaml"
     depends_on:
       - tempo
       - loki
+    ports:
+      - "4317:4317" # otlp grpc
 
   promtail:
     image: grafana/promtail:latest
@@ -18,16 +20,16 @@ services:
       - loki
 
   tempo:
-    image: "grafana/tempo:latest"
+    image: "grafana/tempo:2.5.0"
     command: ["-config.file=/etc/tempo.yaml"]
     volumes:
       - "./configs/tempo.yaml:/etc/tempo.yaml"
     ports:
-      - "4317:4317" # otlp grpc
+      - "4327:4317" # otlp grpc
       - "4318:4318" # otlp http
 
   loki:
-    image: grafana/loki:latest
+    image: grafana/loki:3.1.0
     ports:
       - "3100:3100"
     volumes:
@@ -35,7 +37,7 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
 
   grafana:
-    image: "grafana/grafana:latest"
+    image: "grafana/grafana:10.2.3"
     volumes:
       - ./configs/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
     environment:

@@ -24,6 +24,24 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
  - Investigation: potential unstable ordering of dataset entry listings
 
+## [0.87.0] - 2026-06-29
+### Upstream [kamu `0.264.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.264.0)
+- HTTP endpoint for signing EIP-712 typed data
+- Identity: secondary Secp256k1 private key
+
+## [0.86.4] - 2026-05-30
+### Upstream [kamu `0.263.3`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.263.3)
+- Observability of HTTP and DB transactions under client connection resets
+
+## [0.86.3] - 2026-05-27
+### Upstream [kamu `0.263.2`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.263.2)
+### Fixed
+- S3 PutObject hangup issue when invoked from /ingest API
+
+## [0.86.2] - 2026-05-23
+### Fixed
+- Oracle crashing periodically with "block range extends beyond current head block" error 
+
 ## [0.86.1] - 2026-05-20
 ### Upstream [kamu `0.263.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.263.1)
 - Elasticsearch: added ID escaping for API requests

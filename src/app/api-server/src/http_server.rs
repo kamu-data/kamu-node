@@ -109,6 +109,10 @@ pub async fn build_server(
                 .layer(DatasetAuthorizationLayer::default()),
             tenancy_config,
         ),
+    )
+    .route(
+        "/system/probe",
+        axum::routing::get(kamu_adapter_http::system::probe_handler),
     );
 
     if !ui_config.feature_flags.allow_anonymous {

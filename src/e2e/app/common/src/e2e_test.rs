@@ -122,7 +122,7 @@ pub async fn api_flight_sql_e2e_test<ServerRunFut, Fixture, FixtureFut>(
 /// URL.
 async fn get_server_base_urls(e2e_data_file_path: PathBuf) -> Result<(Url, Url), InternalError> {
     let retry_strategy = FixedInterval::from_millis(500).take(10);
-    let base_urls = Retry::spawn(retry_strategy, || async {
+    let base_urls = Retry::start(retry_strategy, || async {
         let data = tokio::fs::read_to_string(e2e_data_file_path.clone())
             .await
             .int_err()?;

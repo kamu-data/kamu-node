@@ -48,6 +48,10 @@ postgres-restore-dump:
 	  -c "TRUNCATE public.outbox_messages, public.outbox_message_consumptions;"
 	sqlx migrate run --source ../../../kamu-cli/migrations/postgres --database-url postgres://root:root@localhost:5433/kamu
 
+.PHONY: postgres-apply-migrations
+postgres-apply-migrations:
+	sqlx migrate run --source ../../../kamu-cli/migrations/postgres --database-url postgres://root:root@localhost:5433/kamu
+
 
 .PHONY: postgres-refresh-dump
 postgres-refresh-dump: postgres-stop postgres-start postgres-restore-dump
