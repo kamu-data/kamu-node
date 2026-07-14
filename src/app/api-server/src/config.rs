@@ -86,7 +86,7 @@ pub struct ApiServerConfig {
 
     /// UNSTABLE: Identity configuration
     #[config(default)]
-    pub identity: Option<IdentityConfig>,
+    pub identity: kamu_signing::entities::IdentityConfig,
 
     /// Search configuration
     #[config(default)]
@@ -673,44 +673,6 @@ impl OutboxAgentConfig {
             max_listening_timeout: self.max_listening_timeout.into(),
             batch_size: self.batch_size,
         }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Identity
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#[derive(setty::Config, setty::Default)]
-pub struct IdentityConfig {
-    /// Private key used to sign API responses.
-    /// Currently only `ed25519` keys are supported.
-    ///
-    /// To generate use:
-    ///
-    ///     dd if=/dev/urandom bs=1 count=32 status=none |
-    ///         base64 -w0 |
-    ///         tr '+/' '-_' |
-    ///         tr -d '=' |
-    ///         (echo -n u && cat)
-    ///
-    /// The command above:
-    /// - reads 32 random bytes
-    /// - base64-encodes them
-    /// - converts default base64 encoding to base64url and removes padding
-    /// - prepends a multibase prefix
-    #[config(combine(replace))]
-    pub private_key: Option<odf::metadata::PrivateKey>,
-}
-
-impl IdentityConfig {
-    pub fn new() -> Self {
-        Self { private_key: None }
-    }
-
-    pub fn to_infra_cfg(&self) -> Option<kamu_adapter_http::data::query_types::IdentityConfig> {
-        self.private_key
-            .clone()
-            .map(|private_key| kamu_adapter_http::data::query_types::IdentityConfig { private_key })
     }
 }
 

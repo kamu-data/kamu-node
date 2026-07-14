@@ -41,8 +41,16 @@ postgres-stop:
 
 .PHONY: postgres-restore-dump
 postgres-restore-dump:
-	psql -U root -h 127.0.0.1 -p 5433 -d kamu -f ./dump.sql
+	PGPASSWORD=root psql -U root -h 127.0.0.1 -p 5433 -d kamu \
+	  -c "CREATE ROLE postgres;" \
+	  -c "CREATE ROLE kamu_api_server;" \
+	  -f ./dump.sql \
+	  -c "TRUNCATE public.outbox_messages, public.outbox_message_consumptions;"
 	sqlx migrate run --source ../../../kamu-cli/migrations/postgres --database-url postgres://root:root@localhost:5433/kamu
+
+
+.PHONY: postgres-refresh-dump
+postgres-refresh-dump: postgres-stop postgres-start postgres-restore-dump
 
 
 ###############################################################################
