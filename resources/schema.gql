@@ -402,7 +402,7 @@ type AddData {
 	Last offset of the previous data slice, if any. Must be equal to the
 	last non-empty `newData.offsetInterval.end`.
 	"""
-	prevOffset: Int
+	prevOffset: Uint64
 	"""
 	Describes output data written during this transaction, if any.
 	"""
@@ -603,7 +603,7 @@ type Checkpoint {
 	"""
 	Size of checkpoint file in bytes.
 	"""
-	size: Int!
+	size: Uint64!
 }
 
 type CliProtocolDesc {
@@ -1063,7 +1063,7 @@ type DataSlice {
 	"""
 	Size of data file in bytes.
 	"""
-	size: Int!
+	size: Uint64!
 }
 
 input DataTypeInput {
@@ -1979,7 +1979,7 @@ type ExecuteTransform {
 	Last offset of the previous data slice, if any. Must be equal to the
 	last non-empty `newData.offsetInterval.end`.
 	"""
-	prevOffset: Int
+	prevOffset: Uint64
 	"""
 	Describes output data written during this transaction, if any.
 	"""
@@ -2032,14 +2032,14 @@ type ExecuteTransformInput {
 	half-open `(prevOffset, newOffset]` interval of data records that will
 	be considered in this transaction.
 	"""
-	prevOffset: Int
+	prevOffset: Uint64
 	"""
 	Offset of the last data record that will be incorporated into the
 	derivative transformation, if any. When present, defines a half-open
 	`(prevOffset, newOffset]` interval of data records that will be
 	considered in this transaction.
 	"""
-	newOffset: Int
+	newOffset: Uint64
 }
 
 scalar ExtraAttributes
@@ -2090,7 +2090,7 @@ type FetchStepEthereumLogs {
 	for RPC endpoint lookup as well as asserting that provided `nodeUrl`
 	corresponds to the expected chain.
 	"""
-	chainId: Int
+	chainId: Uint64
 	"""
 	Url of the node.
 	"""
@@ -3254,11 +3254,11 @@ type OffsetInterval {
 	"""
 	Start of the closed interval [start; end].
 	"""
-	start: Int!
+	start: Uint64!
 	"""
 	End of the closed interval [start; end].
 	"""
-	end: Int!
+	end: Uint64!
 }
 
 enum OrderingDirection {
@@ -4347,6 +4347,8 @@ type TriggerFlowSuccess implements TriggerFlowResult {
 }
 
 scalar URL
+
+scalar Uint64
 
 interface UnsetRoleResult {
 	message: String!

@@ -44,6 +44,7 @@ deny = [
     # TODO: Too many versions between alloy, aws-sdk, reqwest etc.
     # { name = "rustls", deny-multiple-versions = true },
     { name = "setty", deny-multiple-versions = true },
+    { name = "schemars", deny-multiple-versions = true },
     { name = "sqlx", deny-multiple-versions = true },
     { name = "tokio", deny-multiple-versions = true },
     { name = "tonic", deny-multiple-versions = true },
@@ -118,7 +119,13 @@ ignore = [
     "RUSTSEC-2026-0049",
     "RUSTSEC-2026-0098",
     "RUSTSEC-2026-0099",
-    # Unmaintained (proc-macro-error2)
-    # https://rustsec.org/advisories/RUSTSEC-2026-0173
-    "RUSTSEC-2026-0173"
+    # quick-xml: temporary ignore until upstream dependencies can move to >= 0.41.0
+    # https://rustsec.org/advisories/RUSTSEC-2026-0194
+    # https://rustsec.org/advisories/RUSTSEC-2026-0195
+    "RUSTSEC-2026-0194",
+    "RUSTSEC-2026-0195",
+    # Unmaintained (smallstr)
+    # Waiting for upstream crates to migrate to other implementation
+    # https://rustsec.org/advisories/RUSTSEC-2026-0215
+    "RUSTSEC-2026-0215",
 ]

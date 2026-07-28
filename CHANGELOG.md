@@ -15,6 +15,12 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
+## [Unreleased]
+### Upstream [kamu `0.265.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.265.0)
+- Flatbuffers encoding alignment fix
+- Transfer protocols that preserve binary layout of synced metadata blocks
+- Upgrade to `datafusion v54.1`
+
 ## [0.87.0] - 2026-06-29
 ### Upstream [kamu `0.264.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.264.0)
 - HTTP endpoint for signing EIP-712 typed data
