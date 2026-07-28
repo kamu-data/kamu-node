@@ -4795,7 +4795,7 @@ dependencies = [
 
 [[package]]
 name = "email-gateway"
-version = "0.87.0"
+version = "0.88.0"
 dependencies = [
  "async-trait",
  "dill",
@@ -5462,7 +5462,7 @@ checksum = "e4eba85ea1d0a966a983acd07deee566e67395d2d96b6fb39e62b5a833f1eb0b"
 
 [[package]]
 name = "graceful-shutdown"
-version = "0.87.0"
+version = "0.88.0"
 dependencies = [
  "tokio",
  "tracing",
@@ -7389,7 +7389,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-api-server"
-version = "0.87.0"
+version = "0.88.0"
 dependencies = [
  "arrow-flight",
  "askama",
@@ -8152,7 +8152,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-common"
-version = "0.87.0"
+version = "0.88.0"
 dependencies = [
  "arrow-flight",
  "async-trait",
@@ -8182,7 +8182,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-common-macros"
-version = "0.87.0"
+version = "0.88.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -8191,7 +8191,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-postgres"
-version = "0.87.0"
+version = "0.88.0"
 dependencies = [
  "database-common",
  "indoc 2.0.7",
@@ -8206,7 +8206,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-repo-tests"
-version = "0.87.0"
+version = "0.88.0"
 dependencies = [
  "indoc 2.0.7",
  "kamu-accounts",
@@ -8221,7 +8221,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-e2e-sqlite"
-version = "0.87.0"
+version = "0.88.0"
 dependencies = [
  "database-common",
  "indoc 2.0.7",
@@ -8236,7 +8236,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-node-puppet"
-version = "0.87.0"
+version = "0.88.0"
 dependencies = [
  "assert_cmd",
  "async-trait",
@@ -8250,7 +8250,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-oracle-provider"
-version = "0.87.0"
+version = "0.88.0"
 dependencies = [
  "alloy",
  "async-trait",
@@ -8282,7 +8282,7 @@ dependencies = [
 
 [[package]]
 name = "kamu-repo-tools"
-version = "0.87.0"
+version = "0.88.0"
 dependencies = [
  "chrono",
  "clap",

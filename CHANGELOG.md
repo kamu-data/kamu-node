@@ -15,7 +15,7 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
-## [Unreleased]
+## [0.88.0] - 2026-07-28
 ### Upstream [kamu `0.265.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.265.0)
 - Flatbuffers encoding alignment fix
 - Transfer protocols that preserve binary layout of synced metadata blocks
