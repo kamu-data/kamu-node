@@ -79,15 +79,15 @@ kamu-accounts-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch =
 kamu-adapter-auth-oso-rebac = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-adapter-auth-web3 = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-adapter-flight-sql = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-adapter-flow-dataset = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-adapter-flow-task = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-adapter-flow-webhook = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-adapter-http = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-adapter-oauth = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-adapter-odata = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
-kamu-adapter-flow-dataset = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
-kamu-adapter-flow-webhook = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-adapter-task-dataset = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-adapter-task-webhook = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
-kamu-adapter-flow-task = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-auth-rebac-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-auth-rebac-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-auth-rebac-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
@@ -104,11 +104,11 @@ kamu-flow-system-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branc
 kamu-messaging-outbox-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-messaging-outbox-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-messaging-outbox-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
-kamu-search-elasticsearch = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
-kamu-search-openai = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-search-cache-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-search-cache-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-search-cache-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-search-elasticsearch = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-search-openai = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-task-system-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-task-system-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 kamu-task-system-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
@@ -127,8 +127,8 @@ kamu-cli-e2e-repo-tests = { git = "https://github.com/kamu-data/kamu-cli", branc
 # E2E: kamu-node
 kamu-node-e2e-common = { path = "src/e2e/app/common", version = "0.88.0", default-features = false }
 kamu-node-e2e-common-macros = { path = "src/e2e/app/common-macros", version = "0.88.0", default-features = false }
-kamu-node-puppet = { path = "src/e2e/app/kamu-node-puppet", version = "0.88.0", default-features = false }
 kamu-node-e2e-repo-tests = { path = "src/e2e/app/repo-tests", version = "0.88.0", default-features = false }
+kamu-node-puppet = { path = "src/e2e/app/kamu-node-puppet", version = "0.88.0", default-features = false }
 
 
 [workspace.package]

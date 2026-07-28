@@ -335,12 +335,8 @@ pub async fn init_dependencies(
     b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
 
     // GraphQL
-    {
-        let feature_flags = kamu_adapter_graphql::GqlFeatureFlags::new();
-        b.add_value(feature_flags);
-
-        b.add_value(config.extra.graphql);
-    }
+    b.add_value(config.extra.graphql);
+    b.add_value(kamu_adapter_graphql::GqlFeatureFlags::new());
     //
 
     // FlightSQL
