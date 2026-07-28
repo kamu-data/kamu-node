@@ -23,6 +23,7 @@ deny = [
     { name = "md5", reason = "Use `md-5` instead, which is part of the RustCrypto ecosystem" },
     { name = "native-tls", reason = "We use rustls throughout the project" },
     { name = "serde_yaml", reason = "Use serde_yaml_ng as replacement" },
+
     ### Creates we deny multiple versions of ###
     # This is a temporary approach until we deny by default with some exceptions
     { name = "alloy", deny-multiple-versions = true },
@@ -118,12 +119,13 @@ ignore = [
     "RUSTSEC-2026-0049",
     "RUSTSEC-2026-0098",
     "RUSTSEC-2026-0099",
-    # Unmaintained (proc-macro-error2)
-    # https://rustsec.org/advisories/RUSTSEC-2026-0173
-    "RUSTSEC-2026-0173",
-    # quick-xml: temporarily ignore until upstream dependencies can move to >= 0.41.0
+    # quick-xml: temporary ignore until upstream dependencies can move to >= 0.41.0
     # https://rustsec.org/advisories/RUSTSEC-2026-0194
     # https://rustsec.org/advisories/RUSTSEC-2026-0195
     "RUSTSEC-2026-0194",
-    "RUSTSEC-2026-0195"
+    "RUSTSEC-2026-0195",
+    # Unmaintained (smallstr)
+    # Waiting for upstream crates to migrate to other implementation
+    # https://rustsec.org/advisories/RUSTSEC-2026-0215
+    "RUSTSEC-2026-0215",
 ]

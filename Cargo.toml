@@ -21,118 +21,118 @@ resolver = "3"
 [workspace.dependencies]
 
 # Apps
-kamu-api-server = { path = "src/app/api-server", version = "0.87.0", default-features = false }
+kamu-api-server = { path = "src/app/api-server", version = "0.88.0", default-features = false }
 
 # Utils
-email-gateway = { path = "src/utils/email-gateway", version = "0.87.0", default-features = false, features = [
+email-gateway = { path = "src/utils/email-gateway", version = "0.88.0", default-features = false, features = [
     "postmark",
 ] }
-graceful-shutdown = { path = "src/utils/graceful-shutdown", version = "0.87.0", default-features = false }
+graceful-shutdown = { path = "src/utils/graceful-shutdown", version = "0.88.0", default-features = false }
 
 # Utils (core)
-async-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-container-runtime = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-crypto-eip712-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-crypto-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-database-common = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-database-common-macros = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-email-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-graphql-http = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-http-common = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-init-on-startup = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-internal-error = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-messaging-outbox = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-observability = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-s3-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-server-console = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-test-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-time-source = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
+async-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+container-runtime = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+crypto-eip712-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+crypto-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+database-common = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+database-common-macros = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+email-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+graphql-http = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+http-common = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+init-on-startup = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+internal-error = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+messaging-outbox = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+observability = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+s3-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+server-console = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+test-utils = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+time-source = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 
 ## Open Data Fabric
-odf = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false, package = "opendatafabric" }
+odf = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false, package = "opendatafabric" }
 
 # Domain
-kamu-accounts = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-auth-rebac = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-auth-rebac-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-auth-web3 = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-auth-web3-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-core = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-datasets = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-flow-system = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-flow-system-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-search = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-search-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-signing = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-signing-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-task-system = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-task-system-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-webhooks = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-webhooks-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
+kamu-accounts = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-auth-rebac = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-auth-rebac-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-auth-web3 = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-auth-web3-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-core = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-datasets = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-flow-system = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-flow-system-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-search = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-search-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-signing = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-signing-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-task-system = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-task-system-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-webhooks = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-webhooks-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 
 # Infra
-kamu = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-accounts-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-accounts-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-accounts-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-accounts-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-adapter-auth-oso-rebac = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-adapter-auth-web3 = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-adapter-flight-sql = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-adapter-flow-dataset = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-adapter-flow-task = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-adapter-flow-webhook = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-adapter-http = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-adapter-oauth = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-adapter-odata = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-adapter-task-dataset = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-adapter-task-webhook = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-auth-rebac-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-auth-rebac-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-auth-rebac-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-auth-web3-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-auth-web3-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-auth-web3-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-datasets-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-datasets-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-datasets-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-datasets-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-flow-system-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-flow-system-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-flow-system-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-messaging-outbox-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-messaging-outbox-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-messaging-outbox-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-search-cache-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-search-cache-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-search-cache-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-search-elasticsearch = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-search-openai = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-task-system-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-task-system-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-task-system-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-webhooks-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-webhooks-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-webhooks-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
+kamu = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-accounts-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-accounts-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-accounts-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-accounts-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-adapter-auth-oso-rebac = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-adapter-auth-web3 = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-adapter-flight-sql = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-adapter-graphql = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-adapter-http = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-adapter-oauth = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-adapter-odata = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-adapter-flow-dataset = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-adapter-flow-webhook = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-adapter-task-dataset = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-adapter-task-webhook = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-adapter-flow-task = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-auth-rebac-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-auth-rebac-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-auth-rebac-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-auth-web3-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-auth-web3-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-auth-web3-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-datasets-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-datasets-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-datasets-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-datasets-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-flow-system-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-flow-system-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-flow-system-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-messaging-outbox-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-messaging-outbox-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-messaging-outbox-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-search-elasticsearch = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-search-openai = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-search-cache-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-search-cache-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-search-cache-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-task-system-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-task-system-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-task-system-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-webhooks-inmem = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-webhooks-postgres = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-webhooks-sqlite = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 
 # SKU modules
-kamu-molecule-domain = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-molecule-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
+kamu-molecule-domain = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-molecule-services = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 
 # E2E: kamu-cli
-kamu-cli-e2e-common = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
-kamu-cli-e2e-repo-tests = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.264.0", default-features = false }
+kamu-cli-e2e-common = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
+kamu-cli-e2e-repo-tests = { git = "https://github.com/kamu-data/kamu-cli", branch = "sku/molecule", version = "0.265.0", default-features = false }
 
 # E2E: kamu-node
-kamu-node-e2e-common = { path = "src/e2e/app/common", version = "0.87.0", default-features = false }
-kamu-node-e2e-common-macros = { path = "src/e2e/app/common-macros", version = "0.87.0", default-features = false }
-kamu-node-puppet = { path = "src/e2e/app/kamu-node-puppet", version = "0.87.0", default-features = false }
-kamu-node-e2e-repo-tests = { path = "src/e2e/app/repo-tests", version = "0.87.0", default-features = false }
+kamu-node-e2e-common = { path = "src/e2e/app/common", version = "0.88.0", default-features = false }
+kamu-node-e2e-common-macros = { path = "src/e2e/app/common-macros", version = "0.88.0", default-features = false }
+kamu-node-puppet = { path = "src/e2e/app/kamu-node-puppet", version = "0.88.0", default-features = false }
+kamu-node-e2e-repo-tests = { path = "src/e2e/app/repo-tests", version = "0.88.0", default-features = false }
 
 
 [workspace.package]
-version = "0.87.0"
+version = "0.88.0"
 edition = "2024"
 homepage = "https://github.com/kamu-data/kamu-platform"
 repository = "https://github.com/kamu-data/kamu-platform"
@@ -165,12 +165,14 @@ fn_params_excessive_bools = "allow"
 if_not_else = "allow"
 ignored_unit_patterns = "allow"
 items_after_statements = "allow"
+map_unwrap_or = "allow"
 match_wildcard_for_single_variants = "allow"
 missing_errors_doc = "allow"
 missing_panics_doc = "allow"
 module_name_repetitions = "allow"
 must_use_candidate = "allow"
 needless_raw_string_hashes = "allow"
+option_map_unit_fn = "allow"
 return_self_not_must_use = "allow"
 similar_names = "allow"
 single_match_else = "allow"
@@ -187,28 +189,30 @@ multiple_crate_versions = { level = "allow", priority = 1 }
 
 
 [profile.dev]
-# Change this to 1 for faster builds that still preserve enough info for backtraces.
-# Use 2 when you need to attach a debugger.
-debug = 2
+# Allows debugging for workspace crates. An override below limits the debug info for dependencies.
+debug = "full"
+# Separates debug info into sibling files, which helps with incremental linking times.
+split-debuginfo = "unpacked"
+
+[profile.dev.package."*"]
+# Limited debug info for all dependencies for backtraces only. Workspace crates still get full info (see above)
+debug = "line-tables-only"
 
 
-# Emit the line info tables for our crates to produce useful crash reports and backtraces.
-# We don't emit info for dependencies as this significantly increases binary size.
-# See: https://doc.rust-lang.org/cargo/reference/profiles.html#debug
-[profile.release.package]
-container-runtime = { debug = 1 }
-internal-error = { debug = 1 }
-opendatafabric = { debug = 1 }
-kamu = { debug = 1 }
-kamu-api-server = { debug = 1 }
-kamu-adapter-graphql = { debug = 1 }
-kamu-adapter-http = { debug = 1 }
-kamu-adapter-oauth = { debug = 1 }
-kamu-adapter-auth-oso-rebac = { debug = 1 }
-kamu-adapter-flight-sql = { debug = 1 }
-kamu-task-system = { debug = 1 }
-kamu-task-system-inmem = { debug = 1 }
-kamu-oracle-provider = { debug = 1 }
+# Based on:
+# https://github.com/launchbadge/sqlx/tree/c52e129e8341c46b2ea5c9b912e1af665be1ef83?tab=readme-ov-file#compile-time-verification
+[profile.dev.package.sqlx-macros]
+opt-level = 3
+
+
+[profile.release]
+# Limited debug info for workspace crates for backtraces. An override below disables the debug info for dependencies.
+debug = "line-tables-only"
+
+[profile.release.package."*"]
+# No debug info for dependencies. Workspace crates still get line info (see above).
+# TODO: Split debug info and allow downloading it separately. 
+debug = "none"
 
 
 [profile.ci]
@@ -220,7 +224,8 @@ inherits = "dev"
 incremental = false
 # Line info is enough to get good backtraces in CI - we don't need the
 # full debugging symbols that are only useful when attaching a debugger.
-debug = 1
+debug = "line-tables-only"
+
 
 # Use this section to test or apply emergency overrides to dependencies
 # See: https://doc.rust-lang.org/cargo/reference/overriding-dependencies.html
