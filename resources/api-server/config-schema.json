@@ -24,9 +24,9 @@
         "provider": "InMemory"
       }
     },
-    "datasetEnvVars": {
-      "$ref": "#/$defs/DatasetEnvVarsConfig",
-      "description": "Dataset environment variable feature",
+    "secretsEncryption": {
+      "$ref": "#/$defs/SecretsEncryptionConfig",
+      "description": "Secrets encryption configuration",
       "default": {
         "enabled": false
       }
@@ -613,7 +613,7 @@
         }
       ]
     },
-    "DatasetEnvVarsConfig": {
+    "SecretsEncryptionConfig": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -626,7 +626,7 @@
             "string",
             "null"
           ],
-          "description": "Represents the encryption key for the dataset env vars. This field is\nrequired if `enabled` is `true` or `None`.\n\nThe encryption key must be a 32-character alphanumeric string, which\nincludes both uppercase and lowercase Latin letters (A-Z, a-z) and\ndigits (0-9).\n\nTo generate use:\n```sh\ntr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32; echo\n```"
+          "description": "Represents the encryption key for secrets. This field is required if\n`enabled` is `true` or `None`.\n\nThe encryption key must be a 32-character alphanumeric string, which\nincludes both uppercase and lowercase Latin letters (A-Z, a-z) and\ndigits (0-9).\n\nTo generate use:\n```sh\ntr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32; echo\n```"
         }
       }
     },
