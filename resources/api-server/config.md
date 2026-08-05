@@ -28,12 +28,12 @@
 <td>Database</td>
 </tr>
 <tr>
-<td><code>datasetEnvVars</code></td>
-<td><a href="#datasetenvvarsconfig"><code>DatasetEnvVarsConfig</code></a></td>
+<td><code>secretsEncryption</code></td>
+<td><a href="#secretsencryptionconfig"><code>SecretsEncryptionConfig</code></a></td>
 <td><pre><code class="language-json">{
   &quot;enabled&quot;: false
 }</code></pre></td>
-<td>Dataset environment variable feature</td>
+<td>Secrets encryption configuration</td>
 </tr>
 <tr>
 <td><code>engine</code></td>
@@ -717,7 +717,7 @@ tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32; echo
 </tbody>
 </table>
 
-## `DatasetEnvVarsConfig`
+## `SecretsEncryptionConfig`
 
 <table>
 <thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
@@ -734,8 +734,8 @@ tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32; echo
 <td><code class="language-json">null</code></td>
 <td>
 
-Represents the encryption key for the dataset env vars. This field is
-required if `enabled` is `true` or `None`.
+Represents the encryption key for secrets. This field is required if
+`enabled` is `true` or `None`.
 
 The encryption key must be a 32-character alphanumeric string, which
 includes both uppercase and lowercase Latin letters (A-Z, a-z) and

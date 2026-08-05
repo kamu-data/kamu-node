@@ -81,6 +81,7 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
 
     let kamu_account_name = odf::AccountName::new_unchecked(config::ACCOUNT_KAMU);
     let server_account_subject = kamu_accounts::CurrentAccountSubject::logged(
+        kamu_accounts::Account::seed_resource_id_from_name(&kamu_account_name),
         odf::AccountID::new_seeded_ed25519(kamu_account_name.as_bytes()),
         kamu_account_name,
     );
@@ -483,6 +484,11 @@ pub async fn init_dependencies(
         kamu_webhooks::MESSAGE_PRODUCER_KAMU_WEBHOOK_SUBSCRIPTION_EVENT_CHANGES_SERVICE,
     );
 
+    messaging_outbox::register_message_dispatcher::<kamu_resources::ResourceLifecycleMessage>(
+        &mut b,
+        kamu_resources::MESSAGE_PRODUCER_KAMU_RESOURCE_SERVICE,
+    );
+
     b.add_value(config.outbox.into_system());
 
     // Webhooks configuration
@@ -593,6 +599,11 @@ pub async fn init_dependencies(
         },
     );
 
+    kamu_configuration_services::register_dependencies(&mut b);
+    kamu_resources_facade::register_dependencies(&mut b);
+    kamu_resources_services::register_dependencies(&mut b);
+    kamu_storage_services::register_dependencies(&mut b);
+
     kamu_auth_rebac_services::register_dependencies(&mut b, true);
     kamu_webhooks_services::register_dependencies(&mut b);
     kamu_signing_services::register_dependencies(&mut b);
@@ -700,34 +711,34 @@ pub async fn init_dependencies(
         }
     }
 
-    let dataset_env_vars_config = &config.dataset_env_vars;
-    match dataset_env_vars_config.encryption_key.as_ref() {
+    // Secrets encryption configuration
+    b.add_value(config.secrets_encryption.clone());
+
+    match &config.secrets_encryption.encryption_key {
         None => {
-            if dataset_env_vars_config.enabled {
-                panic!("Dataset env vars encryption key is required");
+            if config.secrets_encryption.enabled {
+                panic!("Secrets encryption key is required");
             } else {
-                error!("Dataset env vars configuration is missing. Feature will be disabled");
+                error!("Secrets encryption configuration is missing. Feature will be disabled");
             }
             b.add::<kamu_datasets_services::DatasetKeyValueServiceSysEnv>();
             b.add::<kamu_datasets_services::DatasetEnvVarServiceNull>();
         }
         Some(encryption_key) => {
-            if !dataset_env_vars_config.enabled {
+            if config.secrets_encryption.enabled {
+                assert!(
+                    AesGcmEncryptor::try_new(encryption_key).is_ok(),
+                    "Invalid secrets encryption key",
+                );
+                b.add::<kamu_datasets_services::DatasetKeyValueServiceImpl>();
+                b.add::<kamu_datasets_services::DatasetEnvVarCompatServiceImpl>();
+            } else {
                 warn!("Dataset env vars feature will be disabled");
                 b.add::<kamu_datasets_services::DatasetKeyValueServiceSysEnv>();
                 b.add::<kamu_datasets_services::DatasetEnvVarServiceNull>();
-            } else {
-                assert!(
-                    AesGcmEncryptor::try_new(encryption_key).is_ok(),
-                    "Invalid dataset env var encryption key. Key must be a 32-character \
-                     alphanumeric string",
-                );
-                b.add::<kamu_datasets_services::DatasetKeyValueServiceImpl>();
-                b.add::<kamu_datasets_services::DatasetEnvVarServiceImpl>();
             }
         }
     }
-    b.add_value(config.dataset_env_vars.clone());
 
     // Did secret key encryption configuration
     b.add_value(config.auth.did_encryption.clone());
@@ -824,7 +835,7 @@ pub async fn init_dependencies(
         semantic_search_threshold_score: config.search.semantic_search_threshold_score,
         min_new_password_length: config.auth.password_policy.min_new_password_length,
         feature_flags: UIFeatureFlags {
-            enable_dataset_env_vars_management: config.dataset_env_vars.is_enabled(),
+            enable_dataset_env_vars_management: config.secrets_encryption.is_enabled(),
             allow_anonymous: config.auth.allow_anonymous,
             ..UIFeatureFlags::default()
         },

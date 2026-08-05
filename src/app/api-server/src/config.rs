@@ -14,7 +14,7 @@ use container_runtime::{ContainerRuntimeType, NetworkNamespaceType};
 use internal_error::*;
 use kamu_accounts::{AccountConfig, DidSecretEncryptionConfig};
 use kamu_accounts_services::PasswordPolicyConfig;
-use kamu_datasets::DatasetEnvVarsConfig;
+use kamu_datasets::SecretsEncryptionConfig;
 use odf::dataset::IpfsGateway;
 use setty::types::UrlOrPath;
 use setty::types::duration_string::DurationString;
@@ -36,9 +36,9 @@ pub struct ApiServerConfig {
     #[config(default)]
     pub database: DatabaseConfig,
 
-    /// Dataset environment variable feature
+    /// Secrets encryption configuration
     #[config(default)]
-    pub dataset_env_vars: DatasetEnvVarsConfig,
+    pub secrets_encryption: SecretsEncryptionConfig,
 
     /// Ingest and transform engines
     #[config(default)]
