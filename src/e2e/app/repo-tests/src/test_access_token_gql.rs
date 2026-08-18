@@ -7,105 +7,147 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-use kamu_accounts::DEFAULT_ACCOUNT_ID;
+use kamu_accounts::DEFAULT_ACCOUNT_NAME_STR;
+use kamu_adapter_graphql::traits::ResponseExt;
 use kamu_cli_e2e_common::{KamuApiServerClient, KamuApiServerClientExt};
+use pretty_assertions::assert_eq;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub async fn test_access_token_gql(mut kamu_api_server_client: KamuApiServerClient) {
     kamu_api_server_client.auth().login_as_kamu().await;
 
-    // Create a new access token
-    kamu_api_server_client
-        .graphql_api_call_assert(
-            indoc::indoc!(
-                r#"
-                mutation {
-                  accounts {
-                    byId(accountId: "<account_id>") {
-                      accessTokens {
-                        createAccessToken (tokenName: "foo") {
-                            __typename
-                            message
-                            ... on CreateAccessTokenResultSuccess {
-                                token {
-                                    name
-                                }
-                            }
+    let account_id = {
+        let res = kamu_api_server_client
+            .graphql_api_call_ex(
+                async_graphql::Request::new(indoc::indoc!(
+                    r#"
+                    query ($accountName: AccountName!) {
+                      accounts {
+                        byName(name: $accountName) {
+                          id
                         }
                       }
                     }
-                  }
-                }
-                "#,
+                    "#
+                ))
+                .variables(async_graphql::Variables::from_value(
+                    async_graphql::value!({
+                        "accountName": DEFAULT_ACCOUNT_NAME_STR,
+                    }),
+                )),
             )
-            .replace("<account_id>", DEFAULT_ACCOUNT_ID.to_string().as_str())
-            .as_str(),
-            Ok(indoc::indoc!(
-                r#"
-                {
-                  "accounts": {
-                    "byId": {
-                      "accessTokens": {
-                        "createAccessToken": {
-                          "__typename": "CreateAccessTokenResultSuccess",
-                          "message": "Success",
-                          "token": {
-                            "name": "foo"
+            .await;
+        assert!(res.is_ok(), "{res:?}");
+        res.into_json_data()["accounts"]["byName"]["id"]
+            .as_str()
+            .unwrap()
+            .to_string()
+    };
+
+    // Create a new access token
+    {
+        let res = kamu_api_server_client
+            .graphql_api_call_ex(
+                async_graphql::Request::new(indoc::indoc!(
+                    r#"
+                    mutation ($accountId: AccountID!) {
+                      accounts {
+                        byId(accountId: $accountId) {
+                          accessTokens {
+                            createAccessToken(tokenName: "foo") {
+                              __typename
+                              message
+                              ... on CreateAccessTokenResultSuccess {
+                                token {
+                                  name
+                                }
+                              }
+                            }
                           }
                         }
                       }
                     }
-                  }
+                    "#
+                ))
+                .variables(async_graphql::Variables::from_value(
+                    async_graphql::value!({
+                        "accountId": account_id,
+                    }),
+                )),
+            )
+            .await;
+        assert!(res.is_ok(), "{res:?}");
+        assert_eq!(
+            async_graphql::value!({
+                "accounts": {
+                    "byId": {
+                        "accessTokens": {
+                            "createAccessToken": {
+                                "__typename": "CreateAccessTokenResultSuccess",
+                                "message": "Success",
+                                "token": {
+                                    "name": "foo"
+                                }
+                            }
+                        }
+                    }
                 }
-                "#,
-            )),
-        )
-        .await;
+            }),
+            res.data,
+        );
+    }
 
     // Get list of access tokens
-    kamu_api_server_client
-        .graphql_api_call_assert(
-            indoc::indoc!(
-                r#"
-                query {
-                  accounts {
-                    byId(accountId: "<account_id>") {
-                      accessTokens {
-                        listAccessTokens (perPage: 10, page: 0) {
-                            nodes {
-                                name,
+    {
+        let res = kamu_api_server_client
+            .graphql_api_call_ex(
+                async_graphql::Request::new(indoc::indoc!(
+                    r#"
+                    query ($accountId: AccountID!) {
+                      accounts {
+                        byId(accountId: $accountId) {
+                          accessTokens {
+                            listAccessTokens(perPage: 10, page: 0) {
+                              nodes {
+                                name
                                 revokedAt
+                              }
                             }
+                          }
                         }
                       }
                     }
-                  }
-                }
-                "#,
+                    "#
+                ))
+                .variables(async_graphql::Variables::from_value(
+                    async_graphql::value!({
+                        "accountId": account_id,
+                    }),
+                )),
             )
-            .replace("<account_id>", DEFAULT_ACCOUNT_ID.to_string().as_str())
-            .as_str(),
-            Ok(indoc::indoc!(
-                r#"
-                {
-                  "accounts": {
+            .await;
+        assert!(res.is_ok(), "{res:?}");
+        assert_eq!(
+            async_graphql::value!({
+                "accounts": {
                     "byId": {
-                      "accessTokens": {
-                        "listAccessTokens": {
-                          "nodes": [
-                            {
-                              "name": "foo",
-                              "revokedAt": null
+                        "accessTokens": {
+                            "listAccessTokens": {
+                                "nodes": [
+                                    {
+                                        "name": "foo",
+                                        "revokedAt": null
+                                    }
+                                ]
                             }
-                          ]
                         }
-                      }
                     }
-                  }
                 }
-                "#,
-            )),
-        )
-        .await;
+            }),
+            res.data,
+        );
+    }
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -343,6 +343,12 @@
 
 ## `AccountConfig`
 
+The declarative account configuration used to register an account if one
+does not already exist.
+
+To update an existing account, either `id` or `private_key` must be
+specified.
+
 <table>
 <thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
 <tbody>
@@ -352,7 +358,18 @@
 <td><code class="language-json">null</code></td>
 <td>
 
-Auto-derived from `account_name` if omitted
+May be omitted in favor of `private_key`.
+
+</td>
+</tr>
+<tr>
+<td><code>privateKey</code></td>
+<td><a href="#privatekey"><code>PrivateKey</code></a></td>
+<td><code class="language-json">null</code></td>
+<td>
+
+Optional ed25519 private key. When set, `id` is derived from it
+(and must match `id` if both are present).
 
 </td>
 </tr>
@@ -424,6 +441,10 @@ Auto-derived from `account_name` if omitted
 </table>
 
 ## `AccountID`
+
+Base type: `string`
+
+## `PrivateKey`
 
 Base type: `string`
 
@@ -1684,10 +1705,6 @@ cast wallet new
 </tr>
 </tbody>
 </table>
-
-## `PrivateKey`
-
-Base type: `string`
 
 ## `Secp256k1Signer`
 
