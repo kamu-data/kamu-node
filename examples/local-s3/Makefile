@@ -41,6 +41,7 @@ postgres-stop:
 
 .PHONY: postgres-restore-dump
 postgres-restore-dump:
+	# NOTE: Outbox will be truncated due to txid difference between databases
 	PGPASSWORD=root psql -U root -h 127.0.0.1 -p 5433 -d kamu \
 	  -c "CREATE ROLE postgres;" \
 	  -c "CREATE ROLE kamu_api_server;" \

@@ -358,6 +358,14 @@
           "type": "string",
           "default": "password"
         },
+        "providerIdentityKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Auto-derived from `account_name` if omitted",
+          "combine": "replace"
+        },
         "avatarUrl": {
           "type": [
             "string",

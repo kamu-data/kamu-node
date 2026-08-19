@@ -41,7 +41,7 @@ make rustfs-sync
   - Download the database `./dump.sql` using the [provided instructions](https://github.com/kamu-data/kamu-deploy/blob/master/DEVELOPER.md#make-a-database-backup).
   - Apply the dump to the local database:
     ```shell
-    # ⚠️ Please note: when applied, Outbox tables will be cleared.
+    # ⚠️ NOTE: Outbox tables will be cleared due to txid mismatch between DBs
     make postgres-restore-dump
     ```
   - Run the server:

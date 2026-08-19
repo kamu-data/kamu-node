@@ -414,6 +414,16 @@ Auto-derived from `account_name` if omitted
 <td></td>
 </tr>
 <tr>
+<td><code>providerIdentityKey</code></td>
+<td><code>string</code></td>
+<td><code class="language-json">null</code></td>
+<td>
+
+Auto-derived from `account_name` if omitted
+
+</td>
+</tr>
+<tr>
 <td><code>avatarUrl</code></td>
 <td><code>string</code></td>
 <td><code class="language-json">null</code></td>
