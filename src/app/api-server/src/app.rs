@@ -371,6 +371,19 @@ pub async fn init_dependencies(
     kamu_adapter_task_dataset::register_dependencies(&mut b);
     kamu_adapter_task_webhook::register_dependencies(&mut b);
 
+    let incremental_search_indexing = config.search.indexer.incremental_indexing;
+
+    {
+        kamu_molecule_services::register_dependencies(
+            &mut b,
+            kamu_molecule_services::MoleculeDomainDependenciesOptions {
+                incremental_search_indexing,
+            },
+        );
+
+        b.add_value(kamu_molecule_services::domain::MoleculeConfig::default());
+    }
+
     b.add::<kamu::RemoteRepositoryRegistryImpl>();
 
     b.add::<kamu::utils::simple_transfer_protocol::SimpleTransferProtocol>();
@@ -589,7 +602,7 @@ pub async fn init_dependencies(
         &mut b,
         kamu_datasets_services::DatasetDomainDependenciesOptions {
             needs_indexing: true,
-            incremental_search_indexing: config.search.indexer.incremental_indexing,
+            incremental_search_indexing,
         },
     );
 
@@ -606,7 +619,7 @@ pub async fn init_dependencies(
         kamu_accounts_services::AccountDomainDependenciesOptions {
             needs_indexing: true,
             production: true,
-            incremental_search_indexing: config.search.indexer.incremental_indexing,
+            incremental_search_indexing,
         },
     );
 

@@ -19,6 +19,15 @@ Recommendation: for ease of reading, use the following format:
 ### Upstream [kamu `0.266.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.266.1)
 - Harden account registration: provisioning and DID secrets
 
+## [Molecule-specific]
+### Changed
+- GQL: `MoleculeMut::create_project()`: use `U256` type for `ipnft_token_id`.
+- Collection API: Ignore noop changes in collection add/move
+- GQL: `Search::query()`: case insensitive search.
+- GQL: `MoleculeMut::create_project()`: generate lowercase project account name.
+### Fixed
+ - Investigation: potential unstable ordering of dataset entry listings
+
 ## [0.88.0] - 2026-07-28
 ### Upstream [kamu `0.265.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.265.0)
 - Flatbuffers encoding alignment fix
