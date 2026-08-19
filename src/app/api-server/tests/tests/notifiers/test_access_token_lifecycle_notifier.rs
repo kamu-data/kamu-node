@@ -10,17 +10,16 @@
 use std::sync::Arc;
 
 use database_common::NoOpDatabasePlugin;
-use dill::*;
 use email_gateway::FakeEmailSender;
 use kamu::domain::{ServerUrlConfig, TenancyConfig};
 use kamu_accounts::{
     AccessTokenLifecycleMessage,
-    DEFAULT_ACCOUNT_ID,
     DUMMY_EMAIL_ADDRESS,
     DidSecretEncryptionConfig,
     JwtAuthenticationConfig,
     MESSAGE_PRODUCER_KAMU_ACCESS_TOKEN_SERVICE,
     PredefinedAccountsConfig,
+    TEST_ACCOUNT_ID,
 };
 use kamu_accounts_inmem::{
     InMemoryAccessTokenRepository,
@@ -43,6 +42,7 @@ use kamu_auth_rebac_services::{
     RebacServiceImpl,
 };
 use messaging_outbox::{Outbox, OutboxExt, OutboxImmediateImpl, register_message_dispatcher};
+use pretty_assertions::assert_eq;
 use time_source::SystemTimeSourceDefault;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ use time_source::SystemTimeSourceDefault;
 async fn test_access_token_created_email() {
     let harness = AccessTokenLifecycleNotifierHarness::new().await;
     harness
-        .send_access_token_created("foo", DEFAULT_ACCOUNT_ID.clone())
+        .send_access_token_created("foo", TEST_ACCOUNT_ID.clone())
         .await;
 
     let emails = harness.fake_email_sender.get_recorded_emails();
@@ -77,7 +77,7 @@ async fn test_access_token_created_email() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct AccessTokenLifecycleNotifierHarness {
-    _catalog: Catalog,
+    _catalog: dill::Catalog,
     outbox: Arc<dyn Outbox>,
     fake_email_sender: Arc<FakeEmailSender>,
 }
@@ -107,7 +107,7 @@ impl AccessTokenLifecycleNotifierHarness {
             .add_value(DidSecretEncryptionConfig::sample())
             .add_value(DefaultAccountProperties::default())
             .add_value(DefaultDatasetProperties::default())
-            .add_value(PredefinedAccountsConfig::single_tenant())
+            .add_value(PredefinedAccountsConfig::test_single_tenant_with_id())
             .add_value(JwtAuthenticationConfig::default())
             .add_value(ServerUrlConfig::new_test(None))
             .add::<FakeEmailSender>();

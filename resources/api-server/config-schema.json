@@ -314,7 +314,19 @@
               "type": "null"
             }
           ],
-          "description": "Auto-derived from `account_name` if omitted",
+          "description": "May be omitted in favor of `private_key`.",
+          "combine": "replace"
+        },
+        "privateKey": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrivateKey"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Optional ed25519 private key. When set, `id` is derived from it\n(and must match `id` if both are present).",
           "combine": "replace"
         },
         "accountName": {
@@ -346,11 +358,21 @@
           "type": "string",
           "default": "password"
         },
+        "providerIdentityKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Auto-derived from `account_name` if omitted",
+          "combine": "replace"
+        },
         "avatarUrl": {
           "type": [
             "string",
             "null"
-          ]
+          ],
+          "format": "uri",
+          "combine": "replace"
         },
         "registeredAt": {
           "type": [
@@ -376,9 +398,13 @@
         "accountName",
         "password",
         "email"
-      ]
+      ],
+      "description": "The declarative account configuration used to register an account if one\ndoes not already exist.\n\nTo update an existing account, either `id` or `private_key` must be\nspecified."
     },
     "AccountID": {
+      "type": "string"
+    },
+    "PrivateKey": {
       "type": "string"
     },
     "AccountName": {
@@ -1351,9 +1377,6 @@
         }
       },
       "description": "Private keys are used to sign API responses.\nSupported algorithms: `ed25519`, `secp256k1`."
-    },
-    "PrivateKey": {
-      "type": "string"
     },
     "Secp256k1Signer": {
       "type": "string"

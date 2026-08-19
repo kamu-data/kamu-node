@@ -22,12 +22,14 @@ doctest = false
 
 
 [dependencies]
+kamu-accounts = { workspace = true }
+kamu-adapter-graphql = { workspace = true }
+kamu-adapter-http = { workspace = true }
 kamu-cli-e2e-common = { workspace = true }
 kamu-node-e2e-common = { workspace = true }
-kamu-adapter-http = { workspace = true }
-kamu-accounts = { workspace = true }
 odf = { workspace = true }
 
+async-graphql = { version = "7", default-features = false }
 indoc = "2"
 pretty_assertions = { version = "1" }
 reqwest = { version = "0.12", default-features = false, features = [] }

@@ -23,7 +23,6 @@ deny = [
     { name = "md5", reason = "Use `md-5` instead, which is part of the RustCrypto ecosystem" },
     { name = "native-tls", reason = "We use rustls throughout the project" },
     { name = "serde_yaml", reason = "Use serde_yaml_ng as replacement" },
-
     ### Creates we deny multiple versions of ###
     # This is a temporary approach until we deny by default with some exceptions
     { name = "alloy", deny-multiple-versions = true },
@@ -124,8 +123,22 @@ ignore = [
     # https://rustsec.org/advisories/RUSTSEC-2026-0195
     "RUSTSEC-2026-0194",
     "RUSTSEC-2026-0195",
-    # Unmaintained (smallstr)
+    # Unmaintained: smallstr
     # Waiting for upstream crates to migrate to other implementation
     # https://rustsec.org/advisories/RUSTSEC-2026-0215
     "RUSTSEC-2026-0215",
+    # Unmaintained: im
+    # https://rustsec.org/advisories/RUSTSEC-2026-0248
+    "RUSTSEC-2026-0248",
+    # Unmaintained: bitmaps
+    # Dependency of the unmaintained `im` crate
+    # https://rustsec.org/advisories/RUSTSEC-2026-0247
+    "RUSTSEC-2026-0247",
+    # Unmaintained: sized-chunks
+    # Dependency of the unmaintained `im` crate
+    # https://rustsec.org/advisories/RUSTSEC-2026-0251
+    "RUSTSEC-2026-0251",
+    # h2 (0.3.27): unbounded empty DATA frames
+    # https://rustsec.org/advisories/RUSTSEC-2026-0258
+    "RUSTSEC-2026-0258",
 ]
