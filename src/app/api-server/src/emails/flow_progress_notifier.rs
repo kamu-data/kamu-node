@@ -12,7 +12,6 @@ use std::sync::Arc;
 
 use askama::Template;
 use chrono::{DateTime, Utc};
-use dill::{Catalog, component, interface, meta};
 use email_gateway::EmailSender;
 use internal_error::{InternalError, ResultIntoInternal};
 use kamu_datasets::GetDatasetEntryError;
@@ -43,10 +42,10 @@ pub struct FlowProgressNotifier {
     tenancy_config: Arc<kamu::domain::TenancyConfig>,
 }
 
-#[component(pub)]
-#[interface(dyn MessageConsumer)]
-#[interface(dyn MessageConsumerT<kamu_fs::FlowProcessLifecycleMessage>)]
-#[meta(MessageConsumerMeta {
+#[dill::component(pub)]
+#[dill::interface(dyn MessageConsumer)]
+#[dill::interface(dyn MessageConsumerT<kamu_fs::FlowProcessLifecycleMessage>)]
+#[dill::meta(MessageConsumerMeta {
     consumer_name: MESSAGE_CONSUMER_KAMU_API_SERVER_FLOW_PROGRESS_NOTIFIER,
     feeding_producers: &[
         kamu_flow_system::MESSAGE_PRODUCER_KAMU_FLOW_PROCESS_STATE_PROJECTOR,
@@ -275,7 +274,7 @@ impl MessageConsumerT<kamu_fs::FlowProcessLifecycleMessage> for FlowProgressNoti
     )]
     async fn consume_message(
         &self,
-        _: &Catalog,
+        _: &dill::Catalog,
         message: &kamu_fs::FlowProcessLifecycleMessage,
     ) -> Result<(), InternalError> {
         tracing::debug!(received_message = ?message, "Received flow progress message");

@@ -15,6 +15,10 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
+## [0.89.0] - 2026-08-19
+### Upstream [kamu `0.266.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.266.1)
+- Harden account registration: provisioning and DID secrets
+
 ## [0.88.0] - 2026-07-28
 ### Upstream [kamu `0.265.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.265.0)
 - Flatbuffers encoding alignment fix

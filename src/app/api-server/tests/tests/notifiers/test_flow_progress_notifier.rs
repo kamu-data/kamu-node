@@ -18,11 +18,11 @@ use kamu::domain::{DidGeneratorDefault, ServerUrlConfig, TenancyConfig};
 use kamu_accounts::{
     CurrentAccountSubject,
     DEFAULT_ACCOUNT_NAME,
-    DEFAULT_ACCOUNT_NAME_STR,
     DUMMY_EMAIL_ADDRESS,
     DidSecretEncryptionConfig,
     JwtAuthenticationConfig,
     PredefinedAccountsConfig,
+    TEST_ACCOUNT_ID,
 };
 use kamu_accounts_inmem::{
     InMemoryAccessTokenRepository,
@@ -52,7 +52,6 @@ use kamu_flow_system_inmem::{InMemoryFlowEventStore, InMemoryFlowSystemEventBrid
 use kamu_flow_system_services::FlowQueryServiceImpl;
 use kamu_task_system::{TaskError, TaskID, TaskOutcome};
 use messaging_outbox::{Outbox, OutboxExt, OutboxImmediateImpl, register_message_dispatcher};
-use odf::DatasetID;
 use odf::dataset::DatasetStorageUnitLocalFs;
 use tempfile::TempDir;
 use time_source::SystemTimeSourceDefault;
@@ -142,7 +141,7 @@ impl FlowProgressNotifierHarness {
             .add_value(DidSecretEncryptionConfig::sample())
             .add_value(DefaultAccountProperties::default())
             .add_value(DefaultDatasetProperties::default())
-            .add_value(PredefinedAccountsConfig::single_tenant())
+            .add_value(PredefinedAccountsConfig::test_single_tenant_with_id())
             .add_value(JwtAuthenticationConfig::default())
             .add_value(ServerUrlConfig::new_test(None));
 
@@ -168,7 +167,7 @@ impl FlowProgressNotifierHarness {
         }
     }
 
-    async fn make_dataset(&self, dataset_id: &DatasetID, dataset_name: &odf::DatasetName) {
+    async fn make_dataset(&self, dataset_id: &odf::DatasetID, dataset_name: &odf::DatasetName) {
         let dataset_entry_repo = self
             .catalog
             .get_one::<dyn DatasetEntryRepository>()
@@ -177,7 +176,7 @@ impl FlowProgressNotifierHarness {
         dataset_entry_repo
             .save_dataset_entry(&DatasetEntry {
                 id: dataset_id.clone(),
-                owner_id: odf::AccountID::new_seeded_ed25519(DEFAULT_ACCOUNT_NAME_STR.as_bytes()),
+                owner_id: TEST_ACCOUNT_ID.clone(),
                 owner_name: DEFAULT_ACCOUNT_NAME.clone(),
                 name: dataset_name.clone(),
                 created_at: Utc::now(),
@@ -187,7 +186,7 @@ impl FlowProgressNotifierHarness {
             .unwrap();
     }
 
-    async fn send_flow_failed(&self, dataset_id: &DatasetID) {
+    async fn send_flow_failed(&self, dataset_id: &odf::DatasetID) {
         let flow_event_store = self.catalog.get_one::<dyn FlowEventStore>().unwrap();
         let flow_id = flow_event_store.new_flow_id().await.unwrap();
 
@@ -217,7 +216,11 @@ impl FlowProgressNotifierHarness {
             .unwrap();
     }
 
-    fn create_and_prepare_flow(&self, dataset_id: &DatasetID, flow_id: FlowID) -> (Flow, TaskID) {
+    fn create_and_prepare_flow(
+        &self,
+        dataset_id: &odf::DatasetID,
+        flow_id: FlowID,
+    ) -> (Flow, TaskID) {
         let mut flow = Flow::new(
             Utc::now(),
             flow_id,
