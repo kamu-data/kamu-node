@@ -15,7 +15,7 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
-## [Unreleased]
+## [0.90.0] - 2026-09-19
 ### Upstream [kamu `0.267.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.267.0)
 - Resource system!
 
