@@ -63,7 +63,7 @@ jobs:
           - x86_64-unknown-linux-gnu
     steps:
       - name: Download Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ matrix.crate }}-${{ matrix.target }}
           path: ${{ matrix.crate }}-${{ matrix.target }}
