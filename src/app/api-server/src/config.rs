@@ -8,6 +8,7 @@
 // by the Apache License, Version 2.0.
 
 use std::collections::BTreeMap;
+use std::num::NonZeroUsize;
 use std::path::PathBuf;
 
 use container_runtime::{ContainerRuntimeType, NetworkNamespaceType};
@@ -76,9 +77,9 @@ pub struct ApiServerConfig {
     #[config(default)]
     pub source: SourceConfig,
 
-    /// Outbox agent configuration
+    /// Background agents configuration (outbox, flow system events, tasks)
     #[config(default)]
-    pub outbox: OutboxAgentConfig,
+    pub background_agents: BackgroundAgentsConfig,
 
     /// Email gateway configuration
     #[config(default = EmailConfig::dummy())]
@@ -575,8 +576,6 @@ pub enum DatabaseConfig {
     InMemory,
     Sqlite(SqliteDatabaseConfig),
     Postgres(RemoteDatabaseConfig),
-    // MySql(RemoteDatabaseConfig),
-    // MariaDB(RemoteDatabaseConfig),
 }
 
 impl DatabaseConfig {
@@ -600,7 +599,8 @@ pub struct RemoteDatabaseConfig {
     pub database_name: String,
     pub host: String,
     pub port: Option<u16>,
-    pub max_connections: Option<u32>,
+    #[config(default = database_common::DatabaseConnectionSettings::DEFAULT_MAX_CONNECTIONS)]
+    pub max_connections: u32,
     pub max_lifetime_secs: Option<u64>,
     pub acquire_timeout_secs: Option<u64>,
 }
@@ -654,24 +654,84 @@ pub struct UploadRepoStorageConfigS3 {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Defaults suit the server on Postgres, where agents are woken up by
+// LISTEN/NOTIFY, so the listening timeout is only a rarely needed fallback.
+// `SQLite` typically wants ~2s timeouts, ~20 batches, 1 outbox consumer
 #[derive(setty::Config, setty::Default)]
-pub struct OutboxAgentConfig {
-    #[config(default_str = "100ms")]
+pub struct BackgroundAgentsConfig {
+    /// How long agents absorb a burst of change signals before processing
+    #[config(default_str = "20ms")]
     pub min_debounce_interval: DurationString,
 
+    /// Fallback period to re-check for work if a change signal is missed.
+    /// With `SQLite` it also paces the polling. The flow agent wakes up at
+    /// the next flow activation moment regardless of it.
     #[config(default_str = "120s")]
     pub max_listening_timeout: DurationString,
 
-    #[config(default = 100)]
-    pub batch_size: usize,
+    /// Batch sizes of agents processing records in batches
+    #[config(default)]
+    pub batching: BackgroundAgentsBatchingConfig,
+
+    /// Concurrency limits of agents processing records in parallel
+    #[config(default)]
+    pub concurrency: BackgroundAgentsConcurrencyConfig,
 }
 
-impl OutboxAgentConfig {
-    pub fn into_system(&self) -> messaging_outbox::OutboxAgentConfig {
-        messaging_outbox::OutboxAgentConfig {
+#[derive(setty::Config, setty::Default)]
+pub struct BackgroundAgentsBatchingConfig {
+    /// Outbox messages relayed per transaction. 0 is treated as 1
+    #[config(default = 100)]
+    pub outbox_messages: usize,
+
+    /// Flow system events applied to a projection per transaction. 0 is
+    /// treated as 1
+    #[config(default = 100)]
+    pub flow_system_events: usize,
+
+    /// Due flows the flow agent loads at once before activating them.
+    /// 0 is treated as 1
+    #[config(default = 100)]
+    pub flow_activations: usize,
+}
+
+#[derive(setty::Config, setty::Default)]
+pub struct BackgroundAgentsConcurrencyConfig {
+    /// Outbox consumers running at once, in order per producer, each holding a
+    /// pooled connection: e.g. 8 with Postgres, 1 with `SQLite`. 0 is treated
+    /// as 1
+    #[config(default = 8)]
+    pub outbox_consumers: usize,
+}
+
+impl BackgroundAgentsConfig {
+    pub fn wakeup_listener_config(&self) -> wakeup_listener::WakeupListenerConfig {
+        wakeup_listener::WakeupListenerConfig {
             min_debounce_interval: self.min_debounce_interval.into(),
             max_listening_timeout: self.max_listening_timeout.into(),
-            batch_size: self.batch_size,
+        }
+    }
+
+    pub fn outbox_agent_config(&self) -> messaging_outbox::OutboxAgentConfig {
+        messaging_outbox::OutboxAgentConfig {
+            batch_size: NonZeroUsize::new(self.batching.outbox_messages)
+                .unwrap_or(NonZeroUsize::MIN),
+            consumer_concurrency: NonZeroUsize::new(self.concurrency.outbox_consumers)
+                .unwrap_or(NonZeroUsize::MIN),
+        }
+    }
+
+    pub fn flow_system_event_agent_config(&self) -> kamu_flow_system::FlowSystemEventAgentConfig {
+        kamu_flow_system::FlowSystemEventAgentConfig {
+            batch_size: NonZeroUsize::new(self.batching.flow_system_events)
+                .unwrap_or(NonZeroUsize::MIN),
+        }
+    }
+
+    pub fn flow_agent_activation_config(&self) -> kamu_flow_system::FlowAgentActivationConfig {
+        kamu_flow_system::FlowAgentActivationConfig {
+            batch_size: NonZeroUsize::new(self.batching.flow_activations)
+                .unwrap_or(NonZeroUsize::MIN),
         }
     }
 }
@@ -713,26 +773,34 @@ pub struct EmailConfigPostmarkGateway {
 
 #[derive(setty::Config, setty::Default)]
 pub struct FlowSystemConfig {
-    #[config(default)]
-    pub flow_agent: FlowAgentConfig,
-
-    #[config(default)]
-    pub flow_system_event_agent: FlowSystemEventAgentConfig,
-
-    #[config(default)]
-    pub task_agent: TaskAgentConfig,
-}
-
-#[derive(setty::Config, setty::Default)]
-pub struct FlowAgentConfig {
+    /// Scheduling granularity: activation times are rounded to it, and failed
+    /// activations retried after it. Not a polling period
     #[config(default = 1)]
     pub awaiting_step_secs: i64,
 
+    /// Minimal time between two runs of the same flow
     #[config(default = 60)]
     pub mandatory_throttling_period_secs: i64,
 
+    /// Retry policies applied by default, by flow type
     #[config(default, combine(merge))]
     pub default_retry_policies: BTreeMap<String, RetryPolicyConfig>,
+}
+
+impl FlowSystemConfig {
+    pub fn into_system(&self) -> kamu_flow_system::FlowAgentConfig {
+        kamu_flow_system::FlowAgentConfig {
+            awaiting_step: chrono::Duration::seconds(self.awaiting_step_secs),
+            mandatory_throttling_period: chrono::Duration::seconds(
+                self.mandatory_throttling_period_secs,
+            ),
+            default_retry_policy_by_flow_type: self
+                .default_retry_policies
+                .iter()
+                .map(|(flow_type, policy)| (flow_type.clone(), policy.into_system()))
+                .collect(),
+        }
+    }
 }
 
 #[derive(setty::Config, setty::Default)]
@@ -750,31 +818,26 @@ pub enum RetryPolicyConfigBackoffType {
     ExponentialWithJitter,
 }
 
-#[derive(setty::Config, setty::Default)]
-pub struct TaskAgentConfig {
-    #[config(default = 1)]
-    pub task_checking_interval_secs: i64,
-}
-
-#[derive(setty::Config, setty::Default)]
-pub struct FlowSystemEventAgentConfig {
-    #[config(default_str = "100ms")]
-    pub min_debounce_interval: DurationString,
-
-    #[config(default_str = "120s")]
-    pub max_listening_timeout: DurationString,
-
-    #[config(default = 100)]
-    pub batch_size: usize,
-}
-
-impl FlowSystemEventAgentConfig {
-    pub fn into_system(&self) -> kamu_flow_system::FlowSystemEventAgentConfig {
-        kamu_flow_system::FlowSystemEventAgentConfig {
-            min_debounce_interval: self.min_debounce_interval.into(),
-            max_listening_timeout: self.max_listening_timeout.into(),
-            batch_size: self.batch_size,
-        }
+impl RetryPolicyConfig {
+    pub fn into_system(&self) -> kamu_flow_system::RetryPolicy {
+        kamu_flow_system::RetryPolicy::new(
+            self.max_attempts.unwrap_or(0),
+            self.min_delay_secs.unwrap_or(0),
+            match self.backoff_type {
+                Some(RetryPolicyConfigBackoffType::Exponential) => {
+                    kamu_flow_system::RetryBackoffType::Exponential
+                }
+                Some(RetryPolicyConfigBackoffType::Linear) => {
+                    kamu_flow_system::RetryBackoffType::Linear
+                }
+                Some(RetryPolicyConfigBackoffType::ExponentialWithJitter) => {
+                    kamu_flow_system::RetryBackoffType::ExponentialWithJitter
+                }
+                Some(RetryPolicyConfigBackoffType::Fixed) | None => {
+                    kamu_flow_system::RetryBackoffType::Fixed
+                }
+            },
+        )
     }
 }
 

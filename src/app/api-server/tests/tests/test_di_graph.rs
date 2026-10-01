@@ -232,7 +232,8 @@ fn get_api_server_config(
                 database_name: "".to_string(),
                 host: "".to_string(),
                 port: None,
-                max_connections: None,
+                max_connections:
+                    database_common::DatabaseConnectionSettings::DEFAULT_MAX_CONNECTIONS,
                 max_lifetime_secs: None,
                 acquire_timeout_secs: None,
             };

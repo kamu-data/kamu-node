@@ -423,7 +423,7 @@ type AccountsMut {
 """
 Indicates that data has been ingested into a root dataset.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/AddData
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/AddData
 """
 type AddData {
 	"""
@@ -516,7 +516,7 @@ type ApplyRolesMatrixResult {
 """
 Embedded attachment item.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/AttachmentEmbedded
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/AttachmentEmbedded
 """
 type AttachmentEmbedded {
 	"""
@@ -532,14 +532,14 @@ type AttachmentEmbedded {
 """
 Defines the source of attachment files.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/Attachments
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/Attachments
 """
 union Attachments = AttachmentsEmbedded
 
 """
 For attachments that are specified inline and are embedded in the metadata.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/Attachments#/$defs/Embedded
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/Attachments#/$defs/Embedded
 """
 type AttachmentsEmbedded {
 	"""
@@ -671,7 +671,7 @@ type CancelFlowRunSuccess implements CancelFlowRunResult {
 """
 Describes a checkpoint produced by an engine
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/Checkpoint
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/Checkpoint
 """
 type Checkpoint {
 	"""
@@ -947,7 +947,7 @@ enum CompareChainsStatus {
 """
 Defines a compression algorithm.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/CompressionFormat
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/CompressionFormat
 """
 enum CompressionFormat {
 	GZIP
@@ -1123,7 +1123,7 @@ scalar DataSchemaInput
 """
 Describes a slice of data added to a dataset or produced via transformation
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/DataSlice
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/DataSlice
 """
 type DataSlice {
 	"""
@@ -1497,7 +1497,7 @@ scalar DatasetID
 """
 Represents type of the dataset.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/DatasetKind
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/DatasetKind
 """
 enum DatasetKind {
 	ROOT
@@ -1979,7 +1979,7 @@ type EngineDesc {
 """
 Defines an environment variable passed into some job.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/EnvVar
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/EnvVar
 """
 type EnvVar {
 	"""
@@ -1997,14 +1997,14 @@ scalar EventID
 """
 Defines the external source of data.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/EventTimeSource
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/EventTimeSource
 """
 union EventTimeSource = EventTimeSourceFromMetadata | EventTimeSourceFromPath | EventTimeSourceFromSystemTime
 
 """
 Extracts event time from the source's metadata.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/EventTimeSource#/$defs/FromMetadata
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/EventTimeSource#/$defs/FromMetadata
 """
 type EventTimeSourceFromMetadata {
 	dummy: String
@@ -2013,7 +2013,7 @@ type EventTimeSourceFromMetadata {
 """
 Extracts event time from the path component of the source.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/EventTimeSource#/$defs/FromPath
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/EventTimeSource#/$defs/FromPath
 """
 type EventTimeSourceFromPath {
 	"""
@@ -2029,7 +2029,7 @@ type EventTimeSourceFromPath {
 """
 Assigns event time from the system time source.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/EventTimeSource#/$defs/FromSystemTime
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/EventTimeSource#/$defs/FromSystemTime
 """
 type EventTimeSourceFromSystemTime {
 	dummy: String
@@ -2040,7 +2040,7 @@ scalar EvmWalletAddress
 """
 Indicates that derivative transformation has been performed.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/ExecuteTransform
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/ExecuteTransform
 """
 type ExecuteTransform {
 	"""
@@ -2081,7 +2081,7 @@ type ExecuteTransform {
 """
 Describes a slice of the input dataset used during a transformation
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/ExecuteTransformInput
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/ExecuteTransformInput
 """
 type ExecuteTransformInput {
 	"""
@@ -2826,11 +2826,13 @@ type FlowTimingRecords {
 	"""
 	initiatedAt: DateTime!
 	"""
-	First scheduling time
+	Time when the first attempt's task was scheduled; unset while the flow
+	waits for activation
 	"""
 	firstAttemptScheduledAt: DateTime
 	"""
-	Planned scheduling time (different than first in case of retries)
+	Planned activation time of the next attempt; moved by manual runs,
+	batching and retries
 	"""
 	scheduledAt: DateTime
 	"""
@@ -3012,7 +3014,7 @@ input LookupFilters {
 Merge strategy determines how newly ingested data should be combined with
 the data that already exists in the dataset.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/MergeStrategy
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/MergeStrategy
 """
 union MergeStrategy = MergeStrategyAppend | MergeStrategyLedger | MergeStrategySnapshot | MergeStrategyChangelogStream | MergeStrategyUpsertStream
 
@@ -3022,7 +3024,7 @@ Append merge strategy.
 Under this strategy new data will be appended to the dataset in its
 entirety, without any deduplication.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/MergeStrategy#/$defs/Append
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/MergeStrategy#/$defs/Append
 """
 type MergeStrategyAppend {
 	dummy: String
@@ -3036,7 +3038,7 @@ evolution of all event records including appends, retractions, and
 corrections as per RFC-015. No pre-processing except for format validation
 is done.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/MergeStrategy#/$defs/ChangelogStream
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/MergeStrategy#/$defs/ChangelogStream
 """
 type MergeStrategyChangelogStream {
 	"""
@@ -3055,7 +3057,7 @@ user-specified primary key columns. This means that the source data can
 contain partially overlapping set of records and only those records that
 were not previously seen will be appended.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/MergeStrategy#/$defs/Ledger
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/MergeStrategy#/$defs/Ledger
 """
 type MergeStrategyLedger {
 	"""
@@ -3093,7 +3095,7 @@ modification timestamp, an incremental version, or a data hash), then it can
 be specified in `compareColumns` property to speed up the detection of
 modified rows.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/MergeStrategy#/$defs/Snapshot
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/MergeStrategy#/$defs/Snapshot
 """
 type MergeStrategySnapshot {
 	"""
@@ -3117,7 +3119,7 @@ insert-or-update events only carry the new values, so this strategy will use
 primary key to re-classify the events into an append or a correction from/to
 pair, looking up the previous values.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/MergeStrategy#/$defs/UpsertStream
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/MergeStrategy#/$defs/UpsertStream
 """
 type MergeStrategyUpsertStream {
 	"""
@@ -3187,7 +3189,7 @@ type MetadataChainMut {
 """
 Represents a transaction that occurred on a dataset.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/MetadataEvent
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/MetadataEvent
 """
 union MetadataEvent = AddData | ExecuteTransform | Seed | SetPollingSource | SetTransform | SetVocab | SetAttachments | SetInfo | SetLicense | SetDataSchema | AddPushSource | DisablePushSource | DisablePollingSource
 
@@ -3232,7 +3234,7 @@ type ModifyPasswordWrongOldPassword implements ModifyPasswordResult {
 """
 MQTT quality of service class.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/MqttQos
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/MqttQos
 """
 enum MqttQos {
 	AT_MOST_ONCE
@@ -3243,7 +3245,7 @@ enum MqttQos {
 """
 MQTT topic subscription parameters.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/MqttTopicSubscription
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/MqttTopicSubscription
 """
 type MqttTopicSubscription {
 	"""
@@ -3330,7 +3332,7 @@ type OdataProtocolDesc {
 """
 Describes a range of data as a closed arithmetic interval of offsets
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/OffsetInterval
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/OffsetInterval
 """
 type OffsetInterval {
 	"""
@@ -3389,14 +3391,14 @@ type PostgreSqlDesl {
 """
 Defines the steps to prepare raw data for ingestion.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/PrepStep
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/PrepStep
 """
 union PrepStep = PrepStepDecompress | PrepStepPipe
 
 """
 Pulls data from one of the supported sources by its URL.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/PrepStep#/$defs/Decompress
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/PrepStep#/$defs/Decompress
 """
 type PrepStepDecompress {
 	"""
@@ -3413,7 +3415,7 @@ type PrepStepDecompress {
 """
 Executes external command to process the data using piped input/output.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/PrepStep#/$defs/Pipe
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/PrepStep#/$defs/Pipe
 """
 type PrepStepPipe {
 	"""
@@ -3514,7 +3516,7 @@ type ReactivateWebhookSubscriptionResultUnexpected implements ReactivateWebhookS
 """
 Defines how raw data should be read into the structured form.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/ReadStep
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/ReadStep
 """
 interface ReadStep {
 	schema(format: DataSchemaFormat): DataSchema
@@ -3523,7 +3525,7 @@ interface ReadStep {
 """
 Reader for comma-separated files.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/ReadStep#/$defs/Csv
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/ReadStep#/$defs/Csv
 """
 type ReadStepCsv implements ReadStep {
 	"""
@@ -3604,7 +3606,7 @@ type ReadStepCsv implements ReadStep {
 """
 Reader for ESRI Shapefile format.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/ReadStep#/$defs/EsriShapefile
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/ReadStep#/$defs/EsriShapefile
 """
 type ReadStepEsriShapefile implements ReadStep {
 	"""
@@ -3630,7 +3632,7 @@ root and will create a record per each `Feature` inside it extracting the
 properties into individual columns and leaving the feature geometry in its
 own column.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/ReadStep#/$defs/GeoJson
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/ReadStep#/$defs/GeoJson
 """
 type ReadStepGeoJson implements ReadStep {
 	"""
@@ -3647,7 +3649,7 @@ type ReadStepGeoJson implements ReadStep {
 """
 Reader for JSON files that contain an array of objects within them.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/ReadStep#/$defs/Json
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/ReadStep#/$defs/Json
 """
 type ReadStepJson implements ReadStep {
 	"""
@@ -3693,7 +3695,7 @@ Reader for Newline-delimited GeoJSON files. It is similar to `GeoJson`
 format but instead of `FeatureCollection` object in the root it expects
 every individual feature object to appear on its own line.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/ReadStep#/$defs/NdGeoJson
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/ReadStep#/$defs/NdGeoJson
 """
 type ReadStepNdGeoJson implements ReadStep {
 	"""
@@ -3711,7 +3713,7 @@ type ReadStepNdGeoJson implements ReadStep {
 Reader for files containing multiple newline-delimited JSON objects with the
 same schema.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/ReadStep#/$defs/NdJson
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/ReadStep#/$defs/NdJson
 """
 type ReadStepNdJson implements ReadStep {
 	"""
@@ -3749,7 +3751,7 @@ type ReadStepNdJson implements ReadStep {
 """
 Reader for Apache Parquet format.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/ReadStep#/$defs/Parquet
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/ReadStep#/$defs/Parquet
 """
 type ReadStepParquet implements ReadStep {
 	"""
@@ -3808,7 +3810,7 @@ type RenameResultSuccess implements RenameResult {
 """
 Defines a header (e.g. HTTP) to be passed into some request.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/RequestHeader
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/RequestHeader
 """
 type RequestHeader {
 	"""
@@ -3826,11 +3828,11 @@ Top-level container for canonical representation of a resource that
 specifies the type and version of the resource, carries identity, ownership,
 and status information.
 
-Schema: https://opendatafabric.org/schemas/resource/v1alpha1/Resource
+Schema: https://opendatafabric.org/schemas/resources/v1alpha1/Resource
 """
 type Resource {
 	"""
-	Identifies the controlling entity, a bounded context that this resource belongs to, and the version. Url should follow the pattern `{base-url}/{context}/{version}/{name}.json` e.g. `https://opendatafabric.org/schemas/dataset/v1/Dataset.json`.
+	Identifies the controlling entity, a bounded context that this resource belongs to, and the version. Url should follow the pattern `{base-url}/{context}/{version}/{name}.json` e.g. `https://opendatafabric.org/schemas/datasets/v1/Dataset.json`.
 	"""
 	schema: TypeUri!
 	"""
@@ -3971,12 +3973,32 @@ type ResourceEmptyRefProblem {
 	message: String!
 }
 
+"""
+Link to another resolved resource.
+
+Schema: https://opendatafabric.org/schemas/resources/v1alpha1/ResourceHandle
+"""
 type ResourceHandle {
-	id: ResourceID!
-	type: TypeUri!
-	did: Did
-	name: ResourceName!
+	"""
+	Account that owns the target resource.
+	"""
 	account: AccountHandle!
+	"""
+	Type URI of the target resource.
+	"""
+	type: TypeUri!
+	"""
+	ID of the resource within a node.
+	"""
+	id: ResourceID!
+	"""
+	DID of the resource, if applicable.
+	"""
+	did: Did
+	"""
+	Name of a resource.
+	"""
+	name: ResourceName!
 }
 
 type ResourceHandleConnection {
@@ -4015,7 +4037,7 @@ enum ResourceHeaderValidationProblemCode {
 """
 Container for identity and ownership information of a resource.
 
-Schema: https://opendatafabric.org/schemas/resource/v1alpha1/ResourceHeaders
+Schema: https://opendatafabric.org/schemas/resources/v1alpha1/ResourceHeaders
 """
 type ResourceHeaders {
 	"""
@@ -4043,6 +4065,11 @@ type ResourceHeaders {
 	annotations are not indexed and cannot be queried by.
 	"""
 	annotations: ResourceAnnotations!
+	"""
+	References to resources that created this resource. Used for lineage
+	tracking and cascading cleanup.
+	"""
+	ownerReferences: [ResourceHandle!]
 	"""
 	A sequential number that changes every time the resource header and spec
 	are updated. Does not increment on status changes, thus signifying
@@ -4178,7 +4205,7 @@ type ResourceNameNotFoundProblem {
 """
 Represents the reconciliation phase of a resource.
 
-Schema: https://opendatafabric.org/schemas/resource/v1alpha1/ResourcePhase
+Schema: https://opendatafabric.org/schemas/resources/v1alpha1/ResourcePhase
 """
 enum ResourcePhase {
 	PENDING
@@ -4285,7 +4312,7 @@ scalar ResourceSelectorName
 """
 Resource lifecycle and reconciliation information.
 
-Schema: https://opendatafabric.org/schemas/resource/v1alpha1/ResourceStatus
+Schema: https://opendatafabric.org/schemas/resources/v1alpha1/ResourceStatus
 """
 type ResourceStatus {
 	"""
@@ -4578,7 +4605,7 @@ type SearchResultExEdge {
 Establishes the identity of the dataset. Always the first metadata event in
 the chain.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/Seed
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/Seed
 """
 type Seed {
 	"""
@@ -4617,7 +4644,7 @@ input SetAccountQuotasStorageInput {
 """
 Associates a set of files with this dataset.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/SetAttachments
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/SetAttachments
 """
 type SetAttachments {
 	"""
@@ -4659,7 +4686,7 @@ type SetFlowTriggerSuccess implements SetFlowTriggerResult {
 """
 Provides basic human-readable information about a dataset.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/SetInfo
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/SetInfo
 """
 type SetInfo {
 	"""
@@ -4675,7 +4702,7 @@ type SetInfo {
 """
 Defines a license that applies to this dataset.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/SetLicense
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/SetLicense
 """
 type SetLicense {
 	"""
@@ -4737,7 +4764,7 @@ type SetRoleResultSuccess implements SetRoleResult {
 """
 Defines a transformation that produces data in a derivative dataset.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/SetTransform
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/SetTransform
 """
 type SetTransform {
 	"""
@@ -4753,7 +4780,7 @@ type SetTransform {
 """
 Lets you manipulate names of the system columns to avoid conflicts.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/SetVocab
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/SetVocab
 """
 type SetVocab {
 	"""
@@ -4794,14 +4821,14 @@ type SetWatermarkUpdated implements SetWatermarkResult {
 """
 Defines how external data should be cached.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/SourceCaching
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/SourceCaching
 """
 union SourceCaching = SourceCachingForever
 
 """
 After source was processed once it will never be ingested again.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/SourceCaching#/$defs/Forever
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/SourceCaching#/$defs/Forever
 """
 type SourceCachingForever {
 	dummy: String
@@ -4810,7 +4837,7 @@ type SourceCachingForever {
 """
 Specifies how input files should be ordered before ingestion.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/SourceOrdering
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/SourceOrdering
 """
 enum SourceOrdering {
 	BY_EVENT_TIME
@@ -4820,7 +4847,7 @@ enum SourceOrdering {
 """
 The state of the source the data was added from to allow fast resuming.
 
-Schema: https://opendatafabric.org/schemas/source/v1alpha1/SourceState
+Schema: https://opendatafabric.org/schemas/sources/v1alpha1/SourceState
 """
 type SourceState {
 	"""
@@ -4854,7 +4881,7 @@ input SpecViewOptsInput {
 """
 Defines a query in a multi-step SQL transformation.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/SqlQueryStep
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/SqlQueryStep
 """
 type SqlQueryStep {
 	"""
@@ -4985,7 +5012,7 @@ enum TaskStatus {
 Temporary Flink-specific extension for creating temporal tables from
 streams.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/TemporalTable
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/TemporalTable
 """
 type TemporalTable {
 	"""
@@ -5027,7 +5054,7 @@ type TotalDatasetsStatistic {
 """
 Engine-specific processing queries that shape the resulting data.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/Transform
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/Transform
 """
 union Transform = TransformSql
 
@@ -5040,7 +5067,7 @@ type TransformInput {
 """
 Describes a derivative transformation input
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/TransformInput
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/TransformInput
 """
 interface TransformInputDataset {
 	message: String!
@@ -5059,7 +5086,7 @@ type TransformInputDatasetNotAccessible implements TransformInputDataset {
 """
 Transform using one of the SQL dialects.
 
-Schema: https://opendatafabric.org/schemas/dataset/v1alpha1/Transform#/$defs/Sql
+Schema: https://opendatafabric.org/schemas/datasets/v1alpha1/Transform#/$defs/Sql
 """
 type TransformSql {
 	engine: String!

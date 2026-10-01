@@ -127,19 +127,9 @@
 <td><code>flowSystem</code></td>
 <td><a href="#flowsystemconfig"><code>FlowSystemConfig</code></a></td>
 <td><pre><code class="language-json">{
-  &quot;flowAgent&quot;: {
-    &quot;awaitingStepSecs&quot;: 1,
-    &quot;mandatoryThrottlingPeriodSecs&quot;: 60,
-    &quot;defaultRetryPolicies&quot;: {}
-  },
-  &quot;flowSystemEventAgent&quot;: {
-    &quot;minDebounceInterval&quot;: &quot;100ms&quot;,
-    &quot;maxListeningTimeout&quot;: &quot;2m&quot;,
-    &quot;batchSize&quot;: 100
-  },
-  &quot;taskAgent&quot;: {
-    &quot;taskCheckingIntervalSecs&quot;: 1
-  }
+  &quot;awaitingStepSecs&quot;: 1,
+  &quot;mandatoryThrottlingPeriodSecs&quot;: 60,
+  &quot;defaultRetryPolicies&quot;: {}
 }</code></pre></td>
 <td>Configuration for the flow system</td>
 </tr>
@@ -171,14 +161,21 @@
 <td>Ingestion's sources</td>
 </tr>
 <tr>
-<td><code>outbox</code></td>
-<td><a href="#outboxagentconfig"><code>OutboxAgentConfig</code></a></td>
+<td><code>backgroundAgents</code></td>
+<td><a href="#backgroundagentsconfig"><code>BackgroundAgentsConfig</code></a></td>
 <td><pre><code class="language-json">{
-  &quot;minDebounceInterval&quot;: &quot;100ms&quot;,
+  &quot;minDebounceInterval&quot;: &quot;20ms&quot;,
   &quot;maxListeningTimeout&quot;: &quot;2m&quot;,
-  &quot;batchSize&quot;: 100
+  &quot;batching&quot;: {
+    &quot;outboxMessages&quot;: 100,
+    &quot;flowSystemEvents&quot;: 100,
+    &quot;flowActivations&quot;: 100
+  },
+  &quot;concurrency&quot;: {
+    &quot;outboxConsumers&quot;: 8
+  }
 }</code></pre></td>
-<td>Outbox agent configuration</td>
+<td>Background agents configuration (outbox, flow system events, tasks)</td>
 </tr>
 <tr>
 <td><code>email</code></td>
@@ -615,7 +612,7 @@ tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32; echo
 <tr>
 <td><code>maxConnections</code></td>
 <td><code>integer</code></td>
-<td><code class="language-json">null</code></td>
+<td><code class="language-json">20</code></td>
 <td></td>
 </tr>
 <tr>
@@ -1244,58 +1241,27 @@ Base type: `string`
 <thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
 <tbody>
 <tr>
-<td><code>flowAgent</code></td>
-<td><a href="#flowagentconfig"><code>FlowAgentConfig</code></a></td>
-<td><pre><code class="language-json">{
-  &quot;awaitingStepSecs&quot;: 1,
-  &quot;mandatoryThrottlingPeriodSecs&quot;: 60,
-  &quot;defaultRetryPolicies&quot;: {}
-}</code></pre></td>
-<td></td>
-</tr>
-<tr>
-<td><code>flowSystemEventAgent</code></td>
-<td><a href="#flowsystemeventagentconfig"><code>FlowSystemEventAgentConfig</code></a></td>
-<td><pre><code class="language-json">{
-  &quot;minDebounceInterval&quot;: &quot;100ms&quot;,
-  &quot;maxListeningTimeout&quot;: &quot;2m&quot;,
-  &quot;batchSize&quot;: 100
-}</code></pre></td>
-<td></td>
-</tr>
-<tr>
-<td><code>taskAgent</code></td>
-<td><a href="#taskagentconfig"><code>TaskAgentConfig</code></a></td>
-<td><pre><code class="language-json">{
-  &quot;taskCheckingIntervalSecs&quot;: 1
-}</code></pre></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-
-## `FlowAgentConfig`
-
-<table>
-<thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr>
 <td><code>awaitingStepSecs</code></td>
 <td><code>integer</code></td>
 <td><code class="language-json">1</code></td>
-<td></td>
+<td>
+
+Scheduling granularity: activation times are rounded to it, and failed
+activations retried after it. Not a polling period
+
+</td>
 </tr>
 <tr>
 <td><code>mandatoryThrottlingPeriodSecs</code></td>
 <td><code>integer</code></td>
 <td><code class="language-json">60</code></td>
-<td></td>
+<td>Minimal time between two runs of the same flow</td>
 </tr>
 <tr>
 <td><code>defaultRetryPolicies</code></td>
 <td><code>object</code></td>
 <td><code class="language-json">{}</code></td>
-<td></td>
+<td>Retry policies applied by default, by flow type</td>
 </tr>
 </tbody>
 </table>
@@ -1335,46 +1301,6 @@ Base type: `string`
 <tr><td><code>Linear</code></td></tr>
 <tr><td><code>Exponential</code></td></tr>
 <tr><td><code>ExponentialWithJitter</code></td></tr>
-</tbody>
-</table>
-
-## `FlowSystemEventAgentConfig`
-
-<table>
-<thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr>
-<td><code>minDebounceInterval</code></td>
-<td><a href="#durationstring"><code>DurationString</code></a></td>
-<td><code class="language-json">&quot;100ms&quot;</code></td>
-<td></td>
-</tr>
-<tr>
-<td><code>maxListeningTimeout</code></td>
-<td><a href="#durationstring"><code>DurationString</code></a></td>
-<td><code class="language-json">&quot;2m&quot;</code></td>
-<td></td>
-</tr>
-<tr>
-<td><code>batchSize</code></td>
-<td><code>integer</code></td>
-<td><code class="language-json">100</code></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-
-## `TaskAgentConfig`
-
-<table>
-<thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr>
-<td><code>taskCheckingIntervalSecs</code></td>
-<td><code>integer</code></td>
-<td><code class="language-json">1</code></td>
-<td></td>
-</tr>
 </tbody>
 </table>
 
@@ -1564,7 +1490,7 @@ See: [ethereum/execution-apis#295](https://github.com/ethereum/execution-apis/is
 </tbody>
 </table>
 
-## `OutboxAgentConfig`
+## `BackgroundAgentsConfig`
 
 <table>
 <thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
@@ -1572,20 +1498,94 @@ See: [ethereum/execution-apis#295](https://github.com/ethereum/execution-apis/is
 <tr>
 <td><code>minDebounceInterval</code></td>
 <td><a href="#durationstring"><code>DurationString</code></a></td>
-<td><code class="language-json">&quot;100ms&quot;</code></td>
-<td></td>
+<td><code class="language-json">&quot;20ms&quot;</code></td>
+<td>How long agents absorb a burst of change signals before processing</td>
 </tr>
 <tr>
 <td><code>maxListeningTimeout</code></td>
 <td><a href="#durationstring"><code>DurationString</code></a></td>
 <td><code class="language-json">&quot;2m&quot;</code></td>
-<td></td>
+<td>
+
+Fallback period to re-check for work if a change signal is missed.
+With `SQLite` it also paces the polling. The flow agent wakes up at
+the next flow activation moment regardless of it.
+
+</td>
 </tr>
 <tr>
-<td><code>batchSize</code></td>
+<td><code>batching</code></td>
+<td><a href="#backgroundagentsbatchingconfig"><code>BackgroundAgentsBatchingConfig</code></a></td>
+<td><pre><code class="language-json">{
+  &quot;outboxMessages&quot;: 100,
+  &quot;flowSystemEvents&quot;: 100,
+  &quot;flowActivations&quot;: 100
+}</code></pre></td>
+<td>Batch sizes of agents processing records in batches</td>
+</tr>
+<tr>
+<td><code>concurrency</code></td>
+<td><a href="#backgroundagentsconcurrencyconfig"><code>BackgroundAgentsConcurrencyConfig</code></a></td>
+<td><pre><code class="language-json">{
+  &quot;outboxConsumers&quot;: 8
+}</code></pre></td>
+<td>Concurrency limits of agents processing records in parallel</td>
+</tr>
+</tbody>
+</table>
+
+## `BackgroundAgentsBatchingConfig`
+
+<table>
+<thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr>
+<td><code>outboxMessages</code></td>
 <td><code>integer</code></td>
 <td><code class="language-json">100</code></td>
-<td></td>
+<td>Outbox messages relayed per transaction. 0 is treated as 1</td>
+</tr>
+<tr>
+<td><code>flowSystemEvents</code></td>
+<td><code>integer</code></td>
+<td><code class="language-json">100</code></td>
+<td>
+
+Flow system events applied to a projection per transaction. 0 is
+treated as 1
+
+</td>
+</tr>
+<tr>
+<td><code>flowActivations</code></td>
+<td><code>integer</code></td>
+<td><code class="language-json">100</code></td>
+<td>
+
+Due flows the flow agent loads at once before activating them.
+0 is treated as 1
+
+</td>
+</tr>
+</tbody>
+</table>
+
+## `BackgroundAgentsConcurrencyConfig`
+
+<table>
+<thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr>
+<td><code>outboxConsumers</code></td>
+<td><code>integer</code></td>
+<td><code class="language-json">8</code></td>
+<td>
+
+Outbox consumers running at once, in order per producer, each holding a
+pooled connection: e.g. 8 with Postgres, 1 with `SQLite`. 0 is treated
+as 1
+
+</td>
 </tr>
 </tbody>
 </table>

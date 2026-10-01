@@ -117,19 +117,9 @@
       "$ref": "#/$defs/FlowSystemConfig",
       "description": "Configuration for the flow system",
       "default": {
-        "flowAgent": {
-          "awaitingStepSecs": 1,
-          "mandatoryThrottlingPeriodSecs": 60,
-          "defaultRetryPolicies": {}
-        },
-        "flowSystemEventAgent": {
-          "minDebounceInterval": "100ms",
-          "maxListeningTimeout": "2m",
-          "batchSize": 100
-        },
-        "taskAgent": {
-          "taskCheckingIntervalSecs": 1
-        }
+        "awaitingStepSecs": 1,
+        "mandatoryThrottlingPeriodSecs": 60,
+        "defaultRetryPolicies": {}
       }
     },
     "webhooks": {
@@ -157,13 +147,20 @@
         }
       }
     },
-    "outbox": {
-      "$ref": "#/$defs/OutboxAgentConfig",
-      "description": "Outbox agent configuration",
+    "backgroundAgents": {
+      "$ref": "#/$defs/BackgroundAgentsConfig",
+      "description": "Background agents configuration (outbox, flow system events, tasks)",
       "default": {
-        "minDebounceInterval": "100ms",
+        "minDebounceInterval": "20ms",
         "maxListeningTimeout": "2m",
-        "batchSize": 100
+        "batching": {
+          "outboxMessages": 100,
+          "flowSystemEvents": 100,
+          "flowActivations": 100
+        },
+        "concurrency": {
+          "outboxConsumers": 8
+        }
       }
     },
     "email": {
@@ -514,12 +511,10 @@
               "maximum": 65535
             },
             "maxConnections": {
-              "type": [
-                "integer",
-                "null"
-              ],
+              "type": "integer",
               "format": "uint32",
-              "minimum": 0
+              "minimum": 0,
+              "default": 20
             },
             "maxLifetimeSecs": {
               "type": [
@@ -1022,42 +1017,16 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "flowAgent": {
-          "$ref": "#/$defs/FlowAgentConfig",
-          "default": {
-            "awaitingStepSecs": 1,
-            "mandatoryThrottlingPeriodSecs": 60,
-            "defaultRetryPolicies": {}
-          }
-        },
-        "flowSystemEventAgent": {
-          "$ref": "#/$defs/FlowSystemEventAgentConfig",
-          "default": {
-            "minDebounceInterval": "100ms",
-            "maxListeningTimeout": "2m",
-            "batchSize": 100
-          }
-        },
-        "taskAgent": {
-          "$ref": "#/$defs/TaskAgentConfig",
-          "default": {
-            "taskCheckingIntervalSecs": 1
-          }
-        }
-      }
-    },
-    "FlowAgentConfig": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
         "awaitingStepSecs": {
           "type": "integer",
           "format": "int64",
+          "description": "Scheduling granularity: activation times are rounded to it, and failed\nactivations retried after it. Not a polling period",
           "default": 1
         },
         "mandatoryThrottlingPeriodSecs": {
           "type": "integer",
           "format": "int64",
+          "description": "Minimal time between two runs of the same flow",
           "default": 60
         },
         "defaultRetryPolicies": {
@@ -1065,6 +1034,7 @@
           "additionalProperties": {
             "$ref": "#/$defs/RetryPolicyConfig"
           },
+          "description": "Retry policies applied by default, by flow type",
           "default": {},
           "combine": "merge"
         }
@@ -1110,37 +1080,6 @@
         "Exponential",
         "ExponentialWithJitter"
       ]
-    },
-    "FlowSystemEventAgentConfig": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "minDebounceInterval": {
-          "$ref": "#/$defs/DurationString",
-          "default": "100ms"
-        },
-        "maxListeningTimeout": {
-          "$ref": "#/$defs/DurationString",
-          "default": "2m"
-        },
-        "batchSize": {
-          "type": "integer",
-          "format": "uint",
-          "minimum": 0,
-          "default": 100
-        }
-      }
-    },
-    "TaskAgentConfig": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "taskCheckingIntervalSecs": {
-          "type": "integer",
-          "format": "int64",
-          "default": 1
-        }
-      }
     },
     "WebhooksConfig": {
       "type": "object",
@@ -1271,23 +1210,75 @@
         "nodeUrl"
       ]
     },
-    "OutboxAgentConfig": {
+    "BackgroundAgentsConfig": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "minDebounceInterval": {
           "$ref": "#/$defs/DurationString",
-          "default": "100ms"
+          "description": "How long agents absorb a burst of change signals before processing",
+          "default": "20ms"
         },
         "maxListeningTimeout": {
           "$ref": "#/$defs/DurationString",
+          "description": "Fallback period to re-check for work if a change signal is missed.\nWith `SQLite` it also paces the polling. The flow agent wakes up at\nthe next flow activation moment regardless of it.",
           "default": "2m"
         },
-        "batchSize": {
+        "batching": {
+          "$ref": "#/$defs/BackgroundAgentsBatchingConfig",
+          "description": "Batch sizes of agents processing records in batches",
+          "default": {
+            "outboxMessages": 100,
+            "flowSystemEvents": 100,
+            "flowActivations": 100
+          }
+        },
+        "concurrency": {
+          "$ref": "#/$defs/BackgroundAgentsConcurrencyConfig",
+          "description": "Concurrency limits of agents processing records in parallel",
+          "default": {
+            "outboxConsumers": 8
+          }
+        }
+      }
+    },
+    "BackgroundAgentsBatchingConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "outboxMessages": {
           "type": "integer",
           "format": "uint",
           "minimum": 0,
+          "description": "Outbox messages relayed per transaction. 0 is treated as 1",
           "default": 100
+        },
+        "flowSystemEvents": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0,
+          "description": "Flow system events applied to a projection per transaction. 0 is\ntreated as 1",
+          "default": 100
+        },
+        "flowActivations": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0,
+          "description": "Due flows the flow agent loads at once before activating them.\n0 is treated as 1",
+          "default": 100
+        }
+      }
+    },
+    "BackgroundAgentsConcurrencyConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "outboxConsumers": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0,
+          "description": "Outbox consumers running at once, in order per producer, each holding a\npooled connection: e.g. 8 with Postgres, 1 with `SQLite`. 0 is treated\nas 1",
+          "default": 8
         }
       }
     },

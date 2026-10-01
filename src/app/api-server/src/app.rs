@@ -420,6 +420,7 @@ pub async fn init_dependencies(
     b.bind::<dyn messaging_outbox::Outbox, messaging_outbox::OutboxDispatchingImpl>();
     b.add::<messaging_outbox::OutboxAgentImpl>();
     b.add::<messaging_outbox::OutboxAgentMetrics>();
+    b.add::<wakeup_listener::WakeupListenerMetrics>();
 
     messaging_outbox::register_message_dispatcher::<kamu_datasets::DatasetLifecycleMessage>(
         &mut b,
@@ -489,7 +490,14 @@ pub async fn init_dependencies(
         kamu_resources::MESSAGE_PRODUCER_KAMU_RESOURCE_SERVICE,
     );
 
-    b.add_value(config.outbox.into_system());
+    // Background agents configuration
+    b.add_value(config.background_agents.wakeup_listener_config());
+    b.add_value(config.background_agents.outbox_agent_config());
+    b.add_value(config.background_agents.flow_system_event_agent_config());
+    b.add_value(config.background_agents.flow_agent_activation_config());
+
+    // Flow system configuration
+    b.add_value(config.flow_system.into_system());
 
     // Webhooks configuration
     let webhooks_config = config.webhooks;
@@ -536,46 +544,7 @@ pub async fn init_dependencies(
         ));
     }
 
-    b.add_value(kamu_task_system::TaskAgentConfig::new(Duration::seconds(
-        config.flow_system.task_agent.task_checking_interval_secs,
-    )));
     kamu_task_system_services::register_dependencies(&mut b);
-
-    let flow_system_event_agent_config = config.flow_system.flow_system_event_agent;
-    b.add_value(flow_system_event_agent_config.into_system());
-
-    let flow_agent_config = config.flow_system.flow_agent;
-    b.add_value(kamu_flow_system::FlowAgentConfig::new(
-        Duration::seconds(flow_agent_config.awaiting_step_secs),
-        Duration::seconds(flow_agent_config.mandatory_throttling_period_secs),
-        flow_agent_config
-            .default_retry_policies
-            .iter()
-            .map(|(flow_type, retry_policy_config)| {
-                (
-                    flow_type.clone(),
-                    kamu_flow_system::RetryPolicy::new(
-                        retry_policy_config.max_attempts.unwrap_or(0),
-                        retry_policy_config.min_delay_secs.unwrap_or(0),
-                        match retry_policy_config.backoff_type {
-                            Some(config::RetryPolicyConfigBackoffType::Exponential) => {
-                                kamu_flow_system::RetryBackoffType::Exponential
-                            }
-                            Some(config::RetryPolicyConfigBackoffType::Linear) => {
-                                kamu_flow_system::RetryBackoffType::Linear
-                            }
-                            Some(config::RetryPolicyConfigBackoffType::ExponentialWithJitter) => {
-                                kamu_flow_system::RetryBackoffType::ExponentialWithJitter
-                            }
-                            Some(config::RetryPolicyConfigBackoffType::Fixed) | None => {
-                                kamu_flow_system::RetryBackoffType::Fixed
-                            }
-                        },
-                    ),
-                )
-            })
-            .collect(),
-    ));
 
     let quota_defaults = kamu_datasets_services::QuotaDefaultsConfig::default();
     let default_account_storage_limit_in_bytes = config

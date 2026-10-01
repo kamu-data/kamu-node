@@ -31,7 +31,7 @@ query-extensions-json = ["kamu/query-extensions-json"]
 
 
 [dependencies]
-dill = { version = "0.15", default-features = false }
+dill = { version = "0.17", default-features = false, features = ["nightly"] }
 
 async-utils = { workspace = true }
 container-runtime = { workspace = true }
@@ -63,6 +63,7 @@ odf = { workspace = true, default-features = false, features = [
 s3-utils = { workspace = true }
 server-console = { workspace = true }
 time-source = { workspace = true }
+wakeup-listener = { workspace = true }
 
 kamu = { workspace = true, features = ["query-extensions-nested-functions"] }
 kamu-accounts = { workspace = true }
@@ -136,6 +137,9 @@ kamu-task-system-inmem = { workspace = true }
 kamu-task-system-postgres = { workspace = true }
 kamu-task-system-services = { workspace = true }
 kamu-task-system-sqlite = { workspace = true }
+kamu-wakeup-listener-inmem = { workspace = true }
+kamu-wakeup-listener-postgres = { workspace = true }
+kamu-wakeup-listener-sqlite = { workspace = true }
 kamu-webhooks = { workspace = true }
 kamu-webhooks-inmem = { workspace = true }
 kamu-webhooks-postgres = { workspace = true }
@@ -160,7 +164,7 @@ sqlx = { version = "0.8", default-features = false, features = [
     "runtime-tokio",
     "tls-rustls-aws-lc-rs",
 ] }
-tokio-tungstenite = { version = "0.29", features = ["rustls-tls-webpki-roots"] }
+tokio-tungstenite = { version = "0.30", features = ["rustls-tls-webpki-roots"] }
 
 # APIs
 arrow-flight = { version = "58", features = ["flight-sql-experimental"] }
@@ -199,7 +203,7 @@ indoc = "2"
 secrecy = "0.10"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-setty = { version = "1.0", features = [
+setty = { version = "1", features = [
     "derive-clone",
     "derive-debug",
     "derive-partial-eq",

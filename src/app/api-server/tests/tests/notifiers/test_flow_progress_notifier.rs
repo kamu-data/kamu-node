@@ -51,10 +51,12 @@ use kamu_flow_system::*;
 use kamu_flow_system_inmem::{InMemoryFlowEventStore, InMemoryFlowSystemEventBridge};
 use kamu_flow_system_services::FlowQueryServiceImpl;
 use kamu_task_system::{TaskError, TaskID, TaskOutcome};
+use kamu_wakeup_listener_inmem::InMemoryWakeupHub;
 use messaging_outbox::{Outbox, OutboxExt, OutboxImmediateImpl, register_message_dispatcher};
 use odf::dataset::DatasetStorageUnitLocalFs;
 use tempfile::TempDir;
 use time_source::SystemTimeSourceDefault;
+use wakeup_listener::WakeupListenerMetrics;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -115,6 +117,8 @@ impl FlowProgressNotifierHarness {
             .add::<FlowQueryServiceImpl>()
             .add::<InMemoryFlowEventStore>()
             .add::<InMemoryFlowSystemEventBridge>()
+            .add::<InMemoryWakeupHub>()
+            .add::<WakeupListenerMetrics>()
             .add::<DatasetEntryServiceImpl>()
             .add::<InMemoryDatasetEntryRepository>()
             .add::<DidGeneratorDefault>()
@@ -122,11 +126,11 @@ impl FlowProgressNotifierHarness {
             .add_builder(DatasetStorageUnitLocalFs::builder(datasets_dir))
             .add::<odf::dataset::DatasetLfsBuilderDefault>()
             .add_value(CurrentAccountSubject::new_test())
-            .add_value(FlowAgentConfig::new(
-                TimeDelta::seconds(1),
-                TimeDelta::minutes(1),
-                HashMap::new(),
-            ))
+            .add_value(FlowAgentConfig {
+                awaiting_step: TimeDelta::seconds(1),
+                mandatory_throttling_period: TimeDelta::minutes(1),
+                default_retry_policy_by_flow_type: HashMap::new(),
+            })
             .add::<InMemoryAccountRepository>()
             .add::<AccountServiceImpl>()
             .add::<AccessTokenServiceImpl>()

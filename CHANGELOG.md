@@ -15,6 +15,24 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
+## [0.91.0] - 2026-10-01
+### Upstream [kamu `0.268.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.268.1)
+- Task and flow agents no longer poll: Postgres LISTEN/NOTIFY, SQLite incremental polling
+  (requires new Postgres migrations `tasks_listen_notify` and `flows_listen_notify`)
+- Prometheus metrics for background agents
+- Outbox consumers run with bounded concurrency
+### Changed
+- **Breaking config change:** background agents are configured in one top-level `backgroundAgents` section:
+  - `minDebounceInterval` (default `20ms`) and `maxListeningTimeout` (default `120s`) replace
+    the per-agent settings in `outbox` and `flowSystem.flowSystemEventAgent`
+  - `batching.outboxMessages`, `batching.flowSystemEvents` and `batching.flowActivations` (default `100` each)
+    replace `outbox.batchSize` and `flowSystem.flowSystemEventAgent.batchSize`
+  - `concurrency.outboxConsumers` (default `8`) limits outbox consumers handling messages at once
+  - `flowSystem.taskAgent` is removed
+  - `flowSystem.flowAgent.*` settings moved one level up to `flowSystem.*`
+- `database.maxConnections` defaults to `20` connections
+- Upgraded `dill` to `0.17` and `opentelemetry` to `0.33`
+
 ## [0.90.0] - 2026-09-19
 ### Upstream [kamu `0.267.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.267.0)
 - Resource system!

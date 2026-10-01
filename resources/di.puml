@@ -79,6 +79,7 @@ interface "EngineProvisioner" <<i>>
 interface "ExpensiveAccountRepository" <<i>>
 interface "FindCollectionEntriesUseCase" <<i>>
 interface "FindVersionedFileVersionUseCase" <<i>>
+interface "FlowActivationWakeupSource" <<i>>
 interface "FlowAgent" <<i>>
 interface "FlowAgentTestDriver" <<i>>
 interface "FlowConfigurationEventStore" <<i>>
@@ -178,6 +179,7 @@ interface "SystemTimeSource" <<i>>
 interface "TaskAgent" <<i>>
 interface "TaskDefinitionPlanner" <<i>>
 interface "TaskEventStore" <<i>>
+interface "TaskQueueWakeupSource" <<i>>
 interface "TaskRunner" <<i>>
 interface "TaskScheduler" <<i>>
 interface "TransformElaborationService" <<i>>
@@ -296,8 +298,11 @@ class "FileUploadLimitConfig" <<singleton>>
 class "FindCollectionEntriesUseCaseImpl"
 class "FindVersionedFileVersionUseCaseImpl"
 class "FlowAbortHelper"
+class "FlowAgentActivationConfig" <<singleton>>
 class "FlowAgentConfig" <<singleton>>
 class "FlowAgentImpl" <<singleton>>
+class "FlowAgentMetrics" <<singleton>>
+class "FlowCompletionMetrics" <<singleton>>
 class "FlowConfigurationServiceImpl"
 class "FlowControllerCompact"
 class "FlowControllerIngest"
@@ -314,6 +319,7 @@ class "FlowSchedulingServiceImpl"
 class "FlowSensorDispatcherImpl" <<singleton>>
 class "FlowSystemEventAgentConfig" <<singleton>>
 class "FlowSystemEventAgentImpl" <<singleton>>
+class "FlowSystemEventAgentMetrics" <<singleton>>
 class "FlowTriggerServiceImpl"
 class "FlowWebhooksEventBridge"
 class "GenericResourceQueryServiceImpl"
@@ -381,12 +387,14 @@ class "PostgresDatasetReferenceRepository"
 class "PostgresDatasetStatisticsRepository"
 class "PostgresDidSecretKeyRepository"
 class "PostgresEmbeddingsCacheRepository"
+class "PostgresFlowActivationWakeupSource" <<agnostic>>
 class "PostgresFlowConfigurationEventStore"
 class "PostgresFlowEventStore"
 class "PostgresFlowProcessStateQuery"
 class "PostgresFlowProcessStateRepository"
 class "PostgresFlowSystemEventBridge" <<agnostic>>
 class "PostgresFlowTriggerEventStore"
+class "PostgresNotificationHub" <<singleton>>
 class "PostgresOAuthDeviceCodeRepository"
 class "PostgresOutboxMessageBridge" <<agnostic>>
 class "PostgresPasswordRefresher"
@@ -397,6 +405,7 @@ class "PostgresResourceLabelProjectionRepository"
 class "PostgresResourceRepository"
 class "PostgresSecretSetProjectionRepository"
 class "PostgresTaskEventStore"
+class "PostgresTaskQueueWakeupSource" <<agnostic>>
 class "PostgresTransactionManager"
 class "PostgresVariableSetProjectionRepository"
 class "PostgresWeb3AuthEip4361NonceRepository"
@@ -493,8 +502,8 @@ class "StorageTypedResourceQueryServiceImpl"
 class "SyncRequestBuilder"
 class "SyncServiceImpl"
 class "SystemTimeSourceDefault" <<agnostic>>
-class "TaskAgentConfig" <<singleton>>
 class "TaskAgentImpl" <<singleton>>
+class "TaskAgentMetrics" <<singleton>>
 class "TaskSchedulerImpl"
 class "TenancyConfig" <<singleton>>
 class "TransactionRef" <<singleton>>
@@ -527,6 +536,8 @@ class "VerificationServiceImpl"
 class "VerifyDatasetUseCaseImpl"
 class "ViewCollectionEntriesUseCaseImpl"
 class "ViewVersionedFileHistoryUseCaseImpl"
+class "WakeupListenerConfig" <<singleton>>
+class "WakeupListenerMetrics" <<singleton>>
 class "Web3AuthEip4361NonceServiceImpl"
 class "Web3WalletAuthenticationProvider"
 class "WebhookDatasetRemovalHandler"
@@ -1182,12 +1193,14 @@ class "WsSmartTransferProtocolClient"
 "CreateDatasetUseCaseHelper"  --> "DatasetStorageUnitWriter"
 "CreateDatasetUseCaseHelper"  --> "SystemTimeSource"
 "CreateDatasetUseCaseHelper"  --> "TenancyConfig"
+"FlowActivationWakeupSource" <|-- "PostgresFlowActivationWakeupSource"
+"PostgresFlowActivationWakeupSource"  --> "PostgresNotificationHub"
 "FlowConfigurationEventStore" <|-- "PostgresFlowConfigurationEventStore"
 "PostgresFlowConfigurationEventStore"  --> "TransactionRefT"
 "FlowEventStore" <|-- "PostgresFlowEventStore"
 "PostgresFlowEventStore"  --> "TransactionRefT"
 "FlowSystemEventBridge" <|-- "PostgresFlowSystemEventBridge"
-"PostgresFlowSystemEventBridge"  --> "Pool"
+"PostgresFlowSystemEventBridge"  --> "PostgresNotificationHub"
 "FlowTriggerEventStore" <|-- "PostgresFlowTriggerEventStore"
 "PostgresFlowTriggerEventStore"  --> "TransactionRefT"
 "FlowProcessStateQuery" <|-- "PostgresFlowProcessStateQuery"
@@ -1201,6 +1214,7 @@ class "WsSmartTransferProtocolClient"
 "FlowAbortHelper"  --> "FlowSensorDispatcher"
 "FlowAbortHelper"  --> "TaskScheduler"
 "FlowAbortHelper"  --> "SystemTimeSource"
+"FlowAbortHelper"  --> "FlowCompletionMetrics"
 "BackgroundAgent" <|-- "FlowAgentImpl"
 "InitOnStartup" <|-- "FlowAgentImpl"
 "FlowAgent" <|-- "FlowAgentImpl"
@@ -1209,8 +1223,15 @@ class "WsSmartTransferProtocolClient"
 "MessageConsumerT" <|-- "FlowAgentImpl"
 "MessageConsumerT" <|-- "FlowAgentImpl"
 "FlowAgentImpl"  --> "CatalogWeakRef"
+"FlowAgentImpl"  --> "FlowActivationWakeupSource"
 "FlowAgentImpl"  --> "SystemTimeSource"
+"FlowAgentImpl"  --> "FlowAgentActivationConfig"
 "FlowAgentImpl"  --> "FlowAgentConfig"
+"FlowAgentImpl"  --> "FlowAgentMetrics"
+"FlowAgentImpl"  --> "FlowCompletionMetrics"
+"FlowAgentImpl"  --> "WakeupListenerConfig"
+"MetricsProvider" <|-- "FlowAgentMetrics"
+"MetricsProvider" <|-- "FlowCompletionMetrics"
 "FlowQueryService" <|-- "FlowQueryServiceImpl"
 "FlowQueryServiceImpl"  --> "FlowEventStore"
 "FlowRunService" <|-- "FlowRunServiceImpl"
@@ -1241,13 +1262,16 @@ class "WsSmartTransferProtocolClient"
 "FlowSystemEventAgentImpl"  --> "CatalogWeakRef"
 "FlowSystemEventAgentImpl"  --> "FlowSystemEventBridge"
 "FlowSystemEventAgentImpl"  --> "FlowSystemEventAgentConfig"
+"FlowSystemEventAgentImpl"  --> "FlowSystemEventAgentMetrics"
+"FlowSystemEventAgentImpl"  --> "WakeupListenerConfig"
+"MetricsProvider" <|-- "FlowSystemEventAgentMetrics"
 "FlowScopeRemovalHandler" <|-- "FlowTriggerServiceImpl"
 "FlowTriggerService" <|-- "FlowTriggerServiceImpl"
 "FlowTriggerServiceImpl"  --> "FlowTriggerEventStore"
 "FlowTriggerServiceImpl"  --> "Outbox"
 "FlowTriggerServiceImpl"  --> "SystemTimeSource"
 "OutboxMessageBridge" <|-- "PostgresOutboxMessageBridge"
-"PostgresOutboxMessageBridge"  --> "Pool"
+"PostgresOutboxMessageBridge"  --> "PostgresNotificationHub"
 "ResourceFacade" <|-- "LocalResourceFacadeImpl"
 "LocalResourceFacadeImpl"  --> "GenericResourceQueryService"
 "LocalResourceFacadeImpl"  --> "ResourceAccountResolver"
@@ -1338,17 +1362,24 @@ class "WsSmartTransferProtocolClient"
 "StorageTypedResourceQueryServiceImpl"  --> "ResourceRepository"
 "TaskEventStore" <|-- "PostgresTaskEventStore"
 "PostgresTaskEventStore"  --> "TransactionRefT"
+"TaskQueueWakeupSource" <|-- "PostgresTaskQueueWakeupSource"
+"PostgresTaskQueueWakeupSource"  --> "PostgresNotificationHub"
 "TaskDefinitionPlanner" <|-- "ProbeTaskPlanner"
 "TaskRunner" <|-- "ProbeTaskRunner"
 "BackgroundAgent" <|-- "TaskAgentImpl"
 "InitOnStartup" <|-- "TaskAgentImpl"
 "TaskAgent" <|-- "TaskAgentImpl"
 "TaskAgentImpl"  --> "CatalogWeakRef"
+"TaskAgentImpl"  --> "TaskQueueWakeupSource"
 "TaskAgentImpl"  --> "SystemTimeSource"
-"TaskAgentImpl"  --> "TaskAgentConfig"
+"TaskAgentImpl"  --> "TaskAgentMetrics"
+"TaskAgentImpl"  --> "WakeupListenerConfig"
+"MetricsProvider" <|-- "TaskAgentMetrics"
 "TaskScheduler" <|-- "TaskSchedulerImpl"
 "TaskSchedulerImpl"  --> "TaskEventStore"
 "TaskSchedulerImpl"  --> "SystemTimeSource"
+"PostgresNotificationHub"  --> "Pool"
+"PostgresNotificationHub"  --> "WakeupListenerMetrics"
 "WebhookDeliveryRepository" <|-- "PostgresWebhookDeliveryRepository"
 "PostgresWebhookDeliveryRepository"  --> "TransactionRefT"
 "WebhookSubscriptionEventStore" <|-- "PostgresWebhookSubscriptionEventStore"
@@ -1401,6 +1432,7 @@ class "WsSmartTransferProtocolClient"
 "OutboxAgentImpl"  --> "OutboxMessageBridge"
 "OutboxAgentImpl"  --> "OutboxAgentMetrics"
 "OutboxAgentImpl"  --> "OutboxAgentConfig"
+"OutboxAgentImpl"  --> "WakeupListenerConfig"
 "MetricsProvider" <|-- "OutboxAgentMetrics"
 "OutboxDispatchingImpl"  --> "Catalog"
 "OutboxDispatchingImpl"  --> "OutboxImmediateImpl"
@@ -1421,4 +1453,5 @@ class "WsSmartTransferProtocolClient"
 "DatasetFactoryImpl"  --> "IpfsGateway"
 "DatasetFactoryImpl" "?" --> "S3Metrics"
 "SystemTimeSource" <|-- "SystemTimeSourceDefault"
+"MetricsProvider" <|-- "WakeupListenerMetrics"
 @enduml
