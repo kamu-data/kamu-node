@@ -31,16 +31,24 @@ kamu-node-puppet = { workspace = true, default-features = false, features = [
 ] }
 odf = { workspace = true }
 
-arrow-flight = { version = "58", features = ["flight-sql-experimental"] }
+arrow-flight = { version = "58", features = [
+    "flight-sql-experimental",
+] }
 async-trait = "0.1"
-chrono = { version = "0.4", default-features = false, features = ["now"] }
+chrono = { version = "0.4", default-features = false, features = [
+    "now",
+] }
 datafusion = { version = "54", default-features = false }
 futures = "0.3"
 indoc = "2"
 pretty_assertions = "1"
 regex = "1"
-reqwest = { version = "0.12", default-features = false, features = ["json"] }
-serde = { version = "1", features = ["derive"] }
+reqwest = { version = "0.12", default-features = false, features = [
+    "json",
+] }
+serde = { version = "1", features = [
+    "derive",
+] }
 serde_json = "1"
 serde_urlencoded = { version = "0.7" }
 serde_yaml = { package = "serde_yaml_ng", version = "0.10" }
@@ -49,7 +57,10 @@ sqlx = { version = "0.8", default-features = false, features = [
     "sqlite",
 ] }
 thiserror = { version = "2", default-features = false }
-tokio = { version = "1", default-features = false, features = ["macros", "fs"] }
+tokio = { version = "1", default-features = false, features = [
+    "fs",
+    "macros",
+] }
 tokio-retry = "0.3"
 tonic = { version = "0.14", default-features = false }
 

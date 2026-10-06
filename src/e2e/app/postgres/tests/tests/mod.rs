@@ -14,4 +14,5 @@ mod test_dataset;
 mod test_flight_sql;
 mod test_odata;
 mod test_odf_core;
+mod test_schema_dump;
 mod test_selftest;

@@ -22,5 +22,7 @@ doctest = false
 
 
 [dependencies]
+tokio = { version = "1", default-features = false, features = [
+    "signal",
+] }
 tracing = { version = "0.1", default-features = false }
-tokio = { version = "1", default-features = false, features = ["signal"] }

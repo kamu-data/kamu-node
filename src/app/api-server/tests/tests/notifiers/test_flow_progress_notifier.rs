@@ -48,7 +48,11 @@ use kamu_datasets::{DatasetEntry, DatasetEntryRepository};
 use kamu_datasets_inmem::InMemoryDatasetEntryRepository;
 use kamu_datasets_services::DatasetEntryServiceImpl;
 use kamu_flow_system::*;
-use kamu_flow_system_inmem::{InMemoryFlowEventStore, InMemoryFlowSystemEventBridge};
+use kamu_flow_system_inmem::{
+    InMemoryFlowActivationLinkRepository,
+    InMemoryFlowEventStore,
+    InMemoryFlowSystemEventBridge,
+};
 use kamu_flow_system_services::FlowQueryServiceImpl;
 use kamu_task_system::{TaskError, TaskID, TaskOutcome};
 use kamu_wakeup_listener_inmem::InMemoryWakeupHub;
@@ -117,6 +121,7 @@ impl FlowProgressNotifierHarness {
             .add::<FlowQueryServiceImpl>()
             .add::<InMemoryFlowEventStore>()
             .add::<InMemoryFlowSystemEventBridge>()
+            .add::<InMemoryFlowActivationLinkRepository>()
             .add::<InMemoryWakeupHub>()
             .add::<WakeupListenerMetrics>()
             .add::<DatasetEntryServiceImpl>()

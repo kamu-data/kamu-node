@@ -22,55 +22,69 @@ scalar AccessTokenID
 
 type Account {
 	"""
-	Unique and stable identifier of this account
+	Unique and stable identifier of this account.
+	Visible to everyone.
 	"""
 	id: AccountID!
 	"""
-	Symbolic account name
+	Symbolic account name.
+	Visible to everyone.
 	"""
 	accountName: AccountName!
 	"""
-	Account name to display
+	Account name to display.
+	Visible to everyone.
 	"""
 	displayName: AccountDisplayName!
 	"""
-	Account type
+	Account type.
+	Visible to everyone.
 	"""
 	accountType: AccountType!
 	"""
-	Account provider
+	Account provider.
+	Visible to everyone.
 	"""
 	accountProvider: AccountProvider!
 	"""
-	Email address
+	Email address.
+	Available only to the account itself.
 	"""
 	email: String!
 	"""
-	Avatar URL
+	Avatar URL.
+	Visible to everyone.
 	"""
 	avatarUrl: Url
 	"""
-	Indicates the administrator status
+	Indicates the administrator status.
+	Visible only to the account itself and to administrators, `null` for
+	everyone else.
 	"""
-	isAdmin: Boolean!
+	isAdmin: Boolean
 	"""
-	Access to the flow configurations of this account
+	Access to the flow configurations of this account.
+	Available only to the account itself and to administrators.
 	"""
 	flows: AccountFlows!
 	"""
-	Access to the access token management
+	Access to the access token management.
+	Available only to the account itself.
 	"""
 	accessTokens: AccountAccessTokens!
 	"""
-	Access to account usage statistic
+	Access to account usage statistic.
+	Available only to the account itself and to administrators.
 	"""
 	usage: AccountUsage!
 	"""
-	Returns datasets belonging to this account
+	Returns datasets belonging to this account.
+	Lists only the datasets the caller is allowed to read.
 	"""
 	ownedDatasets(page: Int, perPage: Int): DatasetConnection!
 	"""
-	Returns account quotas
+	Returns account quotas.
+	Available only to the account itself and to administrators.
 	"""
 	quotas: AccountQuotas!
 }
@@ -223,35 +237,43 @@ type AccountMut {
 	"""
 	account: Account!
 	"""
-	Update account name
+	Update account name.
+	Allowed only to the account itself and to administrators.
 	"""
 	rename(newName: AccountName!): RenameAccountResult!
 	"""
-	Update account email
+	Update account email.
+	Allowed only to the account itself and to administrators.
 	"""
 	updateEmail(newEmail: Email!): UpdateEmailResult!
 	"""
-	Reset password for a selected account. Allowed only for admin users
+	Reset password for a selected account.
+	Allowed only to the account itself and to administrators.
 	"""
 	modifyPassword(password: AccountPassword!): ModifyPasswordResult!
 	"""
-	Change password with confirmation
+	Change password with confirmation.
+	Allowed only to the account itself and to administrators.
 	"""
 	modifyPasswordWithConfirmation(oldPassword: AccountPassword!, newPassword: AccountPassword!): ModifyPasswordResult!
 	"""
-	Delete a selected account. Allowed only for admin users
+	Delete a selected account.
+	Allowed only to the account itself and to administrators.
 	"""
 	delete: DeleteAccountResult!
 	"""
-	Access to the mutable flow configurations of this account
+	Access to the mutable flow configurations of this account.
+	Available only to the account itself.
 	"""
 	flows: AccountFlowsMut!
 	"""
-	Access to the mutable flow configurations of this account
+	Access to the access token management of this account.
+	Available only to the account itself.
 	"""
 	accessTokens: AccountAccessTokensMut!
 	"""
-	Access to the mutable quotas of this account
+	Access to the mutable quotas of this account.
+	Changes are allowed only to administrators.
 	"""
 	quotas: AccountQuotasMut!
 }
@@ -1236,6 +1258,24 @@ type Dataset {
 	asCollection: Collection
 }
 
+"""
+A dataset the caller may read, or only its ID when the dataset is missing
+or not readable by the caller
+"""
+interface DatasetAccessResult {
+	message: String!
+}
+
+type DatasetAccessResultAccessible implements DatasetAccessResult {
+	dataset: Dataset!
+	message: String!
+}
+
+type DatasetAccessResultNotAccessible implements DatasetAccessResult {
+	id: DatasetID!
+	message: String!
+}
+
 enum DatasetAccessRole {
 	"""
 	Role opening the possibility for read-only access
@@ -1520,11 +1560,11 @@ type DatasetMetadata {
 	"""
 	Current upstream dependencies of a dataset
 	"""
-	currentUpstreamDependencies: [DependencyDatasetResult!]!
+	currentUpstreamDependencies: [DatasetAccessResult!]!
 	"""
 	Current downstream dependencies of a dataset
 	"""
-	currentDownstreamDependencies: [DependencyDatasetResult!]!
+	currentDownstreamDependencies: [DatasetAccessResult!]!
 	"""
 	Current polling source used by the root dataset
 	"""
@@ -1896,20 +1936,6 @@ type DeleteResultDanglingReference implements DeleteResult {
 
 type DeleteResultSuccess implements DeleteResult {
 	deletedDataset: DatasetAlias!
-	message: String!
-}
-
-interface DependencyDatasetResult {
-	message: String!
-}
-
-type DependencyDatasetResultAccessible implements DependencyDatasetResult {
-	dataset: Dataset!
-	message: String!
-}
-
-type DependencyDatasetResultNotAccessible implements DependencyDatasetResult {
-	id: DatasetID!
 	message: String!
 }
 
@@ -2306,6 +2332,11 @@ type Flow {
 	"""
 	history: [FlowEvent!]!
 	"""
+	Flows activated by this flow's completion. Filled asynchronously, so
+	the list may lag briefly behind the completion
+	"""
+	downstreamFlows: [FlowDownstreamLink!]!
+	"""
 	A user, who initiated the flow run. None for system-initiated flows
 	"""
 	initiator: Account
@@ -2342,7 +2373,11 @@ type FlowActivationCauseAutoPolling {
 }
 
 type FlowActivationCauseDatasetUpdate {
-	dataset: Dataset!
+	datasetId: DatasetID!
+	"""
+	Null when the dataset was deleted or is not readable by the caller
+	"""
+	dataset: Dataset
 	source: FlowActivationCauseDatasetUpdateSource!
 }
 
@@ -2543,6 +2578,33 @@ type FlowDescriptionWebhookDeliver {
 	eventType: String!
 }
 
+"""
+A flow that was activated by the completion of another flow
+"""
+type FlowDownstreamLink {
+	"""
+	Downstream flow ID
+	"""
+	flowId: FlowID!
+	"""
+	When the downstream flow received the activation
+	"""
+	activatedAt: DateTime!
+	"""
+	Dataset the downstream flow belongs to, if any
+	"""
+	datasetId: DatasetID
+	"""
+	Null only when `datasetId` is null
+	"""
+	dataset: DatasetAccessResult
+	"""
+	Null unless the caller may see the downstream flow: Read on its
+	dataset, and Maintain for webhook deliveries
+	"""
+	flow: Flow
+}
+
 type FlowEdge {
 	node: Flow!
 }
@@ -2566,6 +2628,11 @@ type FlowEventActivationCauseAdded implements FlowEvent {
 type FlowEventCompleted implements FlowEvent {
 	eventId: EventID!
 	eventTime: DateTime!
+	"""
+	Flows activated by this flow's completion. Filled asynchronously, so
+	the list may lag briefly behind the completion
+	"""
+	downstreamFlows: [FlowDownstreamLink!]!
 }
 
 type FlowEventInitiated implements FlowEvent {

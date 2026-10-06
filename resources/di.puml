@@ -79,6 +79,8 @@ interface "EngineProvisioner" <<i>>
 interface "ExpensiveAccountRepository" <<i>>
 interface "FindCollectionEntriesUseCase" <<i>>
 interface "FindVersionedFileVersionUseCase" <<i>>
+interface "FlowActivationCauseUpstreamExtractor" <<i>>
+interface "FlowActivationLinkRepository" <<i>>
 interface "FlowActivationWakeupSource" <<i>>
 interface "FlowAgent" <<i>>
 interface "FlowAgentTestDriver" <<i>>
@@ -259,6 +261,7 @@ class "DatasetKeyValueServiceSysEnv"
 class "DatasetProperties" <<singleton>>
 class "DatasetReferenceIndexer"
 class "DatasetReferenceServiceImpl"
+class "DatasetResourceUpstreamFlowExtractor"
 class "DatasetS3BuilderDatabaseBackedImpl"
 class "DatasetSearchSchemaProvider"
 class "DatasetSearchServiceImpl"
@@ -298,6 +301,7 @@ class "FileUploadLimitConfig" <<singleton>>
 class "FindCollectionEntriesUseCaseImpl"
 class "FindVersionedFileVersionUseCaseImpl"
 class "FlowAbortHelper"
+class "FlowActivationLinkProjector"
 class "FlowAgentActivationConfig" <<singleton>>
 class "FlowAgentConfig" <<singleton>>
 class "FlowAgentImpl" <<singleton>>
@@ -387,6 +391,7 @@ class "PostgresDatasetReferenceRepository"
 class "PostgresDatasetStatisticsRepository"
 class "PostgresDidSecretKeyRepository"
 class "PostgresEmbeddingsCacheRepository"
+class "PostgresFlowActivationLinkRepository"
 class "PostgresFlowActivationWakeupSource" <<agnostic>>
 class "PostgresFlowConfigurationEventStore"
 class "PostgresFlowEventStore"
@@ -813,6 +818,7 @@ class "WsSmartTransferProtocolClient"
 "FlowControllerTransform"  --> "Catalog"
 "FlowControllerTransform"  --> "DatasetIncrementQueryService"
 "FlowControllerTransform"  --> "FlowSensorDispatcher"
+"FlowActivationCauseUpstreamExtractor" <|-- "DatasetResourceUpstreamFlowExtractor"
 "MessageConsumer" <|-- "FlowDatasetsEventBridge"
 "MessageConsumerT" <|-- "FlowDatasetsEventBridge"
 "MessageConsumerT" <|-- "FlowDatasetsEventBridge"
@@ -1193,6 +1199,8 @@ class "WsSmartTransferProtocolClient"
 "CreateDatasetUseCaseHelper"  --> "DatasetStorageUnitWriter"
 "CreateDatasetUseCaseHelper"  --> "SystemTimeSource"
 "CreateDatasetUseCaseHelper"  --> "TenancyConfig"
+"FlowActivationLinkRepository" <|-- "PostgresFlowActivationLinkRepository"
+"PostgresFlowActivationLinkRepository"  --> "TransactionRefT"
 "FlowActivationWakeupSource" <|-- "PostgresFlowActivationWakeupSource"
 "PostgresFlowActivationWakeupSource"  --> "PostgresNotificationHub"
 "FlowConfigurationEventStore" <|-- "PostgresFlowConfigurationEventStore"
@@ -1233,6 +1241,7 @@ class "WsSmartTransferProtocolClient"
 "MetricsProvider" <|-- "FlowAgentMetrics"
 "MetricsProvider" <|-- "FlowCompletionMetrics"
 "FlowQueryService" <|-- "FlowQueryServiceImpl"
+"FlowQueryServiceImpl"  --> "FlowActivationLinkRepository"
 "FlowQueryServiceImpl"  --> "FlowEventStore"
 "FlowRunService" <|-- "FlowRunServiceImpl"
 "FlowRunServiceImpl"  --> "FlowEventStore"
@@ -1245,6 +1254,10 @@ class "WsSmartTransferProtocolClient"
 "FlowSchedulingServiceImpl"  --> "FlowProcessStateQuery"
 "FlowSchedulingServiceImpl"  --> "FlowConfigurationService"
 "FlowSchedulingServiceImpl"  --> "FlowAgentConfig"
+"FlowSystemEventProjector" <|-- "FlowActivationLinkProjector"
+"FlowActivationLinkProjector"  --> "FlowActivationLinkRepository"
+"FlowActivationLinkProjector"  --> "FlowEventStore"
+"FlowActivationLinkProjector" "*" --> "FlowActivationCauseUpstreamExtractor"
 "FlowConfigurationService" <|-- "FlowConfigurationServiceImpl"
 "FlowScopeRemovalHandler" <|-- "FlowConfigurationServiceImpl"
 "FlowConfigurationServiceImpl"  --> "FlowConfigurationEventStore"

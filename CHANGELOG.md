@@ -15,6 +15,28 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
+## [0.92.0] - 2026-10-06
+### Upstream [kamu `0.269.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.269.0)
+- Flows: GraphQL lists the flows a completed flow started downstream (`FlowEventCompleted.downstreamFlows`,
+  `Flow.downstreamFlows`), including history recorded before this release
+- GraphQL (breaking): `FlowActivationCauseDatasetUpdate.dataset` is nullable (null when the dataset was deleted
+  or is not readable by the caller), with the new `datasetId` always set; `DependencyDatasetResult` and its
+  variants are renamed to `DatasetAccessResult`, `DatasetAccessResultAccessible` and `DatasetAccessResultNotAccessible`
+- Outbox and flow-system event delivery on Postgres wait for older in-flight transactions to commit before moving
+  past them, so a long transaction delays delivery instead of risking a skipped message
+- Concurrent modifications of flow triggers, flow configurations, account quotas and resources are detected
+  instead of one writer silently overwriting the other
+- Enabling a transform trigger detects inputs whose history was rewritten while the trigger was off
+- Numerous flow system fixes: history of flows activated by deleted upstream datasets, pending reactive triggers
+  after restart, configurations of deleted datasets, retry policy overflows, webhook delivery panics
+- New Postgres and SQLite migrations: `flow_binding_events_prev_event_id`, `account_quota_events_prev_event_id`,
+  `flow_activation_links` and `flow_activation_links_backfill` (backfills links from existing flow history)
+### Changed
+- Stricter Clippy policy: `match_wildcard_for_single_variants`, `wildcard_enum_match_arm` and
+  `allow_attributes_without_reason` are enforced workspace-wide
+- `Cargo.toml` files are sorted with `cargo-sort` and formatted with `taplo`, enforced in CI (`make fmt`, `make lint-cargo-toml`)
+- Post-migration database schema dumps are kept in `resources/db/` (`make resources-db-schema`)
+
 ## [0.91.0] - 2026-10-01
 ### Upstream [kamu `0.268.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.268.1)
 - Task and flow agents no longer poll: Postgres LISTEN/NOTIFY, SQLite incremental polling

@@ -26,7 +26,9 @@ doctest = false
 
 
 [dev-dependencies]
-database-common = { workspace = true,  default-features = false, features = ["testing"] }
+database-common = { workspace = true, default-features = false, features = [
+    "testing",
+] }
 kamu-cli-e2e-repo-tests = { workspace = true }
 kamu-node-e2e-common = { workspace = true }
 kamu-node-e2e-repo-tests = { workspace = true }
@@ -37,5 +39,8 @@ sqlx = { version = "0.8", default-features = false, features = [
     "postgres",
 ] }
 test-group = { version = "1" }
-test-log = { version = "0.2", features = ["trace"] }
-tokio = { version = "1", default-features = false, features = [] }
+test-log = { version = "0.2", features = [
+    "trace",
+] }
+tokio = { version = "1", default-features = false, features = [
+] }

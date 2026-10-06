@@ -26,16 +26,23 @@ doctest = false
 
 
 [dev-dependencies]
-database-common = { workspace = true,  default-features = false, features = ["testing"] }
+database-common = { workspace = true, default-features = false, features = [
+    "testing",
+] }
 kamu-cli-e2e-repo-tests = { workspace = true }
 kamu-node-e2e-common = { workspace = true }
 kamu-node-e2e-repo-tests = { workspace = true }
 
+dill = { version = "0.17", default-features = false }
 indoc = "2"
 sqlx = { version = "0.8", default-features = false, features = [
     "macros",
     "sqlite",
 ] }
+tempfile = { version = "3" }
 test-group = { version = "1" }
-test-log = { version = "0.2", features = ["trace"] }
-tokio = { version = "1", default-features = false, features = [] }
+test-log = { version = "0.2", features = [
+    "trace",
+] }
+tokio = { version = "1", default-features = false, features = [
+] }

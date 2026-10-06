@@ -2,6 +2,15 @@
 
 Please see [Kamu CLI's Developer Guide](https://github.com/kamu-data/kamu-cli/blob/master/DEVELOPER.md) for general setup instructions as this repo follows the same conventions.
 
+## Formatting and linting
+
+`Cargo.toml` files are sorted with [`cargo-sort`](https://github.com/DevinR528/cargo-sort) and formatted with [`taplo`](https://taplo.tamasfe.dev/):
+```sh
+cargo install cargo-sort taplo-cli
+make fmt   # rustfmt + cargo sort + taplo
+make lint  # includes the same checks (`make lint-cargo-toml`)
+```
+
 ## Local testing (S3 repo)
 
 Check [examples/local-s3](examples/local-s3/README.md).

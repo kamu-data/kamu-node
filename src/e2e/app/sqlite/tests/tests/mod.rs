@@ -15,5 +15,6 @@ mod test_flight_sql;
 mod test_odata;
 mod test_odf_core;
 mod test_openapi;
+mod test_schema_dump;
 mod test_selftest;
 mod test_swagger;

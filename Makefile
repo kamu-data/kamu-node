@@ -5,17 +5,36 @@ SQLITE_CRATES := ./src/e2e/app/sqlite
 
 KAMU_CONTAINER_RUNTIME_TYPE ?= podman
 
+# Keep in sync with `services.postgres.image` in `.github/workflows/build.yaml`
+POSTGRES_IMAGE ?= postgres:18
+
+###############################################################################
+# Formatting
+###############################################################################
+
+.PHONY: fmt
+fmt:
+	cargo fmt --all
+	cargo sort -g -w -n
+	taplo fmt
+
 ###############################################################################
 # Lint
 ###############################################################################
 
 .PHONY: lint
-lint: lint-rustfmt lint-repo lint-deps clippy
+lint: lint-rustfmt lint-cargo-toml lint-repo lint-deps clippy
 
 
 .PHONY: lint-rustfmt
 lint-rustfmt:
 	cargo fmt --check
+
+
+.PHONY: lint-cargo-toml
+lint-cargo-toml:
+	cargo sort -g -w -n -c
+	taplo fmt --check
 
 
 .PHONY: lint-repo
@@ -37,10 +56,13 @@ clippy:
 # Lint (with fixes)
 ###############################################################################
 
-.PHONY: lint-fix
-lint-fix:
+.PHONY: lint-fix-clippy
+lint-fix-clippy:
 	cargo clippy --workspace --all-targets --fix --allow-dirty --allow-staged --broken-code
-	cargo fmt --all
+
+
+.PHONY: lint-fix
+lint-fix: lint-fix-clippy fmt
 
 
 ###############################################################################
@@ -50,6 +72,7 @@ lint-fix:
 define Setup_EnvFile
 echo "DATABASE_URL=$(1)://root:root@localhost:$(2)/kamu" > $(3)/.env;
 echo "SQLX_OFFLINE=false" >> $(3)/.env;
+echo "KAMU_POSTGRES_IMAGE=$(POSTGRES_IMAGE)" >> $(3)/.env;
 endef
 
 define Setup_EnvFile_Sqlite
@@ -62,10 +85,10 @@ sqlx-local-setup: sqlx-local-setup-postgres sqlx-local-setup-sqlite
 
 .PHONY: sqlx-local-setup-postgres
 sqlx-local-setup-postgres:
-	$(KAMU_CONTAINER_RUNTIME_TYPE) pull postgres:latest
+	$(KAMU_CONTAINER_RUNTIME_TYPE) pull $(POSTGRES_IMAGE)
 	$(KAMU_CONTAINER_RUNTIME_TYPE) stop kamu-node-postgres || true && $(KAMU_CONTAINER_RUNTIME_TYPE) rm kamu-node-postgres || true
 	# Expose port 5433 to avoid conflicts with kamu-cli postgres container
-	$(KAMU_CONTAINER_RUNTIME_TYPE) run --name kamu-node-postgres -p 5433:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=root -d postgres:latest
+	$(KAMU_CONTAINER_RUNTIME_TYPE) run --name kamu-node-postgres -p 5433:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=root -d $(POSTGRES_IMAGE)
 	$(foreach crate,$(POSTGRES_CRATES),$(call Setup_EnvFile,postgres,5433,$(crate)))
 	sleep 3  # Letting the container to start
 	until PGPASSWORD=root psql -h localhost -U root -p 5433 -d root -c '\q'; do sleep 3; done
@@ -128,6 +151,11 @@ test-no-oracle:
 .PHONY: resources
 resources:
 	$(TEST_LOG_PARAMS) cargo nextest run -E 'test(::resourcegen::)'
+
+
+.PHONY: resources-db-schema
+resources-db-schema:
+	$(TEST_LOG_PARAMS) cargo nextest run -E 'test(dump_sqlite_schema) | test(dump_postgres_schema)'
 
 
 ###############################################################################

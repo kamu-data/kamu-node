@@ -23,8 +23,17 @@ jobs:
           cache: true
           cache-workspace-crates: true
           cache-on-failure: true
-      - name: rustfmt
+      - uses: cargo-bins/cargo-binstall@main
+      - name: cargo fmt
         run: cargo fmt --check
+      - name: cargo sort
+        run: |
+          cargo binstall cargo-sort -y
+          cargo sort -g -w -n -c
+      - name: taplo fmt
+        run: |
+          cargo binstall taplo-cli -y
+          taplo fmt --check
       - name: license headers
         run: cargo test -p kamu-repo-tools -- license_header
       - name: clippy
@@ -53,6 +62,7 @@ jobs:
       KAMU_CONTRACTS_DIR: ../../../kamu-contracts
     services:
       postgres:
+        # Keep in sync with `POSTGRES_IMAGE` in `Makefile`
         image: 'postgres:18'
         env:
           POSTGRES_USER: root
@@ -100,6 +110,9 @@ jobs:
         env:
           SQLX_OFFLINE: false
           DATABASE_URL: postgres://root:root@localhost:5432/kamu-test
+          # Used by the schema dump test to run `pg_dump` in a container
+          KAMU_CONTAINER_RUNTIME_TYPE_DB: docker
+          KAMU_POSTGRES_IMAGE: postgres:18
         run: cargo nextest run ${{ env.NEXTEST_FLAGS }} -E 'test(::postgres::)'
 
       - name: Check git diff

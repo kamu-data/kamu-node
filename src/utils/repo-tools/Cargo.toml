@@ -16,13 +16,24 @@ path = "src/release.rs"
 
 
 [dependencies]
-chrono = { version = "0.4", default-features = false, features = ["std", "clock"] }
-clap = { version = "4", default-features = false, features = ["std"] }
+chrono = { version = "0.4", default-features = false, features = [
+    "clock",
+    "std",
+] }
+clap = { version = "4", default-features = false, features = [
+    "std",
+] }
 glob = { version = "0.3", default-features = false }
 pretty_assertions = { version = "1" }
-regex = { version = "1", default-features = false, features = ["std", "unicode"] }
+regex = { version = "1", default-features = false, features = [
+    "std",
+    "unicode",
+] }
 semver = { version = "1", default-features = false }
-toml = { version = "1", default-features = false, features = ["parse", "serde"] }
+toml = { version = "1", default-features = false, features = [
+    "parse",
+    "serde",
+] }
 
 
 [dev-dependencies]
