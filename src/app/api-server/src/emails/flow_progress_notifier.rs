@@ -106,27 +106,25 @@ impl FlowProgressNotifier {
                 .await?;
 
             // Render email
-            let rendered_email = self
-                .render_dataset_flow_failure_email(
-                    &owner_account,
-                    &dataset_entry,
-                    flow_state.flow_binding.flow_type.as_str(),
-                    FlowFailureData {
-                        id: flow_id,
-                        // ToDo: Replace by the real fail error message
-                        error: "Unknown",
-                        started_at: flow_state
-                            .timing
-                            .running_since
-                            .expect("Start time should be defined"),
-                        occurred_at: flow_state
-                            .timing
-                            .last_attempt_finished_at
-                            .expect("Finish time should be defined"),
-                        primary_activation_cause: flow_state.primary_activation_cause(),
-                    },
-                )
-                .await?;
+            let rendered_email = self.render_dataset_flow_failure_email(
+                &owner_account,
+                &dataset_entry,
+                flow_state.flow_binding.flow_type.as_str(),
+                FlowFailureData {
+                    id: flow_id,
+                    // ToDo: Replace by the real fail error message
+                    error: "Unknown",
+                    started_at: flow_state
+                        .timing
+                        .running_since
+                        .expect("Start time should be defined"),
+                    occurred_at: flow_state
+                        .timing
+                        .last_attempt_finished_at
+                        .expect("Finish time should be defined"),
+                    primary_activation_cause: flow_state.primary_activation_cause(),
+                },
+            )?;
 
             // Format subject
             let email_subject = format!(
@@ -171,7 +169,7 @@ impl FlowProgressNotifier {
         Ok(Cow::Borrowed(owner_account))
     }
 
-    async fn render_dataset_flow_failure_email(
+    fn render_dataset_flow_failure_email(
         &self,
         owner_account: &kamu_accounts::Account,
         dataset_entry: &kamu_datasets::DatasetEntry,
@@ -292,6 +290,7 @@ impl MessageConsumerT<kamu_fs::FlowProcessLifecycleMessage> for FlowProgressNoti
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#[derive(Clone, Copy)]
 struct FlowFailureData<'a> {
     id: kamu_fs::FlowID,
     primary_activation_cause: &'a kamu_fs::FlowActivationCause,

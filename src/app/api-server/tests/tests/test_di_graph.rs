@@ -84,10 +84,15 @@ async fn test_di_graph_validates_local(
     let config = get_api_server_config(repositories_config);
     let repo_url = url::Url::from_directory_path(tempdir.path()).unwrap();
 
-    let mut catalog_builder =
-        kamu_api_server::init_dependencies(config, &repo_url, tenancy_config, tempdir.path(), None)
-            .await
-            .unwrap();
+    let mut catalog_builder = Box::pin(kamu_api_server::init_dependencies(
+        config,
+        &repo_url,
+        tenancy_config,
+        tempdir.path(),
+        None,
+    ))
+    .await
+    .unwrap();
 
     add_database_components(&mut catalog_builder, repositories_config);
 
@@ -127,10 +132,15 @@ async fn test_di_graph_validates_remote(
 
     let config = get_api_server_config(repositories_config);
 
-    let mut catalog_builder =
-        kamu_api_server::init_dependencies(config, &s3.url, tenancy_config, tmp_dir.path(), None)
-            .await
-            .unwrap();
+    let mut catalog_builder = Box::pin(kamu_api_server::init_dependencies(
+        config,
+        &s3.url,
+        tenancy_config,
+        tmp_dir.path(),
+        None,
+    ))
+    .await
+    .unwrap();
 
     add_database_components(&mut catalog_builder, repositories_config);
 
@@ -145,9 +155,9 @@ async fn test_di_graph_validates_remote(
         "some-session-id".to_string(),
     ));
 
-    // TODO: We should ensure this test covers parameters requested by commands and
-    // types needed for GQL/HTTP adapter that are currently being constructed
-    // manually
+    // TODO: We should ensure this test covers parameters requested by commands
+    // and types needed for GQL/HTTP adapter that are currently being
+    // constructed manually
     let validate_result = catalog_builder.validate();
 
     assert!(
@@ -169,13 +179,13 @@ async fn update_di_graph() {
 
     let config = get_api_server_config(RepositoriesConfig::Postgres);
 
-    let mut catalog_builder = kamu_api_server::init_dependencies(
+    let mut catalog_builder = Box::pin(kamu_api_server::init_dependencies(
         config,
         &s3.url,
         TenancyConfig::MultiTenant,
         tmp_dir.path(),
         None,
-    )
+    ))
     .await
     .unwrap();
 
@@ -216,28 +226,28 @@ fn get_api_server_config(
         RepositoriesConfig::Sqlite => {
             config.database = DatabaseConfig::Sqlite(SqliteDatabaseConfig {
                 database_path: "will-not-be-created.db.sqlite".to_string(),
-            })
+            });
         }
         RepositoriesConfig::Postgres => {
             let db_config = RemoteDatabaseConfig {
                 credentials_policy: DatabaseCredentialsPolicyConfig {
                     source: DatabaseCredentialSourceConfig::RawPassword(
                         RawDatabasePasswordPolicyConfig {
-                            user_name: "".to_string(),
-                            raw_password: "".to_string(),
+                            user_name: String::new(),
+                            raw_password: String::new(),
                         },
                     ),
                     rotation_frequency_in_minutes: None,
                 },
-                database_name: "".to_string(),
-                host: "".to_string(),
+                database_name: String::new(),
+                host: String::new(),
                 port: None,
                 max_connections:
                     database_common::DatabaseConnectionSettings::DEFAULT_MAX_CONNECTIONS,
                 max_lifetime_secs: None,
                 acquire_timeout_secs: None,
             };
-            config.database = DatabaseConfig::Postgres(db_config)
+            config.database = DatabaseConfig::Postgres(db_config);
         }
     }
 

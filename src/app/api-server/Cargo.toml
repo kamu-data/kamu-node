@@ -17,6 +17,10 @@ autoexamples = false
 build = "build.rs"
 
 
+[lints]
+workspace = true
+
+
 [lib]
 doctest = false
 
@@ -164,10 +168,11 @@ kamu-webhooks-services = { workspace = true }
 kamu-webhooks-sqlite = { workspace = true }
 
 
-# Top-level TLS and runtime configurations
-# TODO: Include alloy, aws-smithy
-# TODO: Unify deps around either ring or aws-lc-rs
-# TODO: Unify deps around either using webpki or native certs
+# Top-level TLS configuration. Configure: aws-lc-rs, webpki root certs
+# TODO: alloy is pinned until datafusion & object_store upgrade to reqwest v13
+alloy = { optional = true, version = "~1.7.3", default-features = false, features = [
+    "reqwest-rustls-tls",
+] }
 reqwest = { version = "0.12", default-features = false, features = [
     "rustls-tls-webpki-roots",
 ] }
@@ -177,16 +182,16 @@ rumqttc = { optional = true, version = "0.25", default-features = false, feature
 rustls = { version = "0.23", default-features = false, features = [
     "aws-lc-rs",
 ] }
-sqlx = { version = "0.8", default-features = false, features = [
-    "runtime-tokio",
+sqlx = { version = "0.9", default-features = false, features = [
     "tls-rustls-aws-lc-rs",
 ] }
 tokio-tungstenite = { version = "0.30", features = [
     "rustls-tls-webpki-roots",
 ] }
+# END: Top-level TLS configuration
 
 # APIs
-arrow-flight = { version = "58", features = [
+arrow-flight = { version = "59", features = [
     "flight-sql-experimental",
 ] }
 async-graphql = { version = "7", default-features = false }
@@ -204,9 +209,9 @@ tower-http = { version = "0.6", features = [
     "cors",
     "trace",
 ] }
-utoipa = { version = "5", default-features = false, features = [
+utoipa = { version = "6", default-features = false, features = [
 ] }
-utoipa-axum = { version = "0.2", default-features = false, features = [
+utoipa-axum = { version = "0.3", default-features = false, features = [
 ] }
 
 # Tracing / logging / telemetry / metrics
@@ -214,7 +219,7 @@ prometheus = { version = "0.14", default-features = false }
 tracing = "0.1"
 
 # Utils
-askama = { version = "0.15" }
+askama = { version = "0.16" }
 async-trait = { version = "0.1", default-features = false }
 chrono = "0.4"
 clap = { version = "4", default-features = false, features = [
@@ -284,4 +289,4 @@ test-log = { version = "0.2", features = [
 
 
 [build-dependencies]
-vergen-gitcl = { version = "9.1.0", features = ["build", "cargo", "rustc"] }
+vergen-gitcl = { version = "10", features = ["build", "cargo", "rustc"] }

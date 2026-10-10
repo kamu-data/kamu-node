@@ -38,7 +38,7 @@ pub async fn run(args: Cli, config: Config) -> Result<(), InternalError> {
     let http_port = config.http_port;
 
     let rpc_client = init_rpc_client(&config).await?;
-    let api_client = init_api_client(&config).await?;
+    let api_client = init_api_client(&config)?;
 
     let metrics_reg =
         prometheus::Registry::new_custom(Some("kamu_oracle_provider".into()), None).unwrap();
@@ -128,8 +128,8 @@ pub async fn init_rpc_client(config: &Config) -> Result<DynProvider, InternalErr
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pub async fn init_api_client(config: &Config) -> Result<Arc<dyn OdfApiClient>, InternalError> {
-    let client = OdfApiClientRest::new(config.api_url.clone(), config.api_access_token.clone())?;
+pub fn init_api_client(config: &Config) -> Result<Arc<dyn OdfApiClient>, InternalError> {
+    let client = OdfApiClientRest::new(&config.api_url, config.api_access_token.clone())?;
     Ok(Arc::new(client))
 }
 

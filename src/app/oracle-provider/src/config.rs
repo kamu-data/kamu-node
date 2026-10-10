@@ -43,15 +43,15 @@ pub struct Config {
     pub provider_private_key: String,
 
     /// Block number to start scanning from on startup (precedence:
-    /// scan_from_block, scan_last_blocks, scan_last_blocks_period)
+    /// `scan_from_block`, `scan_last_blocks`, `scan_last_blocks_period`)
     pub scan_from_block: Option<u64>,
 
-    /// Number of last blocks to scan on startup (precedence: scan_from_block,
-    /// scan_last_blocks, scan_last_blocks_period)
+    /// Number of last blocks to scan on startup (precedence: `scan_from_block`,
+    /// `scan_last_blocks`, `scan_last_blocks_period`)
     pub scan_last_blocks: Option<u64>,
 
     /// Time period in which blocks will be scanned on startup (precedence:
-    /// scan_from_block, scan_last_blocks, scan_last_blocks_period)
+    /// `scan_from_block`, `scan_last_blocks`, `scan_last_blocks_period`)
     pub scan_last_blocks_period: Option<DurationString>,
 
     /// Number of blocks to examine per one getLogs RPC request when catching up

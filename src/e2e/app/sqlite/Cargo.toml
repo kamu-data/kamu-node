@@ -35,7 +35,7 @@ kamu-node-e2e-repo-tests = { workspace = true }
 
 dill = { version = "0.17", default-features = false }
 indoc = "2"
-sqlx = { version = "0.8", default-features = false, features = [
+sqlx = { version = "0.9", default-features = false, features = [
     "macros",
     "sqlite",
 ] }

@@ -72,7 +72,7 @@ alloy::sol! {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#[allow(dead_code)]
+#[allow(dead_code, reason = "Fields are only read via Debug output")]
 #[derive(Debug)]
 struct OdfRequest {
     pub id: u64,
@@ -203,8 +203,8 @@ impl OdfOracleProvider {
         Self {
             config,
             rpc_client,
-            api_client,
             oracle_contract,
+            api_client,
             metrics,
         }
     }
@@ -254,6 +254,13 @@ impl OdfOracleProvider {
         }
     }
 
+    #[expect(
+        clippy::cast_precision_loss,
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "Block numbers and timestamps are far below 2^52, and the estimate is \
+                  non-negative"
+    )]
     pub async fn get_approx_block_number_by_time(
         &self,
         time: DateTime<Utc>,
@@ -332,8 +339,8 @@ impl OdfOracleProvider {
         self.wait_for_auth_and_balance().await?;
 
         loop {
-            // TODO: Operate on blocks that have >N confirmations to avoid running into too
-            // many reorgs?
+            // TODO: Operate on blocks that have >N confirmations to avoid
+            // running into too many reorgs?
             let to_block = self.rpc_client.get_block_number().await.int_err()?;
 
             // TODO: Reorg resistance
@@ -345,9 +352,8 @@ impl OdfOracleProvider {
 
                 tokio::time::sleep(self.config.loop_idle_time.into()).await;
                 continue;
-            } else {
-                idle_start = None;
             }
+            idle_start = None;
 
             let span =
                 observability::tracing::root_span!("process_block_range", from_block, to_block);
@@ -488,7 +494,8 @@ impl OdfOracleProvider {
             let logs = match self.rpc_client.get_logs(&filter).await {
                 Ok(v) => v,
                 Err(err) if is_block_range_error(&err) => {
-                    // Likely request was routed to a node that is slightly behind
+                    // Likely request was routed to a node that is slightly
+                    // behind
                     Err(ProcessBlockRangeError::InconsistentHeadBlock)?
                 }
                 Err(err) => Err(err.int_err())?,
@@ -589,7 +596,7 @@ impl OdfOracleProvider {
             Err("Request does not start with version specifier".int_err())?
         };
         if u8::try_from(version) != Ok(1) {
-            Err(format!("Unsupported protocol version {version:?}").int_err())?
+            Err(format!("Unsupported protocol version {version:?}").int_err())?;
         }
 
         let mut sql = None;
@@ -735,9 +742,9 @@ impl OdfOracleProvider {
 
         self.metrics.transactions_num.inc();
 
-        // TODO: We should ingore RequestNotFound errors as indicating that request was
-        // already satisfied by another provider. But getting error data is currently
-        // hard with alloy
+        // TODO: We should ingore RequestNotFound errors as indicating that
+        // request was already satisfied by another provider. But
+        // getting error data is currently hard with alloy
         // See: https://github.com/alloy-rs/alloy/issues/787
         let pending_tx = match transaction.send().await {
             Ok(tr) => Ok(tr),
@@ -771,19 +778,16 @@ impl OdfOracleProvider {
 fn is_block_range_error<Transport>(err: &alloy::transports::RpcError<Transport>) -> bool {
     const INVALID_PARAMS: i64 = -32602;
 
-    match err {
-        // TODO: This will likely only work for Alchemy
-        alloy::transports::RpcError::ErrorResp(payload)
-            if payload.code == INVALID_PARAMS
-                && payload
-                    .message
-                    .to_lowercase()
-                    .contains("block range extends beyond current head block") =>
-        {
-            true
-        }
-        _ => false,
-    }
+    let alloy::transports::RpcError::ErrorResp(payload) = err else {
+        return false;
+    };
+
+    // TODO: This will likely only work for Alchemy
+    payload.code == INVALID_PARAMS
+        && payload
+            .message
+            .to_lowercase()
+            .contains("block range extends beyond current head block")
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

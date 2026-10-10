@@ -187,7 +187,7 @@ pub struct EngineImagesConfig {
     #[config(default = kamu::EngineProvisionerLocalConfig::default().datafusion_image)]
     pub datafusion: String,
 
-    /// UNSTABLE: RisingWave engine image
+    /// UNSTABLE: `RisingWave` engine image
     #[config(default = kamu::EngineProvisionerLocalConfig::default().risingwave_image)]
     pub risingwave: String,
 }
@@ -488,7 +488,7 @@ pub struct ProtocolConfig {
     #[config(default)]
     pub ipfs: IpfsConfig,
 
-    /// FlightSQL configuration
+    /// `FlightSQL` configuration
     #[config(default)]
     pub flight_sql: FlightSqlConfig,
 }
@@ -505,8 +505,8 @@ pub struct IpfsConfig {
     #[config(default = IpfsGateway::default().url)]
     pub http_gateway: Url,
 
-    /// Whether kamu should pre-resolve IPNS DNSLink names using DNS or leave it
-    /// to the Gateway.
+    /// Whether kamu should pre-resolve IPNS `DNSLink` names using DNS or leave
+    /// it to the Gateway.
     #[config(default = IpfsGateway::default().pre_resolve_dnslink)]
     pub pre_resolve_dnslink: bool,
 }
@@ -528,23 +528,23 @@ pub struct FlightSqlConfig {
     #[config(default = true)]
     pub allow_anonymous: bool,
 
-    /// Time after which FlightSQL client session will be forgotten and client
+    /// Time after which `FlightSQL` client session will be forgotten and client
     /// will have to re-authroize (for authenticated clients)
     #[config(default_str = "30m")]
     pub authed_session_expiration_timeout: DurationString,
 
-    /// Time after which FlightSQL session context will be released to free the
-    /// resources (for authenticated clients)
+    /// Time after which `FlightSQL` session context will be released to free
+    /// the resources (for authenticated clients)
     #[config(default_str = "5s")]
     pub authed_session_inactivity_timeout: DurationString,
 
-    /// Time after which FlightSQL client session will be forgotten and client
+    /// Time after which `FlightSQL` client session will be forgotten and client
     /// will have to re-authroize (for anonymous clients)
     #[config(default_str = "5m")]
     pub anon_session_expiration_timeout: DurationString,
 
-    /// Time after which FlightSQL session context will be released to free the
-    /// resources (for anonymous clients)
+    /// Time after which `FlightSQL` session context will be released to free
+    /// the resources (for anonymous clients)
     #[config(default_str = "5s")]
     pub anon_session_inactivity_timeout: DurationString,
 }
@@ -863,11 +863,13 @@ pub struct WebhooksConfig {
     /// digits (0-9).
     ///
     /// # Example
+    /// ```ignore
     /// let config = WebhooksConfig {
-    ///     ...
-    ///     secret_encryption_enabled: Some(true),
-    ///     encryption_key:
-    /// Some(String::from("aBcDeFgHiJkLmNoPqRsTuVwXyZ012345")) }; ```
+    ///     secret_encryption_enabled: true,
+    ///     secret_encryption_key: Some(String::from("aBcDeFgHiJkLmNoPqRsTuVwXyZ012345")),
+    ///     ..
+    /// };
+    /// ```
     pub secret_encryption_key: Option<String>,
 }
 
@@ -893,7 +895,7 @@ pub struct SearchConfig {
     #[config(default = SearchRepositoryConfig::Dummy)]
     pub repo: SearchRepositoryConfig,
 
-    #[config(default = 0.0)]
+    #[config(default = 0.0_f32)]
     pub semantic_search_threshold_score: f32,
 }
 

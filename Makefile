@@ -47,6 +47,11 @@ lint-deps:
 	cargo deny check --hide-inclusion-graph
 
 
+.PHONY: check
+check:
+	cargo check --workspace --all-targets
+
+
 .PHONY: clippy
 clippy:
 	cargo clippy --workspace --all-targets -- -D warnings

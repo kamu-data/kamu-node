@@ -122,7 +122,10 @@ pub enum Include {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#[allow(clippy::enum_variant_names)]
+#[allow(
+    clippy::enum_variant_names,
+    reason = "Variant names mirror the wire format names"
+)]
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum DataFormat {
     #[default]
@@ -216,7 +219,7 @@ impl OdfApiClient for OdfApiClientRest {
 }
 
 impl OdfApiClientRest {
-    pub fn new(url: url::Url, access_token: Option<String>) -> Result<Self, InternalError> {
+    pub fn new(url: &url::Url, access_token: Option<String>) -> Result<Self, InternalError> {
         let mut headers = reqwest::header::HeaderMap::new();
         if let Some(access_token) = access_token {
             let mut auth =

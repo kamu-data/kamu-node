@@ -8,7 +8,7 @@
 // by the Apache License, Version 2.0.
 
 use std::path::{Path, PathBuf};
-use std::{ffi, fs};
+use std::{env, ffi, fs};
 
 use test_utils::LocalS3Server;
 
@@ -136,7 +136,7 @@ impl KamuNodePuppet {
         I: IntoIterator<Item = S>,
         S: AsRef<ffi::OsStr>,
     {
-        let mut command = assert_cmd::Command::cargo_bin("kamu-api-server").unwrap();
+        let mut command = assert_cmd::Command::new(kamu_api_server_bin_path());
 
         if let Some(env_vars) = maybe_env {
             for (name, value) in env_vars {
@@ -161,6 +161,30 @@ pub struct NewWorkspaceOptions {
     pub repo_type: RepositoryType,
     pub kamu_api_server_config: Option<String>,
     pub env_vars: Vec<(String, String)>,
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// TODO: Replace with `assert_cmd::Command::cargo_bin` once it supports new cargo layout
+fn kamu_api_server_bin_path() -> PathBuf {
+    // `CARGO_BIN_EXE_kamu-api-server` is only set for tests of the `kamu-api-server` package,
+    // and `assert_cmd`'s fallback expects test executables in `<profile>/deps/`, while cargo's
+    // build-dir layout places them in `<profile>/build/<pkg>/<hash>/out/`. Searching the
+    // ancestors of the test executable covers both layouts.
+    let bin_name = format!("kamu-api-server{}", env::consts::EXE_SUFFIX);
+    let test_exe = env::current_exe().unwrap();
+
+    test_exe
+        .ancestors()
+        .skip(1)
+        .map(|dir| dir.join(&bin_name))
+        .find(|path| path.is_file())
+        .unwrap_or_else(|| {
+            panic!(
+                "Binary {bin_name} not found in any parent directory of {}",
+                test_exe.display()
+            )
+        })
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

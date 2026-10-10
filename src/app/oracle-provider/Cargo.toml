@@ -13,6 +13,10 @@ edition = { workspace = true }
 publish = { workspace = true }
 
 
+[lints]
+workspace = true
+
+
 [lib]
 doctest = false
 
@@ -26,12 +30,14 @@ observability = { workspace = true, default-features = false, features = [
 ] }
 odf = { workspace = true, default-features = false }
 
-alloy = { version = "1", default-features = false, features = [
+# TODO: alloy is pinned until datafusion & object_store upgrade to reqwest v13
+alloy = { version = "~1.7.3", default-features = false, features = [
     "contract",
     "network",
     "node-bindings",
     "provider-http",
     "provider-ws",
+    "reqwest-rustls-tls",
     "rpc-types-eth",
     "signer-local",
     "sol-types",

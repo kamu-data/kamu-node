@@ -1,64 +1,112 @@
 {
-  "type": "object",
+  "$defs": {
+    "DurationString": {
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
-    "httpAddress": {
-      "type": "string",
-      "description": "Interface to listen for HTTP admin traffic on",
-      "default": "127.0.0.1"
+    "apiAccessToken": {
+      "description": "API token to use for authentication with the server",
+      "type": [
+        "string",
+        "null"
+      ]
     },
-    "httpPort": {
-      "type": "integer",
-      "format": "uint16",
-      "minimum": 0,
-      "maximum": 65535,
-      "description": "Port to listen for HTTP admin traffic on",
-      "default": 0
-    },
-    "rpcUrl": {
-      "type": "string",
+    "apiUrl": {
+      "default": "http://localhost:8080/",
+      "description": "URL of the ODF-compatible API server that will execute requests",
       "format": "uri",
-      "description": "Ethereum-compatible JSON-RPC address",
-      "default": "http://localhost:8545/"
+      "type": "string"
+    },
+    "blocksStride": {
+      "default": 100000,
+      "description": "Number of blocks to examine per one getLogs RPC request when catching up",
+      "format": "uint64",
+      "minimum": 0,
+      "type": "integer"
     },
     "chainId": {
-      "type": "integer",
+      "default": 0,
+      "description": "ID of the chain used during signing to prevent replay attacks",
       "format": "uint64",
       "minimum": 0,
-      "description": "ID of the chain used during signing to prevent replay attacks",
-      "default": 0
+      "type": "integer"
+    },
+    "httpAddress": {
+      "default": "127.0.0.1",
+      "description": "Interface to listen for HTTP admin traffic on",
+      "type": "string"
+    },
+    "httpPort": {
+      "default": 0,
+      "description": "Port to listen for HTTP admin traffic on",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "ignoreConsumers": {
+      "default": [],
+      "description": "Consumer addresses to ignore requests from (use as a disaster recovery\nmechanism only)",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "ignoreRequests": {
+      "default": [],
+      "description": "Request IDs that provider should skip over (use as a disaster recovery\nmechanism only)",
+      "items": {
+        "format": "uint64",
+        "minimum": 0,
+        "type": "integer"
+      },
+      "type": "array"
+    },
+    "loopIdleTime": {
+      "$ref": "#/$defs/DurationString",
+      "default": "1s",
+      "description": "Time to sleep while waiting for new blocks"
     },
     "oracleContractAddress": {
-      "type": "string",
+      "combine": "replace",
       "description": "Address of the oracle contract to read logs from",
-      "combine": "replace"
+      "type": "string"
     },
     "providerAddress": {
-      "type": "string",
+      "combine": "replace",
       "description": "Address of this provider's account to use when submitting transactions",
-      "combine": "replace"
+      "type": "string"
     },
     "providerPrivateKey": {
-      "type": "string",
-      "description": "Private key of the provider to use when signing transactions."
+      "description": "Private key of the provider to use when signing transactions.",
+      "type": "string"
+    },
+    "rpcUrl": {
+      "default": "http://localhost:8545/",
+      "description": "Ethereum-compatible JSON-RPC address",
+      "format": "uri",
+      "type": "string"
     },
     "scanFromBlock": {
+      "description": "Block number to start scanning from on startup (precedence:\n`scan_from_block`, `scan_last_blocks`, `scan_last_blocks_period`)",
+      "format": "uint64",
+      "minimum": 0,
       "type": [
         "integer",
         "null"
-      ],
-      "format": "uint64",
-      "minimum": 0,
-      "description": "Block number to start scanning from on startup (precedence:\nscan_from_block, scan_last_blocks, scan_last_blocks_period)"
+      ]
     },
     "scanLastBlocks": {
+      "description": "Number of last blocks to scan on startup (precedence: `scan_from_block`,\n`scan_last_blocks`, `scan_last_blocks_period`)",
+      "format": "uint64",
+      "minimum": 0,
       "type": [
         "integer",
         "null"
-      ],
-      "format": "uint64",
-      "minimum": 0,
-      "description": "Number of last blocks to scan on startup (precedence: scan_from_block,\nscan_last_blocks, scan_last_blocks_period)"
+      ]
     },
     "scanLastBlocksPeriod": {
       "anyOf": [
@@ -69,61 +117,18 @@
           "type": "null"
         }
       ],
-      "description": "Time period in which blocks will be scanned on startup (precedence:\nscan_from_block, scan_last_blocks, scan_last_blocks_period)"
-    },
-    "blocksStride": {
-      "type": "integer",
-      "format": "uint64",
-      "minimum": 0,
-      "description": "Number of blocks to examine per one getLogs RPC request when catching up",
-      "default": 100000
-    },
-    "loopIdleTime": {
-      "$ref": "#/$defs/DurationString",
-      "description": "Time to sleep while waiting for new blocks",
-      "default": "1s"
+      "description": "Time period in which blocks will be scanned on startup (precedence:\n`scan_from_block`, `scan_last_blocks`, `scan_last_blocks_period`)"
     },
     "transactionConfirmations": {
-      "type": "integer",
+      "description": "Number of confirmations to await before considering transaction included",
       "format": "uint64",
       "minimum": 0,
-      "description": "Number of confirmations to await before considering transaction included"
+      "type": "integer"
     },
     "transactionTimeout": {
       "$ref": "#/$defs/DurationString",
-      "description": "Timeout when submitting a transaction",
-      "default": "1m"
-    },
-    "apiUrl": {
-      "type": "string",
-      "format": "uri",
-      "description": "URL of the ODF-compatible API server that will execute requests",
-      "default": "http://localhost:8080/"
-    },
-    "apiAccessToken": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "description": "API token to use for authentication with the server"
-    },
-    "ignoreRequests": {
-      "type": "array",
-      "items": {
-        "type": "integer",
-        "format": "uint64",
-        "minimum": 0
-      },
-      "description": "Request IDs that provider should skip over (use as a disaster recovery\nmechanism only)",
-      "default": []
-    },
-    "ignoreConsumers": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "Consumer addresses to ignore requests from (use as a disaster recovery\nmechanism only)",
-      "default": []
+      "default": "1m",
+      "description": "Timeout when submitting a transaction"
     }
   },
   "required": [
@@ -133,10 +138,5 @@
     "transactionConfirmations"
   ],
   "title": "Config",
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$defs": {
-    "DurationString": {
-      "type": "string"
-    }
-  }
+  "type": "object"
 }

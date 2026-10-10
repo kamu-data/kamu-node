@@ -47,16 +47,15 @@ const DEFAULT_RUST_LOG: &str = "debug,";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), InternalError> {
-    let repo_url = if let Some(repo_url) = config.repo.repo_url.as_ref().cloned() {
+    let repo_url = if let Some(repo_url) = config.repo.repo_url.clone() {
         repo_url
     } else {
         let workspace_dir = find_workspace();
-        if !workspace_dir.exists() {
-            panic!(
-                "Directory is not a kamu workspace: {}",
-                workspace_dir.display()
-            );
-        }
+        assert!(
+            workspace_dir.exists(),
+            "Directory is not a kamu workspace: {}",
+            workspace_dir.display()
+        );
         Url::from_directory_path(workspace_dir.join("datasets"))
             .unwrap()
             .into()
@@ -95,13 +94,13 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
         .transpose()
         .int_err()?;
 
-    let catalog = init_dependencies(
+    let catalog = Box::pin(init_dependencies(
         config,
         &repo_url,
         tenancy_config,
         local_dir.path(),
         e2e_http_port,
-    )
+    ))
     .await?
     .build();
 
@@ -235,7 +234,7 @@ pub fn load_config(path: Option<&PathBuf>) -> Result<config::ApiServerConfig, In
         }
 
         fig = fig.with_source(setty::source::File::<setty::format::Yaml>::new(path));
-    };
+    }
 
     fig = fig.with_source(setty::source::Env::<setty::format::Yaml>::new(
         "KAMU_API_SERVER_CONFIG_",
@@ -516,14 +515,11 @@ pub async fn init_dependencies(
 
         match webhooks_config.secret_encryption_key.as_ref() {
             None => {
-                if webhooks_config.secret_encryption_enabled {
-                    panic!("Webhook secrets encryption key is required")
-                } else {
-                    warn!(
-                        "Webhook encryption configuration is missing. Secrets will not be \
-                         encrypted"
-                    );
-                }
+                assert!(
+                    !webhooks_config.secret_encryption_enabled,
+                    "Webhook secrets encryption key is required"
+                );
+                warn!("Webhook encryption configuration is missing. Secrets will not be encrypted");
             }
             Some(encryption_key) => {
                 if webhooks_config.secret_encryption_enabled {
@@ -615,7 +611,7 @@ pub async fn init_dependencies(
                         b.add_value(kamu_accounts::PredefinedAccountsConfig {
                             predefined: prov.accounts,
                         });
-                        need_to_add_default_predefined_accounts_config = false
+                        need_to_add_default_predefined_accounts_config = false;
                     }
                 }
             }
@@ -685,11 +681,11 @@ pub async fn init_dependencies(
 
     match &config.secrets_encryption.encryption_key {
         None => {
-            if config.secrets_encryption.enabled {
-                panic!("Secrets encryption key is required");
-            } else {
-                error!("Secrets encryption configuration is missing. Feature will be disabled");
-            }
+            assert!(
+                !config.secrets_encryption.enabled,
+                "Secrets encryption key is required"
+            );
+            error!("Secrets encryption configuration is missing. Feature will be disabled");
             b.add::<kamu_datasets_services::DatasetKeyValueServiceSysEnv>();
             b.add::<kamu_datasets_services::DatasetEnvVarServiceNull>();
         }
@@ -737,7 +733,7 @@ pub async fn init_dependencies(
         configure_database_components(&mut b, &config.database, db_connection_settings);
     } else {
         configure_in_memory_components(&mut b);
-    };
+    }
 
     // Search configuration
 
