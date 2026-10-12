@@ -15,6 +15,31 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
+## [0.93.0] - 2026-10-12
+### Upstream [kamu `0.270.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.270.0)
+- Flows: configuration and trigger changes apply to an already waiting flow, not only the next one: ingest,
+  compaction and reset options and the retry policy apply until the first task is formed, a changed schedule
+  moves a waiting scheduled flow, a changed batching rule re-evaluates a derived flow waiting for inputs,
+  and a stop policy already reached stops the trigger at once
+- GraphQL: new `FlowEventRetryPolicyModified` flow history event; every schema type, field and enum value
+  is documented
+- Flow triggers, configurations, tasks and webhook subscriptions are loaded and saved in bulk instead of
+  one round-trip per item
+- Storage quotas no longer apply to admin accounts
+- GraphQL (breaking): `AccountQuotasUsageStorage.limitTotalBytes` is nullable, null when storage is unlimited
+- Pull or push into an existing dataset with a different ID fails with "Source and destination are different
+  datasets" instead of a misleading divergence or invalid interval error
+- GraphQL: `CollectionProjection.entries(maxDepth)` above 64 returns an error instead of crashing the request
+- SQLite: indexing more than ~5,400 new blocks at once no longer fails with "too many SQL variables";
+  new migration `resource_ids_text_to_blob` repairs resource IDs stored as text by v0.267.0 migrations
+- Upgraded to `datafusion v55`, `arrow v59` and `sqlx v0.9`
+### Changed
+- Upgraded Rust toolchain to `nightly-2026-10-09`
+- TLS-related dependencies are configured in one place (`aws-lc-rs`, webpki root certificates)
+### Fixed
+- API server: panics return a 500 response with CORS headers, so browser clients see the error instead of
+  a failed request without details
+
 ## [0.92.0] - 2026-10-06
 ### Upstream [kamu `0.269.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.269.0)
 - Flows: GraphQL lists the flows a completed flow started downstream (`FlowEventCompleted.downstreamFlows`,
