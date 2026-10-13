@@ -15,6 +15,75 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
+## [0.93.0] - 2026-10-12
+### Upstream [kamu `0.270.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.270.0)
+- Flows: configuration and trigger changes apply to an already waiting flow, not only the next one: ingest,
+  compaction and reset options and the retry policy apply until the first task is formed, a changed schedule
+  moves a waiting scheduled flow, a changed batching rule re-evaluates a derived flow waiting for inputs,
+  and a stop policy already reached stops the trigger at once
+- GraphQL: new `FlowEventRetryPolicyModified` flow history event; every schema type, field and enum value
+  is documented
+- Flow triggers, configurations, tasks and webhook subscriptions are loaded and saved in bulk instead of
+  one round-trip per item
+- Storage quotas no longer apply to admin accounts
+- GraphQL (breaking): `AccountQuotasUsageStorage.limitTotalBytes` is nullable, null when storage is unlimited
+- Pull or push into an existing dataset with a different ID fails with "Source and destination are different
+  datasets" instead of a misleading divergence or invalid interval error
+- GraphQL: `CollectionProjection.entries(maxDepth)` above 64 returns an error instead of crashing the request
+- SQLite: indexing more than ~5,400 new blocks at once no longer fails with "too many SQL variables";
+  new migration `resource_ids_text_to_blob` repairs resource IDs stored as text by v0.267.0 migrations
+- Upgraded to `datafusion v55`, `arrow v59` and `sqlx v0.9`
+### Changed
+- Upgraded Rust toolchain to `nightly-2026-10-09`
+- TLS-related dependencies are configured in one place (`aws-lc-rs`, webpki root certificates)
+### Fixed
+- API server: panics return a 500 response with CORS headers, so browser clients see the error instead of
+  a failed request without details
+
+## [0.92.0] - 2026-10-06
+### Upstream [kamu `0.269.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.269.0)
+- Flows: GraphQL lists the flows a completed flow started downstream (`FlowEventCompleted.downstreamFlows`,
+  `Flow.downstreamFlows`), including history recorded before this release
+- GraphQL (breaking): `FlowActivationCauseDatasetUpdate.dataset` is nullable (null when the dataset was deleted
+  or is not readable by the caller), with the new `datasetId` always set; `DependencyDatasetResult` and its
+  variants are renamed to `DatasetAccessResult`, `DatasetAccessResultAccessible` and `DatasetAccessResultNotAccessible`
+- Outbox and flow-system event delivery on Postgres wait for older in-flight transactions to commit before moving
+  past them, so a long transaction delays delivery instead of risking a skipped message
+- Concurrent modifications of flow triggers, flow configurations, account quotas and resources are detected
+  instead of one writer silently overwriting the other
+- Enabling a transform trigger detects inputs whose history was rewritten while the trigger was off
+- Numerous flow system fixes: history of flows activated by deleted upstream datasets, pending reactive triggers
+  after restart, configurations of deleted datasets, retry policy overflows, webhook delivery panics
+- New Postgres and SQLite migrations: `flow_binding_events_prev_event_id`, `account_quota_events_prev_event_id`,
+  `flow_activation_links` and `flow_activation_links_backfill` (backfills links from existing flow history)
+### Changed
+- Stricter Clippy policy: `match_wildcard_for_single_variants`, `wildcard_enum_match_arm` and
+  `allow_attributes_without_reason` are enforced workspace-wide
+- `Cargo.toml` files are sorted with `cargo-sort` and formatted with `taplo`, enforced in CI (`make fmt`, `make lint-cargo-toml`)
+- Post-migration database schema dumps are kept in `resources/db/` (`make resources-db-schema`)
+
+## [0.91.0] - 2026-10-01
+### Upstream [kamu `0.268.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.268.1)
+- Task and flow agents no longer poll: Postgres LISTEN/NOTIFY, SQLite incremental polling
+  (requires new Postgres migrations `tasks_listen_notify` and `flows_listen_notify`)
+- Prometheus metrics for background agents
+- Outbox consumers run with bounded concurrency
+### Changed
+- **Breaking config change:** background agents are configured in one top-level `backgroundAgents` section:
+  - `minDebounceInterval` (default `20ms`) and `maxListeningTimeout` (default `120s`) replace
+    the per-agent settings in `outbox` and `flowSystem.flowSystemEventAgent`
+  - `batching.outboxMessages`, `batching.flowSystemEvents` and `batching.flowActivations` (default `100` each)
+    replace `outbox.batchSize` and `flowSystem.flowSystemEventAgent.batchSize`
+  - `concurrency.outboxConsumers` (default `8`) limits outbox consumers handling messages at once
+  - `flowSystem.taskAgent` is removed
+  - `flowSystem.flowAgent.*` settings moved one level up to `flowSystem.*`
+- `database.maxConnections` defaults to `20` connections
+- Upgraded `dill` to `0.17` and `opentelemetry` to `0.33`
+
+## [0.90.0] - 2026-09-19
+### Upstream [kamu `0.267.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.267.0)
+- Resource system!
+
 ## [0.89.0] - 2026-08-19
 ### Upstream [kamu `0.266.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.266.1)
 - Harden account registration: provisioning and DID secrets

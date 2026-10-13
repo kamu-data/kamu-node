@@ -47,16 +47,15 @@ const DEFAULT_RUST_LOG: &str = "debug,";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), InternalError> {
-    let repo_url = if let Some(repo_url) = config.repo.repo_url.as_ref().cloned() {
+    let repo_url = if let Some(repo_url) = config.repo.repo_url.clone() {
         repo_url
     } else {
         let workspace_dir = find_workspace();
-        if !workspace_dir.exists() {
-            panic!(
-                "Directory is not a kamu workspace: {}",
-                workspace_dir.display()
-            );
-        }
+        assert!(
+            workspace_dir.exists(),
+            "Directory is not a kamu workspace: {}",
+            workspace_dir.display()
+        );
         Url::from_directory_path(workspace_dir.join("datasets"))
             .unwrap()
             .into()
@@ -81,6 +80,7 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
 
     let kamu_account_name = odf::AccountName::new_unchecked(config::ACCOUNT_KAMU);
     let server_account_subject = kamu_accounts::CurrentAccountSubject::logged(
+        kamu_accounts::Account::seed_resource_id_from_name(&kamu_account_name),
         odf::AccountID::new_seeded_ed25519(kamu_account_name.as_bytes()),
         kamu_account_name,
     );
@@ -94,13 +94,13 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
         .transpose()
         .int_err()?;
 
-    let catalog = init_dependencies(
+    let catalog = Box::pin(init_dependencies(
         config,
         &repo_url,
         tenancy_config,
         local_dir.path(),
         e2e_http_port,
-    )
+    ))
     .await?
     .build();
 
@@ -234,7 +234,7 @@ pub fn load_config(path: Option<&PathBuf>) -> Result<config::ApiServerConfig, In
         }
 
         fig = fig.with_source(setty::source::File::<setty::format::Yaml>::new(path));
-    };
+    }
 
     fig = fig.with_source(setty::source::Env::<setty::format::Yaml>::new(
         "KAMU_API_SERVER_CONFIG_",
@@ -432,6 +432,7 @@ pub async fn init_dependencies(
     b.bind::<dyn messaging_outbox::Outbox, messaging_outbox::OutboxDispatchingImpl>();
     b.add::<messaging_outbox::OutboxAgentImpl>();
     b.add::<messaging_outbox::OutboxAgentMetrics>();
+    b.add::<wakeup_listener::WakeupListenerMetrics>();
 
     messaging_outbox::register_message_dispatcher::<kamu_datasets::DatasetLifecycleMessage>(
         &mut b,
@@ -496,7 +497,19 @@ pub async fn init_dependencies(
         kamu_webhooks::MESSAGE_PRODUCER_KAMU_WEBHOOK_SUBSCRIPTION_EVENT_CHANGES_SERVICE,
     );
 
-    b.add_value(config.outbox.into_system());
+    messaging_outbox::register_message_dispatcher::<kamu_resources::ResourceLifecycleMessage>(
+        &mut b,
+        kamu_resources::MESSAGE_PRODUCER_KAMU_RESOURCE_SERVICE,
+    );
+
+    // Background agents configuration
+    b.add_value(config.background_agents.wakeup_listener_config());
+    b.add_value(config.background_agents.outbox_agent_config());
+    b.add_value(config.background_agents.flow_system_event_agent_config());
+    b.add_value(config.background_agents.flow_agent_activation_config());
+
+    // Flow system configuration
+    b.add_value(config.flow_system.into_system());
 
     // Webhooks configuration
     let webhooks_config = config.webhooks;
@@ -515,14 +528,11 @@ pub async fn init_dependencies(
 
         match webhooks_config.secret_encryption_key.as_ref() {
             None => {
-                if webhooks_config.secret_encryption_enabled {
-                    panic!("Webhook secrets encryption key is required")
-                } else {
-                    warn!(
-                        "Webhook encryption configuration is missing. Secrets will not be \
-                         encrypted"
-                    );
-                }
+                assert!(
+                    !webhooks_config.secret_encryption_enabled,
+                    "Webhook secrets encryption key is required"
+                );
+                warn!("Webhook encryption configuration is missing. Secrets will not be encrypted");
             }
             Some(encryption_key) => {
                 if webhooks_config.secret_encryption_enabled {
@@ -543,46 +553,7 @@ pub async fn init_dependencies(
         ));
     }
 
-    b.add_value(kamu_task_system::TaskAgentConfig::new(Duration::seconds(
-        config.flow_system.task_agent.task_checking_interval_secs,
-    )));
     kamu_task_system_services::register_dependencies(&mut b);
-
-    let flow_system_event_agent_config = config.flow_system.flow_system_event_agent;
-    b.add_value(flow_system_event_agent_config.into_system());
-
-    let flow_agent_config = config.flow_system.flow_agent;
-    b.add_value(kamu_flow_system::FlowAgentConfig::new(
-        Duration::seconds(flow_agent_config.awaiting_step_secs),
-        Duration::seconds(flow_agent_config.mandatory_throttling_period_secs),
-        flow_agent_config
-            .default_retry_policies
-            .iter()
-            .map(|(flow_type, retry_policy_config)| {
-                (
-                    flow_type.clone(),
-                    kamu_flow_system::RetryPolicy::new(
-                        retry_policy_config.max_attempts.unwrap_or(0),
-                        retry_policy_config.min_delay_secs.unwrap_or(0),
-                        match retry_policy_config.backoff_type {
-                            Some(config::RetryPolicyConfigBackoffType::Exponential) => {
-                                kamu_flow_system::RetryBackoffType::Exponential
-                            }
-                            Some(config::RetryPolicyConfigBackoffType::Linear) => {
-                                kamu_flow_system::RetryBackoffType::Linear
-                            }
-                            Some(config::RetryPolicyConfigBackoffType::ExponentialWithJitter) => {
-                                kamu_flow_system::RetryBackoffType::ExponentialWithJitter
-                            }
-                            Some(config::RetryPolicyConfigBackoffType::Fixed) | None => {
-                                kamu_flow_system::RetryBackoffType::Fixed
-                            }
-                        },
-                    ),
-                )
-            })
-            .collect(),
-    ));
 
     let quota_defaults = kamu_datasets_services::QuotaDefaultsConfig::default();
     let default_account_storage_limit_in_bytes = config
@@ -605,6 +576,11 @@ pub async fn init_dependencies(
             incremental_search_indexing,
         },
     );
+
+    kamu_configuration_services::register_dependencies(&mut b);
+    kamu_resources_facade::register_dependencies(&mut b);
+    kamu_resources_services::register_dependencies(&mut b);
+    kamu_storage_services::register_dependencies(&mut b);
 
     kamu_auth_rebac_services::register_dependencies(&mut b, true);
     kamu_webhooks_services::register_dependencies(&mut b);
@@ -648,7 +624,7 @@ pub async fn init_dependencies(
                         b.add_value(kamu_accounts::PredefinedAccountsConfig {
                             predefined: prov.accounts,
                         });
-                        need_to_add_default_predefined_accounts_config = false
+                        need_to_add_default_predefined_accounts_config = false;
                     }
                 }
             }
@@ -713,34 +689,34 @@ pub async fn init_dependencies(
         }
     }
 
-    let dataset_env_vars_config = &config.dataset_env_vars;
-    match dataset_env_vars_config.encryption_key.as_ref() {
+    // Secrets encryption configuration
+    b.add_value(config.secrets_encryption.clone());
+
+    match &config.secrets_encryption.encryption_key {
         None => {
-            if dataset_env_vars_config.enabled {
-                panic!("Dataset env vars encryption key is required");
-            } else {
-                error!("Dataset env vars configuration is missing. Feature will be disabled");
-            }
+            assert!(
+                !config.secrets_encryption.enabled,
+                "Secrets encryption key is required"
+            );
+            error!("Secrets encryption configuration is missing. Feature will be disabled");
             b.add::<kamu_datasets_services::DatasetKeyValueServiceSysEnv>();
             b.add::<kamu_datasets_services::DatasetEnvVarServiceNull>();
         }
         Some(encryption_key) => {
-            if !dataset_env_vars_config.enabled {
+            if config.secrets_encryption.enabled {
+                assert!(
+                    AesGcmEncryptor::try_new(encryption_key).is_ok(),
+                    "Invalid secrets encryption key",
+                );
+                b.add::<kamu_datasets_services::DatasetKeyValueServiceImpl>();
+                b.add::<kamu_datasets_services::DatasetEnvVarCompatServiceImpl>();
+            } else {
                 warn!("Dataset env vars feature will be disabled");
                 b.add::<kamu_datasets_services::DatasetKeyValueServiceSysEnv>();
                 b.add::<kamu_datasets_services::DatasetEnvVarServiceNull>();
-            } else {
-                assert!(
-                    AesGcmEncryptor::try_new(encryption_key).is_ok(),
-                    "Invalid dataset env var encryption key. Key must be a 32-character \
-                     alphanumeric string",
-                );
-                b.add::<kamu_datasets_services::DatasetKeyValueServiceImpl>();
-                b.add::<kamu_datasets_services::DatasetEnvVarServiceImpl>();
             }
         }
     }
-    b.add_value(config.dataset_env_vars.clone());
 
     // Did secret key encryption configuration
     b.add_value(config.auth.did_encryption.clone());
@@ -770,7 +746,7 @@ pub async fn init_dependencies(
         configure_database_components(&mut b, &config.database, db_connection_settings);
     } else {
         configure_in_memory_components(&mut b);
-    };
+    }
 
     // Search configuration
 
@@ -837,7 +813,7 @@ pub async fn init_dependencies(
         semantic_search_threshold_score: config.search.semantic_search_threshold_score,
         min_new_password_length: config.auth.password_policy.min_new_password_length,
         feature_flags: UIFeatureFlags {
-            enable_dataset_env_vars_management: config.dataset_env_vars.is_enabled(),
+            enable_dataset_env_vars_management: config.secrets_encryption.is_enabled(),
             allow_anonymous: config.auth.allow_anonymous,
             ..UIFeatureFlags::default()
         },

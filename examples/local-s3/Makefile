@@ -77,7 +77,7 @@ run-postgres:
 	AWS_SECRET_ACCESS_KEY=rustfs123 \
 	AWS_ENDPOINT_URL=http://localhost:9000 \
 	AWS_SESSION_TOKEN= \
-		cargo run -p kamu-api-server -- --config config_postgres.yaml run --address=127.0.0.1 --http-port=8080 --flightsql-port=50050
+		cargo run -p kamu-api-server -- --config ../../.priv/config-demo-to-local.yaml run --address=127.0.0.1 --http-port=8080 --flightsql-port=50050
 
 
 ###############################################################################

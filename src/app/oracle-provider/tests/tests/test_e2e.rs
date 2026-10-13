@@ -57,9 +57,7 @@ fn get_contracts_dir() -> PathBuf {
             .unwrap()
             .join("../../../../kamu-contracts")
     };
-    if !dir.exists() {
-        panic!("Contracts dir not found at {}", dir.display());
-    }
+    assert!(dir.exists(), "Contracts dir not found at {}", dir.display());
     dir
 }
 
@@ -171,7 +169,7 @@ async fn test_oracle_e2e() {
     provider.run_once(Some(0), None).await.unwrap();
 
     assert_eq!(consumer.province().call().await.unwrap(), "ON");
-    assert_eq!(consumer.totalCases().call().await.unwrap(), 100500);
+    assert_eq!(consumer.totalCases().call().await.unwrap(), 100_500);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -211,7 +209,7 @@ impl OdfApiClient for MockOdfApiClient {
                 limit: Some(1000),
             }),
             output: Outputs{
-                data: json!([["ON", 100500]]),
+                data: json!([["ON", 100_500]]),
                 data_format: DataFormat::JsonAoa,
             }
         })

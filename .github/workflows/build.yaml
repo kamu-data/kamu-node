@@ -8,6 +8,9 @@ on:
   # manual trigger
   workflow_dispatch: { }
 env:
+  # Decide crate freshness by file checksums, not mtimes, so that unchanged workspace crates
+  # restored from the cache are reused after `actions/checkout` resets all mtimes
+  CARGO_UNSTABLE_CHECKSUM_FRESHNESS: "true"
   RUST_LOG: "debug"
   RUST_LOG_SPAN_EVENTS: "new,close"
   RUST_BACKTRACE: "1"
@@ -17,29 +20,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: actions-rs/toolchain@v1
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: rustfmt, clippy
-      - name: cargo fmt --check
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --check
-      - name: license headers
+          cache: false
+      - uses: cargo-bins/cargo-binstall@main
+      - name: cargo fmt
+        run: cargo fmt --check
+      - name: cargo sort
         run: |
-          cargo test -p kamu-repo-tools -- license_header
+          cargo binstall cargo-sort -y
+          cargo sort -g -w -n -c
+      - name: taplo fmt
+        run: |
+          cargo binstall taplo-cli -y
+          taplo fmt --check
+      - name: license headers
+        run: cargo test -p kamu-repo-tools -- license_header
       - name: clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --workspace --all-targets -- -D warnings
+        run: cargo clippy --workspace --all-targets -- -D warnings
 
   lint_deps:
     name: Lint / Dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: actions-rs/toolchain@v1
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: false
       - uses: cargo-bins/cargo-binstall@main
       - run: cargo binstall cargo-deny -y
       - run: cargo deny check --hide-inclusion-graph
@@ -55,6 +63,7 @@ jobs:
       KAMU_CONTRACTS_DIR: ../../../kamu-contracts
     services:
       postgres:
+        # Keep in sync with `POSTGRES_IMAGE` in `Makefile`
         image: 'postgres:18'
         env:
           POSTGRES_USER: root
@@ -71,14 +80,17 @@ jobs:
         with:
           repository: kamu-data/kamu-contracts
           path: kamu-contracts
-      - uses: actions-rs/toolchain@v1
-      - uses: swatinem/rust-cache@v2
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
+          cache: true
+          # Prevents branch builds from evicting master cache
+          cache-save-if: ${{ github.ref == 'refs/heads/master' }}
+          # Requires CARGO_UNSTABLE_CHECKSUM_FRESHNESS
+          cache-workspace-crates: true
           cache-on-failure: true
       - uses: cargo-bins/cargo-binstall@main
       - name: Install cargo tools
-        run: |
-          cargo binstall cargo-nextest -y --force
+        run: cargo binstall cargo-nextest -y --force
       - name: Install foundry
         uses: foundry-rs/foundry-toolchain@v1
       - name: Build node
@@ -102,6 +114,9 @@ jobs:
         env:
           SQLX_OFFLINE: false
           DATABASE_URL: postgres://root:root@localhost:5432/kamu-test
+          # Used by the schema dump test to run `pg_dump` in a container
+          KAMU_CONTAINER_RUNTIME_TYPE_DB: docker
+          KAMU_POSTGRES_IMAGE: postgres:18
         run: cargo nextest run ${{ env.NEXTEST_FLAGS }} -E 'test(::postgres::)'
 
       - name: Check git diff

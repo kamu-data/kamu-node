@@ -78,9 +78,7 @@ impl Command for RunCommand {
                 .int_err()?;
         }
 
-        let address = self
-            .address
-            .unwrap_or(std::net::Ipv4Addr::new(127, 0, 0, 1).into());
+        let address = self.address.unwrap_or(std::net::Ipv4Addr::LOCALHOST.into());
 
         // API servers are built from the regular catalog
         // that does not contain any auth subject, thus they will rely on

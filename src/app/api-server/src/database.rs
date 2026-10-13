@@ -27,7 +27,7 @@ pub(crate) fn try_build_db_connection_settings(
             c.database_name.clone(),
             c.host.clone(),
             c.port,
-            c.max_connections,
+            Some(c.max_connections),
             c.max_lifetime_secs,
             c.acquire_timeout_secs,
         )
@@ -60,7 +60,6 @@ pub(crate) fn configure_database_components(
             b.add::<kamu_accounts_postgres::PostgresDidSecretKeyRepository>();
             b.add::<kamu_accounts_postgres::PostgresAccountQuotaEventStore>();
 
-            b.add::<kamu_datasets_postgres::PostgresDatasetEnvVarRepository>();
             b.add::<kamu_datasets_postgres::PostgresDatasetEntryRepository>();
             b.add::<kamu_datasets_postgres::PostgresDatasetDependencyRepository>();
             b.add::<kamu_datasets_postgres::PostgresDatasetReferenceRepository>();
@@ -68,16 +67,27 @@ pub(crate) fn configure_database_components(
             b.add::<kamu_datasets_postgres::PostgresDatasetKeyBlockRepository>();
             b.add::<kamu_datasets_postgres::PostgresDatasetDataBlockRepository>();
 
+            b.add::<kamu_resources_postgres::PostgresRawResourceEventStore>();
+            b.add::<kamu_resources_postgres::PostgresResourceRepository>();
+            b.add::<kamu_resources_postgres::PostgresResourceLabelProjectionRepository>();
+
+            b.add::<kamu_configuration_postgres::PostgresVariableSetProjectionRepository>();
+            b.add::<kamu_configuration_postgres::PostgresSecretSetProjectionRepository>();
+
             b.add::<kamu_flow_system_postgres::PostgresFlowConfigurationEventStore>();
             b.add::<kamu_flow_system_postgres::PostgresFlowTriggerEventStore>();
             b.add::<kamu_flow_system_postgres::PostgresFlowEventStore>();
             b.add::<kamu_flow_system_postgres::PostgresFlowSystemEventBridge>();
             b.add::<kamu_flow_system_postgres::PostgresFlowProcessStateRepository>();
             b.add::<kamu_flow_system_postgres::PostgresFlowProcessStateQuery>();
+            b.add::<kamu_flow_system_postgres::PostgresFlowActivationLinkRepository>();
+            b.add::<kamu_flow_system_postgres::PostgresFlowActivationWakeupSource>();
 
             b.add::<kamu_task_system_postgres::PostgresTaskEventStore>();
+            b.add::<kamu_task_system_postgres::PostgresTaskQueueWakeupSource>();
 
             b.add::<kamu_messaging_outbox_postgres::PostgresOutboxMessageBridge>();
+            b.add::<kamu_wakeup_listener_postgres::PostgresNotificationHub>();
 
             b.add::<kamu_auth_rebac_postgres::PostgresRebacRepository>();
 
@@ -97,7 +107,6 @@ pub(crate) fn configure_database_components(
             b.add::<kamu_accounts_sqlite::SqliteDidSecretKeyRepository>();
             b.add::<kamu_accounts_sqlite::SqliteAccountQuotaEventStore>();
 
-            b.add::<kamu_datasets_sqlite::SqliteDatasetEnvVarRepository>();
             b.add::<kamu_datasets_sqlite::SqliteDatasetEntryRepository>();
             b.add::<kamu_datasets_sqlite::SqliteDatasetDependencyRepository>();
             b.add::<kamu_datasets_sqlite::SqliteDatasetReferenceRepository>();
@@ -105,16 +114,27 @@ pub(crate) fn configure_database_components(
             b.add::<kamu_datasets_sqlite::SqliteDatasetKeyBlockRepository>();
             b.add::<kamu_datasets_sqlite::SqliteDatasetDataBlockRepository>();
 
+            b.add::<kamu_resources_sqlite::SqliteResourceRawEventStore>();
+            b.add::<kamu_resources_sqlite::SqliteResourceRepository>();
+            b.add::<kamu_resources_sqlite::SqliteResourceLabelProjectionRepository>();
+
+            b.add::<kamu_configuration_sqlite::SqliteVariableSetProjectionRepository>();
+            b.add::<kamu_configuration_sqlite::SqliteSecretSetProjectionRepository>();
+
             b.add::<kamu_flow_system_sqlite::SqliteFlowConfigurationEventStore>();
             b.add::<kamu_flow_system_sqlite::SqliteFlowTriggerEventStore>();
             b.add::<kamu_flow_system_sqlite::SqliteFlowEventStore>();
             b.add::<kamu_flow_system_sqlite::SqliteFlowSystemEventBridge>();
             b.add::<kamu_flow_system_sqlite::SqliteFlowProcessStateRepository>();
             b.add::<kamu_flow_system_sqlite::SqliteFlowProcessStateQuery>();
+            b.add::<kamu_flow_system_sqlite::SqliteFlowActivationLinkRepository>();
+            b.add::<kamu_flow_system_sqlite::SqliteFlowActivationWakeupSource>();
 
             b.add::<kamu_task_system_sqlite::SqliteTaskEventStore>();
+            b.add::<kamu_task_system_sqlite::SqliteTaskQueueWakeupSource>();
 
             b.add::<kamu_messaging_outbox_sqlite::SqliteOutboxMessageBridge>();
+            b.add::<kamu_wakeup_listener_sqlite::SqlitePollingHub>();
 
             b.add::<kamu_auth_rebac_sqlite::SqliteRebacRepository>();
 
@@ -124,12 +144,6 @@ pub(crate) fn configure_database_components(
             b.add::<kamu_auth_web3_sqlite::SqliteWeb3AuthEip4361NonceRepository>();
 
             b.add::<kamu_search_cache_sqlite::SqliteEmbeddingsCacheRepository>();
-        }
-        DatabaseProvider::MySql | DatabaseProvider::MariaDB => {
-            panic!(
-                "{} database configuration not supported",
-                db_connection_settings.provider
-            )
         }
     }
 
@@ -142,6 +156,7 @@ pub(crate) fn configure_database_components(
 
 pub(crate) fn configure_in_memory_components(b: &mut CatalogBuilder) {
     b.add::<kamu_messaging_outbox_inmem::InMemoryOutboxMessageBridge>();
+    b.add::<kamu_wakeup_listener_inmem::InMemoryWakeupHub>();
 
     b.add::<kamu_accounts_inmem::InMemoryAccountRepository>();
     b.add::<kamu_accounts_inmem::InMemoryAccessTokenRepository>();
@@ -154,16 +169,25 @@ pub(crate) fn configure_in_memory_components(b: &mut CatalogBuilder) {
     b.add::<kamu_flow_system_inmem::InMemoryFlowEventStore>();
     b.add::<kamu_flow_system_inmem::InMemoryFlowSystemEventBridge>();
     b.add::<kamu_flow_system_inmem::InMemoryFlowProcessState>();
+    b.add::<kamu_flow_system_inmem::InMemoryFlowActivationLinkRepository>();
+    b.add::<kamu_flow_system_inmem::InMemoryFlowActivationWakeupSource>();
 
     b.add::<kamu_task_system_inmem::InMemoryTaskEventStore>();
+    b.add::<kamu_task_system_inmem::InMemoryTaskQueueWakeupSource>();
 
-    b.add::<kamu_datasets_inmem::InMemoryDatasetEnvVarRepository>();
     b.add::<kamu_datasets_inmem::InMemoryDatasetEntryRepository>();
     b.add::<kamu_datasets_inmem::InMemoryDatasetDependencyRepository>();
     b.add::<kamu_datasets_inmem::InMemoryDatasetReferenceRepository>();
     b.add::<kamu_datasets_inmem::InMemoryDatasetStatisticsRepository>();
     b.add::<kamu_datasets_inmem::InMemoryDatasetKeyBlockRepository>();
     b.add::<kamu_datasets_inmem::InMemoryDatasetDataBlockRepository>();
+
+    b.add::<kamu_resources_inmem::InMemoryRawResourceEventStore>();
+    b.add::<kamu_resources_inmem::InMemoryResourceRepository>();
+    b.add::<kamu_resources_inmem::InMemoryResourceLabelProjectionRepository>();
+
+    b.add::<kamu_configuration_inmem::InMemoryVariableSetProjectionRepository>();
+    b.add::<kamu_configuration_inmem::InMemorySecretSetProjectionRepository>();
 
     b.add::<kamu_auth_rebac_inmem::InMemoryRebacRepository>();
 
@@ -222,14 +246,6 @@ pub(crate) async fn connect_database_initially(
             db_credentials.as_ref(),
         )
         .int_err(),
-        DatabaseProvider::MySql | DatabaseProvider::MariaDB => {
-            MySqlPlugin::catalog_with_connected_pool(
-                base_catalog,
-                &db_connection_settings,
-                db_credentials.as_ref(),
-            )
-            .int_err()
-        }
         DatabaseProvider::Sqlite => {
             SqlitePlugin::catalog_with_connected_pool(base_catalog, &db_connection_settings)
                 .await

@@ -64,7 +64,7 @@ async fn test_access_token_created_email() {
     );
     assert_eq!(
         access_token_created_email.subject,
-        format!("{ACCESS_TOKEN_CREATED_SUBJECT}")
+        ACCESS_TOKEN_CREATED_SUBJECT
     );
     assert!(access_token_created_email.body.contains("foo"));
     assert!(

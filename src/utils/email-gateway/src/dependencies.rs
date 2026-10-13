@@ -32,13 +32,6 @@ pub fn register_dependencies(catalog_builder: &mut CatalogBuilder, email_config:
             catalog_builder.add_value(postmark_settings);
             catalog_builder.add::<PostmarkEmailSender>();
         }
-        #[allow(unreachable_patterns)]
-        _ => {
-            panic!(
-                "Email gateway '{email_config:?}' is unavailable, compile with the corresponding \
-                 feature enabled",
-            );
-        }
     }
 }
 
