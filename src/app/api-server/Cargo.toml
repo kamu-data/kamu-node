@@ -167,6 +167,8 @@ kamu-webhooks-postgres = { workspace = true }
 kamu-webhooks-services = { workspace = true }
 kamu-webhooks-sqlite = { workspace = true }
 
+# SKU
+kamu-molecule-services = { workspace = true }
 
 # Top-level TLS configuration. Configure: aws-lc-rs, webpki root certs
 # TODO: alloy is pinned until datafusion & object_store upgrade to reqwest v13
