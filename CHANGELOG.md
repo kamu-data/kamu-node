@@ -15,6 +15,14 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
+## [Unreleased]
+### Upstream kamu `master`
+- The local disk cache of S3 metadata blocks writes entries atomically, so a failed or interrupted download
+  no longer leaves a truncated block that breaks the node until the cache is cleared
+- Webhooks: create and update subscription use cases depend on `WebhooksConfig`, which has a new
+  `loopback_targets_only` option (disabled in the API server)
+- Updated `rustls` and `num-modular` for security alerts
+
 ## [0.93.0] - 2026-10-12
 ### Upstream [kamu `0.270.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.270.0)
 - Flows: configuration and trigger changes apply to an already waiting flow, not only the next one: ingest,

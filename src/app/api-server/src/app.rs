@@ -537,6 +537,7 @@ pub async fn init_dependencies(
             max_consecutive_failures,
             Duration::seconds(i64::from(delivery_timeout_secs)),
             webhooks_config.secret_encryption_key,
+            false,
         ));
     }
 
