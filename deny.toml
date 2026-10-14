@@ -143,4 +143,8 @@ ignore = [
     # Dependency of the unmaintained `im` crate
     # https://rustsec.org/advisories/RUSTSEC-2026-0251
     "RUSTSEC-2026-0251",
+    # Unmaintained: unsafe-libyaml
+    # Used by serde_yaml_ng via kamu-cli crates; waiting for upstream migration to serde-saphyr
+    # https://rustsec.org/advisories/RUSTSEC-2024-0449
+    "RUSTSEC-2024-0449",
 ]
