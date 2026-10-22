@@ -859,7 +859,9 @@ CREATE TABLE public.resources (
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     deleted_at timestamp with time zone,
-    last_event_id bigint
+    last_event_id bigint,
+    status_generation bigint DEFAULT 1 NOT NULL,
+    deletion_requested_at timestamp with time zone
 );
 
 
@@ -977,6 +979,17 @@ CREATE TABLE public.webhook_subscriptions (
     status public.webhook_subscription_status DEFAULT 'UNVERIFIED'::public.webhook_subscription_status NOT NULL,
     label character varying(100),
     last_event_id bigint
+);
+
+
+--
+-- Name: webhook_watermarks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.webhook_watermarks (
+    subscription_id uuid NOT NULL,
+    event_type character varying(64) NOT NULL,
+    watermark jsonb NOT NULL
 );
 
 
@@ -1232,6 +1245,14 @@ ALTER TABLE ONLY public.webhook_subscription_events
 
 ALTER TABLE ONLY public.webhook_subscriptions
     ADD CONSTRAINT webhook_subscriptions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: webhook_watermarks webhook_watermarks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.webhook_watermarks
+    ADD CONSTRAINT webhook_watermarks_pkey PRIMARY KEY (subscription_id, event_type);
 
 
 --
@@ -1672,7 +1693,7 @@ CREATE INDEX idx_resource_labels_projection_key_value_resource_id ON public.reso
 -- Name: idx_resources_account_schema_name_ci; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_resources_account_schema_name_ci ON public.resources USING btree (account_id, resource_schema, lower((resource_name)::text));
+CREATE UNIQUE INDEX idx_resources_account_schema_name_ci ON public.resources USING btree (account_id, resource_schema, lower((resource_name)::text)) WHERE (deletion_requested_at IS NULL);
 
 
 --
@@ -1943,6 +1964,14 @@ ALTER TABLE ONLY public.webhook_deliveries
 
 ALTER TABLE ONLY public.webhook_subscription_events
     ADD CONSTRAINT webhook_subscription_events_subscription_id_fkey FOREIGN KEY (subscription_id) REFERENCES public.webhook_subscriptions(id);
+
+
+--
+-- Name: webhook_watermarks webhook_watermarks_subscription_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.webhook_watermarks
+    ADD CONSTRAINT webhook_watermarks_subscription_id_fkey FOREIGN KEY (subscription_id) REFERENCES public.webhook_subscriptions(id);
 
 
 --

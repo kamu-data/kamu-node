@@ -15,13 +15,46 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
-## [Unreleased]
-### Upstream kamu `master`
+## [0.94.0] - 2026-10-22
+### Upstream [kamu `0.271.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.271.0)
+- Updated to ODF spec v0.42.1
+- GraphQL (breaking): `AccountHandle` is renamed to `ResourceOwnerHandle` and `AccountRefInput` to
+  `ResourceOwnerRefInput`, following ODF
+- GraphQL (breaking): removed account-wide flow pausing: the `Account.flows.triggers.allPaused` query and
+  the `pauseAccountDatasetFlows` and `resumeAccountDatasetFlows` mutations. Pause and resume flows per
+  dataset instead
+- GraphQL: `DatasetMetadata.currentDownstreamDependenciesCount` returns the number of direct downstream
+  datasets, including private ones for accounts that can maintain the dataset
+- Resources: deleting a resource takes two steps, `Deleting` until its controller has cleaned up, then
+  `Deleted`. Resources being deleted are hidden unless asked for with `includeDeleting`. GraphQL
+  `ResourceHeaders` has `statusGeneration` and `deletionRequestedAt`, `ResourcePhase` has `DELETING` and
+  `DELETED`
+- Resources (breaking): status conditions follow ODF. The `Ready` and `Reconciling` conditions are gone; a
+  failed reconciliation or cleanup is reported by the ODF `ReconciliationError` condition. Stored statuses
+  are migrated
+- Resources: updates or deletion during a running reconciliation no longer fail it with an internal error
+- Webhooks: `DATASET.REF.UPDATED` deliveries track the last head the receiver accepted, so updates missed
+  right after subscribing, while paused or unreachable, or while the node was down are delivered once the
+  subscription is active again. After upgrading, a subscription may get one delivery covering changes since
+  its last accepted one
+- Deleting a dataset also removes the flows of its webhook subscriptions
 - The local disk cache of S3 metadata blocks writes entries atomically, so a failed or interrupted download
   no longer leaves a truncated block that breaks the node until the cache is cleared
 - Webhooks: create and update subscription use cases depend on `WebhooksConfig`, which has a new
   `loopback_targets_only` option (disabled in the API server)
-- Updated `rustls` and `num-modular` for security alerts
+- SQL: `to_table()` reads only the datasets the query lists, at the query's pinned blocks; datasets in
+  subqueries inside expressions (`EXISTS`, `IN (SELECT ...)`, scalar subqueries) are found
+- `ChangelogStream` and `UpsertStream` ingest keep the input order of records
+- Collection updates are committed as a single block; concurrent uploads to a versioned file fail with a
+  conflict instead of creating duplicate versions
+- New database migrations: webhook watermarks (with backfill), resource status events, resource deletion
+  requests, and the `ReconciliationError` condition
+### Security
+- Dropped the `use-rustls` feature of `rumqttc` (MQTT ingest only connects over plain TCP), which removes
+  vulnerable `rustls-webpki 0.102` (RUSTSEC-2026-0382) and unmaintained `rustls-pemfile` from the build
+- Updated `rustls`, `rustls-webpki` (0.103.16), `num-modular` and other dependencies for security alerts
+- `cargo deny`: removed advisory ignores that no longer apply; ignored the unmaintained `basic-toml`
+  advisory (RUSTSEC-2026-0374), used by `askama` for its `askama.toml` configuration
 
 ## [0.93.0] - 2026-10-12
 ### Upstream [kamu `0.270.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.270.0)

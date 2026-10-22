@@ -111,18 +111,6 @@ ignore = [
     # Unmaintained (instant)
     # https://rustsec.org/advisories/RUSTSEC-2024-0384
     "RUSTSEC-2024-0384",
-    # Unmaintained (rustls-pemfile)
-    # https://rustsec.org/advisories/RUSTSEC-2025-0134
-    "RUSTSEC-2025-0134",
-    # rustls-webpki: transitive dependency; there are currently no updates for higher-order dependencies
-    # https://rustsec.org/advisories/RUSTSEC-2026-0104
-    # https://rustsec.org/advisories/RUSTSEC-2026-0049
-    # https://rustsec.org/advisories/RUSTSEC-2026-0098
-    # https://rustsec.org/advisories/RUSTSEC-2026-0099
-    "RUSTSEC-2026-0104",
-    "RUSTSEC-2026-0049",
-    "RUSTSEC-2026-0098",
-    "RUSTSEC-2026-0099",
     # quick-xml: temporary ignore until upstream dependencies can move to >= 0.41.0
     # https://rustsec.org/advisories/RUSTSEC-2026-0194
     # https://rustsec.org/advisories/RUSTSEC-2026-0195
@@ -147,4 +135,8 @@ ignore = [
     # Used by serde_yaml_ng via kamu-cli crates; waiting for upstream migration to serde-saphyr
     # https://rustsec.org/advisories/RUSTSEC-2024-0449
     "RUSTSEC-2024-0449",
+    # Unmaintained: basic-toml
+    # Used by askama (`config` feature, needed for our `askama.toml`); no askama release without it yet
+    # https://rustsec.org/advisories/RUSTSEC-2026-0374
+    "RUSTSEC-2026-0374",
 ]
