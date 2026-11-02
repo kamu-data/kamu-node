@@ -23,7 +23,7 @@ use tracing::{error, info, warn};
 use url::Url;
 
 use crate::commands::{Command, CommandDesc};
-use crate::ui_configuration::{UIConfiguration, UIFeatureFlags};
+use crate::ui_configuration::{UIConfiguration, UIFeatureFlags, UIWebhooksConfiguration};
 use crate::{
     AccessTokenLifecycleNotifier,
     AccountLifecycleNotifier,
@@ -500,6 +500,7 @@ pub async fn init_dependencies(
 
     // Webhooks configuration
     let webhooks_config = config.webhooks;
+    let webhooks_loopback_targets_only = false;
     {
         let max_consecutive_failures = webhooks_config.max_consecutive_failures;
         assert!(
@@ -537,7 +538,7 @@ pub async fn init_dependencies(
             max_consecutive_failures,
             Duration::seconds(i64::from(delivery_timeout_secs)),
             webhooks_config.secret_encryption_key,
-            false,
+            webhooks_loopback_targets_only,
         ));
     }
 
@@ -804,6 +805,9 @@ pub async fn init_dependencies(
             enable_dataset_env_vars_management: config.secrets_encryption.is_enabled(),
             allow_anonymous: config.auth.allow_anonymous,
             ..UIFeatureFlags::default()
+        },
+        webhooks: UIWebhooksConfiguration {
+            loopback_targets_only: webhooks_loopback_targets_only,
         },
     });
     //

@@ -19,6 +19,7 @@ pub struct UIConfiguration {
     pub feature_flags: UIFeatureFlags,
     pub semantic_search_threshold_score: f32,
     pub min_new_password_length: usize,
+    pub webhooks: UIWebhooksConfiguration,
 }
 
 impl Default for UIConfiguration {
@@ -28,6 +29,7 @@ impl Default for UIConfiguration {
             feature_flags: UIFeatureFlags::default(),
             semantic_search_threshold_score: 0.0,
             min_new_password_length: PasswordPolicyConfig::default().min_new_password_length,
+            webhooks: UIWebhooksConfiguration::default(),
         }
     }
 }
@@ -54,6 +56,14 @@ impl Default for UIFeatureFlags {
             allow_anonymous: false,
         }
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Clone, Default, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UIWebhooksConfiguration {
+    pub loopback_targets_only: bool,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

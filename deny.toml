@@ -27,21 +27,17 @@ deny = [
     # This is a temporary approach until we deny by default with some exceptions
     { name = "alloy", deny-multiple-versions = true },
     { name = "arrow", deny-multiple-versions = true },
-    # TODO: Waiting for old version of tonic to go away
-    # { name = "axum", deny-multiple-versions = true },
+    { name = "axum", deny-multiple-versions = true },
     { name = "aws-config", deny-multiple-versions = true },
     { name = "clap", deny-multiple-versions = true },
     { name = "datafusion", deny-multiple-versions = true },
     { name = "dill", deny-multiple-versions = true },
-    # TODO: waiting for aws-sdk to upgrade
-    # https://github.com/awslabs/aws-sdk-rust/issues/977
-    # { name = "hyper", deny-multiple-versions = true },
+    { name = "hyper", deny-multiple-versions = true },
     { name = "object_store", deny-multiple-versions = true },
     { name = "parquet", deny-multiple-versions = true },
     { name = "prost", deny-multiple-versions = true },
     { name = "reqwest", deny-multiple-versions = true },
-    # TODO: Too many versions between alloy, aws-sdk, reqwest etc.
-    # { name = "rustls", deny-multiple-versions = true },
+    { name = "rustls", deny-multiple-versions = true },
     { name = "setty", deny-multiple-versions = true },
     { name = "schemars", deny-multiple-versions = true },
     { name = "sqlx", deny-multiple-versions = true },
@@ -70,18 +66,11 @@ allow = [
     "MIT",
     "MIT-0",
     "MPL-2.0",
-    "OpenSSL",
     "Unicode-3.0",
     "Unlicense",
     "Zlib",
 ]
 private = { ignore = true }
-
-
-[[licenses.clarify]]
-name = "ring"
-expression = "MIT AND ISC AND OpenSSL"
-license-files = [{ path = "LICENSE", hash = 0xbd0eed23 }]
 
 
 [sources]
@@ -139,4 +128,8 @@ ignore = [
     # Used by askama (`config` feature, needed for our `askama.toml`); no askama release without it yet
     # https://rustsec.org/advisories/RUSTSEC-2026-0374
     "RUSTSEC-2026-0374",
+    # crypto-bigint 0.5: timing side channels, fixed only in 0.7.6+
+    # Pulled via alloy -> k256 0.13 / elliptic-curve 0.13; no alloy release uses 0.14 yet
+    # https://rustsec.org/advisories/RUSTSEC-2026-0387
+    "RUSTSEC-2026-0387",
 ]

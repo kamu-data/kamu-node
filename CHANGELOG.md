@@ -15,6 +15,34 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
+## [0.95.0] - 2026-11-02
+### Upstream [kamu `0.272.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.272.0)
+- GraphQL: `MetadataChain.blocks` takes an optional `filter` that selects blocks by event type and by
+  block hash prefix; `totalCount` and `pageInfo` count only the matching blocks
+- GraphQL: `DatasetMetadata.currentWatermark` accepts an optional `head` and returns the watermark as of
+  that block
+- GraphQL: `DatasetEnvVarsMut.createEnvVariable` adds a dataset environment variable or secret, and returns
+  `CreateDatasetEnvVarResultAlreadyExists` instead of overwriting an existing key
+- GraphQL (breaking): the enum taken by `DatasetMetadata.metadataProjection` is renamed from
+  `MetadataEventType` to `MetadataProjectionEventType`. `MetadataEventType` now lists every metadata event
+  type and is used by the `MetadataChain.blocks` filter
+- `/query` and `/verify` no longer fail with "Response signing is not enabled" on nodes without a signing
+  key. Only queries that request a `Proof` need the key
+- GraphQL: `AccountFlowRuns.listDatasetsWithFlow` includes datasets whose only flows are webhook
+  deliveries; `AccountFlowRuns.listFlows` returns no flows for an account without datasets, instead of the
+  flows of all accounts
+- Dataset environment variables: invalid keys, empty or too long values, and too many entries are
+  reported as typed results instead of "Internal error"; variables with keys the current naming rules
+  reject no longer block editing the others; concurrent edits no longer silently overwrite each other
+### Added
+- `/ui-config` returns `webhooks.loopbackTargetsOnly`, so the Web UI validates webhook target URLs by the
+  same rule as the node (always `false` in the API server)
+### Changed
+- Minor dependency updates, aligned with kamu-cli; e2e test macros use `syn` 3
+- `cargo deny`: `axum`, `hyper` and `rustls` are denied in multiple versions; dropped the `OpenSSL`
+  license and the `ring` license clarification; ignored the `crypto-bigint` 0.5 advisory
+  (RUSTSEC-2026-0387), pulled in via `alloy`, until an `alloy` release moves off it
+
 ## [0.94.0] - 2026-10-22
 ### Upstream [kamu `0.271.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.271.0)
 - Updated to ODF spec v0.42.1

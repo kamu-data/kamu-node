@@ -40,6 +40,8 @@ interface "DatabasePasswordProvider" <<i>>
 interface "DatabasePasswordRefresher" <<i>>
 interface "DatabaseTransactionManager" <<i>>
 interface "DatasetActionAuthorizer" <<i>>
+interface "DatasetBlockQueryRepository" <<i>>
+interface "DatasetBlocksQueryService" <<i>>
 interface "DatasetDataBlockRepository" <<i>>
 interface "DatasetDependencyRepository" <<i>>
 interface "DatasetEntryRemovalListener" <<i>>
@@ -252,6 +254,7 @@ class "DatasetAccountLifecycleHandler"
 class "DatasetAliasUpdateHandler"
 class "DatasetBlockIndexer"
 class "DatasetBlockUpdateHandler"
+class "DatasetBlocksQueryServiceImpl"
 class "DatasetEntryIndexer"
 class "DatasetEntryServiceImpl"
 class "DatasetEnvVarMutationAdapterImpl"
@@ -386,6 +389,7 @@ class "Pool" <<singleton>>
 class "PostgresAccessTokenRepository"
 class "PostgresAccountQuotaEventStore"
 class "PostgresAccountRepository"
+class "PostgresDatasetBlockQueryRepository"
 class "PostgresDatasetDataBlockRepository"
 class "PostgresDatasetDependencyRepository"
 class "PostgresDatasetEntryRepository"
@@ -960,6 +964,7 @@ class "WsSmartTransferProtocolClient"
 "DatasetEnvVarMutationAdapter" <|-- "DatasetEnvVarMutationAdapterImpl"
 "DatasetEnvVarMutationAdapterImpl"  --> "AccountService"
 "DatasetEnvVarMutationAdapterImpl"  --> "DatasetEntryRepository"
+"DatasetEnvVarMutationAdapterImpl"  --> "DatasetEnvVarSpecResolver"
 "DatasetEnvVarMutationAdapterImpl"  --> "GenericResourceQueryService"
 "DatasetEnvVarMutationAdapterImpl"  --> "SecretsEncryptionConfig"
 "DatasetEnvVarMutationAdapterImpl"  --> "ResourceDispatcherFactory"
@@ -1061,6 +1066,8 @@ class "WsSmartTransferProtocolClient"
 "ResourceSpecSanitizer" <|-- "SecretSetSpecSanitizer"
 "SecretSetSpecSanitizer"  --> "SecretsEncryptionConfig"
 "DidGenerator" <|-- "DidGeneratorDefault"
+"DatasetBlockQueryRepository" <|-- "PostgresDatasetBlockQueryRepository"
+"PostgresDatasetBlockQueryRepository"  --> "TransactionRefT"
 "DatasetDataBlockRepository" <|-- "PostgresDatasetDataBlockRepository"
 "PostgresDatasetDataBlockRepository"  --> "TransactionRefT"
 "DatasetDependencyRepository" <|-- "PostgresDatasetDependencyRepository"
@@ -1094,6 +1101,9 @@ class "WsSmartTransferProtocolClient"
 "DatasetBlockUpdateHandler"  --> "DatasetKeyBlockRepository"
 "DatasetBlockUpdateHandler"  --> "DatasetRegistry"
 "DatasetBlockUpdateHandler"  --> "Outbox"
+"DatasetBlocksQueryService" <|-- "DatasetBlocksQueryServiceImpl"
+"DatasetBlocksQueryServiceImpl"  --> "DatasetBlockQueryRepository"
+"DatasetBlocksQueryServiceImpl"  --> "DatasetKeyBlockRepository"
 "MessageConsumer" <|-- "DatasetAccountLifecycleHandler"
 "MessageConsumerT" <|-- "DatasetAccountLifecycleHandler"
 "DatasetAccountLifecycleHandler"  --> "DatasetRegistry"
