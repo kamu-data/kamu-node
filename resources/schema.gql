@@ -304,30 +304,6 @@ type AccountFlowRuns {
 }
 
 """
-Flow trigger queries across datasets owned by an account
-"""
-type AccountFlowTriggers {
-	"""
-	Checks if all triggers of all datasets in account are disabled
-	"""
-	allPaused: Boolean!
-}
-
-"""
-Flow trigger mutations across all datasets owned by an account
-"""
-type AccountFlowTriggersMut {
-	"""
-	Resumes flow triggers of all datasets owned by the account
-	"""
-	resumeAccountDatasetFlows: Boolean!
-	"""
-	Pauses flow triggers of all datasets owned by the account
-	"""
-	pauseAccountDatasetFlows: Boolean!
-}
-
-"""
 Flow queries scoped to an account
 """
 type AccountFlows {
@@ -339,40 +315,6 @@ type AccountFlows {
 	Returns interface for flow runs queries
 	"""
 	runs: AccountFlowRuns!
-	"""
-	Returns interface for flow triggers queries
-	"""
-	triggers: AccountFlowTriggers!
-}
-
-"""
-Flow mutations scoped to an account
-"""
-type AccountFlowsMut {
-	"""
-	Flow trigger mutations for the account's datasets
-	"""
-	triggers: AccountFlowTriggersMut!
-}
-
-"""
-Link to an account.
-
-Schema: https://opendatafabric.org/schemas/auth/v1alpha1/AccountHandle
-"""
-type AccountHandle {
-	"""
-	ID of the account resource.
-	"""
-	id: ResourceID!
-	"""
-	DID of the account.
-	"""
-	did: AccountID!
-	"""
-	Name of the account.
-	"""
-	name: AccountName!
 }
 
 """
@@ -423,11 +365,6 @@ type AccountMut {
 	Allowed only to the account itself and to administrators.
 	"""
 	delete: DeleteAccountResult!
-	"""
-	Access to the mutable flow configurations of this account.
-	Available only to the account itself.
-	"""
-	flows: AccountFlowsMut!
 	"""
 	Access to the access token management of this account.
 	Available only to the account itself.
@@ -507,27 +444,6 @@ type AccountQuotasUsageStorage {
 	account is unlimited.
 	"""
 	limitTotalBytes: Int
-}
-
-"""
-Reference to an account, mirroring the ODF `auth/v1alpha1/AccountRef`.
-
-Resolves by `did` if given, else by `name`; any other field present is then
-checked for agreement, so a mismatch is reported rather than ignored.
-"""
-input AccountRefInput {
-	"""
-	Resource ID of the account, only checked for agreement
-	"""
-	id: ResourceID
-	"""
-	Account DID, used for lookup when given
-	"""
-	did: AccountID
-	"""
-	Account name, used for lookup when `did` is absent
-	"""
-	name: AccountName
 }
 
 """
@@ -963,7 +879,8 @@ Resource handles found and references that could not be resolved
 """
 type BatchResourceHandlesResult {
 	"""
-	Handles found, one per resolved reference
+	Handles found, one per resolved reference; with `includeDeleting` a
+	name may match several, which share its `requestIndex`
 	"""
 	handles: [BatchResourceHandleSuccess!]!
 	"""
@@ -996,7 +913,8 @@ Rendered manifests and references that could not be resolved
 """
 type BatchResourceManifestsResult {
 	"""
-	Manifests rendered, one per resolved reference
+	Manifests rendered, one per resolved reference; with `includeDeleting`
+	a name may match several, which share its `requestIndex`
 	"""
 	manifests: [BatchResourceManifestSuccess!]!
 	"""
@@ -1043,7 +961,8 @@ Resources found and references that could not be resolved
 """
 type BatchResourcesResult {
 	"""
-	Resources found, one per resolved reference
+	Resources found, one per resolved reference; with `includeDeleting` a
+	name may match several, which share its `requestIndex`
 	"""
 	resources: [BatchResourceSuccess!]!
 	"""
@@ -2836,6 +2755,11 @@ type DatasetMetadata {
 	Current downstream dependencies of a dataset
 	"""
 	currentDownstreamDependencies: [DatasetAccessResult!]!
+	"""
+	Number of direct downstream dependencies. Includes inaccessible ones only
+	for accounts that can maintain the dataset
+	"""
+	currentDownstreamDependenciesCount: Int!
 	"""
 	Current polling source used by the root dataset
 	"""
@@ -5654,7 +5578,7 @@ is immutable. It does so by performing Change Data Capture - essentially diffing
 state of data against the reconstructed previous state and recording differences as retractions
 or corrections. The Operation Type "op" column will contain:
 - append (`+A`) when a row appears for the first time
-- retraction (`-D`) when row disappears
+- retraction (`-R`) when row disappears
 - correction (`-C`, `+C`) when row data has changed, with `-C` event carrying the old value of
 the row and `+C` carrying the new value.
 
@@ -5929,6 +5853,9 @@ type MoleculeActivityAnnouncement {
 	announcement: MoleculeAnnouncementEntry!
 }
 
+"""
+Activity event in the data room or announcements of a project
+"""
 union MoleculeActivityEvent = MoleculeActivityFileAdded | MoleculeActivityFileUpdated | MoleculeActivityFileRemoved | MoleculeActivityAnnouncement
 
 """
@@ -5959,15 +5886,34 @@ type MoleculeActivityEventEdge {
 	node: MoleculeActivityEvent!
 }
 
+"""
+File was added to the data room
+"""
 type MoleculeActivityFileAdded {
+	"""
+	Data room entry as recorded by this event
+	"""
 	entry: MoleculeDataRoomEntry!
 }
 
+"""
+File was removed from the data room
+"""
 type MoleculeActivityFileRemoved {
+	"""
+	Data room entry as recorded by this event
+	"""
 	entry: MoleculeDataRoomEntry!
 }
 
+"""
+New version of a file was uploaded, or a file was moved or its metadata
+changed
+"""
 type MoleculeActivityFileUpdated {
+	"""
+	Data room entry as recorded by this event
+	"""
 	entry: MoleculeDataRoomEntry!
 }
 
@@ -6107,6 +6053,44 @@ type MoleculeDataRoomEntry {
 	changeBy: String!
 	accessLevel: String!
 	asVersionedFile: MoleculeVersionedFile!
+	"""
+	Activity events of this entry in reverse chronological order, including
+	moves and renames
+	"""
+	activity(page: Int, perPage: Int): MoleculeDataRoomEntryActivityEventConnection!
+}
+
+"""
+Activity event of a single data room entry
+"""
+union MoleculeDataRoomEntryActivityEvent = MoleculeActivityFileAdded | MoleculeActivityFileUpdated | MoleculeActivityFileRemoved
+
+"""
+A page of `MoleculeDataRoomEntryActivityEvent` items
+"""
+type MoleculeDataRoomEntryActivityEventConnection {
+	"""
+	A shorthand for `edges { node { ... } }`
+	"""
+	nodes: [MoleculeDataRoomEntryActivityEvent!]!
+	"""
+	Page information
+	"""
+	pageInfo: PageBasedInfo!
+	"""
+	Items of this page, each wrapped in an edge
+	"""
+	edges: [MoleculeDataRoomEntryActivityEventEdge!]!
+}
+
+"""
+An edge wrapping a single `MoleculeDataRoomEntryActivityEvent` item
+"""
+type MoleculeDataRoomEntryActivityEventEdge {
+	"""
+	The item itself
+	"""
+	node: MoleculeDataRoomEntryActivityEvent!
 }
 
 """
@@ -6204,7 +6188,7 @@ type MoleculeDataRoomMut {
 	"""
 	updateFileMetadata(		ref: DatasetID!,
 		"""
-		Expected head block hash to prevent concurrent updates
+		Expected head block hash of the versioned file to prevent concurrent updates
 		"""
 		expectedHead: Multihash,		accessLevel: String!,		changeBy: String!,		description: String,		categories: [String!],		tags: [String!],		contentText: String
 	): MoleculeDataRoomUpdateFileMetadataResult!
@@ -6365,6 +6349,11 @@ input MoleculeProjectActivityFilters {
 	byAccessLevels: [String!]
 	byAccessLevelRules: [MoleculeAccessLevelRuleInput!]
 	byKinds: [MoleculeActivityKindInput!]
+	"""
+	Only activity of the data room entries that link these datasets;
+	leaves out announcements
+	"""
+	byRefs: [DatasetID!]
 }
 
 """
@@ -6518,6 +6507,16 @@ type MoleculeV3 {
 
 type MoleculeVersionedFile {
 	"""
+	Returns list of versions in reverse chronological order, regardless of
+	data room version
+	"""
+	versions(
+		"""
+		Upper version bound (inclusive)
+		"""
+		maxVersion: Int,		page: Int,		perPage: Int
+	): MoleculeVersionedFileEntryConnection!
+	"""
 	Returns the latest versioned file entry, regardless of data room version
 	"""
 	latest: MoleculeVersionedFileEntry
@@ -6554,6 +6553,38 @@ type MoleculeVersionedFileEntry {
 	Returns a direct download URL
 	"""
 	contentUrl: VersionedFileContentDownload!
+}
+
+"""
+A page of `MoleculeVersionedFileEntry` items
+"""
+type MoleculeVersionedFileEntryConnection {
+	"""
+	A shorthand for `edges { node { ... } }`
+	"""
+	nodes: [MoleculeVersionedFileEntry!]!
+	"""
+	Approximate number of total nodes
+	"""
+	totalCount: Int!
+	"""
+	Page information
+	"""
+	pageInfo: PageBasedInfo!
+	"""
+	Items of this page, each wrapped in an edge
+	"""
+	edges: [MoleculeVersionedFileEntryEdge!]!
+}
+
+"""
+An edge wrapping a single `MoleculeVersionedFileEntry` item
+"""
+type MoleculeVersionedFileEntryEdge {
+	"""
+	The item itself
+	"""
+	node: MoleculeVersionedFileEntry!
 }
 
 """
@@ -7382,7 +7413,7 @@ Schema: https://opendatafabric.org/schemas/resources/v1alpha1/Resource
 """
 type Resource {
 	"""
-	Identifies the controlling entity, a bounded context that this resource belongs to, and the version. Url should follow the pattern `{base-url}/{context}/{version}/{name}.json` e.g. `https://opendatafabric.org/schemas/datasets/v1/Dataset.json`.
+	Identifies the controlling entity, a bounded context that this resource belongs to, and the version. Url should follow the pattern `{base-url}/{context}/{version}/{name}` e.g. `https://opendatafabric.org/schemas/datasets/v1/Dataset`.
 	"""
 	schema: TypeUri!
 	"""
@@ -7611,11 +7642,12 @@ Result of deleting resources by reference
 union ResourceDeleteOutcome = ResourceDeleteResult | ResourceUnsupportedSelectorProblem | ResourceAccountResolutionProblem
 
 """
-Resources deleted and references that could not be resolved
+Resources whose deletion was requested and references that could not be
+resolved
 """
 type ResourceDeleteResult {
 	"""
-	Resources that were deleted
+	Resources whose deletion was requested
 	"""
 	resources: [ResourceDeleteSuccess!]!
 	"""
@@ -7625,7 +7657,7 @@ type ResourceDeleteResult {
 }
 
 """
-Resource deleted for one reference of a batch
+Resource whose deletion was requested for one reference of a batch
 """
 type ResourceDeleteSuccess {
 	"""
@@ -7633,9 +7665,13 @@ type ResourceDeleteSuccess {
 	"""
 	requestIndex: Int!
 	"""
-	Unique identifier of the deleted resource
+	Unique identifier of the resource
 	"""
 	resourceId: ResourceID!
+	"""
+	`DELETING` while controllers clean up, `DELETED` once they finished
+	"""
+	phase: ResourcePhase!
 }
 
 """
@@ -7667,7 +7703,7 @@ type ResourceHandle {
 	"""
 	Account that owns the target resource.
 	"""
-	account: AccountHandle!
+	account: ResourceOwnerHandle!
 	"""
 	Type URI of the target resource.
 	"""
@@ -7780,7 +7816,7 @@ type ResourceHeaders {
 	"""
 	Link to the account that owns the resource.
 	"""
-	account: AccountHandle!
+	account: ResourceOwnerHandle!
 	"""
 	Map of string keys and values that can be used to organize, categorize, and query
 	resources.
@@ -7804,6 +7840,12 @@ type ResourceHeaders {
 	"""
 	generation: Uint64!
 	"""
+	A sequential number that changes every time the resource status is updated. Can be passed
+	back as a precondition of a status update to make sure the status was not modified since it
+	was read. Populated by the system. Starts with `1`.
+	"""
+	statusGeneration: Uint64!
+	"""
 	Time when the resource was first applied and assigned an identity.
 	"""
 	createdAt: DateTime!
@@ -7811,6 +7853,11 @@ type ResourceHeaders {
 	Time when the resource was last updated, including header, spec, and status updates.
 	"""
 	updatedAt: DateTime!
+	"""
+	Time when deletion of the resource was requested. The resource remains visible until its
+	controllers finish cleaning up and the deletion completes.
+	"""
+	deletionRequestedAt: DateTime
 	"""
 	Time when the resource was deleted.
 	"""
@@ -8080,7 +8127,48 @@ type ResourceNameNotFoundProblem {
 }
 
 """
-Represents the reconciliation phase of a resource.
+Link to a resolved account that can own resources: `User`, `Organization`, or `Node`.
+
+Schema: https://opendatafabric.org/schemas/auth/v1alpha1/ResourceOwnerHandle
+"""
+type ResourceOwnerHandle {
+	"""
+	ID of the account resource.
+	"""
+	id: ResourceID!
+	"""
+	DID of the account.
+	"""
+	did: AccountID!
+	"""
+	Name of the account.
+	"""
+	name: AccountName!
+}
+
+"""
+Reference to an account, mirroring the ODF `auth/v1alpha1/ResourceOwnerRef`.
+
+Resolves by `did` if given, else by `name`; any other field present is then
+checked for agreement, so a mismatch is reported rather than ignored.
+"""
+input ResourceOwnerRefInput {
+	"""
+	Resource ID of the account, only checked for agreement
+	"""
+	id: ResourceID
+	"""
+	Account DID, used for lookup when given
+	"""
+	did: AccountID
+	"""
+	Account name, used for lookup when `did` is absent
+	"""
+	name: AccountName
+}
+
+"""
+Represents the reconciliation or deletion phase of a resource.
 
 Schema: https://opendatafabric.org/schemas/resources/v1alpha1/ResourcePhase
 """
@@ -8090,10 +8178,12 @@ enum ResourcePhase {
 	READY
 	DEGRADED
 	FAILED
+	DELETING
+	DELETED
 }
 
 """
-Number of resources in each reconciliation phase
+Number of resources in each phase
 """
 type ResourcePhaseCounts {
 	"""
@@ -8116,10 +8206,16 @@ type ResourcePhaseCounts {
 	Resources that failed and were never reconciled
 	"""
 	failed: Uint64!
+	"""
+	Resources whose deletion waits for their controllers to clean up
+	"""
+	deleting: Uint64!
 }
 
 """
-Reference to exactly one resource, mirroring the ODF `ResourceRef`.
+Reference to one resource, mirroring the ODF `ResourceRef`. A name matches
+the live resource holding it; with `includeDeleting` it also matches
+resources being deleted, so it may resolve to several.
 
 A resource is addressed either by `id`, or by `type` **and** `name` — ODF's
 uniqueness key is `(account, type, name)`, and resources of different types
@@ -8132,13 +8228,13 @@ than in the schema, which cannot express "at least one of".
 
 To match resources *without* knowing their type, use a selector
 (`bySelectors`): selectors ask which resources match and may span every
-type, while a ref names exactly one.
+type, while a ref names one resource.
 """
 input ResourceRefInput {
 	"""
 	Account owning the resource, defaults to the calling account
 	"""
-	account: AccountRefInput
+	account: ResourceOwnerRefInput
 	"""
 	Canonical selector (`variablesets`), alias (`vs`), ODF type name
 	(`VariableSet`), or full schema URI — all resolve to the same type.
@@ -8211,7 +8307,7 @@ input ResourceSelectorInput {
 	§ Selectors), which have no call to inherit an account from; using it as
 	a per-selector override within a query extends beyond that.
 	"""
-	account: AccountRefInput
+	account: ResourceOwnerRefInput
 	"""
 	Canonical selector (`variablesets`), alias (`vs`), ODF type name
 	(`VariableSet`), or full schema URI. `null` spans every type.
@@ -8460,15 +8556,25 @@ type Resources {
 	Returns a summary-oriented dashboard for the current or specified
 	subject
 	"""
-	summary(account: AccountRefInput): ResourcesSummaryOutcome!
+	summary(account: ResourceOwnerRefInput): ResourcesSummaryOutcome!
 	"""
 	Returns resources by refs
 	"""
-	byRefs(resourceRefs: [ResourceRefInput!]!, opts: SpecViewOptsInput! = {revealed: false}): BatchResourcesOutcome!
+	byRefs(		resourceRefs: [ResourceRefInput!]!,		opts: SpecViewOptsInput! = {revealed: false},
+		"""
+		Also find resources whose deletion is in progress; a name may then match several resources, the live one first
+		"""
+		includeDeleting: Boolean! = false
+	): BatchResourcesOutcome!
 	"""
 	Returns resource handles by refs
 	"""
-	handlesByRefs(resourceRefs: [ResourceRefInput!]!): BatchResourceHandlesOutcome!
+	handlesByRefs(		resourceRefs: [ResourceRefInput!]!,
+		"""
+		Also find resources whose deletion is in progress; a name may then match several resources, the live one first
+		"""
+		includeDeleting: Boolean! = false
+	): BatchResourceHandlesOutcome!
 	"""
 	Returns resources matching the given selectors, which act as a logical
 	OR and may span several resource types and accounts
@@ -8481,7 +8587,12 @@ type Resources {
 	"""
 	Renders canonical manifest representations from stored resources
 	"""
-	renderManifests(resourceRefs: [ResourceRefInput!]!, format: ResourceManifestFormat!, opts: SpecViewOptsInput! = {revealed: false}): BatchResourceManifestsOutcome!
+	renderManifests(		resourceRefs: [ResourceRefInput!]!,		format: ResourceManifestFormat!,		opts: SpecViewOptsInput! = {revealed: false},
+		"""
+		Also find resources whose deletion is in progress; a name may then match several resources, the live one first
+		"""
+		includeDeleting: Boolean! = false
+	): BatchResourceManifestsOutcome!
 }
 
 """
@@ -8499,7 +8610,9 @@ type ResourcesMut {
 	"""
 	applyManifests(manifests: [ApplyManifestInput!]!, dryRun: Boolean): ResourceApplyManifestsResult!
 	"""
-	Deletes the resources identified by the given references
+	Requests deletion of the resources identified by the given references.
+	Names match live resources only; an id also matches a resource being
+	deleted, which retries its cleanup
 	"""
 	delete(resourceRefs: [ResourceRefInput!]!): ResourceDeleteOutcome!
 }
@@ -8704,6 +8817,10 @@ input SearchResourcesInput {
 	narrowing to zero, not a widening to everything.
 	"""
 	selectors: [ResourceSelectorInput!]
+	"""
+	Also match resources whose deletion is in progress
+	"""
+	includeDeleting: Boolean! = false
 }
 
 """
@@ -9697,6 +9814,20 @@ type UpdateVersionErrorInvalidExtraData implements UpdateVersionResult & Molecul
 	Always false
 	"""
 	isSuccess: Boolean!
+}
+
+"""
+Extra data cannot be updated, as the file has no versions yet
+"""
+type UpdateVersionErrorNoVersions implements UpdateVersionResult {
+	"""
+	Always false
+	"""
+	isSuccess: Boolean!
+	"""
+	Human-readable error message
+	"""
+	message: String!
 }
 
 """
