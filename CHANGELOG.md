@@ -15,6 +15,25 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
+## [0.95.1] - 2026-11-05
+### Upstream [kamu `0.272.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.272.1)
+- Versioned files can be viewed and downloaded on nodes with local storage:
+  `VersionedFileEntry.contentUrl` returns a short-lived URL served by the node itself
+  (`GET /platform/file/download/{token}`), which works without request headers
+- GraphQL (breaking): `VersionedFileEntry.content` fails with an error coded `CONTENT_TOO_LARGE` for
+  files over the in-band limit. Use `contentUrl` for those
+- `/query` (breaking): commitment hashes and signatures are computed over RFC 8785 (JCS) canonical
+  JSON, as the ODF spec requires, so standard JCS clients can reproduce them. Commitments signed by
+  earlier versions fail `/verify`
+- GraphQL: `TransformInput.alias` returns the query alias the input has in `SetTransform`, not the
+  input dataset's alias, and inputs keep their order. Read the dataset alias from
+  `TransformInput.inputDataset`. Encoded metadata blocks (`encoded`, `blockByHashEncoded`) now match
+  the stored block
+### Added
+- `versionedFiles.maxInBandContentSizeInBytes` config (default 10 MiB) limits the size of files
+  returned in-band by `VersionedFileEntry.content`. `/ui-config` returns it as
+  `versionedFiles.maxInBandContentSizeInBytes`
+
 ## [0.95.0] - 2026-11-02
 ### Upstream [kamu `0.272.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.272.0)
 - GraphQL: `MetadataChain.blocks` takes an optional `filter` that selects blocks by event type and by

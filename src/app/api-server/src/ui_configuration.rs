@@ -8,6 +8,7 @@
 // by the Apache License, Version 2.0.
 
 use kamu_accounts_services::PasswordPolicyConfig;
+use kamu_datasets::VersionedFilesConfig;
 use serde::Serialize;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,6 +21,7 @@ pub struct UIConfiguration {
     pub semantic_search_threshold_score: f32,
     pub min_new_password_length: usize,
     pub webhooks: UIWebhooksConfiguration,
+    pub versioned_files: UIVersionedFilesConfiguration,
 }
 
 impl Default for UIConfiguration {
@@ -30,6 +32,7 @@ impl Default for UIConfiguration {
             semantic_search_threshold_score: 0.0,
             min_new_password_length: PasswordPolicyConfig::default().min_new_password_length,
             webhooks: UIWebhooksConfiguration::default(),
+            versioned_files: UIVersionedFilesConfiguration::default(),
         }
     }
 }
@@ -64,6 +67,25 @@ impl Default for UIFeatureFlags {
 #[serde(rename_all = "camelCase")]
 pub struct UIWebhooksConfiguration {
     pub loopback_targets_only: bool,
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UIVersionedFilesConfiguration {
+    /// Files up to this size can be read in-band through
+    /// `VersionedFileEntry.content`, larger ones through `contentUrl`
+    pub max_in_band_content_size_in_bytes: usize,
+}
+
+impl Default for UIVersionedFilesConfiguration {
+    fn default() -> Self {
+        Self {
+            max_in_band_content_size_in_bytes:
+                VersionedFilesConfig::DEFAULT_MAX_IN_BAND_CONTENT_SIZE_IN_BYTES,
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

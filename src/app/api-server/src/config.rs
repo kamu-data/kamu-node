@@ -15,7 +15,7 @@ use container_runtime::{ContainerRuntimeType, NetworkNamespaceType};
 use internal_error::*;
 use kamu_accounts::{AccountConfig, DidSecretEncryptionConfig};
 use kamu_accounts_services::PasswordPolicyConfig;
-use kamu_datasets::SecretsEncryptionConfig;
+use kamu_datasets::{SecretsEncryptionConfig, VersionedFilesConfig};
 use odf::dataset::IpfsGateway;
 use setty::types::UrlOrPath;
 use setty::types::duration_string::DurationString;
@@ -60,6 +60,10 @@ pub struct ApiServerConfig {
     /// File upload repository
     #[config(default)]
     pub upload_repo: UploadRepoConfig,
+
+    /// Versioned files configuration
+    #[config(default)]
+    pub versioned_files: VersionedFilesConfig,
 
     /// External URLs
     #[config(default)]

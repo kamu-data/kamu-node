@@ -78,6 +78,7 @@ interface "EmbeddingsEncoder" <<i>>
 interface "EmbeddingsProvider" <<i>>
 interface "EngineProvisioner" <<i>>
 interface "ExpensiveAccountRepository" <<i>>
+interface "FileDownloadService" <<i>>
 interface "FindCollectionEntriesUseCase" <<i>>
 interface "FindVersionedFileVersionUseCase" <<i>>
 interface "FlowActivationCauseUpstreamExtractor" <<i>>
@@ -303,6 +304,7 @@ class "EngineProvisionerLocal"
 class "EngineProvisionerLocalConfig" <<singleton>>
 class "EthereumSourceConfig" <<singleton>>
 class "FetchService"
+class "FileDownloadServiceJwt"
 class "FileUploadLimitConfig" <<singleton>>
 class "FindCollectionEntriesUseCaseImpl"
 class "FindVersionedFileVersionUseCaseImpl"
@@ -550,6 +552,7 @@ class "VariableSetResourcePresentationDispatcher"
 class "VariableSetTypedResourceQueryServiceImpl"
 class "VerificationServiceImpl"
 class "VerifyDatasetUseCaseImpl"
+class "VersionedFilesConfig" <<singleton>>
 class "ViewCollectionEntriesUseCaseImpl"
 class "ViewVersionedFileHistoryUseCaseImpl"
 class "WakeupListenerConfig" <<singleton>>
@@ -860,6 +863,10 @@ class "WsSmartTransferProtocolClient"
 "WebhookTriggerStartupRecoveryJob"  --> "WebhookSubscriptionQueryService"
 "WebhookTriggerStartupRecoveryJob"  --> "SystemTimeSource"
 "WebhookTriggerStartupRecoveryJob"  --> "WebhooksConfig"
+"FileDownloadService" <|-- "FileDownloadServiceJwt"
+"FileDownloadServiceJwt"  --> "SystemTimeSource"
+"FileDownloadServiceJwt"  --> "JwtAuthenticationConfig"
+"FileDownloadServiceJwt"  --> "ServerUrlConfig"
 "UploadService" <|-- "UploadServiceLocal"
 "UploadServiceLocal" "?" --> "AccessToken"
 "UploadServiceLocal"  --> "ServerUrlConfig"

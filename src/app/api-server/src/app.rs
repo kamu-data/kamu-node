@@ -23,7 +23,12 @@ use tracing::{error, info, warn};
 use url::Url;
 
 use crate::commands::{Command, CommandDesc};
-use crate::ui_configuration::{UIConfiguration, UIFeatureFlags, UIWebhooksConfiguration};
+use crate::ui_configuration::{
+    UIConfiguration,
+    UIFeatureFlags,
+    UIVersionedFilesConfiguration,
+    UIWebhooksConfiguration,
+};
 use crate::{
     AccessTokenLifecycleNotifier,
     AccountLifecycleNotifier,
@@ -660,6 +665,14 @@ pub async fn init_dependencies(
         config.upload_repo.max_file_size_mb,
     ));
 
+    // Versioned files configuration
+    let versioned_files_max_in_band_content_size_in_bytes =
+        config.versioned_files.max_in_band_content_size_in_bytes;
+    b.add_value(config.versioned_files);
+
+    // Serves download URLs for storages that cannot issue external ones (local FS)
+    b.add::<kamu_adapter_http::platform::FileDownloadServiceJwt>();
+
     match config.upload_repo.storage {
         config::UploadRepoStorageConfig::Local => {
             b.add::<kamu_adapter_http::platform::UploadServiceLocal>();
@@ -808,6 +821,9 @@ pub async fn init_dependencies(
         },
         webhooks: UIWebhooksConfiguration {
             loopback_targets_only: webhooks_loopback_targets_only,
+        },
+        versioned_files: UIVersionedFilesConfiguration {
+            max_in_band_content_size_in_bytes: versioned_files_max_in_band_content_size_in_bytes,
         },
     });
     //
