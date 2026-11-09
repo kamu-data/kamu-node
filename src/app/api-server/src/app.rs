@@ -17,6 +17,7 @@ use crypto_utils::AesGcmEncryptor;
 use dill::*;
 use internal_error::*;
 use kamu::domain::{DidGeneratorDefault, KamuBackgroundCatalog, TenancyConfig};
+use kamu_accounts::CurrentAccountSubjectCatalogExt as _;
 use observability::metrics::MetricsProvider;
 use s3_utils::{S3Context, S3Metrics};
 use tracing::{error, info, warn};
@@ -144,7 +145,6 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
         }
         cli::Command::Run(c) => Box::new(
             commands::RunCommand::builder(
-                server_account_subject.clone(),
                 c.address,
                 c.http_port,
                 c.flightsql_port,
@@ -170,7 +170,7 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
     let catalog = if command_desc.needs_admin_auth {
         catalog
             .builder_chained()
-            .add_value(server_account_subject)
+            .add_current_account_subject(server_account_subject)
             .build()
     } else {
         catalog
@@ -339,6 +339,9 @@ pub async fn init_dependencies(
     b.add_value(config.protocol.ipfs.into_gateway_config());
     b.add_value(kamu::utils::ipfs_wrapper::IpfsClient::default());
 
+    // Smart transfer protocol
+    b.add_value(config.protocol.smart_transfer_protocol.to_server_config()?);
+
     // GraphQL
     b.add_value(config.extra.graphql);
     b.add_value(kamu_adapter_graphql::GqlFeatureFlags::new());
@@ -370,6 +373,8 @@ pub async fn init_dependencies(
     b.add::<kamu::ObjectStoreRegistryImpl>();
     b.add::<kamu::RemoteAliasesRegistryImpl>();
     b.add::<kamu::RemoteAliasResolverImpl>();
+    b.add::<kamu::RemoteDatasetUrlResolverImpl>();
+    b.add::<kamu::DatasetPullSourceResolverImpl>();
 
     kamu_adapter_flow_dataset::register_dependencies(&mut b, Default::default());
     kamu_adapter_flow_webhook::register_dependencies(&mut b);
@@ -383,18 +388,21 @@ pub async fn init_dependencies(
 
     b.add::<kamu::DataFormatRegistryImpl>();
 
+    b.add::<kamu::PollingIngestPlannerImpl>();
     b.add::<kamu::PollingIngestServiceImpl>();
     b.add::<kamu::PushIngestPlannerImpl>();
     b.add::<kamu::PushIngestExecutorImpl>();
-    b.add::<kamu::TransformRequestPlannerImpl>();
-    b.add::<kamu::TransformElaborationServiceImpl>();
+    b.add::<kamu::TransformPlannerImpl>();
     b.add::<kamu::TransformExecutorImpl>();
     b.add::<kamu::SyncServiceImpl>();
+    b.add::<kamu::IpfsServiceImpl>();
+    b.add::<kamu::LocalSyncCommitterImpl>();
     b.add::<kamu::SyncRequestBuilder>();
     b.add::<kamu::CompactionPlannerImpl>();
     b.add::<kamu::CompactionExecutorImpl>();
     b.add::<kamu::VerificationServiceImpl>();
     b.add::<kamu::PullRequestPlannerImpl>();
+    b.add::<kamu::DatasetUpdateKindResolverImpl>();
     b.add::<kamu::PushRequestPlannerImpl>();
     b.add::<kamu::SetWatermarkPlannerImpl>();
     b.add::<kamu::SetWatermarkExecutorImpl>();
@@ -409,6 +417,7 @@ pub async fn init_dependencies(
     b.add::<kamu::CompactDatasetUseCaseImpl>();
     b.add::<kamu::PushIngestDataUseCaseImpl>();
     b.add::<kamu::PullDatasetUseCaseImpl>();
+    b.add::<kamu::DatasetUpdateStepsImpl>();
     b.add::<kamu::PushDatasetUseCaseImpl>();
     b.add::<kamu::ResetDatasetUseCaseImpl>();
     b.add::<kamu::SetWatermarkUseCaseImpl>();

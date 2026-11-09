@@ -13,8 +13,7 @@ use std::pin::Pin;
 
 use async_utils::BackgroundAgent;
 use internal_error::*;
-use kamu::domain::TenancyConfig;
-use kamu_accounts::CurrentAccountSubject;
+use kamu::domain::{KamuBackgroundCatalog, TenancyConfig};
 
 use super::{Command, CommandDesc};
 use crate::ui_configuration::UIConfiguration;
@@ -32,9 +31,6 @@ pub struct RunCommand {
 
     tenancy_config: TenancyConfig,
     ui_config: UIConfiguration,
-
-    #[dill::component(explicit)]
-    server_account_subject: CurrentAccountSubject,
 
     #[dill::component(explicit)]
     address: Option<std::net::IpAddr>,
@@ -59,18 +55,15 @@ impl Command for RunCommand {
     async fn run(&self) -> Result<(), InternalError> {
         let shutdown_requested = graceful_shutdown::trap_signals();
 
-        // System services are built from the special catalog that contains the admin
-        // subject. Thus all services that require authorization are granted full access
-        // to all resources.
-        //
-        // TODO: Granting admin access to all system services is a security threat. We
-        // should consider to instead propagate the auth info of the user who triggered
-        // some system flow alongside all actions to enforce proper authorization.
+        // Startup jobs and background agents act for the system, so they are built from
+        // the system catalog, which holds the server account subject and
+        // `Principal::Node`: they pass every permission check, but hold no account's
+        // signing key
         let system_catalog = self
             .catalog
-            .builder_chained()
-            .add_value(self.server_account_subject.clone())
-            .build();
+            .get_one::<KamuBackgroundCatalog>()
+            .int_err()?
+            .system_user_catalog();
 
         if !self.read_only {
             init_on_startup::run_startup_jobs(&system_catalog)
