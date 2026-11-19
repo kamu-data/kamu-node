@@ -20,6 +20,23 @@ Recommendation: for ease of reading, use the following format:
 - Data types now support a shorthand for optionality, e.g. `Float64?`
 - OpenAPI / config schema: `AccountID` and `DatasetID` schema types renamed to `AccountDid` and `DatasetDid`
 - GraphQL: `ResourceOwnerHandle.type` and `ResourceOwnerRefInput.type` fields, new `TypeRef` scalar
+### Upstream [kamu `epic/task-iac-stage-0`](https://github.com/kamu-data/kamu-cli/pull/1774)
+- IaC Task System Stage 0 ([#348](https://github.com/kamu-data/kamu-node/issues/348)): dataset `HEAD`
+  moves go through a single compare-and-set commit primitive, and pull, ingest, transform,
+  compaction, reset and sync were rebuilt on top of it
+- Database migration (breaking): task and flow run history is wiped on upgrade
+- Startup jobs and background agents run as `Principal::Node`: they pass every permission check but
+  hold no account's signing key
+- GraphQL (breaking): `FlowDescriptionUpdateResultUnknown` is removed from `FlowDescriptionUpdateResult`
+- GraphQL: `SetWatermarkResult` gains `SetWatermarkCasFailed`, returned when the dataset head moved
+  concurrently
+### Added
+- Config: `protocol.smartTransferProtocol.uploadProgressInterval` (default `10s`) — how often the
+  server asks a pushing client for upload progress; keep it below the idle timeout of load balancers
+### Fixed
+- Dataset dependency graph is updated as soon as a dataset's key blocks change (e.g. a new
+  `SetTransform`), not only on restart: the outbox dispatcher for dataset key block messages was
+  not registered, so these messages were dropped
 
 ## [0.95.1] - 2026-11-05
 ### Upstream [kamu `0.272.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.272.1)
