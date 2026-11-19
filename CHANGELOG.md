@@ -16,6 +16,10 @@ Recommendation: for ease of reading, use the following format:
 -->
 
 ## [Unreleased]
+### Upstream kamu `master` (`cd13a6dfe`)
+- Data types now support a shorthand for optionality, e.g. `Float64?`
+- OpenAPI / config schema: `AccountID` and `DatasetID` schema types renamed to `AccountDid` and `DatasetDid`
+- GraphQL: `ResourceOwnerHandle.type` and `ResourceOwnerRefInput.type` fields, new `TypeRef` scalar
 ### Upstream [kamu `epic/task-iac-stage-0`](https://github.com/kamu-data/kamu-cli/pull/1774)
 - IaC Task System Stage 0 ([#348](https://github.com/kamu-data/kamu-node/issues/348)): dataset `HEAD`
   moves go through a single compare-and-set commit primitive, and pull, ingest, transform,
