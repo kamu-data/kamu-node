@@ -293,7 +293,7 @@ Auto-derived from `account_name` if omitted
 </tr>
 <tr>
 <td><code>id</code></td>
-<td><a href="#accountid"><code>AccountID</code></a></td>
+<td><a href="#accountdid"><code>AccountDid</code></a></td>
 <td><code class="language-json">null</code></td>
 <td>
 
@@ -355,7 +355,7 @@ Auto-derived from `account_name` if omitted
 </tbody>
 </table>
 
-## `AccountID`
+## `AccountDid`
 
 Base type: `string`
 

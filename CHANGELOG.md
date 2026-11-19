@@ -15,6 +15,12 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
+## [Unreleased]
+### Upstream kamu `master` (`cd13a6dfe`)
+- Data types now support a shorthand for optionality, e.g. `Float64?`
+- OpenAPI / config schema: `AccountID` and `DatasetID` schema types renamed to `AccountDid` and `DatasetDid`
+- GraphQL: `ResourceOwnerHandle.type` and `ResourceOwnerRefInput.type` fields, new `TypeRef` scalar
+
 ## [0.95.1] - 2026-11-05
 ### Upstream [kamu `0.272.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.272.1)
 - Versioned files can be viewed and downloaded on nodes with local storage:
