@@ -448,6 +448,10 @@ pub async fn init_dependencies(
         &mut b,
         kamu_datasets::MESSAGE_PRODUCER_KAMU_DATASET_DEPENDENCY_GRAPH_SERVICE,
     );
+    messaging_outbox::register_message_dispatcher::<kamu_datasets::DatasetKeyBlocksMessage>(
+        &mut b,
+        kamu_datasets::MESSAGE_PRODUCER_KAMU_DATASET_KEY_BLOCK_UPDATE_HANDLER,
+    );
     messaging_outbox::register_message_dispatcher::<kamu_task_system::TaskProgressMessage>(
         &mut b,
         kamu_task_system::MESSAGE_PRODUCER_KAMU_TASK_AGENT,

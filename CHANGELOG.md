@@ -33,6 +33,10 @@ Recommendation: for ease of reading, use the following format:
 ### Added
 - Config: `protocol.smartTransferProtocol.uploadProgressInterval` (default `10s`) — how often the
   server asks a pushing client for upload progress; keep it below the idle timeout of load balancers
+### Fixed
+- Dataset dependency graph is updated as soon as a dataset's key blocks change (e.g. a new
+  `SetTransform`), not only on restart: the outbox dispatcher for dataset key block messages was
+  not registered, so these messages were dropped
 
 ## [0.95.1] - 2026-11-05
 ### Upstream [kamu `0.272.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.272.1)
