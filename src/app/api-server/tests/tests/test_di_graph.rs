@@ -8,7 +8,6 @@
 // by the Apache License, Version 2.0.
 
 use kamu::domain::TenancyConfig;
-use kamu_accounts::CurrentAccountSubjectCatalogExt as _;
 use test_utils::LocalS3Server;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,7 +98,7 @@ async fn test_di_graph_validates_local(
 
     // CurrentAccountSubject is inserted by middlewares, but won't be present in
     // the default dependency graph, so we have to add it manually
-    catalog_builder.add_current_account_subject(kamu_accounts::CurrentAccountSubject::new_test());
+    kamu_accounts::CurrentAccountSubject::new_test().register(&mut catalog_builder);
 
     catalog_builder.add_value(kamu_adapter_http::AccessToken::new("some-token"));
 
@@ -147,7 +146,7 @@ async fn test_di_graph_validates_remote(
 
     // CurrentAccountSubject is inserted by middlewares, but won't be present in
     // the default dependency graph, so we have to add it manually
-    catalog_builder.add_current_account_subject(kamu_accounts::CurrentAccountSubject::new_test());
+    kamu_accounts::CurrentAccountSubject::new_test().register(&mut catalog_builder);
 
     catalog_builder.add_value(kamu_adapter_http::AccessToken::new("some-token"));
 
@@ -194,7 +193,7 @@ async fn update_di_graph() {
 
     // CurrentAccountSubject is inserted by middlewares, but won't be present in
     // the default dependency graph, so we have to add it manually
-    catalog_builder.add_current_account_subject(kamu_accounts::CurrentAccountSubject::new_test());
+    kamu_accounts::CurrentAccountSubject::new_test().register(&mut catalog_builder);
 
     catalog_builder.add_value(kamu_adapter_http::AccessToken::new("some-token"));
 

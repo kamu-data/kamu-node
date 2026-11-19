@@ -56,14 +56,13 @@ impl Command for RunCommand {
         let shutdown_requested = graceful_shutdown::trap_signals();
 
         // Startup jobs and background agents act for the system, so they are built from
-        // the system catalog, which holds the server account subject and
-        // `Principal::Node`: they pass every permission check, but hold no account's
-        // signing key
+        // the node catalog: it holds `Principal::Node` and no caller, so they pass every
+        // permission check, but hold no account's signing key
         let system_catalog = self
             .catalog
             .get_one::<KamuBackgroundCatalog>()
             .int_err()?
-            .system_user_catalog();
+            .node_catalog();
 
         if !self.read_only {
             init_on_startup::run_startup_jobs(&system_catalog)

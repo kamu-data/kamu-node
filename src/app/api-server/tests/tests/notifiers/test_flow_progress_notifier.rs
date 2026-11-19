@@ -16,12 +16,12 @@ use dill::*;
 use email_gateway::FakeEmailSender;
 use kamu::domain::{DidGeneratorDefault, ServerUrlConfig, TenancyConfig};
 use kamu_accounts::{
-    CurrentAccountSubject,
     DEFAULT_ACCOUNT_NAME,
     DUMMY_EMAIL_ADDRESS,
     DidSecretEncryptionConfig,
     JwtAuthenticationConfig,
     PredefinedAccountsConfig,
+    Principal,
     TEST_ACCOUNT_ID,
 };
 use kamu_accounts_inmem::{
@@ -128,7 +128,7 @@ impl FlowProgressNotifierHarness {
             .add::<SystemTimeSourceDefault>()
             .add_builder(DatasetStorageUnitLocalFs::builder(datasets_dir))
             .add::<odf::dataset::DatasetLfsBuilderDefault>()
-            .add_value(CurrentAccountSubject::new_test())
+            .add_value(Principal::Node)
             .add_value(FlowAgentConfig {
                 awaiting_step: TimeDelta::seconds(1),
                 mandatory_throttling_period: TimeDelta::minutes(1),

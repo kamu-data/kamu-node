@@ -17,7 +17,6 @@ use crypto_utils::AesGcmEncryptor;
 use dill::*;
 use internal_error::*;
 use kamu::domain::{DidGeneratorDefault, KamuBackgroundCatalog, TenancyConfig};
-use kamu_accounts::CurrentAccountSubjectCatalogExt as _;
 use observability::metrics::MetricsProvider;
 use s3_utils::{S3Context, S3Metrics};
 use tracing::{error, info, warn};
@@ -127,10 +126,7 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
     };
 
     let catalog = CatalogBuilder::new_chained(&catalog)
-        .add_value(KamuBackgroundCatalog::new(
-            catalog.clone(),
-            server_account_subject.clone(),
-        ))
+        .add_value(KamuBackgroundCatalog::new(catalog.clone()))
         .build();
 
     let command_builder: Box<dyn TypedBuilder<dyn Command>> = match args.command {
@@ -168,10 +164,9 @@ pub async fn run(args: cli::Cli, config: config::ApiServerConfig) -> Result<(), 
         .unwrap_or_default();
 
     let catalog = if command_desc.needs_admin_auth {
-        catalog
-            .builder_chained()
-            .add_current_account_subject(server_account_subject)
-            .build()
+        let mut b = catalog.builder_chained();
+        server_account_subject.register(&mut b);
+        b.build()
     } else {
         catalog
     };
@@ -389,6 +384,7 @@ pub async fn init_dependencies(
     b.add::<kamu::DataFormatRegistryImpl>();
 
     b.add::<kamu::PollingIngestPlannerImpl>();
+    b.add::<kamu::IngestEnvVarsResolver>();
     b.add::<kamu::PollingIngestServiceImpl>();
     b.add::<kamu::PushIngestPlannerImpl>();
     b.add::<kamu::PushIngestExecutorImpl>();
@@ -396,7 +392,6 @@ pub async fn init_dependencies(
     b.add::<kamu::TransformExecutorImpl>();
     b.add::<kamu::SyncServiceImpl>();
     b.add::<kamu::IpfsServiceImpl>();
-    b.add::<kamu::LocalSyncCommitterImpl>();
     b.add::<kamu::SyncRequestBuilder>();
     b.add::<kamu::CompactionPlannerImpl>();
     b.add::<kamu::CompactionExecutorImpl>();
@@ -414,14 +409,20 @@ pub async fn init_dependencies(
     b.add::<kamu::ResetExecutorImpl>();
     b.add::<kamu::RemoteStatusServiceImpl>();
 
-    b.add::<kamu::CompactDatasetUseCaseImpl>();
+    b.add::<kamu::utils::local_sync_writes::PulledSeedStore>();
+
+    b.add::<kamu::CompactionJobImpl>();
+    b.add::<kamu::ResetJobImpl>();
+    b.add::<kamu::VerifyJobImpl>();
+    b.add::<kamu::PollingIngestJobImpl>();
+    b.add::<kamu::TransformJobImpl>();
+    b.add::<kamu::SyncFromJobImpl>();
+    b.add::<kamu::SyncToJobImpl>();
+
     b.add::<kamu::PushIngestDataUseCaseImpl>();
     b.add::<kamu::PullDatasetUseCaseImpl>();
-    b.add::<kamu::DatasetUpdateStepsImpl>();
     b.add::<kamu::PushDatasetUseCaseImpl>();
-    b.add::<kamu::ResetDatasetUseCaseImpl>();
     b.add::<kamu::SetWatermarkUseCaseImpl>();
-    b.add::<kamu::VerifyDatasetUseCaseImpl>();
     b.add::<kamu::GetDatasetSchemaUseCaseImpl>();
     b.add::<kamu::QueryDatasetDataUseCaseImpl>();
 
