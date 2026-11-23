@@ -433,6 +433,8 @@ pub async fn init_dependencies(
     b.add::<messaging_outbox::OutboxAgentImpl>();
     b.add::<messaging_outbox::OutboxAgentMetrics>();
     b.add::<wakeup_listener::WakeupListenerMetrics>();
+    b.add::<background_agent_host::BackgroundAgentHost>();
+    b.add::<background_agent_host::BackgroundAgentHostMetrics>();
 
     messaging_outbox::register_message_dispatcher::<kamu_datasets::DatasetLifecycleMessage>(
         &mut b,
@@ -507,10 +509,16 @@ pub async fn init_dependencies(
     );
 
     // Background agents configuration
+    b.add_value(config.background_agents.background_agent_host_config());
     b.add_value(config.background_agents.wakeup_listener_config());
     b.add_value(config.background_agents.outbox_agent_config());
     b.add_value(config.background_agents.flow_system_event_agent_config());
     b.add_value(config.background_agents.flow_agent_activation_config());
+    b.add_value(
+        config
+            .background_agents
+            .resource_controller_runtime_config(),
+    );
 
     // Flow system configuration
     b.add_value(config.flow_system.into_system());
@@ -586,6 +594,7 @@ pub async fn init_dependencies(
     kamu_configuration_services::register_dependencies(&mut b);
     kamu_resources_facade::register_dependencies(&mut b);
     kamu_resources_services::register_dependencies(&mut b);
+    b.add::<kamu_resources_services::ResourceControllerRuntimeImpl>();
     kamu_storage_services::register_dependencies(&mut b);
 
     kamu_auth_rebac_services::register_dependencies(&mut b, true);

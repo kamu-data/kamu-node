@@ -51,7 +51,7 @@ dill = { version = "0.17", default-features = false, features = [
     "nightly",
 ] }
 
-async-utils = { workspace = true }
+background-agent-host = { workspace = true }
 container-runtime = { workspace = true }
 crypto-utils = { workspace = true }
 database-common = { workspace = true }
@@ -78,6 +78,7 @@ odf = { workspace = true, default-features = false, features = [
     "sqlx-sqlite",
     "utoipa",
 ] }
+retry-backoff = { workspace = true }
 s3-utils = { workspace = true }
 server-console = { workspace = true }
 time-source = { workspace = true }

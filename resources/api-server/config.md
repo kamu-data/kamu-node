@@ -26,15 +26,40 @@
   &quot;batching&quot;: {
     &quot;flowActivations&quot;: 100,
     &quot;flowSystemEvents&quot;: 100,
-    &quot;outboxMessages&quot;: 100
+    &quot;outboxMessages&quot;: 100,
+    &quot;resourceControllers&quot;: 20
   },
   &quot;concurrency&quot;: {
-    &quot;outboxConsumers&quot;: 8
+    &quot;outboxConsumers&quot;: 8,
+    &quot;resourceControllers&quot;: 4
   },
   &quot;maxListeningTimeout&quot;: &quot;2m&quot;,
-  &quot;minDebounceInterval&quot;: &quot;20ms&quot;
+  &quot;minDebounceInterval&quot;: &quot;20ms&quot;,
+  &quot;resourceControllers&quot;: {
+    &quot;failureBackoff&quot;: {
+      &quot;backoffType&quot;: &quot;Exponential&quot;,
+      &quot;maxDelay&quot;: &quot;5m&quot;,
+      &quot;minDelay&quot;: &quot;1s&quot;
+    },
+    &quot;loopRestartBackoff&quot;: {
+      &quot;backoffType&quot;: &quot;Exponential&quot;,
+      &quot;maxDelay&quot;: &quot;1m&quot;,
+      &quot;minDelay&quot;: &quot;1s&quot;
+    }
+  },
+  &quot;restartBackoff&quot;: {
+    &quot;backoffType&quot;: &quot;Exponential&quot;,
+    &quot;maxDelay&quot;: &quot;1m&quot;,
+    &quot;minDelay&quot;: &quot;1s&quot;
+  },
+  &quot;shutdownTimeout&quot;: &quot;10s&quot;
 }</code></pre></td>
-<td>Background agents configuration (outbox, flow system events, tasks)</td>
+<td>
+
+Background agents configuration (outbox, flow system events, tasks,
+resource controllers)
+
+</td>
 </tr>
 <tr>
 <td><code>database</code></td>
@@ -519,6 +544,17 @@ treated as 1
 <td><code class="language-json">100</code></td>
 <td>Outbox messages relayed per transaction. 0 is treated as 1</td>
 </tr>
+<tr>
+<td><code>resourceControllers</code></td>
+<td><code>integer</code></td>
+<td><code class="language-json">20</code></td>
+<td>
+
+Resources a resource controller selects at once before processing
+them. 0 is treated as 1
+
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -539,6 +575,18 @@ as 1
 
 </td>
 </tr>
+<tr>
+<td><code>resourceControllers</code></td>
+<td><code>integer</code></td>
+<td><code class="language-json">4</code></td>
+<td>
+
+Resources each resource controller processes at once, each in
+transactions of its own: e.g. 4 with Postgres, 1 with `SQLite`. 0 is
+treated as 1
+
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -553,7 +601,8 @@ as 1
 <td><pre><code class="language-json">{
   &quot;flowActivations&quot;: 100,
   &quot;flowSystemEvents&quot;: 100,
-  &quot;outboxMessages&quot;: 100
+  &quot;outboxMessages&quot;: 100,
+  &quot;resourceControllers&quot;: 20
 }</code></pre></td>
 <td>Batch sizes of agents processing records in batches</td>
 </tr>
@@ -561,7 +610,8 @@ as 1
 <td><code>concurrency</code></td>
 <td><a href="#backgroundagentsconcurrencyconfig"><code>BackgroundAgentsConcurrencyConfig</code></a></td>
 <td><pre><code class="language-json">{
-  &quot;outboxConsumers&quot;: 8
+  &quot;outboxConsumers&quot;: 8,
+  &quot;resourceControllers&quot;: 4
 }</code></pre></td>
 <td>Concurrency limits of agents processing records in parallel</td>
 </tr>
@@ -582,6 +632,88 @@ the next flow activation moment regardless of it.
 <td><a href="#durationstring"><code>DurationString</code></a></td>
 <td><code class="language-json">&quot;20ms&quot;</code></td>
 <td>How long agents absorb a burst of change signals before processing</td>
+</tr>
+<tr>
+<td><code>resourceControllers</code></td>
+<td><a href="#backgroundagentsresourcecontrollersconfig"><code>BackgroundAgentsResourceControllersConfig</code></a></td>
+<td><pre><code class="language-json">{
+  &quot;failureBackoff&quot;: {
+    &quot;backoffType&quot;: &quot;Exponential&quot;,
+    &quot;maxDelay&quot;: &quot;5m&quot;,
+    &quot;minDelay&quot;: &quot;1s&quot;
+  },
+  &quot;loopRestartBackoff&quot;: {
+    &quot;backoffType&quot;: &quot;Exponential&quot;,
+    &quot;maxDelay&quot;: &quot;1m&quot;,
+    &quot;minDelay&quot;: &quot;1s&quot;
+  }
+}</code></pre></td>
+<td>Retry delays of the resource controller runtime</td>
+</tr>
+<tr>
+<td><code>restartBackoff</code></td>
+<td><a href="#restartbackoffconfig"><code>RestartBackoffConfig</code></a></td>
+<td><pre><code class="language-json">{
+  &quot;backoffType&quot;: &quot;Exponential&quot;,
+  &quot;maxDelay&quot;: &quot;1m&quot;,
+  &quot;minDelay&quot;: &quot;1s&quot;
+}</code></pre></td>
+<td>
+
+Delay before an agent that failed, panicked or returned early is
+restarted, growing with consecutive restarts. A run that lasted at
+least `maxDelay` resets the count
+
+</td>
+</tr>
+<tr>
+<td><code>shutdownTimeout</code></td>
+<td><a href="#durationstring"><code>DurationString</code></a></td>
+<td><code class="language-json">&quot;10s&quot;</code></td>
+<td>
+
+How long background agents and in-flight API requests get to finish
+on a shutdown, before they are aborted
+
+</td>
+</tr>
+</tbody>
+</table>
+
+## `BackgroundAgentsResourceControllersConfig`
+
+<table>
+<thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr>
+<td><code>failureBackoff</code></td>
+<td><a href="#resourcecontrollerfailurebackoffconfig"><code>ResourceControllerFailureBackoffConfig</code></a></td>
+<td><pre><code class="language-json">{
+  &quot;backoffType&quot;: &quot;Exponential&quot;,
+  &quot;maxDelay&quot;: &quot;5m&quot;,
+  &quot;minDelay&quot;: &quot;1s&quot;
+}</code></pre></td>
+<td>
+
+Delay before a resource whose processing failed is processed again,
+growing with consecutive failures
+
+</td>
+</tr>
+<tr>
+<td><code>loopRestartBackoff</code></td>
+<td><a href="#restartbackoffconfig"><code>RestartBackoffConfig</code></a></td>
+<td><pre><code class="language-json">{
+  &quot;backoffType&quot;: &quot;Exponential&quot;,
+  &quot;maxDelay&quot;: &quot;1m&quot;,
+  &quot;minDelay&quot;: &quot;1s&quot;
+}</code></pre></td>
+<td>
+
+Delay before a failed resource controller loop is restarted, growing
+with consecutive failures
+
+</td>
 </tr>
 </tbody>
 </table>
@@ -1605,6 +1737,64 @@ Base type: `string`
 <td><code>repoUrl</code></td>
 <td><a href="#urlorpath"><code>UrlOrPath</code></a></td>
 <td><code class="language-json">null</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+## `ResourceControllerFailureBackoffConfig`
+
+Delay before a retry: a function of the attempt number, from `minDelay`
+up to `maxDelay`
+
+<table>
+<thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr>
+<td><code>backoffType</code></td>
+<td><a href="#retrypolicyconfigbackofftype"><code>RetryPolicyConfigBackoffType</code></a></td>
+<td><code class="language-json">&quot;Exponential&quot;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>maxDelay</code></td>
+<td><a href="#durationstring"><code>DurationString</code></a></td>
+<td><code class="language-json">&quot;5m&quot;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>minDelay</code></td>
+<td><a href="#durationstring"><code>DurationString</code></a></td>
+<td><code class="language-json">&quot;1s&quot;</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+## `RestartBackoffConfig`
+
+Delay before a retry: a function of the attempt number, from `minDelay`
+up to `maxDelay`
+
+<table>
+<thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr>
+<td><code>backoffType</code></td>
+<td><a href="#retrypolicyconfigbackofftype"><code>RetryPolicyConfigBackoffType</code></a></td>
+<td><code class="language-json">&quot;Exponential&quot;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>maxDelay</code></td>
+<td><a href="#durationstring"><code>DurationString</code></a></td>
+<td><code class="language-json">&quot;1m&quot;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>minDelay</code></td>
+<td><a href="#durationstring"><code>DurationString</code></a></td>
+<td><code class="language-json">&quot;1s&quot;</code></td>
 <td></td>
 </tr>
 </tbody>
