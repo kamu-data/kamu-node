@@ -409,8 +409,6 @@ pub async fn init_dependencies(
     b.add::<kamu::ResetExecutorImpl>();
     b.add::<kamu::RemoteStatusServiceImpl>();
 
-    b.add::<kamu::utils::local_sync_writes::PulledSeedStore>();
-
     b.add::<kamu::CompactionJobImpl>();
     b.add::<kamu::ResetJobImpl>();
     b.add::<kamu::VerifyJobImpl>();
