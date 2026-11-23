@@ -243,7 +243,7 @@
           "type": "integer"
         },
         "resourceControllers": {
-          "default": 4,
+          "default": 1,
           "description": "Resources each resource controller processes at once, each in\ntransactions of its own: e.g. 4 with Postgres, 1 with `SQLite`. 0 is\ntreated as 1",
           "format": "uint",
           "minimum": 0,
@@ -269,7 +269,7 @@
           "$ref": "#/$defs/BackgroundAgentsConcurrencyConfig",
           "default": {
             "outboxConsumers": 8,
-            "resourceControllers": 4
+            "resourceControllers": 1
           },
           "description": "Concurrency limits of agents processing records in parallel"
         },
@@ -1561,7 +1561,7 @@
         },
         "concurrency": {
           "outboxConsumers": 8,
-          "resourceControllers": 4
+          "resourceControllers": 1
         },
         "maxListeningTimeout": "2m",
         "minDebounceInterval": "20ms",

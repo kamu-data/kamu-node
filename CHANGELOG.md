@@ -39,7 +39,7 @@ framework foundation and supervised background agents.
 - Config: `backgroundAgents.resourceControllers.failureBackoff` (from 1s, doubling, up to 5m by
   default) and `backgroundAgents.resourceControllers.loopRestartBackoff` (from 1s, doubling, up to
   1m), and `backgroundAgents.batching.resourceControllers` (default 20) and
-  `backgroundAgents.concurrency.resourceControllers` (default 4) for resource controllers
+  `backgroundAgents.concurrency.resourceControllers` (default 1) for resource controllers
 ### Changed
 - On SIGINT / SIGTERM (or the e2e shutdown route) the server stops accepting requests and gives
   in-flight requests and background agents `backgroundAgents.shutdownTimeout` to finish, instead of

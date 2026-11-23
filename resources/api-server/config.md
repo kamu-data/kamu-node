@@ -31,7 +31,7 @@
   },
   &quot;concurrency&quot;: {
     &quot;outboxConsumers&quot;: 8,
-    &quot;resourceControllers&quot;: 4
+    &quot;resourceControllers&quot;: 1
   },
   &quot;maxListeningTimeout&quot;: &quot;2m&quot;,
   &quot;minDebounceInterval&quot;: &quot;20ms&quot;,
@@ -578,7 +578,7 @@ as 1
 <tr>
 <td><code>resourceControllers</code></td>
 <td><code>integer</code></td>
-<td><code class="language-json">4</code></td>
+<td><code class="language-json">1</code></td>
 <td>
 
 Resources each resource controller processes at once, each in
@@ -611,7 +611,7 @@ treated as 1
 <td><a href="#backgroundagentsconcurrencyconfig"><code>BackgroundAgentsConcurrencyConfig</code></a></td>
 <td><pre><code class="language-json">{
   &quot;outboxConsumers&quot;: 8,
-  &quot;resourceControllers&quot;: 4
+  &quot;resourceControllers&quot;: 1
 }</code></pre></td>
 <td>Concurrency limits of agents processing records in parallel</td>
 </tr>

@@ -695,8 +695,7 @@ pub struct UploadRepoStorageConfigS3 {
 
 // Defaults suit the server on Postgres, where agents are woken up by
 // LISTEN/NOTIFY, so the listening timeout is only a rarely needed fallback.
-// `SQLite` typically wants ~2s timeouts, ~20 batches, 1 outbox consumer and
-// 1 resource controller process at once
+// `SQLite` typically wants ~2s timeouts, ~20 batches, 1 outbox consumer
 #[derive(setty::Config, setty::Default)]
 pub struct BackgroundAgentsConfig {
     /// How long agents absorb a burst of change signals before processing
@@ -766,7 +765,7 @@ pub struct BackgroundAgentsConcurrencyConfig {
     /// Resources each resource controller processes at once, each in
     /// transactions of its own: e.g. 4 with Postgres, 1 with `SQLite`. 0 is
     /// treated as 1
-    #[config(default = 4)]
+    #[config(default = 1)]
     pub resource_controllers: usize,
 }
 
