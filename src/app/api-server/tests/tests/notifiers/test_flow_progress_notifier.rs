@@ -16,12 +16,12 @@ use dill::*;
 use email_gateway::FakeEmailSender;
 use kamu::domain::{DidGeneratorDefault, ServerUrlConfig, TenancyConfig};
 use kamu_accounts::{
-    CurrentAccountSubject,
     DEFAULT_ACCOUNT_NAME,
     DUMMY_EMAIL_ADDRESS,
     DidSecretEncryptionConfig,
     JwtAuthenticationConfig,
     PredefinedAccountsConfig,
+    Principal,
     TEST_ACCOUNT_ID,
 };
 use kamu_accounts_inmem::{
@@ -45,7 +45,6 @@ use kamu_auth_rebac_services::{
     RebacServiceImpl,
 };
 use kamu_datasets::{DatasetEntry, DatasetEntryRepository};
-use kamu_datasets_inmem::InMemoryDatasetEntryRepository;
 use kamu_datasets_services::DatasetEntryServiceImpl;
 use kamu_flow_system::*;
 use kamu_flow_system_inmem::{
@@ -125,12 +124,11 @@ impl FlowProgressNotifierHarness {
             .add::<InMemoryWakeupHub>()
             .add::<WakeupListenerMetrics>()
             .add::<DatasetEntryServiceImpl>()
-            .add::<InMemoryDatasetEntryRepository>()
             .add::<DidGeneratorDefault>()
             .add::<SystemTimeSourceDefault>()
             .add_builder(DatasetStorageUnitLocalFs::builder(datasets_dir))
             .add::<odf::dataset::DatasetLfsBuilderDefault>()
-            .add_value(CurrentAccountSubject::new_test())
+            .add_value(Principal::Node)
             .add_value(FlowAgentConfig {
                 awaiting_step: TimeDelta::seconds(1),
                 mandatory_throttling_period: TimeDelta::minutes(1),
@@ -153,6 +151,8 @@ impl FlowProgressNotifierHarness {
             .add_value(PredefinedAccountsConfig::test_single_tenant_with_id())
             .add_value(JwtAuthenticationConfig::default())
             .add_value(ServerUrlConfig::new_test(None));
+
+        kamu_datasets_inmem::register_dependencies(&mut b);
 
         NoOpDatabasePlugin::init_database_components(&mut b);
 

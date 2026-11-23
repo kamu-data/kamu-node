@@ -16,10 +16,55 @@ Recommendation: for ease of reading, use the following format:
 -->
 
 ## [Unreleased]
-### Upstream kamu `master` (`cd13a6dfe`)
-- Data types now support a shorthand for optionality, e.g. `Float64?`
-- OpenAPI / config schema: `AccountID` and `DatasetID` schema types renamed to `AccountDid` and `DatasetDid`
+### Upstream [kamu `0.273.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.273.0)
+IaC Task System Stage 0 ([#348](https://github.com/kamu-data/kamu-node/issues/348)): every change
+to a dataset's head is a compare-and-set, and ingest, transform, sync, compaction, reset and
+verification run as one job per dataset operation.
+- Upgrading (breaking) clears the history of tasks and flow runs, including pending manual runs.
+  Flow configurations and triggers are kept, and enabled flows are scheduled again on start
+- Concurrent changes to a dataset are no longer overwritten: a task or smart protocol push whose
+  dataset head moved fails with a head-moved conflict naming the expected and actual heads, and
+  tasks that fail this way are retried. `POST /ingest` returns 409 in this case
+- Tasks no longer retry failures that a retry cannot fix (diverged or missing remotes, denied
+  commits, invalid fetch steps or data, incompatible transform schemas, unknown engines, datasets
+  deleted after scheduling); network and other transient failures are still retried
+- Startup jobs and background agents act as the node itself: they pass every permission check, but
+  hold no account's signing key
+- A dataset the caller may not read is reported as not found by every operation, so a denial does
+  not reveal that a private dataset exists; a readable dataset the caller may not change fails with
+  the missing permission
+- Without `engine.maxConcurrency`, at most one engine per CPU core runs at a time
+- Transform flows run for an input with a single record or that only advanced its watermark, and
+  report `FlowDescriptionUpdateResultUpToDate` when there is nothing to do
+- Compaction keeps blocks that only set a watermark or source state when they cannot be merged, and
+  removes its temporary files when it ends
+- Setting a watermark keeps the polling source's progress, and datasets with the same fetch step no
+  longer share fetched data
+- `${{ env.NAME }}` in a polling source no longer expands templates found inside a variable's value,
+  and substituted values are no longer written to the debug log
+- Smart protocol: a push whose metadata unpacks to more than 256 MiB is rejected; a push or pull no
+  longer commits blocks whose data was not transferred; failed object downloads are retried
+- `POST /ingest` returns 400 for a derived dataset, for data that does not match the schema or does
+  not parse, and for an invalid `Content-Type`, instead of a server error
+- Transform, ingest and compaction runs no longer leave working files behind after success
+- Data types support a shorthand for optionality, e.g. `Float64?`
+- GraphQL (breaking): `FlowDescriptionUpdateResultUnknown` is removed from
+  `FlowDescriptionUpdateResult`
+- GraphQL: `setWatermark` can return `SetWatermarkCasFailed` with the expected and actual heads
 - GraphQL: `ResourceOwnerHandle.type` and `ResourceOwnerRefInput.type` fields, new `TypeRef` scalar
+- OpenAPI / config schema: `AccountID` and `DatasetID` schema types renamed to `AccountDid` and
+  `DatasetDid`
+### Added
+- Config: `protocol.smartTransferProtocol.uploadProgressInterval` (default `10s`) sets how often the
+  server asks a pushing client for upload progress; keep it below the idle timeout of load balancers
+### Changed
+- Dependency updates aligned with kamu `0.273.0`, including DataFusion 55.3, Arrow 59.3,
+  jsonwebtoken 12, jsonschema 0.63 and sqlx 0.9.1, whose `libsqlite3-sys` 0.40 fixes the bundled
+  SQLite advisory RUSTSEC-2026-0459
+### Fixed
+- Dataset dependency graph is updated as soon as a dataset's key blocks change (e.g. a new
+  `SetTransform`), not only on restart: the outbox dispatcher for dataset key block messages was
+  not registered, so these messages were dropped
 
 ## [0.95.1] - 2026-11-05
 ### Upstream [kamu `0.272.1`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.272.1)
