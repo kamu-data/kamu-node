@@ -7,11 +7,10 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
-use std::future::{Future, IntoFuture as _};
+use std::future::IntoFuture as _;
 use std::path::PathBuf;
-use std::pin::Pin;
 
-use async_utils::BackgroundAgent;
+use background_agent_host::{BackgroundAgentHost, BackgroundAgentHostConfig, CancellationToken};
 use internal_error::*;
 use kamu::domain::{KamuBackgroundCatalog, TenancyConfig};
 
@@ -104,17 +103,11 @@ impl Command for RunCommand {
             std::fs::write(e2e_output_data_path, e2e_file_content).unwrap();
         }
 
-        let background_agents = system_catalog
-            .get::<dill::AllOf<dyn BackgroundAgent>>()
-            .unwrap();
-
-        // Ensure we have background agents registered
-        assert!(
-            !background_agents.is_empty(),
-            "No background agents found! This indicates a DI container configuration issue. Make \
-             sure all agent implementations are registered as both their specific trait (e.g., \
-             TaskAgent) AND as BackgroundAgent in the DI container."
-        );
+        let background_agent_host = system_catalog.get_one::<BackgroundAgentHost>().int_err()?;
+        let shutdown_timeout = system_catalog
+            .get_one::<BackgroundAgentHostConfig>()
+            .int_err()?
+            .shutdown_timeout;
 
         tracing::info!(
             http_endpoint = format!("http://{}", local_addr),
@@ -122,72 +115,83 @@ impl Command for RunCommand {
             "Serving traffic"
         );
 
+        // One token stops both the servers and the agents
+        let shutdown = CancellationToken::new();
+
         // TODO: Avoid using shutdown_notify in e2e and use signals instead
-        let shutdown_future: Pin<Box<dyn Future<Output = ()> + Send>> =
-            if let Some(shutdown_notify) = maybe_shutdown_notify {
-                let combined = async move {
-                    tokio::select! {
-                        _ = shutdown_requested => {}
-                        _ = shutdown_notify.notified() => {}
+        let shutdown_requests = {
+            let shutdown = shutdown.clone();
+            async move {
+                let e2e_shutdown = async {
+                    match maybe_shutdown_notify {
+                        Some(notify) => notify.notified().await,
+                        None => std::future::pending().await,
                     }
                 };
-                Box::pin(combined)
-            } else {
-                Box::pin(shutdown_requested)
-            };
+                tokio::select! {
+                    () = shutdown.cancelled() => {}
+                    () = shutdown_requested => {}
+                    () = e2e_shutdown => {
+                        tracing::info!("Shutdown requested through the e2e route");
+                    }
+                }
+                shutdown.cancel();
 
-        let http_server = http_server
-            .with_graceful_shutdown(shutdown_future)
+                // From then on, a signal exits the process at once, in case the graceful
+                // stop hangs. Detached, so that it does not hold up the end of a graceful stop
+                tokio::spawn(async {
+                    graceful_shutdown::trap_signals().await;
+                    tracing::warn!("Second shutdown signal received, exiting at once");
+                    std::process::exit(1);
+                });
+            }
+        };
+
+        let mut http_server = http_server
+            .with_graceful_shutdown(shutdown.clone().cancelled_owned())
             .into_future();
 
-        // Start all background agents as tasks
-        // Note: Background agents are designed to run forever in event loops.
-        // If any agent completes normally, it's considered an unexpected event
-        // that should trigger a server shutdown.
-        let agent_tasks: Vec<_> = background_agents
-            .into_iter()
-            .map(|agent| {
-                let agent_name = agent.agent_name().to_string();
-                tokio::spawn(async move {
-                    tracing::info!("Starting background agent: {}", agent_name);
-                    let result = agent.run().await;
-                    match &result {
-                        Err(error) => {
-                            tracing::error!("Background agent {} failed: {}", agent_name, error);
-                        }
-                        Ok(()) => {
-                            tracing::warn!(
-                                "Background agent {} completed unexpectedly! This will cause \
-                                 server shutdown.",
-                                agent_name
-                            );
-                        }
-                    }
-                    result
-                })
-            })
-            .collect();
+        // On a shutdown, in-flight HTTP requests get the agents' shutdown timeout to
+        // finish. Any server completing on its own stops everything else
+        let servers = async {
+            let result = tokio::select! {
+                biased;
 
-        // TODO: PERF: Do we need to spawn these into separate tasks?
-        if !self.read_only {
-            tokio::select! {
-                res = http_server => { res.int_err() },
-                res = flightsql_server.run() => { res.int_err() },
-                res = async {
-                    let (result, _index, _remaining) = futures::future::select_all(agent_tasks).await;
-                    match result {
-                        Ok(agent_result) => agent_result,
-                        Err(join_error) => {
-                            Err(InternalError::new(format!("Background agent task panicked: {join_error}")))
-                        },
+                () = shutdown.cancelled() => {
+                    match tokio::time::timeout(shutdown_timeout, &mut http_server).await {
+                        Ok(res) => res.int_err(),
+                        Err(_) => {
+                            tracing::warn!(
+                                "HTTP grace period expired, remaining requests end with the process"
+                            );
+                            Ok(())
+                        }
                     }
-                } => { res }
-            }
+                }
+                res = &mut http_server => {
+                    tracing::warn!("HTTP server completed unexpectedly, shutting down");
+                    res.int_err()
+                }
+                res = flightsql_server.run() => {
+                    tracing::warn!("FlightSQL server completed unexpectedly, shutting down");
+                    res.int_err()
+                }
+            };
+            shutdown.cancel();
+            result
+        };
+
+        if self.read_only {
+            let (servers_result, ()) = tokio::join!(servers, shutdown_requests);
+            servers_result
         } else {
-            tokio::select! {
-                res = http_server => { res.int_err() },
-                res = flightsql_server.run() => { res.int_err() },
-            }
+            let (servers_result, agents_result, ()) = tokio::join!(
+                servers,
+                background_agent_host.run(shutdown.clone()),
+                shutdown_requests,
+            );
+            agents_result?;
+            servers_result
         }
     }
 }

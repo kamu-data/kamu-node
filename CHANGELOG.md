@@ -15,6 +15,36 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
+## [Unreleased]
+### Upstream [kamu `epic/task-iac-stage-1`](https://github.com/kamu-data/kamu-cli/pull/1808)
+IaC Task System Stage 1 ([#348](https://github.com/kamu-data/kamu-node/issues/348)): the resource
+framework foundation and supervised background agents.
+- Resources (`VariableSet`, `SecretSet`, `Storage`) are reconciled by a background controller that
+  keeps trying, instead of once per change: a resource left `Reconciling` or `Deleting` by a crash is
+  completed after a restart, transient reconciliation and cleanup failures are retried with a
+  growing backoff, and a resource that keeps failing no longer delays the others
+- The server keeps running when a background agent fails, panics or stops: the agent is logged and
+  restarted after a delay that grows with each consecutive failure, while the API and the other
+  agents keep working. Before, the whole server shut down. A task that panics is marked failed and
+  the next task runs
+- Prometheus metrics: per agent `background_agent_running`, `background_agent_restarts_total` by
+  reason and `background_agent_last_failure_timestamp_seconds`; per resource controller
+  `resource_controller_processed_total`, `resource_controller_failing_resources` and
+  `resource_controller_loop_restarts_total`
+### Added
+- Config: `backgroundAgents.restartBackoff` (from 1s, doubling, up to 1m by default) sets the delay
+  before a failed background agent is restarted
+- Config: `backgroundAgents.shutdownTimeout` (default `10s`) bounds how long in-flight HTTP requests
+  and background agents get to finish on a shutdown
+- Config: `backgroundAgents.resourceControllers.failureBackoff` (from 1s, doubling, up to 5m by
+  default) and `backgroundAgents.resourceControllers.loopRestartBackoff` (from 1s, doubling, up to
+  1m), and `backgroundAgents.batching.resourceControllers` (default 20) and
+  `backgroundAgents.concurrency.resourceControllers` (default 1) for resource controllers
+### Changed
+- On SIGINT / SIGTERM (or the e2e shutdown route) the server stops accepting requests and gives
+  in-flight requests and background agents `backgroundAgents.shutdownTimeout` to finish, instead of
+  dropping the agents at once; a second signal exits immediately
+
 ## [0.96.0] - 2026-11-23
 ### Upstream [kamu `0.273.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.273.0)
 IaC Task System Stage 0 ([#348](https://github.com/kamu-data/kamu-node/issues/348)): every change
