@@ -15,7 +15,7 @@ Recommendation: for ease of reading, use the following format:
 ### Fixed
 -->
 
-## [Unreleased]
+## [0.96.0] - 2026-11-23
 ### Upstream [kamu `0.273.0`](https://github.com/kamu-data/kamu-cli/releases/tag/v0.273.0)
 IaC Task System Stage 0 ([#348](https://github.com/kamu-data/kamu-node/issues/348)): every change
 to a dataset's head is a compare-and-set, and ingest, transform, sync, compaction, reset and
